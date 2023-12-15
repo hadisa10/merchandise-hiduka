@@ -1,8 +1,8 @@
 {
-  "name": "@minimal-kit/next-ts",
-  "author": "Minimals",
+  "name": "@hiduka/next-ts",
+  "author": "Hokela",
   "version": "5.6.0",
-  "description": "Next & TypeScript",
+  "description": "Hiduka Solutions",
   "private": true,
   "scripts": {
     "dev": "next dev -p 8082",
