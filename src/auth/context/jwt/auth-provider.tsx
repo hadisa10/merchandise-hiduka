@@ -197,7 +197,7 @@ export function AuthProvider({ children }: Props) {
   const memoizedValue = useMemo(
     () => ({
       user: state.user,
-      method: 'jwt',
+      method: 'firebase',
       loading: status === 'loading',
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
