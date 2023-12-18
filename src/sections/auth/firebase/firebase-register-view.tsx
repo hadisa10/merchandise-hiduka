@@ -68,7 +68,7 @@ export default function FirebaseRegisterView() {
         email: data.email,
       }).toString();
 
-      const href = `${paths.auth.main.verify}?${searchParams}`;
+      const href = `${paths.auth.firebase.verify}?${searchParams}`;
 
       router.push(href);
     } catch (error) {
@@ -109,7 +109,7 @@ export default function FirebaseRegisterView() {
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2"> Already have an account? </Typography>
 
-        <Link href={paths.auth.main.login} component={RouterLink} variant="subtitle2">
+        <Link href={paths.auth.firebase.login} component={RouterLink} variant="subtitle2">
           Sign in
         </Link>
       </Stack>
@@ -120,10 +120,10 @@ export default function FirebaseRegisterView() {
     <Typography
       component="div"
       sx={{
-        color: 'text.secondary',
         mt: 2.5,
-        typography: 'caption',
         textAlign: 'center',
+        typography: 'caption',
+        color: 'text.secondary',
       }}
     >
       {'By signing up, I agree to '}
@@ -140,8 +140,6 @@ export default function FirebaseRegisterView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
         <RHFTextField name="firstName" label="First name" />
         <RHFTextField name="lastName" label="Last name" />
@@ -209,14 +207,22 @@ export default function FirebaseRegisterView() {
   );
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
+    <>
       {renderHead}
 
-      {renderForm}
+      {!!errorMsg && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {errorMsg}
+        </Alert>
+      )}
+
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        {renderForm}
+      </FormProvider>
 
       {renderTerms}
 
       {renderLoginOption}
-    </FormProvider>
+    </>
   );
 }

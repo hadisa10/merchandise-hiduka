@@ -1,6 +1,5 @@
 'use client';
 
-import Box from '@mui/material/Box';
 import Masonry from '@mui/lab/Masonry';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -9,6 +8,8 @@ import { paths } from 'src/routes/paths';
 
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useSnackbar, VariantType, SnackbarOrigin } from 'src/components/snackbar';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 
 import ComponentBlock from '../component-block';
 
@@ -43,26 +44,19 @@ export default function SnackbarView() {
 
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Snackbar"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Snackbar' },
-            ]}
-            moreLink={['https://www.iamhosseindhv.com/notistack']}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Snackbar"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Snackbar' },
+          ]}
+          moreLink={['https://www.iamhosseindhv.com/notistack']}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Masonry columns={{ xs: 1, md: 2 }} spacing={3}>

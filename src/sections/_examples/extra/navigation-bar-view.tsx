@@ -3,7 +3,6 @@
 import isEqual from 'lodash/isEqual';
 import { useState, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Badge from '@mui/material/Badge';
 import Stack from '@mui/material/Stack';
@@ -32,6 +31,8 @@ import {
   NavSectionVertical,
   NavSectionHorizontal,
 } from 'src/components/nav-section';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 
 // ----------------------------------------------------------------------
 
@@ -90,6 +91,20 @@ export default function NavigationBarView() {
               rootItem: {
                 fontSize: 15,
                 fontFamily: (theme) => theme.typography.fontSecondaryFamily,
+                '& .icon': {
+                  /* push your styles */
+                },
+                '& .text-container': {},
+                '& .label': {},
+                '& .caption': {},
+                '& .arrow': {},
+              },
+              subItem: {
+                '& .icon': {},
+                '& .text-container': {},
+                '& .label': {},
+                '& .caption': {},
+                '& .arrow': {},
               },
             }}
           />
@@ -112,6 +127,20 @@ export default function NavigationBarView() {
             rootItem: {
               fontSize: 15,
               fontFamily: (theme) => theme.typography.fontSecondaryFamily,
+              '& .icon': {
+                /* push your styles */
+              },
+              '& .text-container': {},
+              '& .label': {},
+              '& .caption': {},
+              '& .arrow': {},
+            },
+            subItem: {
+              '& .icon': {},
+              '& .text-container': {},
+              '& .label': {},
+              '& .caption': {},
+              '& .arrow': {},
             },
           }}
         />
@@ -208,25 +237,18 @@ export default function NavigationBarView() {
 
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Navigation Bar"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Navigation Bar' },
-            ]}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Navigation Bar"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Navigation Bar' },
+          ]}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Stack
@@ -457,10 +479,12 @@ const BASIC_NAV_ITEMS = [
   {
     title: 'Page',
     path: '#',
+    caption: 'This is the caption',
     children: [
       {
         title: 'Page 1',
         path: '#',
+        caption: 'This is the caption',
         children: [
           { title: 'Page 1.1', path: '#' },
           { title: 'Page 1.2', path: '#' },

@@ -29,6 +29,8 @@ import {
   MegaMenuDesktopHorizontal,
 } from 'src/components/mega-menu';
 
+import ComponentHero from 'src/sections/_examples/component-hero';
+
 // ----------------------------------------------------------------------
 
 export default function MegaMenuView() {
@@ -110,25 +112,18 @@ export default function MegaMenuView() {
 
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Mega Menu"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Mega Menu' },
-            ]}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Mega Menu"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Mega Menu' },
+          ]}
+        />
+      </ComponentHero>
 
       {renderHorizontal}
 

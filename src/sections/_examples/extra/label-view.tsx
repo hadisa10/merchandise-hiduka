@@ -1,6 +1,5 @@
 'use client';
 
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
@@ -10,6 +9,8 @@ import { paths } from 'src/routes/paths';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 
 import ComponentBlock from '../component-block';
 
@@ -22,25 +23,18 @@ const COLORS = ['default', 'primary', 'secondary', 'info', 'success', 'warning',
 export default function LabelView() {
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Label"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Label' },
-            ]}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Label"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Label' },
+          ]}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Stack spacing={3}>

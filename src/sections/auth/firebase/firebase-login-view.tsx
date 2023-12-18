@@ -25,15 +25,11 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { useRealmApp } from 'src/components/RealmApp';
-
-import { Credentials } from "realm-web";
 
 // ----------------------------------------------------------------------
 
 export default function FirebaseLoginView() {
   const { login, loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
-  const realmApp = useRealmApp();
 
   const router = useRouter();
 
@@ -68,8 +64,7 @@ export default function FirebaseLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await realmApp.logIn(Credentials.emailPassword(data.email, data.password));
-      // await login?.(data.email, data.password);
+      await login?.(data.email, data.password);
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
@@ -105,12 +100,12 @@ export default function FirebaseLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Hiduka</Typography>
+      <Typography variant="h4">Sign in to Minimal</Typography>
 
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>
 
-        <Link component={RouterLink} href={paths.auth.main.register} variant="subtitle2">
+        <Link component={RouterLink} href={paths.auth.firebase.register} variant="subtitle2">
           Create an account
         </Link>
       </Stack>
@@ -119,8 +114,6 @@ export default function FirebaseLoginView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-
       <RHFTextField name="email" label="Email address" />
 
       <RHFTextField
@@ -140,7 +133,7 @@ export default function FirebaseLoginView() {
 
       <Link
         component={RouterLink}
-        href={paths.auth.main.forgotPassword}
+        href={paths.auth.firebase.forgotPassword}
         variant="body2"
         color="inherit"
         underline="always"
@@ -194,12 +187,20 @@ export default function FirebaseLoginView() {
   );
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
+    <>
       {renderHead}
 
-      {renderForm}
+      {!!errorMsg && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {errorMsg}
+        </Alert>
+      )}
+
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        {renderForm}
+      </FormProvider>
 
       {renderLoginOption}
-    </FormProvider>
+    </>
   );
 }

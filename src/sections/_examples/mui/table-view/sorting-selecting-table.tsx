@@ -78,7 +78,7 @@ export default function SortingSelectingTable() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const denseHeight = table.dense ? 34 : 54;
+  const denseHeight = table.dense ? 34 : 34 + 20;
 
   return (
     <div>

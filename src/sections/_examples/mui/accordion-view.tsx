@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Accordion from '@mui/material/Accordion';
@@ -16,6 +15,8 @@ import { _mock } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 
 import ComponentBlock from '../component-block';
 
@@ -41,26 +42,19 @@ export default function AccordionView() {
 
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Accordion"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Accordion' },
-            ]}
-            moreLink={['https://mui.com/components/accordion']}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Accordion"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Accordion' },
+          ]}
+          moreLink={['https://mui.com/components/accordion']}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Stack spacing={5}>

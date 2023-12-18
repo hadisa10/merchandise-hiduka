@@ -48,8 +48,8 @@ export default function ChatView() {
 
   const participants: IChatParticipant[] = conversation
     ? conversation.participants.filter(
-      (participant: IChatParticipant) => participant.id !== `${user?.id}`
-    )
+        (participant: IChatParticipant) => participant.id !== `${user?.id}`
+      )
     : [];
 
   useEffect(() => {

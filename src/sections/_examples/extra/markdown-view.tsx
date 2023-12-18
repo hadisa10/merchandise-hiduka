@@ -1,6 +1,5 @@
 'use client';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
@@ -12,6 +11,8 @@ import { paths } from 'src/routes/paths';
 
 import Markdown from 'src/components/markdown';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 
 // ----------------------------------------------------------------------
 
@@ -167,20 +168,13 @@ ReactDOM.render(
 export default function MarkdownView() {
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Markdown"
-            links={[{ name: 'Components', href: paths.components }, { name: 'Markdown' }]}
-            moreLink={['https://www.npmjs.com/package/react-markdown']}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Markdown"
+          links={[{ name: 'Components', href: paths.components }, { name: 'Markdown' }]}
+          moreLink={['https://www.npmjs.com/package/react-markdown']}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Stack spacing={3} direction={{ xs: 'column', md: 'row' }}>

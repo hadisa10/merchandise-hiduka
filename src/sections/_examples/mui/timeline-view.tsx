@@ -1,6 +1,5 @@
 'use client';
 
-import Box from '@mui/material/Box';
 import Masonry from '@mui/lab/Masonry';
 import Paper from '@mui/material/Paper';
 import Timeline from '@mui/lab/Timeline';
@@ -18,6 +17,8 @@ import { paths } from 'src/routes/paths';
 
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 
 import ComponentBlock from '../component-block';
 
@@ -99,26 +100,19 @@ export default function TimelineView() {
 
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Timeline"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Timeline' },
-            ]}
-            moreLink={['https://mui.com/components/timeline']}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Timeline"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Timeline' },
+          ]}
+          moreLink={['https://mui.com/components/timeline']}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Masonry columns={{ xs: 1, md: 3 }} spacing={3}>

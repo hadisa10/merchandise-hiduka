@@ -75,7 +75,7 @@ export default function AmplifyLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Hiduka</Typography>
+      <Typography variant="h4">Sign in to Minimal</Typography>
 
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>
@@ -88,9 +88,7 @@ export default function AmplifyLoginView() {
   );
 
   const renderForm = (
-    <Stack spacing={3}>
-      {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-
+    <Stack spacing={2.5}>
       <RHFTextField name="email" label="Email address" />
 
       <RHFTextField
@@ -133,10 +131,18 @@ export default function AmplifyLoginView() {
   );
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
+    <>
       {renderHead}
 
-      {renderForm}
-    </FormProvider>
+      {!!errorMsg && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {errorMsg}
+        </Alert>
+      )}
+
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        {renderForm}
+      </FormProvider>
+    </>
   );
 }

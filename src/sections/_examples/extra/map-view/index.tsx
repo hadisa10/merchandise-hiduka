@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
@@ -17,6 +16,8 @@ import { cities as CITIES } from 'src/_mock/map/cities';
 import { countries as COUNTRIES } from 'src/_mock/map/countries';
 
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 //
 const MapHeatmap = dynamic(() => import('./heatmap'));
 const MapClusters = dynamic(() => import('./clusters'));
@@ -61,29 +62,22 @@ const StyledMapContainer = styled('div')(({ theme }) => ({
 export default function MapView() {
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Map"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Map' },
-            ]}
-            moreLink={[
-              'http://visgl.github.io/react-map-gl',
-              'http://visgl.github.io/react-map-gl/examples',
-            ]}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Map"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Map' },
+          ]}
+          moreLink={[
+            'http://visgl.github.io/react-map-gl',
+            'http://visgl.github.io/react-map-gl/examples',
+          ]}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Stack spacing={5}>

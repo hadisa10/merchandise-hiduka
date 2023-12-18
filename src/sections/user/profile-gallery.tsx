@@ -78,8 +78,9 @@ export default function ProfileGallery({ gallery }: Props) {
               ratio="1/1"
               src={image.imageUrl}
               onClick={() => lightbox.onOpen(image.imageUrl)}
-              overlay={`linear-gradient(to bottom, ${alpha(theme.palette.grey[900], 0)} 0%, ${theme.palette.grey[900]
-                } 75%)`}
+              overlay={`linear-gradient(to bottom, ${alpha(theme.palette.grey[900], 0)} 0%, ${
+                theme.palette.grey[900]
+              } 75%)`}
             />
           </Card>
         ))}

@@ -23,13 +23,14 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { fTimestamp } from 'src/utils/format-time';
+import { isAfter, isBetween } from 'src/utils/format-time';
 
 import { _invoices, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -74,6 +75,8 @@ const defaultFilters: IInvoiceTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function InvoiceListView() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const theme = useTheme();
 
   const settings = useSettingsContext();
@@ -84,14 +87,11 @@ export default function InvoiceListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_invoices);
+  const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const dateError =
-    filters.startDate && filters.endDate
-      ? filters.startDate.getTime() > filters.endDate.getTime()
-      : false;
+  const dateError = isAfter(filters.startDate, filters.endDate);
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -105,7 +105,7 @@ export default function InvoiceListView() {
     table.page * table.rowsPerPage + table.rowsPerPage
   );
 
-  const denseHeight = table.dense ? 56 : 76;
+  const denseHeight = table.dense ? 56 : 56 + 20;
 
   const canReset =
     !!filters.name ||
@@ -166,26 +166,35 @@ export default function InvoiceListView() {
     [table]
   );
 
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
+
   const handleDeleteRow = useCallback(
     (id: string) => {
       const deleteRow = tableData.filter((row) => row.id !== id);
+
+      enqueueSnackbar('Delete success!');
+
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, tableData]
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+
+    enqueueSnackbar('Delete success!');
+
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
     });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -207,10 +216,6 @@ export default function InvoiceListView() {
     },
     [handleFilters]
   );
-
-  const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, []);
 
   return (
     <>
@@ -357,13 +362,13 @@ export default function InvoiceListView() {
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
+              rowCount={dataFiltered.length}
+              onSelectAllRows={(checked) => {
                 table.onSelectAllRows(
                   checked,
-                  tableData.map((row) => row.id)
-                )
-              }
+                  dataFiltered.map((row) => row.id)
+                );
+              }}
               action={
                 <Stack direction="row">
                   <Tooltip title="Sent">
@@ -399,13 +404,13 @@ export default function InvoiceListView() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      dataFiltered.map((row) => row.id)
                     )
                   }
                 />
@@ -430,7 +435,7 @@ export default function InvoiceListView() {
 
                   <TableEmptyRows
                     height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
 
                   <TableNoData notFound={notFound} />
@@ -523,11 +528,7 @@ function applyFilter({
 
   if (!dateError) {
     if (startDate && endDate) {
-      inputData = inputData.filter(
-        (invoice) =>
-          fTimestamp(invoice.createDate) >= fTimestamp(startDate) &&
-          fTimestamp(invoice.createDate) <= fTimestamp(endDate)
-      );
+      inputData = inputData.filter((invoice) => isBetween(invoice.createDate, startDate, endDate));
     }
   }
 

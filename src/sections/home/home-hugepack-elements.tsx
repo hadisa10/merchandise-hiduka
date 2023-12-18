@@ -229,7 +229,7 @@ export default function HomeHugePackElements() {
           <Chip
             color="error"
             variant="soft"
-            onDelete={() => { }}
+            onDelete={() => {}}
             avatar={<Avatar alt={_mock.fullName(2)} src={_mock.image.avatar(2)} />}
             label="Chip"
           />
@@ -296,7 +296,7 @@ export default function HomeHugePackElements() {
         </m.div>
 
         <m.div variants={varFade().in}>
-          <Alert severity="success" onClose={() => { }}>
+          <Alert severity="success" onClose={() => {}}>
             <AlertTitle>Success</AlertTitle>
             This is a success alert — <strong>check it out!</strong>
           </Alert>

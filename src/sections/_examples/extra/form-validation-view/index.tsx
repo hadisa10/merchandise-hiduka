@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
@@ -13,6 +12,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 
 import ReactHookForm from './react-hook-form';
 
@@ -27,20 +28,13 @@ export default function FormValidationView() {
 
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Form Validation"
-            links={[{ name: 'Components', href: paths.components }, { name: 'Form Validation' }]}
-            moreLink={['https://react-hook-form.com/', 'https://github.com/jquense/yup']}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Form Validation"
+          links={[{ name: 'Components', href: paths.components }, { name: 'Form Validation' }]}
+          moreLink={['https://react-hook-form.com/', 'https://github.com/jquense/yup']}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">

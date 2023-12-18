@@ -1,6 +1,5 @@
 'use client';
 
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
@@ -12,6 +11,8 @@ import { paths } from 'src/routes/paths';
 
 import { useTypography } from 'src/components/text-max-line';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ComponentHero from 'src/sections/_examples/component-hero';
 
 // ----------------------------------------------------------------------
 
@@ -52,26 +53,19 @@ const TYPOGRAPHYS = [
 export default function TypographyView() {
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Typography"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Typography' },
-            ]}
-            moreLink={['https://mui.com/components/typography']}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Typography"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Typography' },
+          ]}
+          moreLink={['https://mui.com/components/typography']}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Grid container rowSpacing={5}>

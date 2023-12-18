@@ -38,7 +38,7 @@ export default function CheckoutView() {
         <CheckoutOrderComplete
           open={checkout.completed}
           onReset={checkout.onReset}
-          onDownloadPDF={() => { }}
+          onDownloadPDF={() => {}}
         />
       ) : (
         <>

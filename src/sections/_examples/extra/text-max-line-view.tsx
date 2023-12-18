@@ -1,6 +1,5 @@
 'use client';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Masonry from '@mui/lab/Masonry';
 import Container from '@mui/material/Container';
@@ -12,30 +11,25 @@ import { paths } from 'src/routes/paths';
 import TextMaxLine from 'src/components/text-max-line';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
+import ComponentHero from 'src/sections/_examples/component-hero';
+
 // ----------------------------------------------------------------------
 
 export default function TextMaxLineView() {
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="TextMaxLine"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'TextMaxLine' },
-            ]}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="TextMaxLine"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'TextMaxLine' },
+          ]}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Masonry columns={3} spacing={3}>

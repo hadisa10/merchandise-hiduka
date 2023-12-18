@@ -1,6 +1,5 @@
 'use client';
 
-import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -13,6 +12,8 @@ import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
+import ComponentHero from 'src/sections/_examples/component-hero';
+
 import ComponentBlock from '../component-block';
 
 // ----------------------------------------------------------------------
@@ -20,26 +21,19 @@ import ComponentBlock from '../component-block';
 export default function BreadcrumbsView() {
   return (
     <>
-      <Box
-        sx={{
-          py: 5,
-          bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.200' : 'grey.800'),
-        }}
-      >
-        <Container>
-          <CustomBreadcrumbs
-            heading="Breadcrumbs"
-            links={[
-              {
-                name: 'Components',
-                href: paths.components,
-              },
-              { name: 'Breadcrumbs' },
-            ]}
-            moreLink={['https://mui.com/components/custom-breadcrumbs']}
-          />
-        </Container>
-      </Box>
+      <ComponentHero>
+        <CustomBreadcrumbs
+          heading="Breadcrumbs"
+          links={[
+            {
+              name: 'Components',
+              href: paths.components,
+            },
+            { name: 'Breadcrumbs' },
+          ]}
+          moreLink={['https://mui.com/components/custom-breadcrumbs']}
+        />
+      </ComponentHero>
 
       <Container sx={{ my: 10 }}>
         <Stack spacing={3}>
