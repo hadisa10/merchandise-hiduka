@@ -21,6 +21,9 @@ import { AuthProvider } from 'src/auth/context/jwt';
 // import { AuthProvider } from 'src/auth/context/auth0';
 // import { AuthProvider } from 'src/auth/context/amplify';
 // import { AuthProvider } from 'src/auth/context/firebase';
+import atlasConfig from "../atlasConfig.json";
+import { RealmProvider } from "src/components/RealmApp";
+
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +47,8 @@ type Props = {
   children: React.ReactNode;
 };
 
+const { appId } = atlasConfig;
+
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="en" className={primaryFont.className}>
@@ -62,13 +67,15 @@ export default function RootLayout({ children }: Props) {
             >
               <ThemeProvider>
                 <MotionLazy>
-                  <SnackbarProvider>
-                    <CheckoutProvider>
-                      <SettingsDrawer />
-                      <ProgressBar />
-                      {children}
-                    </CheckoutProvider>
-                  </SnackbarProvider>
+                  <RealmProvider appId={appId}>
+                    <SnackbarProvider>
+                      <CheckoutProvider>
+                        <SettingsDrawer />
+                        <ProgressBar />
+                        {children}
+                      </CheckoutProvider>
+                    </SnackbarProvider>
+                  </RealmProvider>
                 </MotionLazy>
               </ThemeProvider>
             </SettingsProvider>

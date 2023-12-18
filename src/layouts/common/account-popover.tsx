@@ -19,6 +19,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { varHover } from 'src/components/animate';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { useRealmApp } from 'src/components/RealmApp';
 
 // ----------------------------------------------------------------------
 
@@ -46,13 +47,16 @@ export default function AccountPopover() {
 
   const { logout } = useAuthContext();
 
+  const realmApp = useRealmApp();
+
   const { enqueueSnackbar } = useSnackbar();
 
   const popover = usePopover();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await realmApp.logOut();
+      // await logout();
       popover.onClose();
       router.replace('/');
     } catch (error) {

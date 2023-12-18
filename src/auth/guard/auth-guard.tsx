@@ -6,6 +6,7 @@ import { useRouter } from 'src/routes/hooks';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
+import { useRealmApp } from 'src/components/RealmApp';
 
 // ----------------------------------------------------------------------
 
@@ -35,10 +36,13 @@ function Container({ children }: Props) {
 
   const { authenticated, method } = useAuthContext();
 
+  const { currentUser } = useRealmApp();
+
+
   const [checked, setChecked] = useState(false);
 
   const check = useCallback(() => {
-    if (!authenticated) {
+    if (!currentUser) {
       const searchParams = new URLSearchParams({
         returnTo: window.location.pathname,
       }).toString();

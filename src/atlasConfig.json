@@ -1,0 +1,9 @@
+{
+    "appId": "application-0-qgmja",
+    "appUrl": "https://realm.mongodb.com/groups/657ca9d242b2045ff6146e4f/apps/657cafeff5ca2cd485b9707e",
+    "baseUrl": "https://realm.mongodb.com",
+    "clientApiBaseUrl": "https://ap-south-1.aws.realm.mongodb.com",
+    "dataApiBaseUrl": "https://ap-south-1.aws.data.mongodb-api.com",
+    "dataExplorerLink": "https://cloud.mongodb.com/links/657ca9d242b2045ff6146e4f/explorer/Cluster0/database/collection/find",
+    "dataSourceName": "mongodb-atlas"
+}
