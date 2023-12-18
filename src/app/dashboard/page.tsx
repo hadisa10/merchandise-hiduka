@@ -1,4 +1,4 @@
-import { OverviewAppView } from 'src/sections/overview/app/view';
+import { OverviewEcommerceView } from 'src/sections/overview/e-commerce/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function OverviewAppPage() {
-  return <OverviewAppView />;
+  return <OverviewEcommerceView />;
 }
