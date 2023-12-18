@@ -30,7 +30,7 @@ const ReactQuill = dynamic(() => import('react-quill'), {
 // ----------------------------------------------------------------------
 
 export default function Editor({
-  id = 'hiduka-quill',
+  id = 'minimal-quill',
   error,
   simple = false,
   helperText,

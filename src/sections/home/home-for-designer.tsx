@@ -72,11 +72,10 @@ export default function HomeForDesigner() {
         width: 0.5,
         objectFit: 'cover',
         position: 'absolute',
-        boxShadow: `-80px 80px 80px ${
-          theme.palette.mode === 'light'
-            ? alpha(theme.palette.grey[500], 0.48)
-            : alpha(theme.palette.common.black, 0.24)
-        }`,
+        boxShadow: `-80px 80px 80px ${theme.palette.mode === 'light'
+          ? alpha(theme.palette.grey[500], 0.48)
+          : alpha(theme.palette.common.black, 0.24)
+          }`,
       }}
     />
   );

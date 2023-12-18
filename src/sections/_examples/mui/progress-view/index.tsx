@@ -37,7 +37,7 @@ export default function ProgressView() {
     };
   }, []);
 
-  const progressRef = useRef(() => {});
+  const progressRef = useRef(() => { });
 
   useEffect(() => {
     progressRef.current = () => {

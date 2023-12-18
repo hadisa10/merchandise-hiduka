@@ -77,8 +77,8 @@ export default memo(MapHeatmap);
 function filterFeaturesByDay(
   featureCollection:
     | {
-        features: any[];
-      }
+      features: any[];
+    }
     | undefined,
   time: number
 ) {

@@ -125,9 +125,8 @@ export default function AutocompleteView() {
               )}
             />
 
-            <Typography variant="body2">{`value: ${
-              value !== null ? `'${value}'` : 'null'
-            }`}</Typography>
+            <Typography variant="body2">{`value: ${value !== null ? `'${value}'` : 'null'
+              }`}</Typography>
 
             <Typography variant="body2">{`inputValue: '${inputValue}'`}</Typography>
           </ComponentBlock>

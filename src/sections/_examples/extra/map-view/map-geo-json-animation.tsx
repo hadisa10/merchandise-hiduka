@@ -21,9 +21,9 @@ function MapGeoJSONAnimation({ ...other }: MapBoxProps) {
 
   const [pointData, setPointData] = useState<
     | {
-        type: string;
-        coordinates: number[];
-      }
+      type: string;
+      coordinates: number[];
+    }
     | any
   >(null);
 

@@ -1,9 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
 import NProgress from 'nprogress';
+import { Suspense, useEffect } from 'react';
+
+import { useRouter, usePathname, useSearchParams } from 'src/routes/hooks';
 
 import StyledProgressBar from './styles';
+
+// ----------------------------------------------------------------------
 
 type PushStateInput = [data: any, unused: string, url?: string | URL | null | undefined];
 
@@ -13,7 +17,9 @@ export default function ProgressBar() {
 
     const handleAnchorClick = (event: MouseEvent) => {
       const targetUrl = (event.currentTarget as HTMLAnchorElement).href;
+
       const currentUrl = window.location.href;
+
       if (targetUrl !== currentUrl) {
         NProgress.start();
       }
@@ -42,5 +48,29 @@ export default function ProgressBar() {
     });
   });
 
-  return <StyledProgressBar />;
+  return (
+    <>
+      <StyledProgressBar />
+
+      <Suspense fallback={null}>
+        <NProgressDone />
+      </Suspense>
+    </>
+  );
+}
+
+// ----------------------------------------------------------------------
+
+function NProgressDone() {
+  const pathname = usePathname();
+
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    NProgress.done();
+  }, [pathname, router, searchParams]);
+
+  return null;
 }

@@ -10,6 +10,12 @@ export function fDate(date: InputValue, newFormat?: string) {
   return date ? format(new Date(date), fm) : '';
 }
 
+export function fTime(date: InputValue, newFormat?: string) {
+  const fm = newFormat || 'p';
+
+  return date ? format(new Date(date), fm) : '';
+}
+
 export function fDateTime(date: InputValue, newFormat?: string) {
   const fm = newFormat || 'dd MMM yyyy p';
 
@@ -26,4 +32,21 @@ export function fToNow(date: InputValue) {
         addSuffix: true,
       })
     : '';
+}
+
+export function isBetween(inputDate: Date | string | number, startDate: Date, endDate: Date) {
+  const date = new Date(inputDate);
+
+  const results =
+    new Date(date.toDateString()) >= new Date(startDate.toDateString()) &&
+    new Date(date.toDateString()) <= new Date(endDate.toDateString());
+
+  return results;
+}
+
+export function isAfter(startDate: Date | null, endDate: Date | null) {
+  const results =
+    startDate && endDate ? new Date(startDate).getTime() > new Date(endDate).getTime() : false;
+
+  return results;
 }

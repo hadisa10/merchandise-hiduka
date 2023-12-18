@@ -44,12 +44,11 @@ export default function NotificationItem({ notification }: NotificationItemProps
         >
           <Box
             component="img"
-            src={`/assets/icons/notification/${
-              (notification.type === 'order' && 'ic_order') ||
+            src={`/assets/icons/notification/${(notification.type === 'order' && 'ic_order') ||
               (notification.type === 'chat' && 'ic_chat') ||
               (notification.type === 'mail' && 'ic_mail') ||
               (notification.type === 'delivery' && 'ic_delivery')
-            }.svg`}
+              }.svg`}
             sx={{ width: 24, height: 24 }}
           />
         </Stack>
