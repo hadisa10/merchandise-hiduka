@@ -27,6 +27,7 @@ import { Credentials } from 'realm-web';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { has, isObject, isString } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -73,9 +74,12 @@ export default function FirebaseLoginView() {
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
-      console.error(error);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+      if (isObject(error) && "error" in error && isString(error.error)) {
+        setErrorMsg(error?.error);
+      } else {
+        setErrorMsg(typeof error === 'string' ? error : error?.message);
+      }
     }
   });
 

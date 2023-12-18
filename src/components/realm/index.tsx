@@ -4,10 +4,8 @@ import React, { createContext, useCallback, useEffect, useMemo, useState } from 
 import * as Realm from "realm-web";
 import atlasConfig from "../../atlasConfig.json";
 
-interface AppContextProps {
-    logIn: (credentials: Realm.Credentials) => Promise<void>;
-    logOut: () => Promise<void>;
-    currentUser: Realm.User | null;
+interface AppContextProps extends globalThis.Realm.App {
+    registerUser: (registerUserDetails: globalThis.Realm.Auth.RegisterUserDetails & { name: string }) => Promise<void>
     loading: boolean;
     // Add other properties/methods you may use from the Realm.App object
 }
@@ -19,8 +17,8 @@ function createApp(id: string) {
 }
 
 export function RealmProvider({ appId, children }: { appId: string; children: React.ReactNode }) {
-    const [app, setApp] = useState<Realm.App>(createApp(appId));
-    const [currentUser, setCurrentUser] = useState<Realm.User | null>(app.currentUser);
+    const [app, setApp] = useState<globalThis.Realm.App>(createApp(appId));
+    const [currentUser, setCurrentUser] = useState<globalThis.Realm.User | null>(app.currentUser);
     const [loading, setLoading] = useState<boolean>(false)
 
     useEffect(() => {
@@ -28,17 +26,26 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
     }, [appId]);
 
     const logIn = useCallback(
-        async (credentials: Realm.Credentials) => {
+        async (credentials: globalThis.Realm.Credentials) => {
             setLoading(true);
-            console.log("START")
-            const loginResponse = await app.logIn(credentials);
-            console.log(loginResponse, "END")
+            await app.logIn(credentials);
             setLoading(false)
             setCurrentUser(app.currentUser);
         },
         [app]
     );
+    const registerUser = useCallback(
+        async ({ email, password, name }: globalThis.Realm.Auth.RegisterUserDetails & { name: string }) => {
+            setLoading(true);
+            const registeredUser = await app.emailPasswordAuth.registerUser({ email, password });
+            const updatedUser = await app.currentUser?.functions.onUserCreation({ registeredUser, data: { name } });
 
+            console.log(app.currentUser?.functions, 'FUCNTIONS')
+            setLoading(false)
+            setCurrentUser(app.currentUser);
+        },
+        [app]
+    );
     const logOut = useCallback(async () => {
         try {
             const user = app.currentUser;
@@ -52,9 +59,10 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
         setCurrentUser(app.currentUser);
     }, [app]);
 
-    const appContext = useMemo(() => {
-        return { logIn, logOut, currentUser, loading };
-    }, [logIn, logOut, currentUser, loading]);
+    // @ts-expect-error
+    const appContext: AppContextProps = useMemo(() => {
+        return { ...app, currentUser, logIn, logOut, registerUser, loading };
+    }, [app, logIn, logOut, registerUser, currentUser, loading]);
 
     return <RealmAppContext.Provider value={appContext}>{children}</RealmAppContext.Provider>;
 }

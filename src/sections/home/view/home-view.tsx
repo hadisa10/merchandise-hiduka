@@ -66,15 +66,15 @@ export default function HomeView() {
       >
         <HomeMinimal />
 
-        <HomeHugePackElements />
+        {/* <HomeHugePackElements /> */}
 
-        <Box sx={{ position: 'relative' }}>
+        {/* <Box sx={{ position: 'relative' }}>
           <StyledPolygon />
           <HomeForDesigner />
           <StyledPolygon anchor="bottom" />
-        </Box>
+        </Box> */}
 
-        <HomeDarkMode />
+        {/* <HomeDarkMode />
 
         <HomeColorPresets />
 
@@ -84,7 +84,7 @@ export default function HomeView() {
 
         <HomeLookingFor />
 
-        <HomeAdvertisement />
+        <HomeAdvertisement /> */}
       </Box>
     </MainLayout>
   );

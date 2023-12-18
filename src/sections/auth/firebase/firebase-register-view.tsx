@@ -21,14 +21,18 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { useRealmApp } from 'src/components/realm';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { isObject, isString } from 'lodash';
 
 // ----------------------------------------------------------------------
 
 export default function FirebaseRegisterView() {
-  const { register, loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
+  const { loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
+
+  const realmApp = useRealmApp();
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -63,7 +67,7 @@ export default function FirebaseRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await register?.(data.email, data.password, data.firstName, data.lastName);
+      // await realmApp.registerUser({ email: data.email, password: data.password, name: `${data.firstName} ${data.lastName}` });
       const searchParams = new URLSearchParams({
         email: data.email,
       }).toString();
@@ -74,7 +78,11 @@ export default function FirebaseRegisterView() {
     } catch (error) {
       console.error(error);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+      if (isObject(error) && "error" in error && isString(error.error)) {
+        setErrorMsg(error?.error);
+      } else {
+        setErrorMsg(typeof error === 'string' ? error : error?.message);
+      }
     }
   });
 
