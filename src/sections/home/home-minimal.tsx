@@ -14,19 +14,19 @@ import { varFade, MotionViewport } from 'src/components/animate';
 const CARDS = [
   {
     icon: ' /assets/icons/home/ic_make_brand.svg',
-    title: 'Branding',
-    description: 'Consistent design makes it easy to brand your own.',
+    title: 'Merchandising',
+    description: 'Help get you product to your target right client.',
   },
   {
     icon: ' /assets/icons/home/ic_design.svg',
-    title: 'UI & UX Design',
+    title: 'Sales',
     description:
-      'The kit is built on the principles of the atomic design system. It helps you to create projects fastest and easily customized packages for your projects.',
+      'With a seamless point of sale, you can track you sales and get analytical view of company\'s performance ',
   },
   {
     icon: ' /assets/icons/home/ic_development.svg',
-    title: 'Development',
-    description: 'Easy to customize and extend, saving you time and money.',
+    title: 'Inventoty Management',
+    description: 'Track your inventory, with real time data.',
   },
 ];
 
@@ -55,7 +55,7 @@ export default function HomeMinimal() {
 
         <m.div variants={varFade().inDown}>
           <Typography variant="h2">
-            What Minimal <br /> helps you?
+            How does hiduka <br /> help you?
           </Typography>
         </m.div>
       </Stack>
@@ -79,11 +79,10 @@ export default function HomeMinimal() {
                 p: (theme) => theme.spacing(10, 5),
                 ...(index === 1 && {
                   boxShadow: (theme) => ({
-                    md: `-40px 40px 80px ${
-                      theme.palette.mode === 'light'
-                        ? alpha(theme.palette.grey[500], 0.16)
-                        : alpha(theme.palette.common.black, 0.4)
-                    }`,
+                    md: `-40px 40px 80px ${theme.palette.mode === 'light'
+                      ? alpha(theme.palette.grey[500], 0.16)
+                      : alpha(theme.palette.common.black, 0.4)
+                      }`,
                   }),
                 }),
               }}

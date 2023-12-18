@@ -44,7 +44,7 @@ export default function FirebaseVerifyView() {
 
       <Button
         component={RouterLink}
-        href={paths.auth.firebase.login}
+        href={paths.auth.main.login}
         size="large"
         color="inherit"
         variant="contained"

@@ -63,10 +63,10 @@ export const paths = {
       login: `${ROOTS.AUTH}/jwt/login`,
       register: `${ROOTS.AUTH}/jwt/register`,
     },
-    firebase: {
-      login: `${ROOTS.AUTH}/firebase/login`,
-      verify: `${ROOTS.AUTH}/firebase/verify`,
-      register: `${ROOTS.AUTH}/firebase/register`,
+    main: {
+      login: `${ROOTS.AUTH}/main/login`,
+      verify: `${ROOTS.AUTH}/main/verify`,
+      register: `${ROOTS.AUTH}/main/register`,
       forgotPassword: `${ROOTS.AUTH}/firebase/forgot-password`,
     },
     auth0: {
