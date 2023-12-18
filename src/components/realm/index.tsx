@@ -8,6 +8,7 @@ interface AppContextProps {
     logIn: (credentials: Realm.Credentials) => Promise<void>;
     logOut: () => Promise<void>;
     currentUser: Realm.User | null;
+    loading: boolean;
     // Add other properties/methods you may use from the Realm.App object
 }
 
@@ -52,8 +53,8 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
     }, [app]);
 
     const appContext = useMemo(() => {
-        return { logIn, logOut, currentUser, /* other properties/methods you may use from the Realm.App object */ };
-    }, [logIn, logOut, currentUser]);
+        return { logIn, logOut, currentUser, loading };
+    }, [logIn, logOut, currentUser, loading]);
 
     return <RealmAppContext.Provider value={appContext}>{children}</RealmAppContext.Provider>;
 }
