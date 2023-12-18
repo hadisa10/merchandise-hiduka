@@ -59,7 +59,7 @@ export function useNavData() {
         items: [
           {
             title: t('dashboard'),
-            path: paths.dashboard.general.main,
+            path: paths.dashboard.root,
             icon: ICONS.dashboard,
           },
           {
