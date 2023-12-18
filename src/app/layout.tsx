@@ -15,18 +15,24 @@ import { MotionLazy } from 'src/components/animate/motion-lazy';
 import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
 
+import atlasConfig from "../atlasConfig.json";
 import { CheckoutProvider } from 'src/sections/checkout/context';
+import { RealmProvider } from "src/components/RealmApp";
+
 
 import { AuthProvider } from 'src/auth/context/jwt';
 // import { AuthProvider } from 'src/auth/context/auth0';
 // import { AuthProvider } from 'src/auth/context/amplify';
 // import { AuthProvider } from 'src/auth/context/firebase';
-import atlasConfig from "../atlasConfig.json";
-import { RealmProvider } from "src/components/RealmApp";
-
 
 // ----------------------------------------------------------------------
 
+export const viewport = {
+  themeColor: '#000000',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
 export const metadata = {
   title: 'Hiduka Solutions',
   description:
