@@ -19,7 +19,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { varHover } from 'src/components/animate';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useRealmApp } from 'src/components/RealmApp';
+import { useRealmApp } from 'src/components/realm';
 
 // ----------------------------------------------------------------------
 

@@ -2,7 +2,7 @@
 
 import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import * as Realm from "realm-web";
-import atlasConfig from "../atlasConfig.json";
+import atlasConfig from "../../atlasConfig.json";
 
 interface AppContextProps {
     logIn: (credentials: Realm.Credentials) => Promise<void>;

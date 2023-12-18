@@ -6,7 +6,7 @@ import { useRouter } from 'src/routes/hooks';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
-import { useRealmApp } from 'src/components/RealmApp';
+import { useRealmApp } from 'src/components/realm';
 
 // ----------------------------------------------------------------------
 
