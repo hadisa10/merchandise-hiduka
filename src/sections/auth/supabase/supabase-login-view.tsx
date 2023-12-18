@@ -80,7 +80,7 @@ export default function SupabaseLoginView() {
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>
 
-        <Link component={RouterLink} href={paths.auth.supabase.register} variant="subtitle2">
+        <Link component={RouterLink} href={paths.auth.main.register} variant="subtitle2">
           Create an account
         </Link>
       </Stack>
@@ -108,7 +108,7 @@ export default function SupabaseLoginView() {
 
       <Link
         component={RouterLink}
-        href={paths.auth.supabase.forgotPassword}
+        href={paths.auth.main.forgotPassword}
         variant="body2"
         color="inherit"
         underline="always"

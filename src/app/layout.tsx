@@ -17,7 +17,7 @@ import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
 
 import atlasConfig from "../atlasConfig.json";
 import { CheckoutProvider } from 'src/sections/checkout/context';
-import { RealmProvider } from "src/components/RealmApp";
+import { RealmProvider } from "src/components/realm";
 
 
 import { AuthProvider } from 'src/auth/context/jwt';

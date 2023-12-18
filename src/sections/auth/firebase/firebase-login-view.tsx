@@ -21,7 +21,9 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { useRealmApp } from 'src/components/realm';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { Credentials } from 'realm-web';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
@@ -30,6 +32,8 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 export default function FirebaseLoginView() {
   const { login, loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
+
+  const realmApp = useRealmApp();
 
   const router = useRouter();
 
@@ -64,7 +68,8 @@ export default function FirebaseLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await login?.(data.email, data.password);
+      await realmApp.logIn(Credentials.emailPassword(data.email, data.password));
+      // await login?.(data.email, data.password);
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {

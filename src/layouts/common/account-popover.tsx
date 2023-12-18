@@ -45,7 +45,7 @@ export default function AccountPopover() {
 
   const { user } = useMockedUser();
 
-  const { logout } = useAuthContext();
+  // const { logout } = useAuthContext();
 
   const realmApp = useRealmApp();
 

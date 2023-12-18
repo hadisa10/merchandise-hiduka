@@ -3,7 +3,7 @@ import { ApolloClient, gql, HttpLink, InMemoryCache } from "@apollo/client";
 import jwt_decode from "jwt-decode";
 import { useWatch } from "./useWatch";
 import { useCollection } from "./useCollection";
-import { useRealmApp } from "../components/RealmApp";
+import { useRealmApp } from "../components/realm";
 import atlasConfig from "../atlasConfig.json";
 import {
   addValueAtIndex,

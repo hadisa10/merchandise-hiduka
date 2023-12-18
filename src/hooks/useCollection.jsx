@@ -1,5 +1,5 @@
 import React from "react";
-import { useRealmApp } from "../components/RealmApp";
+import { useRealmApp } from "../components/realm";
 
 /**
  * Returns a MongoDB Collection client object
