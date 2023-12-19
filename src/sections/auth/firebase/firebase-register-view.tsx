@@ -40,11 +40,16 @@ export default function FirebaseRegisterView() {
 
   const password = useBoolean();
 
+  const confirmPassword = useBoolean();
+
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
     lastName: Yup.string().required('Last name required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref('password'), undefined], 'Passwords must match')
+      .required('Confirm Password is required'),
   });
 
   const defaultValues = {
@@ -52,6 +57,7 @@ export default function FirebaseRegisterView() {
     lastName: '',
     email: '',
     password: '',
+    confirmPassword: ''
   };
 
   const methods = useForm({
@@ -164,6 +170,21 @@ export default function FirebaseRegisterView() {
             <InputAdornment position="end">
               <IconButton onClick={password.onToggle} edge="end">
                 <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+
+      <RHFTextField
+        name="confirmPassword"
+        label="Confirm Password"
+        type={confirmPassword.value ? 'text' : 'password'}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={confirmPassword.onToggle} edge="end">
+                <Iconify icon={confirmPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
               </IconButton>
             </InputAdornment>
           ),
