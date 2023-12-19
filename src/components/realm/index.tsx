@@ -35,12 +35,9 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
         [app]
     );
     const registerUser = useCallback(
-        async ({ email, password, name }: globalThis.Realm.Auth.RegisterUserDetails & { name: string }) => {
+        async ({ email, password }: globalThis.Realm.Auth.RegisterUserDetails) => {
             setLoading(true);
-            const registeredUser = await app.emailPasswordAuth.registerUser({ email, password });
-            const updatedUser = await app.currentUser?.functions.onUserCreation({ registeredUser, data: { name } });
-
-            console.log(app.currentUser?.functions, 'FUCNTIONS')
+            await app.emailPasswordAuth.registerUser({ email, password });
             setLoading(false)
             setCurrentUser(app.currentUser);
         },

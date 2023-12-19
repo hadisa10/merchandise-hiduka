@@ -67,7 +67,7 @@ export default function FirebaseRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // await realmApp.registerUser({ email: data.email, password: data.password, name: `${data.firstName} ${data.lastName}` });
+      await realmApp.registerUser({ email: data.email, password: data.password, name: `${data.firstName} ${data.lastName}` });
       const searchParams = new URLSearchParams({
         email: data.email,
       }).toString();

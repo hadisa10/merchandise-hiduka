@@ -27,7 +27,7 @@ import { Credentials } from 'realm-web';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { has, isObject, isString } from 'lodash';
+import { isObject, isString } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ export default function FirebaseLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Minimal</Typography>
+      <Typography variant="h4">Sign in to Hiduka</Typography>
 
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>

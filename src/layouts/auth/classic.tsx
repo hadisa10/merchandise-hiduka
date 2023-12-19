@@ -17,32 +17,32 @@ import Logo from 'src/components/logo';
 
 // ----------------------------------------------------------------------
 
-const METHODS = [
-  {
-    id: 'jwt',
-    label: 'Jwt',
-    path: paths.auth.jwt.login,
-    icon: '/assets/icons/auth/ic_jwt.svg',
-  },
-  {
-    id: 'main',
-    label: 'Main',
-    path: paths.auth.main.login,
-    icon: '/assets/icons/auth/ic_firebase.svg',
-  },
-  {
-    id: 'amplify',
-    label: 'Amplify',
-    path: paths.auth.amplify.login,
-    icon: '/assets/icons/auth/ic_amplify.svg',
-  },
-  {
-    id: 'auth0',
-    label: 'Auth0',
-    path: paths.auth.auth0.login,
-    icon: '/assets/icons/auth/ic_auth0.svg',
-  },
-];
+// const METHODS = [
+//   {
+//     id: 'jwt',
+//     label: 'Jwt',
+//     path: paths.auth.jwt.login,
+//     icon: '/assets/icons/auth/ic_jwt.svg',
+//   },
+//   {
+//     id: 'main',
+//     label: 'Main',
+//     path: paths.auth.main.login,
+//     icon: '/assets/icons/auth/ic_firebase.svg',
+//   },
+//   {
+//     id: 'amplify',
+//     label: 'Amplify',
+//     path: paths.auth.amplify.login,
+//     icon: '/assets/icons/auth/ic_amplify.svg',
+//   },
+//   {
+//     id: 'auth0',
+//     label: 'Auth0',
+//     path: paths.auth.auth0.login,
+//     icon: '/assets/icons/auth/ic_auth0.svg',
+//   },
+// ];
 
 type Props = {
   title?: string;
@@ -51,7 +51,7 @@ type Props = {
 };
 
 export default function AuthClassicLayout({ children, image, title }: Props) {
-  const { method } = useAuthContext();
+  // const { method } = useAuthContext();
 
   const theme = useTheme();
 
