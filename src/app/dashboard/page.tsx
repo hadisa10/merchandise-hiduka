@@ -1,4 +1,3 @@
-import { OverviewEcommerceView } from 'src/sections/overview/e-commerce/view';
 import OverviewDashboardView from './main/page';
 
 // ----------------------------------------------------------------------

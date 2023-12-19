@@ -1,7 +1,7 @@
+import * as Realm from 'realm-web';
 import { NextRequest } from 'next/server';
 import { redirect } from 'next/navigation'
 
-import * as Realm from 'realm-web';
 import atlasConfig from '../../../atlasConfig.json';
 
 const { appId } = atlasConfig;

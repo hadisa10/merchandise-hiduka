@@ -14,12 +14,10 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
-import { useAuthContext } from 'src/auth/hooks';
-
 import { varHover } from 'src/components/animate';
+import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useRealmApp } from 'src/components/realm';
 
 // ----------------------------------------------------------------------
 

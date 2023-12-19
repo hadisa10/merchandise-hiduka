@@ -1,8 +1,8 @@
 import React from "react";
 import { ApolloClient, gql, HttpLink, InMemoryCache } from "@apollo/client";
 import jwt_decode from "jwt-decode";
-import { useWatch } from "./useWatch";
-import { useCollection } from "./useCollection";
+import { useWatch } from "./use-watch";
+import { useCollection } from "./use-collection";
 import { useRealmApp } from "../components/realm";
 import atlasConfig from "../atlasConfig.json";
 import {

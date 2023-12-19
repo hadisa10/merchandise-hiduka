@@ -2,7 +2,9 @@
 
 import * as Yup from 'yup';
 import { useState } from 'react';
+import { Credentials } from 'realm-web';
 import { useForm } from 'react-hook-form';
+import { isObject, isString } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
@@ -21,13 +23,11 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { useRealmApp } from 'src/components/realm';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
-import { Credentials } from 'realm-web';
 
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { isObject, isString } from 'lodash';
 
 // ----------------------------------------------------------------------
 

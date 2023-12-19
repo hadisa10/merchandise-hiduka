@@ -1,7 +1,8 @@
 "use client"
 
-import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import * as Realm from "realm-web";
+import React, { useMemo, useState, useEffect, useCallback, createContext } from "react";
+
 import atlasConfig from "../../atlasConfig.json";
 
 interface AppContextProps extends globalThis.Realm.App {
@@ -57,9 +58,7 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
     }, [app]);
 
     // @ts-expect-error
-    const appContext: AppContextProps = useMemo(() => {
-        return { ...app, currentUser, logIn, logOut, registerUser, loading };
-    }, [app, logIn, logOut, registerUser, currentUser, loading]);
+    const appContext: AppContextProps = useMemo(() => ({ ...app, currentUser, logIn, logOut, registerUser, loading }), [app, logIn, logOut, registerUser, currentUser, loading]);
 
     return <RealmAppContext.Provider value={appContext}>{children}</RealmAppContext.Provider>;
 }
