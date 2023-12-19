@@ -36,7 +36,7 @@ export default function AmplifyLoginView() {
 
   const searchParams = useSearchParams();
 
-  const returnTo = searchParams.get('returnTo');
+  const returnTo = searchParams?.get('returnTo');
 
   const password = useBoolean();
 

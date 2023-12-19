@@ -1,19 +1,39 @@
-import React from "react";
-import { ApolloClient, gql, HttpLink, InMemoryCache } from "@apollo/client";
-import jwt_decode from "jwt-decode";
-import { useWatch } from "./use-watch";
-import { useCollection } from "./use-collection";
-import { useRealmApp } from "../components/realm";
-import atlasConfig from "../atlasConfig.json";
+import { BSON } from "realm-web";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+import { useMemo, useState, useEffect } from "react";
+import { gql, HttpLink, ApolloClient, InMemoryCache } from "@apollo/client";
+
 import {
+  getTodoIndex,
   addValueAtIndex,
-  replaceValueAtIndex,
   updateValueAtIndex,
   removeValueAtIndex,
-  getTodoIndex,
-} from "../utils";
+  replaceValueAtIndex,
+} from "src/utils/realm";
+
+import { useWatch } from "./use-watch";
+import { useCollection } from "./use-collection";
+import atlasConfig from "../../atlasConfig.json";
+import { useRealmApp } from "../../components/realm";
 
 const { baseUrl, dataSourceName } = atlasConfig;
+
+interface Todo {
+  _id: string;
+  owner_id: string;
+  isComplete: boolean;
+  summary: string;
+}
+
+interface TodoChange {
+  fullDocument: Todo;
+}
+
+interface GraphqlResponse {
+  data: {
+    items: Todo[];
+  };
+}
 
 function useApolloClient() {
   const realmApp = useRealmApp();
@@ -21,41 +41,41 @@ function useApolloClient() {
     throw new Error(`You must be logged in to call useApolloClient()`);
   }
 
-  const client = React.useMemo(() => {
+  const client = useMemo(() => {
     const graphqlUri = `${baseUrl}/api/client/v2.0/app/${realmApp.id}/graphql`;
-    // Local apps should use a local URI!
-    // const graphqlUri = `https://us-east-1.aws.stitch.mongodb.com/api/client/v2.0/app/${app.id}/graphql`
 
     async function getValidAccessToken() {
-      // An already logged in user's access token might be expired. We decode the token and check its
-      // expiration to find out whether or not their current access token is stale.
-      const { exp } = jwt_decode(realmApp.currentUser.accessToken);
-      const isExpired = Date.now() >= exp * 1000;
-      if (isExpired) {
-        // To manually refresh the user's expired access token, we refresh their custom data
-        await realmApp.currentUser.refreshCustomData();
+      const { exp } = jwtDecode<JwtPayload>(realmApp.currentUser?.accessToken as string) || {};
+      if (!exp) {
+        await realmApp.currentUser?.refreshCustomData();
       }
-      // The user's access token is now guaranteed to be valid (unless their account is disabled or deleted)
-      return realmApp.currentUser.accessToken;
+      const isExpired = Date.now() >= (exp || 0) * 1000;
+      if (isExpired) {
+        await realmApp.currentUser?.refreshCustomData();
+      }
+      return realmApp.currentUser?.accessToken;
     }
 
     return new ApolloClient({
       link: new HttpLink({
         uri: graphqlUri,
-        // We define a custom fetch handler for the Apollo client that lets us authenticate GraphQL requests.
-        // The function intercepts every Apollo HTTP request and adds an Authorization header with a valid
-        // access token before sending the request.
         fetch: async (uri, options = {}) => {
           const accessToken = await getValidAccessToken();
-          options.headers.Authorization = `Bearer ${accessToken}`;
+          options.headers = {
+            ...options.headers,
+            Authorization: `Bearer ${accessToken}`,
+          };
           try {
-            return await fetch(uri, {
+            const response = await fetch(uri, {
               method: options.method,
               headers: options.headers,
               body: options.body,
             });
+            return response;
           } catch (err) {
             console.error(err);
+            // Returning a placeholder response in case of an error
+            return new Response(null, { status: 500, statusText: "Internal Server Error" });
           }
         },
       }),
@@ -65,16 +85,13 @@ function useApolloClient() {
 
   return client;
 }
-
 export function useTodos() {
-  // Get a graphql client and set up a list of todos in state
   const realmApp = useRealmApp();
   const graphql = useApolloClient();
-  const [todos, setTodos] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch all todos on load and whenever our graphql client changes (i.e. either the current user OR App ID changes)
-  React.useEffect(() => {
+  useEffect(() => {
     const query = gql`
       query FetchAllTodos {
         items {
@@ -85,72 +102,72 @@ export function useTodos() {
         }
       }
     `;
-    graphql.query({ query }).then(({ data }) => {
+    graphql.query<GraphqlResponse>({ query }).then(({ data }) => {
+      // @ts-expect-error
       setTodos(data.items);
       setLoading(false);
     });
   }, [graphql]);
 
-  // Use a MongoDB change stream to reactively update state when operations succeed
   const todoItemCollection = useCollection({
     cluster: dataSourceName,
     db: "todo",
     collection: "Item",
   });
+
   useWatch(todoItemCollection, {
-    onInsert: (change) => {
+    onInsert: (change: TodoChange) => {
       setTodos((oldTodos) => {
         if (loading) {
           return oldTodos;
         }
-        const idx =
-          getTodoIndex(oldTodos, change.fullDocument) ?? oldTodos.length;
-        if (idx === oldTodos.length) {
-          return addValueAtIndex(oldTodos, idx, change.fullDocument);
-        } else {
-          return oldTodos;
-        }
+        const idx = getTodoIndex(oldTodos, change.fullDocument) ?? oldTodos.length;
+        return idx === oldTodos.length
+          ? addValueAtIndex(oldTodos, idx, change.fullDocument)
+          : oldTodos;
       });
     },
-    onUpdate: (change) => {
+    onUpdate: (change: TodoChange) => {
       setTodos((oldTodos) => {
         if (loading) {
           return oldTodos;
         }
         const idx = getTodoIndex(oldTodos, change.fullDocument);
-        return updateValueAtIndex(oldTodos, idx, () => {
-          return change.fullDocument;
-        });
+        if (!idx) {
+          return oldTodos;
+        }
+        return updateValueAtIndex(oldTodos, idx, () => change.fullDocument);
       });
     },
-    onReplace: (change) => {
+    onReplace: (change: TodoChange) => {
       setTodos((oldTodos) => {
         if (loading) {
           return oldTodos;
         }
         const idx = getTodoIndex(oldTodos, change.fullDocument);
+        if (!idx) {
+          return oldTodos;
+        }
         return replaceValueAtIndex(oldTodos, idx, change.fullDocument);
       });
     },
-    onDelete: (change) => {
+    onDelete: (change: { documentKey?: { _id: BSON.ObjectId } }) => {
       setTodos((oldTodos) => {
         if (loading) {
           return oldTodos;
         }
-        const idx = getTodoIndex(oldTodos, { _id: change.documentKey._id });
-        if (idx >= 0) {
-          return removeValueAtIndex(oldTodos, idx);
-        } else {
+        const idx = getTodoIndex(oldTodos, { _id: change.documentKey?._id ?? '' });
+        if (!idx) {
           return oldTodos;
         }
+        return idx >= 0 ? removeValueAtIndex(oldTodos, idx) : oldTodos;
       });
     },
   });
 
-  // Given a draft todo, format it and then insert it with a mutation
-  const saveTodo = async (draftTodo) => {
+  const saveTodo = async (draftTodo: Partial<Todo>) => {
     if (draftTodo.summary) {
-      draftTodo.owner_id = realmApp.currentUser.id;
+      draftTodo.owner_id = realmApp.currentUser?.id as string;
       try {
         await graphql.mutate({
           mutation: gql`
@@ -168,7 +185,7 @@ export function useTodos() {
       } catch (err) {
         if (err.message.match(/^Duplicate key error/)) {
           console.warn(
-            `The following error means that this app tried to insert a todo multiple times (i.e. an existing todo has the same _id). In this app we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
+            `The following error means that this app tried to insert a todo multiple times (i.e. an existing todo has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
           );
         }
         console.error(err);
@@ -176,8 +193,7 @@ export function useTodos() {
     }
   };
 
-  // Toggle whether or not a given todo is complete
-  const toggleTodo = async (todo) => {
+  const toggleTodo = async (todo: Todo) => {
     await graphql.mutate({
       mutation: gql`
         mutation ToggleItemComplete($itemId: ObjectId!) {
@@ -193,8 +209,7 @@ export function useTodos() {
     });
   };
 
-  // Delete a given todo
-  const deleteTodo = async (todo) => {
+  const deleteTodo = async (todo: Todo) => {
     await graphql.mutate({
       mutation: gql`
         mutation DeleteItem($itemId: ObjectId!) {

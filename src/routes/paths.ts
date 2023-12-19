@@ -71,6 +71,13 @@ export const paths = {
     auth0: {
       login: `${ROOTS.AUTH}/auth0/login`,
     },
+    supabase: {
+      login: `${ROOTS.AUTH}/supabase/login`,
+      verify: `${ROOTS.AUTH}/supabase/verify`,
+      register: `${ROOTS.AUTH}/supabase/register`,
+      newPassword: `${ROOTS.AUTH}/supabase/new-password`,
+      forgotPassword: `${ROOTS.AUTH}/supabase/forgot-password`,
+    },
   },
   authDemo: {
     classic: {

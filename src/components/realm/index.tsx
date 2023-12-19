@@ -7,6 +7,7 @@ import atlasConfig from "../../atlasConfig.json";
 
 interface AppContextProps extends globalThis.Realm.App {
     registerUser: (registerUserDetails: globalThis.Realm.Auth.RegisterUserDetails & { name: string }) => Promise<void>
+    logOut: () => Promise<void>
     loading: boolean;
     // Add other properties/methods you may use from the Realm.App object
 }

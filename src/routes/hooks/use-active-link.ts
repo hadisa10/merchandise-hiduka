@@ -1,3 +1,4 @@
+import { isString } from 'lodash';
 import { usePathname } from 'next/navigation';
 
 // ----------------------------------------------------------------------
@@ -13,7 +14,7 @@ export function useActiveLink(path: string, deep = true): ReturnType {
 
   const normalActive = !checkPath && pathname === currentPath;
 
-  const deepActive = !checkPath && pathname.includes(currentPath);
+  const deepActive = !checkPath && isString(pathname) && pathname.includes(currentPath);
 
   return deep ? deepActive : normalActive;
 }

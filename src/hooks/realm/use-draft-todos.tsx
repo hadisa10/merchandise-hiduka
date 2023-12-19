@@ -1,11 +1,27 @@
-import React from "react";
-import { createObjectId } from "../utils";
+import { useState } from "react";
+import * as Realm from "realm-web";
 
-export function useDraftTodos() {
-  const [drafts, setDrafts] = React.useState([]);
+import { createObjectId } from "src/utils/realm";
+
+
+interface DraftTodo {
+  _id: Realm.BSON.ObjectId;
+  summary: string;
+  isComplete: boolean;
+}
+
+interface DraftTodosHook {
+  draftTodos: DraftTodo[];
+  createDraftTodo: () => void;
+  setDraftTodoSummary: (draft: DraftTodo, summary: string) => void;
+  deleteDraftTodo: (draft: DraftTodo) => void;
+}
+
+export function useDraftTodos(): DraftTodosHook {
+  const [drafts, setDrafts] = useState<DraftTodo[]>([]);
 
   const createDraftTodo = () => {
-    const draftTodo = {
+    const draftTodo: DraftTodo = {
       _id: createObjectId(),
       summary: "",
       isComplete: false,
@@ -13,7 +29,7 @@ export function useDraftTodos() {
     setDrafts((d) => [...d, draftTodo]);
   };
 
-  const setDraftTodoSummary = (draft, summary) => {
+  const setDraftTodoSummary = (draft: DraftTodo, summary: string) => {
     setDrafts((oldDrafts) => {
       const idx = oldDrafts.findIndex((d) => d._id === draft._id);
       return [
@@ -24,7 +40,7 @@ export function useDraftTodos() {
     });
   };
 
-  const deleteDraftTodo = (draft) => {
+  const deleteDraftTodo = (draft: DraftTodo) => {
     setDrafts((oldDrafts) => {
       const idx = oldDrafts.findIndex((d) => d._id === draft._id);
       return [...oldDrafts.slice(0, idx), ...oldDrafts.slice(idx + 1)];

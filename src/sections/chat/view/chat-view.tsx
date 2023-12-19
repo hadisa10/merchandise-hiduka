@@ -36,7 +36,7 @@ export default function ChatView() {
 
   const searchParams = useSearchParams();
 
-  const selectedConversationId = searchParams.get('id') || '';
+  const selectedConversationId = searchParams?.get('id') || '';
 
   const [recipients, setRecipients] = useState<IChatParticipant[]>([]);
 
@@ -48,8 +48,8 @@ export default function ChatView() {
 
   const participants: IChatParticipant[] = conversation
     ? conversation.participants.filter(
-        (participant: IChatParticipant) => participant.id !== `${user?.id}`
-      )
+      (participant: IChatParticipant) => participant.id !== `${user?.id}`
+    )
     : [];
 
   useEffect(() => {

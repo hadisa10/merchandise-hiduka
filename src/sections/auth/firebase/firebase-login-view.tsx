@@ -32,7 +32,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function FirebaseLoginView() {
-  const { login, loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
+  const { loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
 
   const realmApp = useRealmApp();
 
@@ -42,7 +42,7 @@ export default function FirebaseLoginView() {
 
   const searchParams = useSearchParams();
 
-  const returnTo = searchParams.get('returnTo');
+  const returnTo = searchParams?.get('returnTo');
 
   const password = useBoolean();
 

@@ -43,6 +43,7 @@ type CanRemove = {
   forgotPassword?: (email: string) => Promise<void>;
   resendCodeRegister?: (email: string) => Promise<void>;
   newPassword?: (email: string, code: string, password: string) => Promise<void>;
+  updatePassword?: (password: string) => Promise<void>;
 };
 
 export type JWTContextType = CanRemove & {
@@ -55,14 +56,6 @@ export type JWTContextType = CanRemove & {
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
 };
-
-export type RealmContextType = {
-  currentUser: AuthUserType;
-  app: any,
-  login: ({ email, password }: { email: string, password: string }) => Promise<void>;
-  logout: () => Promise<void>;
-};
-
 
 export type FirebaseContextType = CanRemove & {
   user: AuthUserType;
@@ -110,4 +103,17 @@ export type Auth0ContextType = CanRemove & {
   loginWithPopup: (options?: PopupLoginOptions) => Promise<void>;
   loginWithRedirect: (options?: RedirectLoginOptions) => Promise<void>;
   logout: (options?: LogoutOptions) => Promise<void>;
+};
+
+export type SupabaseContextType = CanRemove & {
+  user: AuthUserType;
+  method: string;
+  loading: boolean;
+  authenticated: boolean;
+  unauthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+  logout: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
 };

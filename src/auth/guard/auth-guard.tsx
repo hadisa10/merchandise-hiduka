@@ -34,7 +34,7 @@ export default function AuthGuard({ children }: Props) {
 function Container({ children }: Props) {
   const router = useRouter();
 
-  const { authenticated, method } = useAuthContext();
+  const { method } = useAuthContext();
 
   const { currentUser } = useRealmApp();
 
@@ -55,7 +55,7 @@ function Container({ children }: Props) {
     } else {
       setChecked(true);
     }
-  }, [authenticated, method, router, currentUser]);
+  }, [method, router, currentUser]);
 
   useEffect(() => {
     check();

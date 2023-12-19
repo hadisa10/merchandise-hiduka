@@ -20,6 +20,7 @@
     "ts:watch": "yarn ts --watch"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.8",
     "@auth0/auth0-react": "^2.2.3",
     "@emotion/cache": "^11.10.5",
     "@emotion/react": "^11.11.1",
@@ -48,9 +49,11 @@
     "date-fns": "^2.30.0",
     "firebase": "^10.7.1",
     "framer-motion": "^10.16.16",
+    "graphql": "^16.8.1",
     "highlight.js": "^11.9.0",
     "i18next": "^23.7.8",
     "i18next-browser-languagedetector": "^7.2.0",
+    "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "mapbox-gl": "^3.0.1",
     "mui-one-time-password-input": "^2.0.1",

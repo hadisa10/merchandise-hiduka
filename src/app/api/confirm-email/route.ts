@@ -11,8 +11,8 @@ export async function GET(request: NextRequest) {
         // Extract token and tokenId from query parameters
         const url = new URL(request.url)
 
-        const token = url.searchParams.get("token")
-        const tokenId = url.searchParams.get("tokenId")
+        const token = url.searchParams?.get("token")
+        const tokenId = url.searchParams?.get("tokenId")
         // Create a new instance of Realm.App
         const app = new Realm.App({ id: appId, baseUrl: atlasConfig.baseUrl });
 
