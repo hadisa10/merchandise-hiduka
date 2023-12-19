@@ -148,6 +148,7 @@ export default function BankingQuickTransfer({ title, subheader, list, sx, ...ot
         }}
       >
         <Box
+          // @ts-expect-error
           component={Carousel}
           ref={carousel.carouselRef}
           {...carousel.carouselSettings}
