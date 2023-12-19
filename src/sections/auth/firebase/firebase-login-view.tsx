@@ -70,7 +70,6 @@ export default function FirebaseLoginView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await realmApp.logIn(Credentials.emailPassword(data.email, data.password));
-
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
       reset();
