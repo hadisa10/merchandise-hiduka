@@ -55,7 +55,7 @@ function Container({ children }: Props) {
     } else {
       setChecked(true);
     }
-  }, [authenticated, method, router]);
+  }, [authenticated, method, router, currentUser]);
 
   useEffect(() => {
     check();
