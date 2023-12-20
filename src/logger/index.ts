@@ -27,6 +27,6 @@ const logger = pino(
     },
     stream
 )
-
+console.log('')
 
 export default logger;
