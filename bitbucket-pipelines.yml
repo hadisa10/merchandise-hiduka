@@ -10,4 +10,5 @@ pipelines:
           - cd merchandise-hiduka.git
           - git remote add github git@github.com:brill3000/merchandise-hiduka.git
           - git fetch --tags github "+refs/*:refs/*"
-          - git push --mirror github 'refs/heads/main' 'refs/heads/release/pre-release'
+          - git push github 'refs/heads/main'
+          - git push github 'refs/heads/release/pre-release'
