@@ -1,3 +1,4 @@
+import logger from 'src/logger';
 import { HomeView } from 'src/sections/home/view';
 
 // ----------------------------------------------------------------------

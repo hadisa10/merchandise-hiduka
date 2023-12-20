@@ -29,6 +29,9 @@ export const AUTH0_API = {
 };
 
 export const MAPBOX_API = process.env.NEXT_PUBLIC_MAPBOX_API;
+export const LOG_LEVEL = process.env.NEXT_LOG_LEVEL ?? "error";
+export const LOGFLARE_TOKEN = process.env.NEXT_LOGFLARE_TOKEN ?? "";
+export const LOGFLARE_KEY = process.env.NEXT_LOGFLARE_KEY ?? "";
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
