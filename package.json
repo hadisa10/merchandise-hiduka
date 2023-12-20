@@ -5,7 +5,7 @@
   "description": "Hiduka Solutions",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev ",
     "start": "next start",
     "build": "next build",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
@@ -61,6 +61,8 @@
     "notistack": "^3.0.1",
     "nprogress": "^0.2.0",
     "numeral": "^2.0.6",
+    "pino": "^8.17.1",
+    "pino-logflare": "^0.4.2",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18.2.0",
@@ -113,5 +115,6 @@
     "eslint-plugin-unused-imports": "^3.0.0",
     "prettier": "^3.1.0",
     "typescript": "^5.3.3"
-  }
+  },
+  "packageManager": "yarn@4.0.2"
 }
