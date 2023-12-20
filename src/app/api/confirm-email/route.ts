@@ -14,6 +14,12 @@ export async function GET(request: NextRequest) {
 
         const token = url.searchParams?.get("token")
         const tokenId = url.searchParams?.get("tokenId")
+        if (!token) {
+            logger.error(new Error("Invalid email confirmation token"), "Invalid token")
+        }
+        if (tokenId) {
+            logger.error(new Error("Invalid email confirmation token id"), "Invalid token id")
+        }
         // Create a new instance of Realm.App
         const app = new Realm.App({ id: appId, baseUrl: atlasConfig.baseUrl });
         // Call the confirmUser function

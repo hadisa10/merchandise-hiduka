@@ -8,6 +8,5 @@ export const metadata = {
 };
 
 export default function HomePage() {
-  logger.error(new Error("things got bad"), "error message")
   return <HomeView />;
 }
