@@ -1,6 +1,9 @@
+
+
 import pino from 'pino';
-import { createPinoBrowserSend, createWriteStream } from 'pino-logflare';
-import { LOGFLARE_KEY, LOGFLARE_TOKEN, LOG_LEVEL } from 'src/config-global';
+import { createWriteStream, createPinoBrowserSend } from 'pino-logflare';
+
+import { LOG_LEVEL, LOGFLARE_KEY, LOGFLARE_TOKEN } from 'src/config-global';
 
 // create pino-logflare stream
 const stream = createWriteStream({
@@ -19,7 +22,7 @@ const logger = pino(
     {
         browser: {
             transmit: {
-                send: send,
+                send,
             },
         },
         level: LOG_LEVEL,
@@ -27,6 +30,5 @@ const logger = pino(
     },
     stream
 )
-console.log('')
 
 export default logger;
