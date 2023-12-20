@@ -1,32 +1,13 @@
 pipelines:
   default:
     - step:
-        name: Sync GitHub Mirror (Main Branch)
+        name: Sync GitHub Mirror
         image: alpine/git:latest
         clone:
           enabled: false
         script:
           - git clone --bare git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
           - cd merchandise-hiduka.git
-          - git init
-          - git remote add origin git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
-          - git fetch origin main
-          - git push --mirror git@github.com:brill3000/merchandise-hiduka.git
-
-    - step:
-        name: Manual Approval for Pre-release Sync
-        script:
-          - echo "Please manually approve the sync of release/pre-release branch."
-
-    - step:
-        name: Sync GitHub Mirror (Release/Pre-release Branch)
-        image: alpine/git:latest
-        clone:
-          enabled: false
-        script:
-          - git clone --bare git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
-          - cd merchandise-hiduka.git
-          - git init
-          - git remote add origin git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
-          - git fetch origin release/pre-release
-          - git push --mirror git@github.com:brill3000/merchandise-hiduka.git
+          - git remote add github git@github.com:brill3000/merchandise-hiduka.git
+          - git fetch --tags github "+refs/heads/main:refs/heads/main" "+refs/heads/release/pre-release:refs/heads/release/pre-release"
+          - git push --mirror github 'refs/heads/main' 'refs/heads/release/pre-release'
