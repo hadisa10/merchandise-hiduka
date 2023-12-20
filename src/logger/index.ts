@@ -1,11 +1,32 @@
 import pino from 'pino';
-import { LOG_LEVEL } from 'src/config-global';
+import { createPinoBrowserSend, createWriteStream } from 'pino-logflare';
+import { LOGFLARE_KEY, LOGFLARE_TOKEN, LOG_LEVEL } from 'src/config-global';
 
+// create pino-logflare stream
+const stream = createWriteStream({
+    apiKey: LOGFLARE_KEY,
+    sourceToken: LOGFLARE_TOKEN,
+})
+
+// create pino-logflare browser stream
+const send = createPinoBrowserSend({
+    apiKey: LOGFLARE_KEY,
+    sourceToken: LOGFLARE_TOKEN,
+})
+
+// create pino loggger
 const logger = pino(
     {
+        browser: {
+            transmit: {
+                send: send,
+            },
+        },
         level: LOG_LEVEL,
         name: "merchandise-beta"
-    }
-);
+    },
+    stream
+)
+
 
 export default logger;

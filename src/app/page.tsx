@@ -1,3 +1,4 @@
+import logger from 'src/logger';
 import { HomeView } from 'src/sections/home/view';
 
 // ----------------------------------------------------------------------
@@ -7,5 +8,6 @@ export const metadata = {
 };
 
 export default function HomePage() {
+  logger.error(new Error("things got bad"), "error message")
   return <HomeView />;
 }
