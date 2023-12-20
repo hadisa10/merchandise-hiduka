@@ -2,8 +2,9 @@ import * as Realm from 'realm-web';
 import { NextRequest } from 'next/server';
 import { redirect } from 'next/navigation'
 
-import atlasConfig from '../../../atlasConfig.json';
 import logger from 'src/logger';
+
+import atlasConfig from '../../../atlasConfig.json';
 
 const { appId } = atlasConfig;
 
