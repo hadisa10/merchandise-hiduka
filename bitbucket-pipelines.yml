@@ -15,7 +15,6 @@ pipelines:
 
     - step:
         name: Manual Approval for Pre-release Sync
-        deployment: pre-release
         script:
           - echo "Please manually approve the sync of release/pre-release branch."
 
