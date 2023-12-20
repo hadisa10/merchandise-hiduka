@@ -5,6 +5,7 @@ import { useScroll } from 'framer-motion';
 import Box from '@mui/material/Box';
 // import { styled } from '@mui/material/styles';
 
+import logger from 'src/logger';
 import MainLayout from 'src/layouts/main';
 
 import ScrollProgress from 'src/components/scroll-progress';
@@ -42,6 +43,7 @@ import HomeMinimal from '../home-minimal';
 
 export default function HomeView() {
   const { scrollYProgress } = useScroll();
+  logger.error("TESTING LOGS")
 
   return (
     <MainLayout>
