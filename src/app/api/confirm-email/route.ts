@@ -15,10 +15,11 @@ export async function GET(request: NextRequest) {
         const tokenId = url.searchParams?.get("tokenId")
         if (!token) {
             logger.error(new Error("Invalid email confirmation token"), "Invalid token")
-            throw new Error()
+            throw new Error("Invalid email confirmation token")
         }
         if (!tokenId) {
             logger.error(new Error("Invalid email confirmation token id"), "Invalid token id")
+            throw new Error("Invalid email confirmation token id")
         }
 
         // Create a new instance of Realm.App
@@ -37,6 +38,6 @@ export async function GET(request: NextRequest) {
             err = error;
         }
         logger.error(err)
-        return NextResponse.json({ response: "OK", message: err })
+        return NextResponse.json({ response: "ERROR", message: err })
     }
 }
