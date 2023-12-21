@@ -40,6 +40,6 @@ export async function GET(request: NextRequest) {
             err = error;
         }
         logger.error(err)
-        redirect("/auth/main/retry-verify")
+        redirect("/auth/main/retry")
     }
 }
