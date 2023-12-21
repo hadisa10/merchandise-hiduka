@@ -2,20 +2,25 @@ pipelines:
   branches:
     main:
       - step:
-          name: Sync GitHub Mirror - Main Branch
+          name: Sync GitHub Mirror
           image: alpine/git:latest
+          clone:
+            enabled: false
           script:
-            - git clone git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
-            - cd merchandise-hiduka
+            - git clone --bare git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
+            - cd merchandise-hiduka.git
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
-            - git push github HEAD:main
-
+            - git fetch --tags github "+refs/*:refs/*"
+            - git push github 'refs/heads/main'
     release/pre-release:
       - step:
-          name: Sync GitHub Mirror - Release/Pre-release Branch
+          name: Sync GitHub Mirror
           image: alpine/git:latest
+          clone:
+            enabled: false
           script:
-            - git clone git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
-            - cd merchandise-hiduka
+            - git clone --bare git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
+            - cd merchandise-hiduka.git
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
-            - git push github HEAD:release/pre-release
+            - git fetch --tags github "+refs/*:refs/*"
+            - git push github 'refs/heads/release/pre-release'
