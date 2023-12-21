@@ -7,6 +7,7 @@ import { LOG_LEVEL, LOGFLARE_KEY, LOGFLARE_TOKEN } from 'src/config-global';
 function initializeLogger() {
     try {
         if (!LOGFLARE_KEY || !LOGFLARE_TOKEN) throw new Error("LOGFLARE_TOKEN or LOGFLARE_KEY is  missing")
+
         const stream = createWriteStream({
             apiKey: LOGFLARE_KEY,
             sourceToken: LOGFLARE_TOKEN,
