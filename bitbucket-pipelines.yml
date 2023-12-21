@@ -8,6 +8,7 @@ pipelines:
             - git clone git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
             - cd merchandise-hiduka
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
+            - git checkout -b main  # Ensure you are on the main branch
             - git push github main
 
     release/pre-release:
@@ -18,4 +19,6 @@ pipelines:
             - git clone git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
             - cd merchandise-hiduka
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
+            - git fetch origin  # Fetch changes from Bitbucket
+            - git checkout -b release/pre-release origin/release/pre-release || git checkout -b release/pre-release  # Create branch if it doesn't exist
             - git push github release/pre-release
