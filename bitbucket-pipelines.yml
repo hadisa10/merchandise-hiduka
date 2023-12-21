@@ -19,4 +19,11 @@ pipelines:
           script:
             - git clone --bare git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
             - cd merchandise-hiduka.git
-            - git push git@github.com:brill3000/merchandise-hiduka.git release/pre-release
+            - |
+              if git rev-parse --quiet --verify release/pre-release; then
+                git checkout release/pre-release
+                git pull origin release/pre-release
+              else
+                git checkout -b release/pre-release origin/release/pre-release
+              fi
+              git push git@github.com:brill3000/merchandise-hiduka.git release/pre-release
