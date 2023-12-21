@@ -1,4 +1,5 @@
 import * as Realm from 'realm-web';
+import { redirect } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 
 import logger from 'src/logger';
@@ -26,6 +27,7 @@ export async function GET(request: NextRequest) {
         const app = new Realm.App({ id: appId, baseUrl: atlasConfig.baseUrl });
         // Call the confirmUser function
         await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
+        redirect("/auth/main/verified")
         return NextResponse.json({ response: "OK", message: "Email confirmed" })
 
     } catch (error) {
@@ -38,6 +40,6 @@ export async function GET(request: NextRequest) {
             err = error;
         }
         logger.error(err)
-        return NextResponse.json({ response: "ERROR", message: err })
+        redirect("/auth/main/retry-verify")
     }
 }

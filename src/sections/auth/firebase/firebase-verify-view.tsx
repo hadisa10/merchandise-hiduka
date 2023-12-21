@@ -15,7 +15,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function FirebaseFirebaseVerifyView() {
+export default function FirebaseVerifyView() {
   const searchParams = useSearchParams();
 
   const email = searchParams?.get('email');

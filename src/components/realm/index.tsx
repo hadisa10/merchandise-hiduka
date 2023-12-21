@@ -7,6 +7,7 @@ import atlasConfig from "../../atlasConfig.json";
 
 interface AppContextProps extends globalThis.Realm.App {
     registerUser: (registerUserDetails: globalThis.Realm.Auth.RegisterUserDetails & { name: string }) => Promise<void>
+    resendConfirmationEmail: (email: string) => Promise<void>
     logOut: () => Promise<void>
     loading: boolean;
     // Add other properties/methods you may use from the Realm.App object
@@ -46,6 +47,15 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
         },
         [app]
     );
+    const resendConfirmationEmail = useCallback(
+        async ({ email }: globalThis.Realm.Auth.RegisterUserDetails) => {
+            setLoading(true);
+            await app.emailPasswordAuth.resendConfirmationEmail({ email })
+            setLoading(false)
+            setCurrentUser(app.currentUser);
+        },
+        [app]
+    );
     const logOut = useCallback(async () => {
         try {
             const user = app.currentUser;
@@ -60,7 +70,7 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
     }, [app]);
 
     // @ts-expect-error
-    const appContext: AppContextProps = useMemo(() => ({ ...app, currentUser, logIn, logOut, registerUser, loading }), [app, logIn, logOut, registerUser, currentUser, loading]);
+    const appContext: AppContextProps = useMemo(() => ({ ...app, currentUser, logIn, logOut, registerUser, resendConfirmationEmail, loading }), [app, logIn, logOut, registerUser, resendConfirmationEmail, currentUser, loading]);
 
     return <RealmAppContext.Provider value={appContext}>{children}</RealmAppContext.Provider>;
 }
