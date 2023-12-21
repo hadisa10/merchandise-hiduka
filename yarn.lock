@@ -3322,6 +3322,7 @@ __metadata:
     rehype-highlight: "npm:^7.0.0"
     rehype-raw: "npm:^7.0.0"
     remark-gfm: "npm:^4.0.0"
+    rotating-file-stream: "npm:^3.1.1"
     simplebar-react: "npm:^3.2.4"
     slick-carousel: "npm:^1.8.1"
     stylis: "npm:^4.3.0"
@@ -11256,6 +11257,13 @@ __metadata:
   bin:
     rimraf: bin.js
   checksum: 9cb7757acb489bd83757ba1a274ab545eafd75598a9d817e0c3f8b164238dd90eba50d6b848bd4dcc5f3040912e882dc7ba71653e35af660d77b25c381d402e8
+  languageName: node
+  linkType: hard
+
+"rotating-file-stream@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "rotating-file-stream@npm:3.1.1"
+  checksum: 27df69a3ab47d35de79add1f320efb96813f803953f4f81ff7bf289e7b6a9c64656f5dbe7033bdcf704649560ee5b70973ce464bdc11ad75a89ea1452dded070
   languageName: node
   linkType: hard
 
