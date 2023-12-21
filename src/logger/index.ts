@@ -1,5 +1,6 @@
 import pino from 'pino';
 import { createWriteStream, createPinoBrowserSend } from 'pino-logflare';
+
 import { LOG_LEVEL, LOGFLARE_KEY, LOGFLARE_TOKEN } from 'src/config-global';
 
 // Function to initialize Pino-Logflare logger
