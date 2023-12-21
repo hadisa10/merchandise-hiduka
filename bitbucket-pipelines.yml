@@ -8,7 +8,7 @@ pipelines:
             - git clone git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
             - cd merchandise-hiduka
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
-            - git push github HEAD:main
+            - git push github main
 
     release/pre-release:
       - step:
@@ -18,4 +18,4 @@ pipelines:
             - git clone git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
             - cd merchandise-hiduka
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
-            - git push github HEAD:release/pre-release
+            - git push github release/pre-release
