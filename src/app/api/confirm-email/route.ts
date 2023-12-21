@@ -28,6 +28,6 @@ export async function GET(request: NextRequest) {
 
     } catch (error) {
         logger.error(error)
-        return NextResponse.json({ response: "ERROR", message: error })
+        return NextResponse.json(error)
     }
 }
