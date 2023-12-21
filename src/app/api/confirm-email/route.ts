@@ -1,6 +1,5 @@
 import * as Realm from 'realm-web';
-import { NextRequest } from 'next/server';
-import { redirect } from 'next/navigation'
+import { NextRequest, NextResponse } from 'next/server';
 
 import logger from 'src/logger';
 
@@ -25,9 +24,10 @@ export async function GET(request: NextRequest) {
         const app = new Realm.App({ id: appId, baseUrl: atlasConfig.baseUrl });
         // Call the confirmUser function
         await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
-        redirect('/confirmation-success'); // Redirect to success page
+        return NextResponse.json({ response: "OK", message: "Email confirmed" })
+
     } catch (error) {
         logger.error(error)
-        redirect('/confirmation-error'); // Redirect to error page
+        return NextResponse.json({ response: "ERROR", message: error })
     }
 }
