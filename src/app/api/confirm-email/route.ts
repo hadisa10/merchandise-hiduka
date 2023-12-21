@@ -1,10 +1,10 @@
 import * as Realm from 'realm-web';
-import { redirect } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 
 import logger from 'src/logger';
 
 import atlasConfig from '../../../atlasConfig.json';
+import { redirect } from 'next/navigation';
 
 const { appId } = atlasConfig;
 
@@ -26,9 +26,8 @@ export async function GET(request: NextRequest) {
         // Create a new instance of Realm.App
         const app = new Realm.App({ id: appId, baseUrl: atlasConfig.baseUrl });
         // Call the confirmUser function
-        await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
-        redirect("/auth/main/verified")
-        return NextResponse.json({ response: "OK", message: "Email confirmed" })
+        const test = await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
+        return redirect("/auth/main/verified");
 
     } catch (error) {
         let err = ""
@@ -39,7 +38,8 @@ export async function GET(request: NextRequest) {
         } else {
             err = error;
         }
+        console.log(err, 'ERROR')
         logger.error(err)
-        redirect("/auth/main/retry")
+        return redirect("/auth/main/verified");
     }
 }
