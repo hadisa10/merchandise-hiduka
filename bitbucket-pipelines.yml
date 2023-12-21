@@ -8,7 +8,7 @@ pipelines:
             enabled: true
           script:
             - git clone git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
-            - cd merchandise-hiduka.git
+            - cd merchandise-hiduka
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
             - git fetch --tags github "+refs/*:refs/*"
             - git push github 'refs/heads/main'
@@ -20,7 +20,7 @@ pipelines:
             enabled: true
           script:
             - git clone git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
-            - cd merchandise-hiduka.git
+            - cd merchandise-hiduka
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
             - git fetch --tags github "+refs/*:refs/*"
             - git push github 'refs/heads/release/pre-release'
