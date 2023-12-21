@@ -11,9 +11,6 @@ pipelines:
             - cd merchandise-hiduka.git
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
             - git fetch --tags github "+refs/*:refs/*"
-            # Debugging - Log commit details before push
-            - git log --oneline -n 10  # Log the last 10 commits to check if there are new commits
-            - git status  # Check the status of the repository
             - git push github 'refs/heads/main'
     release/pre-release:
       - step:
@@ -26,8 +23,5 @@ pipelines:
             - cd merchandise-hiduka.git
             - git remote add github git@github.com:brill3000/merchandise-hiduka.git
             - git fetch --tags github "+refs/*:refs/*"
-            # Debugging - Log commit details before push
-            - git log --oneline -n 10  # Log the last 10 commits to check if there are new commits
-            - git status  # Check the status of the repository
             - git push github 'refs/heads/release/pre-release'
 
