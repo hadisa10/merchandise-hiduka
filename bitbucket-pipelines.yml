@@ -5,7 +5,7 @@ pipelines:
           name: Sync GitHub Mirror
           image: alpine/git:latest
           clone:
-            enabled: false
+            enabled: true
           script:
             - git clone --bare git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
             - cd merchandise-hiduka.git
@@ -17,7 +17,7 @@ pipelines:
           name: Sync GitHub Mirror
           image: alpine/git:latest
           clone:
-            enabled: false
+            enabled: true
           script:
             - git clone --bare git@bitbucket.org:hokelainteractive/merchandise-hiduka.git
             - cd merchandise-hiduka.git
