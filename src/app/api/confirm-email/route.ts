@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
 
     } catch (error) {
         logger.error(error)
-        return NextResponse.json({ response: "ERROR", message: error })
+        const err = error?.error ?? error;
+        return NextResponse.json({ response: "OK", message: err })
     }
 }
