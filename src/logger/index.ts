@@ -1,47 +1,51 @@
-import pino from 'pino';
-import { createWriteStream, createPinoBrowserSend } from 'pino-logflare';
+import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
-import { LOG_LEVEL, LOGFLARE_KEY, LOGFLARE_TOKEN } from 'src/config-global';
+import { LOG_LEVEL } from 'src/config-global';
 
-// Function to initialize Pino-Logflare logger
+// Function to initialize file logger with log rotation
 function initializeLogger() {
     try {
-        if (!LOGFLARE_KEY || !LOGFLARE_TOKEN) throw new Error("LOGFLARE_TOKEN or LOGFLARE_KEY is  missing")
+        // Define the file path where you want to save logs
+        const logDirectory = 'logs';
+        const fileName = 'app.log';
 
-        const stream = createWriteStream({
-            apiKey: LOGFLARE_KEY,
-            sourceToken: LOGFLARE_TOKEN,
+        // Create a Winston logger instance
+        const logger = winston.createLogger({
+            level: LOG_LEVEL,
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.simple()
+            ),
+            transports: [
+                new DailyRotateFile({
+                    dirname: logDirectory,
+                    filename: fileName,
+                    zippedArchive: true,
+                    maxFiles: '14d', // Retain logs for 14 days
+                    datePattern: 'YYYY-MM-DD',
+                    format: winston.format.combine(
+                        winston.format.timestamp(),
+                        winston.format.json()
+                    ),
+                }),
+            ],
         });
 
-        const send = createPinoBrowserSend({
-            apiKey: LOGFLARE_KEY,
-            sourceToken: LOGFLARE_TOKEN,
-        });
-
-        const logger = pino(
-            {
-                browser: {
-                    transmit: {
-                        send,
-                    },
-                },
-                level: LOG_LEVEL,
-                name: "merchandise-beta"
-            },
-            stream
-        );
-
+        // Return the initialized logger
         return logger;
     } catch (error) {
         // Log or handle the error during logger initialization
-        console.error('Error initializing Pino-Logflare:', error);
+        console.error('Error initializing file logger:', error);
         // You can throw the error again if needed
 
-        return pino();
+        // Fallback to a default logger if an error occurs
+        return winston.createLogger(); // Create a default logger
     }
 }
 
-// Initialize the logger
+// Initialize the file logger with log rotation
 const logger = initializeLogger();
 
+// Export the initialized logger for use in other modules
 export default logger;
