@@ -15,6 +15,7 @@ _static
 out
 dist
 build
+logs
 
 # environment variables
 .env
