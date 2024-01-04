@@ -41,7 +41,6 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
         async ({ email, password }: globalThis.Realm.Auth.RegisterUserDetails) => {
             setLoading(true);
             await app.emailPasswordAuth.registerUser({ email, password });
-            await app.emailPasswordAuth.resendConfirmationEmail({ email })
             setLoading(false)
             setCurrentUser(app.currentUser);
         },
