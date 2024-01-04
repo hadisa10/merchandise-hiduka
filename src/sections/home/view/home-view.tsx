@@ -42,7 +42,6 @@ import HomeMinimal from '../home-minimal';
 
 export default function HomeView() {
   const { scrollYProgress } = useScroll();
-
   return (
     <MainLayout>
       <ScrollProgress scrollYProgress={scrollYProgress} />
