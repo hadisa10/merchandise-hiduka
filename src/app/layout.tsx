@@ -36,8 +36,8 @@ export const viewport = {
 export const metadata = {
   title: 'Hiduka Solutions',
   description:
-    'The starting point for your next project with Minimal UI Kit, built on the newest version of Material-UI ©, ready to be customized to your style',
-  keywords: 'react,material,kit,application,dashboard,admin,template',
+    'Manage your business transaction and document ans human resource all under a single app',
+  keywords: 'sales,merchandising,document-management,resource-tracking',
   manifest: '/manifest.json',
   icons: [
     { rel: 'icon', url: '/favicon/favicon.ico' },
