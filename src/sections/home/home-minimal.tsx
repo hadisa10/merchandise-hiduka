@@ -49,7 +49,7 @@ export default function HomeMinimal() {
       >
         <m.div variants={varFade().inUp}>
           <Typography component="div" variant="overline" sx={{ color: 'text.disabled' }}>
-            Hiduka Solutions
+            Hokela Interactive
           </Typography>
         </m.div>
 

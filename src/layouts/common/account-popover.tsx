@@ -53,6 +53,7 @@ export default function AccountPopover() {
 
   const handleLogout = async () => {
     try {
+      console.log("TEST")
       await realmApp.logOut();
       // await logout();
       popover.onClose();

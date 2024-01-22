@@ -12,7 +12,7 @@ type Props = {
 export default function Layout({ children }: Props) {
   return (
     <GuestGuard>
-      <AuthClassicLayout title="Manage the job more effectively with Hiduka">
+      <AuthClassicLayout title="Manage the job more effectively with Hokela">
         {children}
       </AuthClassicLayout>
     </GuestGuard>

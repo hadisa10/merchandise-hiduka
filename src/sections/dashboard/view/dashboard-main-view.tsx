@@ -12,10 +12,6 @@ import {
 } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
-import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
-import Iconify from 'src/components/iconify';
-import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
-import AnalyticsCurrentVisits from 'src/sections/overview/analytics/analytics-current-visits';
 import DashboardAdminView from '../dashboard-admin-view';
 import DashboardClientView from '../dashboard-client-view';
 import DashboardLeadView from '../dashboard-lead-view';
@@ -25,18 +21,18 @@ import DashboardLeadView from '../dashboard-lead-view';
 
 export default function DashboardView() {
     const settings = useSettingsContext();
-    const renderDashboard = (role: "admin" | "client" | "lead") => {
-        switch (role) {
-            case 'admin':
-                return <DashboardAdminView />;
-            case 'client':
-                return <DashboardClientView />;
-            case 'lead':
-                return <DashboardLeadView />;
-            default:
-                return <>No Roles</>
-        }
-    }
+    // const renderDashboard = (role: "admin" | "client" | "lead") => {
+    //     switch (role) {
+    //         case 'admin':
+    //             return <DashboardAdminView />;
+    //         case 'client':
+    //             return <DashboardClientView />;
+    //         case 'lead':
+    //             return <DashboardLeadView />;
+    //         default:
+    //             return <>No Roles</>
+    //     }
+    // }
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
             <Typography
@@ -47,7 +43,7 @@ export default function DashboardView() {
             >
                 Hi, Welcome back 👋
             </Typography>
-            { renderDashboard("client") }
+            {/* { renderDashboard("client") } */}
         </Container>
     );
 }

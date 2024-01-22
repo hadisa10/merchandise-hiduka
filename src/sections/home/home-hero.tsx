@@ -204,7 +204,7 @@ export default function HomeHero() {
             repeat: Infinity,
           }}
         >
-          Hiduka
+          Hokela
         </StyledTextGradient>
       </m.div>
 
