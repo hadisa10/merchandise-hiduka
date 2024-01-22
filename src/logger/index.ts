@@ -15,8 +15,19 @@ function initializeLogger() {
             level: LOG_LEVEL,
             format: winston.format.combine(
                 winston.format.timestamp(),
-                winston.format.simple()
-            ),
+                winston.format.json(),
+                winston.format.printf((info) => {
+                  const { timestamp, level, message, context, trace } = info;
+                  const logObject = {
+                    timestamp,
+                    level,
+                    message,
+                    context,
+                    trace,
+                  };
+                  return JSON.stringify(logObject, null, 2); // Pretty print with an indentation of 2 spaces
+                }),
+              ),
             transports: [
                 new DailyRotateFile({
                     dirname: logDirectory,
