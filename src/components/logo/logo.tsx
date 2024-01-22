@@ -16,18 +16,18 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
   ({ disabledLink = false, sx, ...other }, ref) => {
     const theme = useTheme();
 
-    const PRIMARY_LIGHT = theme.palette.primary.light;
+    // const PRIMARY_LIGHT = theme.palette.primary.light;
 
-    const PRIMARY_MAIN = theme.palette.primary.main;
+    // const PRIMARY_MAIN = theme.palette.primary.main;
 
-    const PRIMARY_DARK = theme.palette.primary.dark;
+    // const PRIMARY_DARK = theme.palette.primary.dark;
 
     // OR using local (public folder)
     // -------------------------------------------------------
     const logo = (
       <Box
         component="img"
-        src= "/logo/ic_logo_blue.svg"
+        src={theme.palette.mode === "dark" ? "/logo/ic_logo.svg" : "/logo/ic_logo_blue.svg"}
         sx={{ width: 64, height: 54, cursor: 'pointer', ...sx }}
       />
     );

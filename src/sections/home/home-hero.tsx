@@ -189,8 +189,8 @@ export default function HomeHero() {
             textAlign: 'center',
           }}
         >
-          Manage sales and<br />
-          inventory with
+          All-in-one  <br />
+          marketing solution
         </Typography>
       </m.div>
 
@@ -210,7 +210,7 @@ export default function HomeHero() {
 
       <m.div variants={varFade().in}>
         <Typography variant="body2" sx={{ textAlign: 'center' }}>
-          The one stop solution for your sales, retail and project management
+          An all-in-one marketing solution for field/remote teams and their managers.
         </Typography>
       </m.div>
 
