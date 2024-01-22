@@ -141,7 +141,7 @@ export const _ecommerceSalesOverview = ['Total Profit', 'Total Income', 'Total E
 export const _ecommerceBestSalesman = [...Array(5)].map((_, index) => {
   const category = ['CAP', 'Branded Shoes', 'Headphone', 'Cell Phone', 'Earings'][index];
 
-  const flag = ['flagpack:de', 'flagpack:gb-nir', 'flagpack:fr', 'flagpack:kr', 'flagpack:us'][
+  const flag = ['flagpack:ke', 'flagpack:ke', 'flagpack:ug', 'flagpack:et', 'flagpack:ke'][
     index
   ];
 
