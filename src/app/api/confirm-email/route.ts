@@ -1,5 +1,5 @@
 import * as Realm from 'realm-web';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 
 import logger from 'src/logger';
@@ -11,23 +11,25 @@ const { appId } = atlasConfig;
 export async function GET(request: NextRequest) {
     try {
         // Extract token and tokenId from query parameters
-        const url = new URL(request.url)
-        const token = url.searchParams?.get("token")
-        const tokenId = url.searchParams?.get("tokenId")
+        const token = request.nextUrl.searchParams.get("token")
+        const tokenId = request.nextUrl.searchParams.get("tokenId")
+
         if (!token) {
-            logger.error(new Error("Invalid email confirmation token"), "Invalid token")
+            logger.error("Invalid email confirmation token")
             throw new Error("Invalid email confirmation token")
         }
         if (!tokenId) {
-            logger.error(new Error("Invalid email confirmation token id"), "Invalid token id")
+            logger.error("Invalid email confirmation token id")
             throw new Error("Invalid email confirmation token id")
         }
 
         // Create a new instance of Realm.App
         const app = new Realm.App({ id: appId, baseUrl: atlasConfig.baseUrl });
+
         // Call the confirmUser function
-        await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
-        return redirect("/auth/main/verified");
+        const test = await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
+        console.log(test, "TEST")
+        return NextResponse.redirect(new URL("/auth/main/verified", request.url))
 
     } catch (error) {
         let err = ""
@@ -38,8 +40,7 @@ export async function GET(request: NextRequest) {
         } else {
             err = error;
         }
-        console.log(err, 'ERROR')
-        logger.error(err)
-        return redirect("/auth/main/verified");
+        console.log(error, 'ERROR')
+        return NextResponse.redirect(new URL("/auth/main/retry", request.url))
     }
 }

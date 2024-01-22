@@ -24,6 +24,7 @@ import { navConfig } from './config-navigation';
 import LoginButton from '../common/login-button';
 import HeaderShadow from '../common/header-shadow';
 import SettingsButton from '../common/settings-button';
+import { VERSION } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -74,7 +75,7 @@ export default function Header() {
                 sx={{ ml: 1 }}
               >
                 <Label color="info" sx={{ textTransform: 'unset', height: 22, px: 0.5 }}>
-                  v5.6.0
+                  {VERSION}
                 </Label>
               </Link>
             }

@@ -34,7 +34,7 @@ export const viewport = {
   maximumScale: 1,
 };
 export const metadata = {
-  title: 'Hiduka Solutions',
+  title: 'Hokela Interactive',
   description:
     'Manage your business transaction and document ans human resource all under a single app',
   keywords: 'sales,merchandising,document-management,resource-tracking',
@@ -65,7 +65,7 @@ export default function RootLayout({ children }: Props) {
                 themeDirection: 'ltr', //  'rtl' | 'ltr'
                 themeContrast: 'default', // 'default' | 'bold'
                 themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-                themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+                themeColorPresets: 'blue', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
                 themeStretch: false,
               }}
             >
