@@ -195,10 +195,8 @@ export function useClients(): IClientHook {
       mutation: gql`
         mutation ToggleClientStatus($clientId: ObjectId!) {
           updateManyClients(query: { _id: $clientId }, set: { active: ${!client.active} }) {
-            _id
-            owner_id
-            name
-            active
+            matchedCount
+            modifiedCount
           }
         }
       `,
