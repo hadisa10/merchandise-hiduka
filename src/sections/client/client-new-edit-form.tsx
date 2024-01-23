@@ -14,7 +14,7 @@ import Iconify from "src/components/iconify";
 import { IDraftClientItem } from "src/types/client";
 
 
-export function DraftClientItem({ draftClient, clientActions, draftClientActions }: IDraftClientItem) {
+export function ClientNewEditForm({ draftClient, clientActions, draftClientActions }: IDraftClientItem) {
   return (
     <ListItem>
       <ListItemText inset>

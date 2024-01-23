@@ -9,35 +9,28 @@ import {
     Typography
 } from "@mui/material";
 
-import { useClients , useShowLoader , useDraftClients } from "src/hooks/realm";
+import { useClients, useShowLoader, useDraftClients } from "src/hooks/realm";
 
 import { getTodoId } from "src/utils/realm";
 
 import Iconify from "src/components/iconify";
-import { useRealmApp } from "src/components/realm";
 import { LoadingScreen } from "src/components/loading-screen";
 
-import { ClientItem } from "./ClientItem";
-import { DraftClientItem } from "./DraftClientItem";
+import { ClientTableRow } from "../client-table-row";
+import { ClientNewEditForm } from "../client-new-edit-form";
 
-export function ClientsPage() {
+export default function ClientListView() {
     const { loading, clients, ...clientActions } = useClients();
     const { draftClients, ...draftClientActions } = useDraftClients();
     const showLoader = useShowLoader(loading, 200);
-    const realmApp = useRealmApp();
-    console.log(realmApp.currentUser, 'CURRENT USER')
-
     return (
         <Container className="main-container" maxWidth="sm">
-            {loading ? (
-                showLoader ? (
-                    <LoadingScreen />
-                ) : null
+            {loading && showLoader ? (
+                <LoadingScreen />
             ) : (
                 <div className="todo-items-container">
                     <Typography component="p" variant="h5">
-                        {`You have ${clients?.length} Client${clients?.length === 1 ? "" : "s"
-                            }`}
+                        Clients
                     </Typography>
                     <Button
                         variant="contained"
@@ -45,18 +38,18 @@ export function ClientsPage() {
                         startIcon={<Iconify icon="mingcute:add-line" />}
                         onClick={() => draftClientActions.createDraftClient()}
                     >
-                        Add To-Do
+                        Add Client
                     </Button>
                     <List style={{ width: "100%" }}>
                         {clients?.map((client) => (
-                            <ClientItem
+                            <ClientTableRow
                                 key={getTodoId(client)}
                                 client={client}
                                 clientActions={clientActions}
                             />
                         ))}
                         {draftClients.map((draft) => (
-                            <DraftClientItem
+                            <ClientNewEditForm
                                 key={getTodoId(draft)}
                                 draftClient={draft}
                                 clientActions={clientActions}

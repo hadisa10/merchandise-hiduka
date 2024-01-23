@@ -17,7 +17,7 @@ import { IClientItem } from "src/types/client";
 
 
 
-export function ClientItem({ client, clientActions }: IClientItem) {
+export function ClientTableRow({ client, clientActions }: IClientItem) {
   return (
     <ListItem>
       <ListItemIcon>

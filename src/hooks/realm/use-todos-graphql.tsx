@@ -38,7 +38,7 @@ interface GraphqlResponse {
 function useApolloClient() {
   const realmApp = useRealmApp();
   if (!realmApp.currentUser) {
-    return null;
+    throw new Error(`You must be logged in to call useApolloClient()`);
   }
 
   const client = useMemo(() => {
@@ -102,7 +102,7 @@ export function useTodos() {
         }
       }
     `;
-    graphql?.query<GraphqlResponse>({ query }).then(({ data }) => {
+    graphql.query<GraphqlResponse>({ query }).then(({ data }) => {
       // @ts-expect-error
       setTodos(data.items);
       setLoading(false);
@@ -172,7 +172,7 @@ export function useTodos() {
     if (draftTodo.summary) {
       draftTodo.owner_id = realmApp.currentUser?.id as string;
       try {
-        await graphql?.mutate({
+        await graphql.mutate({
           mutation: gql`
             mutation SaveItem($todo: ItemInsertInput!) {
               insertOneItem(data: $todo) {
@@ -197,7 +197,7 @@ export function useTodos() {
   };
 
   const toggleTodo = async (todo: Todo) => {
-    await graphql?.mutate({
+    await graphql.mutate({
       mutation: gql`
         mutation ToggleItemComplete($itemId: ObjectId!) {
           updateOneItem(query: { _id: $itemId }, set: { isComplete: ${!todo.isComplete} }) {
@@ -213,7 +213,7 @@ export function useTodos() {
   };
 
   const deleteTodo = async (todo: Todo) => {
-    await graphql?.mutate({
+    await graphql.mutate({
       mutation: gql`
         mutation DeleteItem($itemId: ObjectId!) {
           deleteOneItem(query: { _id: $itemId }) {

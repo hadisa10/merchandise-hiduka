@@ -3,8 +3,6 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useMemo, useState, useEffect } from "react";
 import { gql, HttpLink, ApolloClient, InMemoryCache } from "@apollo/client";
 
-import { useWatch, useCollection } from "src/hooks/realm";
-
 import {
   getClientIndex,
   addValueAtIndex,
@@ -18,6 +16,9 @@ import atlasConfig from "src/atlasConfig.json";
 import { useRealmApp } from "src/components/realm";
 
 import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse } from "src/types/client";
+
+import { useWatch } from "../use-watch";
+import { useCollection } from "../use-collection"
 
 const { baseUrl, dataSourceName } = atlasConfig;
 

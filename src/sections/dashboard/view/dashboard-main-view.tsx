@@ -1,29 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
+// import { useCallback, useMemo } from 'react';
 
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { useDraftTodos } from 'src/hooks/realm';
-import { useTodos } from 'src/hooks/realm/use-todos-graphql';
-
 import { useSettingsContext } from 'src/components/settings';
 
-import { ClientsPage } from '../test-admin-admin-view';
+import { ClientListView } from 'src/sections/client/view';
+
+// import { useRealmApp } from 'src/components/realm';
+// import DashboardAdminView from '../dashboard-admin-view';
+// import DashboardClientView from '../dashboard-client-view';
+// import DashboardLeadView from '../dashboard-lead-view';
 
 
 // ----------------------------------------------------------------------
 
 export default function DashboardView() {
-
-    const { loading, todos, ...todoActions } = useTodos();
-
-    const { draftTodos, ...draftTodoActions } = useDraftTodos();
-
-
     const settings = useSettingsContext();
-    // const renderDashboard = (role: "admin" | "client" | "lead") => {
+
+    // const realmApp = useRealmApp();
+    // const role = useMemo(() => realmApp.currentUser?.customData.role ?? "lead", [])
+    // const renderDashboard = useCallback(() => {
     //     switch (role) {
     //         case 'admin':
     //             return <DashboardAdminView />;
@@ -34,10 +33,7 @@ export default function DashboardView() {
     //         default:
     //             return <>No Roles</>
     //     }
-    // }
-    useEffect(() => {
-        console.log(todos, 'TODOS')
-    }, [loading])
+    // }, [role])
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
             <Typography
@@ -48,8 +44,8 @@ export default function DashboardView() {
             >
                 Hi, Welcome back 👋
             </Typography>
-            {/* { renderDashboard("client") } */}
-            <ClientsPage />
+            {/* {renderDashboard()} */}
+            <ClientListView />
         </Container>
     );
 }
