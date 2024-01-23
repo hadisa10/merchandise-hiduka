@@ -128,6 +128,13 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       },
     },
+    client: {
+      root: `${ROOTS.DASHBOARD}/client`,
+      new: `${ROOTS.DASHBOARD}/cleint/new`,
+      list: `${ROOTS.DASHBOARD}/client/list`,
+      account: `${ROOTS.DASHBOARD}/client/account`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`,
+    },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,
       new: `${ROOTS.DASHBOARD}/product/new`,

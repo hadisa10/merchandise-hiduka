@@ -7,6 +7,7 @@ import { useTranslate } from 'src/locales';
 // import Label from 'src/components/label';
 // import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
+import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -43,6 +44,7 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  client: <Iconify icon="fluent:mail-24-filled" />
 };
 
 // ----------------------------------------------------------------------
@@ -109,6 +111,19 @@ export function useNavData() {
               { title: t('account'), path: paths.dashboard.user.account },
             ],
           },
+          // CLIENT
+          {
+            title: t('client'),
+            path: paths.dashboard.client.root,
+            icon: ICONS.user,
+            children: [
+              { title: t('list'), path: paths.dashboard.client.root },
+              { title: t('create'), path: paths.dashboard.client.new },
+              { title: t('edit'), path: paths.dashboard.client.edit },
+              { title: t('account'), path: paths.dashboard.client.account },
+            ],
+          },
+
 
           // PRODUCT
           {
