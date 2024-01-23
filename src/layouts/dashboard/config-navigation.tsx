@@ -8,6 +8,7 @@ import { useTranslate } from 'src/locales';
 // import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 
 // ----------------------------------------------------------------------
 
@@ -44,14 +45,15 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
-  client: <Iconify icon="fluent:mail-24-filled" />
+  client: <Iconify icon="mdi:book-account" />
 };
 
 // ----------------------------------------------------------------------
 
 export function useNavData() {
   const { t } = useTranslate();
-
+  const realmApp = useRealmApp();
+  const role = useMemo(() => realmApp.currentUser?.customData?.role, [realmApp.currentUser?.customData?.role])
   const data = useMemo(
     () => [
       // OVERVIEW
@@ -97,6 +99,18 @@ export function useNavData() {
       {
         subheader: t('management'),
         items: [
+
+          // CLIENT
+          {
+            title: t('client'),
+            path: paths.dashboard.client.root,
+            icon: ICONS.client,
+            children: [
+              { title: t('list'), path: paths.dashboard.client.root },
+              { title: t('create'), path: paths.dashboard.client.new }
+            ],
+          },
+
           // USER
           {
             title: t('user'),
@@ -111,19 +125,6 @@ export function useNavData() {
               { title: t('account'), path: paths.dashboard.user.account },
             ],
           },
-          // CLIENT
-          {
-            title: t('client'),
-            path: paths.dashboard.client.root,
-            icon: ICONS.user,
-            children: [
-              { title: t('list'), path: paths.dashboard.client.root },
-              { title: t('create'), path: paths.dashboard.client.new },
-              { title: t('edit'), path: paths.dashboard.client.edit },
-              { title: t('account'), path: paths.dashboard.client.account },
-            ],
-          },
-
 
           // PRODUCT
           {
@@ -332,7 +333,7 @@ export function useNavData() {
       //   ],
       // },
     ],
-    [t]
+    [t, role]
   );
 
   return data;

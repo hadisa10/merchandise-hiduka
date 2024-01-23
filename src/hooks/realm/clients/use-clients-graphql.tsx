@@ -14,19 +14,25 @@ import {
 import atlasConfig from "src/atlasConfig.json";
 
 import { useRealmApp } from "src/components/realm";
+import { useRouter } from 'src/routes/hooks';
+
 
 import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse } from "src/types/client";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
+import { paths } from "src/routes/paths";
 
 const { baseUrl, dataSourceName } = atlasConfig;
 
 
 function useApolloClient() {
+  const router = useRouter();
+
   const realmApp = useRealmApp();
+
   if (!realmApp.currentUser) {
-    throw new Error(`You must be logged in to call useApolloClient()`);
+    router.replace(paths.auth.main.login);
   }
 
   const client = useMemo(() => {

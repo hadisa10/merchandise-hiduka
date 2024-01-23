@@ -46,14 +46,14 @@ export default function ClientListView() {
                     { name: 'Dashboard', href: paths.dashboard.root },
                     {
                         name: 'Client',
-                        href: paths.dashboard.client.root,
+                        href: paths.dashboard.user.root,
                     },
                     { name: 'List' },
                 ]}
                 action={
                     <Button
                         component={RouterLink}
-                        href={paths.dashboard.client.new}
+                        href={paths.dashboard.user.new}
                         variant="contained"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                     >

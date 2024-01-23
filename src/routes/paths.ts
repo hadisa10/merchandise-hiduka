@@ -130,10 +130,11 @@ export const paths = {
     },
     client: {
       root: `${ROOTS.DASHBOARD}/client`,
-      new: `${ROOTS.DASHBOARD}/cleint/new`,
+      new: `${ROOTS.DASHBOARD}/client/new`,
       list: `${ROOTS.DASHBOARD}/client/list`,
+      cards: `${ROOTS.DASHBOARD}/client/cards`,
       account: `${ROOTS.DASHBOARD}/client/account`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`
     },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,

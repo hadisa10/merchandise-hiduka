@@ -6,6 +6,6 @@ export const metadata = {
   title: 'Dashboard: Client List',
 };
 
-export default function UserListPage() {
+export default function ClientListPage() {
   return <ClientListView />;
 }

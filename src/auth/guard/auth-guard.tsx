@@ -38,8 +38,6 @@ function Container({ children }: Props) {
 
   const { currentUser } = useRealmApp();
 
-  console.log(currentUser, 'CURRENT')
-
   const [checked, setChecked] = useState(false);
 
   const check = useCallback(() => {
