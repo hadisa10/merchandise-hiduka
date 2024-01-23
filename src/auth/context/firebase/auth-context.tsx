@@ -2,8 +2,8 @@
 
 import { createContext } from 'react';
 
-import { FirebaseContextType } from '../../types';
+import { MainContextType } from '../../types';
 
 // ----------------------------------------------------------------------
 
-export const AuthContext = createContext({} as FirebaseContextType);
+export const AuthContext = createContext({} as MainContextType);
