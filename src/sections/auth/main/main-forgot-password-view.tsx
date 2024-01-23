@@ -21,7 +21,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function FirebaseForgotPasswordView() {
+export default function MainForgotPasswordView() {
   const { forgotPassword } = useAuthContext();
 
   const router = useRouter();

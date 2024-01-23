@@ -12,7 +12,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function FirebaseVerifiedView() {
+export default function MainVerifiedView() {
 
   const renderHead = (
     <>

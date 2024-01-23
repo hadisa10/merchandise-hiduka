@@ -1,11 +1,11 @@
-import { FirebaseRegisterView } from 'src/sections/auth/firebase';
+import { MainRegisterView } from 'src/sections/auth/main';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Main: Register',
+  title: 'Register',
 };
 
 export default function RegisterPage() {
-  return <FirebaseRegisterView />;
+  return <MainRegisterView />;
 }

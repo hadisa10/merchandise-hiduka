@@ -26,7 +26,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function FirebaseRegisterView() {
+export default function SuperbaseRegisterView() {
   const { register } = useAuthContext();
 
   const [errorMsg, setErrorMsg] = useState('');

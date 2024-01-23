@@ -1,11 +1,11 @@
-import { FirebaseLoginView } from 'src/sections/auth/firebase';
+import { MainLoginView } from 'src/sections/auth/main';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Firebase: Login',
+  title: 'Login',
 };
 
 export default function LoginPage() {
-  return <FirebaseLoginView />;
+  return <MainLoginView />;
 }
