@@ -55,9 +55,8 @@ export default function AccountPopover() {
     try {
       console.log("TEST")
       await realmApp.logOut();
-      // await logout();
       popover.onClose();
-      router.replace('/');
+      router.replace(paths.auth.main.login);
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Unable to logout!', { variant: 'error' });

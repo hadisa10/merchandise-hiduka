@@ -1,25 +1,27 @@
 'use client';
 
-import Grid from '@mui/material/Unstable_Grid2';
+import { useEffect } from 'react';
+
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import {
-    _analyticTasks,
-    _analyticPosts,
-    _analyticTraffic,
-    _analyticOrderTimeline,
-} from 'src/_mock';
+import { useDraftTodos } from 'src/hooks/realm';
+import { useTodos } from 'src/hooks/realm/use-todos-graphql';
 
 import { useSettingsContext } from 'src/components/settings';
-import DashboardAdminView from '../dashboard-admin-view';
-import DashboardClientView from '../dashboard-client-view';
-import DashboardLeadView from '../dashboard-lead-view';
+
+import { ClientsPage } from '../test-admin-admin-view';
 
 
 // ----------------------------------------------------------------------
 
 export default function DashboardView() {
+
+    const { loading, todos, ...todoActions } = useTodos();
+
+    const { draftTodos, ...draftTodoActions } = useDraftTodos();
+
+
     const settings = useSettingsContext();
     // const renderDashboard = (role: "admin" | "client" | "lead") => {
     //     switch (role) {
@@ -33,6 +35,9 @@ export default function DashboardView() {
     //             return <>No Roles</>
     //     }
     // }
+    useEffect(() => {
+        console.log(todos, 'TODOS')
+    }, [loading])
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
             <Typography
@@ -44,6 +49,7 @@ export default function DashboardView() {
                 Hi, Welcome back 👋
             </Typography>
             {/* { renderDashboard("client") } */}
+            <ClientsPage />
         </Container>
     );
 }

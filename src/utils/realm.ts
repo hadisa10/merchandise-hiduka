@@ -48,3 +48,8 @@ export const getTodoIndex = (todos: { _id: Realm.BSON.ObjectId | string }[], tod
     const idx = todos.findIndex((t) => isSameTodo(t, todo));
     return idx >= 0 ? idx : null;
 };
+
+export const getClientIndex = (clients: { _id: Realm.BSON.ObjectId | string }[], client: { _id: Realm.BSON.ObjectId | string }): number | null => {
+    const idx = clients?.findIndex((t) => isSameTodo(t, client));
+    return idx >= 0 ? idx : null;
+};
