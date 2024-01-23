@@ -1,11 +1,11 @@
-import { FirebaseForgotPasswordView } from 'src/sections/auth/firebase';
+import { MainForgotPasswordView } from 'src/sections/auth/main';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Firebase: Forgot Password',
+  title: 'Forgot Password',
 };
 
 export default function ForgotPasswordPage() {
-  return <FirebaseForgotPasswordView />;
+  return <MainForgotPasswordView />;
 }

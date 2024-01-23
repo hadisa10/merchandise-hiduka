@@ -1,4 +1,4 @@
-import { FirebaseRetryVerifyView } from 'src/sections/auth/firebase';
+import { MainRetryVerifyView } from 'src/sections/auth/main';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function VerifyPage() {
-  return <FirebaseRetryVerifyView />;
+  return <MainRetryVerifyView />;
 }

@@ -2,6 +2,7 @@
 
 import * as Yup from 'yup';
 import { useState } from 'react';
+import { Credentials } from 'realm-web';
 import { useForm } from 'react-hook-form';
 import { isObject, isString } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,12 +17,13 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { useRealmApp } from 'src/components/realm';
@@ -29,39 +31,33 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function FirebaseRegisterView() {
+export default function MainLoginView() {
   const { loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
 
   const realmApp = useRealmApp();
 
+  const router = useRouter();
+
   const [errorMsg, setErrorMsg] = useState('');
 
-  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const returnTo = searchParams?.get('returnTo');
 
   const password = useBoolean();
 
-  const confirmPassword = useBoolean();
-
-  const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name required'),
-    lastName: Yup.string().required('Last name required'),
+  const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), undefined], 'Passwords must match')
-      .required('Confirm Password is required'),
   });
 
   const defaultValues = {
-    firstName: '',
-    lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
   };
 
   const methods = useForm({
-    resolver: yupResolver(RegisterSchema),
+    resolver: yupResolver(LoginSchema),
     defaultValues,
   });
 
@@ -73,16 +69,9 @@ export default function FirebaseRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await realmApp.registerUser({ email: data.email, password: data.password, name: `${data.firstName} ${data.lastName}` });
-      const searchParams = new URLSearchParams({
-        email: data.email,
-      }).toString();
-
-      const href = `${paths.auth.main.verify}?${searchParams}`;
-
-      router.push(href);
+      await realmApp.logIn(Credentials.emailPassword(data.email, data.password));
+      router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
-      console.error(error);
       reset();
       if (isObject(error) && "error" in error && isString(error.error)) {
         setErrorMsg(error?.error);
@@ -117,48 +106,21 @@ export default function FirebaseRegisterView() {
   };
 
   const renderHead = (
-    <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-      <Typography variant="h4">Get started absolutely free</Typography>
+    <Stack spacing={2} sx={{ mb: 5 }}>
+      <Typography variant="h4">Sign in to Hokela</Typography>
 
       <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2"> Already have an account? </Typography>
+        <Typography variant="body2">New user?</Typography>
 
-        <Link href={paths.auth.main.login} component={RouterLink} variant="subtitle2">
-          Sign in
+        <Link component={RouterLink} href={paths.auth.main.register} variant="subtitle2">
+          Create an account
         </Link>
       </Stack>
     </Stack>
   );
 
-  const renderTerms = (
-    <Typography
-      component="div"
-      sx={{
-        mt: 2.5,
-        textAlign: 'center',
-        typography: 'caption',
-        color: 'text.secondary',
-      }}
-    >
-      {'By signing up, I agree to '}
-      <Link underline="always" color="text.primary">
-        Terms of Service
-      </Link>
-      {' and '}
-      <Link underline="always" color="text.primary">
-        Privacy Policy
-      </Link>
-      .
-    </Typography>
-  );
-
   const renderForm = (
     <Stack spacing={2.5}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <RHFTextField name="firstName" label="First name" />
-        <RHFTextField name="lastName" label="Last name" />
-      </Stack>
-
       <RHFTextField name="email" label="Email address" />
 
       <RHFTextField
@@ -176,20 +138,16 @@ export default function FirebaseRegisterView() {
         }}
       />
 
-      <RHFTextField
-        name="confirmPassword"
-        label="Confirm Password"
-        type={confirmPassword.value ? 'text' : 'password'}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={confirmPassword.onToggle} edge="end">
-                <Iconify icon={confirmPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
+      <Link
+        component={RouterLink}
+        href={paths.auth.main.forgotPassword}
+        variant="body2"
+        color="inherit"
+        underline="always"
+        sx={{ alignSelf: 'flex-end' }}
+      >
+        Forgot password?
+      </Link>
 
       <LoadingButton
         fullWidth
@@ -199,7 +157,7 @@ export default function FirebaseRegisterView() {
         variant="contained"
         loading={isSubmitting}
       >
-        Create account
+        Login
       </LoadingButton>
     </Stack>
   );
@@ -248,8 +206,6 @@ export default function FirebaseRegisterView() {
       <FormProvider methods={methods} onSubmit={onSubmit}>
         {renderForm}
       </FormProvider>
-
-      {renderTerms}
 
       {renderLoginOption}
     </>

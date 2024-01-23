@@ -1,11 +1,11 @@
-import { FirebaseVerifiedView } from 'src/sections/auth/firebase';
+import { MainVerifiedView } from 'src/sections/auth/main';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Main: Verified',
+  title: 'Verified',
 };
 
 export default function VerifiedPage() {
-  return <FirebaseVerifiedView />;
+  return <MainVerifiedView />;
 }
