@@ -32,6 +32,13 @@ export function ClientTableRow({ client, clientActions }: IClientItem) {
         />
       </ListItemIcon>
       <ListItemText>{client.name}</ListItemText>
+
+      <ListItemText>{client.active === true ? "true" : "false"}</ListItemText>
+
+      <ListItemText>{client.client_icon}</ListItemText>
+
+      <ListItemText>{client.client_plan}</ListItemText>
+
       <ListItemSecondaryAction>
         <IconButton
           data-testid="todo-delete-button"

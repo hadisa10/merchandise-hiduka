@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { m } from 'framer-motion';
 
 import Box from '@mui/material/Box';
@@ -16,7 +17,7 @@ import { varHover } from 'src/components/animate';
 import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useMemo } from 'react';
+
 import { IUserAccount } from 'src/types/user';
 
 // ----------------------------------------------------------------------

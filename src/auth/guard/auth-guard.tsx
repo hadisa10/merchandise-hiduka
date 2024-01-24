@@ -51,7 +51,12 @@ function Container({ children }: Props) {
       const href = `${loginPath}?${searchParams}`;
 
       router.replace(href);
-    } else {
+    }
+    else if(!(currentUser?.customData?.role)){
+      console.log(currentUser, )
+      router.replace(paths.dashboard.user.edit(currentUser.id));
+    }
+    else {
       setChecked(true);
     }
   }, [method, router, currentUser]);

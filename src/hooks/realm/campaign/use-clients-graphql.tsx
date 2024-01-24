@@ -1,7 +1,6 @@
 import { BSON } from "realm-web";
-import { jwtDecode, JwtPayload } from "jwt-decode";
-import { useMemo, useState, useEffect } from "react";
-import { gql, HttpLink, ApolloClient, InMemoryCache } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useState, useEffect } from "react";
 
 import {
   getClientIndex,
@@ -14,74 +13,20 @@ import {
 import atlasConfig from "src/atlasConfig.json";
 
 import { useRealmApp } from "src/components/realm";
-import { useRouter } from 'src/routes/hooks';
-
 
 import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse } from "src/types/client";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
-import { paths } from "src/routes/paths";
+import { useCustomApolloClient } from "../use-apollo-client";
 
-const { baseUrl, dataSourceName } = atlasConfig;
+const { dataSourceName } = atlasConfig;
 
 
-function useApolloClient() {
-  const router = useRouter();
-
-  const realmApp = useRealmApp();
-
-  if (!realmApp.currentUser) {
-    router.replace(paths.auth.main.login);
-  }
-
-  const client = useMemo(() => {
-    const graphqlUri = `${baseUrl}/api/client/v2.0/app/${realmApp.id}/graphql`;
-
-    async function getValidAccessToken() {
-      const { exp } = jwtDecode<JwtPayload>(realmApp.currentUser?.accessToken as string) || {};
-      if (!exp) {
-        await realmApp.currentUser?.refreshCustomData();
-      }
-      const isExpired = Date.now() >= (exp || 0) * 1000;
-      if (isExpired) {
-        await realmApp.currentUser?.refreshCustomData();
-      }
-      return realmApp.currentUser?.accessToken;
-    }
-
-    return new ApolloClient({
-      link: new HttpLink({
-        uri: graphqlUri,
-        fetch: async (uri, options = {}) => {
-          const accessToken = await getValidAccessToken();
-          options.headers = {
-            ...options.headers,
-            Authorization: `Bearer ${accessToken}`,
-          };
-          try {
-            const response = await fetch(uri, {
-              method: options.method,
-              headers: options.headers,
-              body: options.body,
-            });
-            return response;
-          } catch (err) {
-            console.error(err);
-            // Returning a placeholder response in case of an error
-            return new Response(null, { status: 500, statusText: "Internal Server Error" });
-          }
-        },
-      }),
-      cache: new InMemoryCache(),
-    });
-  }, [realmApp.currentUser, realmApp.id]);
-
-  return client;
-}
 export function useClients(): IClientHook {
   const realmApp = useRealmApp();
-  const graphql = useApolloClient();
+
+  const graphql = useCustomApolloClient();
   const [clients, setClients] = useState<IClient[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -93,6 +38,10 @@ export function useClients(): IClientHook {
           owner_id
           name
           active
+          client_plan
+          client_icon
+          createdAt
+          updatedAt
         }
       }
     `;
@@ -164,7 +113,14 @@ export function useClients(): IClientHook {
 
   const saveClient = async (draftClient: IDraftClient) => {
     if (draftClient.name) {
+      console.log(draftClient, 'DRAFT CLIENT')
       draftClient.owner_id = realmApp.currentUser?.id as string;
+      const dt = new Date();
+      const cpClient: Omit<IClient, "_id">= {
+        ...draftClient,
+        createdAt: dt,
+        updatedAt: dt
+      }
       try {
         await graphql.mutate({
           mutation: gql`
@@ -177,7 +133,7 @@ export function useClients(): IClientHook {
               }
             }
           `,
-          variables: { client: draftClient },
+          variables: { client: cpClient },
         });
       } catch (err) {
         if (err.message.match(/^Duplicate key error/)) {
@@ -194,7 +150,7 @@ export function useClients(): IClientHook {
     await graphql.mutate({
       mutation: gql`
         mutation ToggleClientStatus($clientId: ObjectId!) {
-          updateManyClients(query: { _id: $clientId }, set: { active: ${!client.active} }) {
+          updateManyClients(query: { _id: $clientId }, set: { active: ${!client.active}, updatedAt: "${new Date().toISOString()}" }) {
             matchedCount
             modifiedCount
           }

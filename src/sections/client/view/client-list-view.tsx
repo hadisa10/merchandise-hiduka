@@ -31,6 +31,7 @@ export default function ClientListView() {
     const { loading, clients, ...clientActions } = useClients();
     const { draftClients, ...draftClientActions } = useDraftClients();
     const showLoader = useShowLoader(loading, 200);
+    
     return (
         <Container
             maxWidth={settings.themeStretch ? false : 'lg'}

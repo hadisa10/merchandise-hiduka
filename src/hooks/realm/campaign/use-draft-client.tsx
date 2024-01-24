@@ -13,6 +13,8 @@ export function useDraftClients(): IDraftClientsHook {
       _id: createObjectId(),
       name: "",
       owner_id: "",
+      client_icon: "no-icon",
+      client_plan: 1,
       active: false,
     };
     setDrafts((d) => [...d, draftTodo]);

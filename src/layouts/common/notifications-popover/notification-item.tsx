@@ -12,18 +12,12 @@ import { fToNow } from 'src/utils/format-time';
 import Label from 'src/components/label';
 import FileThumbnail from 'src/components/file-thumbnail';
 
+import { INotification } from 'src/types/notification';
+
 // ----------------------------------------------------------------------
 
 type NotificationItemProps = {
-  notification: {
-    id: string;
-    title: string;
-    category: string;
-    createdAt: Date;
-    isUnRead: boolean;
-    type: string;
-    avatarUrl: string | null;
-  };
+  notification: INotification
 };
 
 export default function NotificationItem({ notification }: NotificationItemProps) {
