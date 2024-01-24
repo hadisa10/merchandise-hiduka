@@ -67,8 +67,8 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
     items: [
       // CLIENT
       { title: t('clients'), path: paths.dashboard.client.root, icon: ICONS.client },
-      { title: t('projects'), path: paths.dashboard.client.root, icon: ICONS.client },
-      { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
+      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.client },
+      // { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
     ],
   },
 
@@ -104,8 +104,8 @@ const renderLead = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('overview'),
     items: [
-      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard,
-      }
+      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      { title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard }
     ],
   },
 
@@ -115,7 +115,8 @@ const renderLead = (t: TFunction<"translation", undefined>) => ([
     subheader: t('management'),
     items: [
       // CLIENT
-      { title: t('campaigns'), path: paths.dashboard.client.root, icon: ICONS.client },
+      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.client },
+      { title: t('campaigns'), path: paths.dashboard.campaign.root, icon: ICONS.client },
       { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
     ],
   },
