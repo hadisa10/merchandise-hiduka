@@ -3,20 +3,19 @@ import * as Realm from "realm-web";
 
 export interface IClient {
     _id: string;
-    owner_id: string;
+    creator_id: string;
     name: string;
     active: boolean;
     client_icon: string;
     client_plan: number;
     createdAt: Date;
     updatedAt: Date;
-
 }
 
 export interface IDraftClient {
     _id: Realm.BSON.ObjectId;
     name: string;
-    owner_id: string;
+    creator_id: string;
     active: boolean;
     client_icon: string;
     client_plan: number;

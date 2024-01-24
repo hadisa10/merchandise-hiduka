@@ -1,63 +1,62 @@
 import * as Realm from "realm-web";
 
 
-export interface IClient {
+export interface IProject {
     _id: string;
-    owner_id: string;
-    name: string;
-    active: boolean;
-    client_icon: string;
-    client_plan: number;
+    creator_id: string;
+    client_id: string;
+    campaigns: string;
+    reports: number;
     createdAt: Date;
     updatedAt: Date;
-
 }
 
-export interface IDraftClient {
+export interface IDraftProject {
     _id: Realm.BSON.ObjectId;
-    name: string;
-    owner_id: string;
-    active: boolean;
-    client_icon: string;
-    client_plan: number;
+    creator_id: string;
+    client_id: string;
+    campaigns: string;
+    reports: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 
-export interface IClientChange {
-    fullDocument: IClient;
+export interface IProjectChange {
+    fullDocument: IProject;
 }
 
 export interface IGraphqlResponse {
-    clients: IClient[];
+    projects: IProject[];
 }
-export interface IClientActions {
-    saveClient: (draftClient: IDraftClient) => Promise<void>;
-    toggleClientStatus: (client: IClient) => Promise<void>;
-    deleteClient: (client: IClient) => Promise<void>;
+export interface IProjectActions {
+    saveProject: (draftProject: IDraftProject) => Promise<void>;
+    toggleProjectStatus: (project: IProject) => Promise<void>;
+    deleteProject: (project: IProject) => Promise<void>;
 }
 
-export interface IClientHook extends IClientActions {
+export interface IProjectHook extends IProjectActions {
     loading: boolean;
-    clients: IClient[];
+    projects: IProject[];
 }
 
-export interface IDraftClientsHook extends IDraftClientActions {
-    draftClients: IDraftClient[];
+export interface IDraftProjectHook extends IDraftProjectActions {
+    draftProjects: IDraftProject[];
 
 }
-export interface IDraftClientActions {
-    createDraftClient: () => void;
-    setDraftClientName: (draft: IDraftClient, summary: string) => void;
-    deleteDraftClient: (draft: IDraftClient) => void;
+export interface IDraftProjectActions {
+    createDraftProject: () => void;
+    setDraftProjectName: (draft: IDraftProject, name: string) => void;
+    deleteDraftProject: (draft: IDraftProject) => void;
 }
 
-export interface IClientItem {
-    client: IClient;
-    clientActions: IClientActions;
+export interface IProjectItem {
+    project: IProject;
+    projectActions: IProjectActions;
 }
 
-export interface IDraftClientItem {
-    draftClient: IDraftClient;
-    clientActions: IClientActions;
-    draftClientActions: IDraftClientActions;
+export interface IDraftProjectItem {
+    draftProject: IDraftProject;
+    projectActions: IProjectActions;
+    draftProjectActions: IDraftProjectActions;
 }

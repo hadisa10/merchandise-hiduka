@@ -12,7 +12,7 @@ export function useDraftClients(): IDraftClientsHook {
     const draftTodo: IDraftClient = {
       _id: createObjectId(),
       name: "",
-      owner_id: "",
+      creator_id: "",
       client_icon: "no-icon",
       client_plan: 1,
       active: false,

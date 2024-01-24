@@ -56,7 +56,14 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard }
+      {
+        title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard,
+        children: [
+          { title: 'overview', path: paths.dashboard.root },
+          { title: 'codelist', path: paths.dashboard.root },
+          { title: 'verify', path: paths.dashboard.root },
+        ]
+      }
     ],
   },
 
@@ -81,7 +88,14 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard }
+      {
+        title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard,
+        children: [
+          { title: 'overview', path: paths.dashboard.root },
+          { title: 'codelist', path: paths.dashboard.root },
+          { title: 'verify', path: paths.dashboard.root },
+        ]
+      }
     ],
   },
 
@@ -105,7 +119,14 @@ const renderLead = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard }
+      {
+        title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard,
+        children: [
+          { title: 'overview', path: paths.dashboard.root },
+          { title: 'codelist', path: paths.dashboard.root },
+          { title: 'verify', path: paths.dashboard.root },
+        ]
+      }
     ],
   },
 

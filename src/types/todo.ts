@@ -1,6 +1,6 @@
 export interface Todo {
     _id: string;
-    owner_id: string;
+    creator_id: string;
     isComplete: boolean;
     summary: string;
 }

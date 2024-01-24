@@ -35,7 +35,7 @@ export function useClients(): IClientHook {
       query FetchAllClients {
         clients {
           _id
-          owner_id
+          creator_id
           name
           active
           client_plan
@@ -114,7 +114,7 @@ export function useClients(): IClientHook {
   const saveClient = async (draftClient: IDraftClient) => {
     if (draftClient.name) {
       console.log(draftClient, 'DRAFT CLIENT')
-      draftClient.owner_id = realmApp.currentUser?.id as string;
+      draftClient.creator_id = realmApp.currentUser?.id as string;
       const dt = new Date();
       const cpClient: Omit<IClient, "_id">= {
         ...draftClient,
@@ -127,7 +127,7 @@ export function useClients(): IClientHook {
             mutation SaveClient($client: ClientInsertInput!) {
               insertOneClient(data: $client) {
                 _id
-                owner_id
+                creator_id
                 name
                 active
               }
