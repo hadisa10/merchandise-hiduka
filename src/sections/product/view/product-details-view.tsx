@@ -28,6 +28,10 @@ import ProductDetailsSummary from '../product-details-summary';
 import ProductDetailsToolbar from '../product-details-toolbar';
 import ProductDetailsCarousel from '../product-details-carousel';
 import ProductDetailsDescription from '../product-details-description';
+import { useProducts } from 'src/hooks/realm';
+import { enqueueSnackbar } from 'notistack';
+import { IProductItem } from 'src/types/product';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
@@ -56,7 +60,29 @@ type Props = {
 };
 
 export default function ProductDetailsView({ id }: Props) {
-  const { product, productLoading, productError } = useGetProduct(id);
+  // const { product, productLoading, productError } = useGetProduct(id);
+
+  const { getProduct } = useProducts()
+
+  const [product, setProduct] = useState<IProductItem | undefined>(undefined)
+  const [productError, setProductError] = useState<String | undefined>(undefined)
+  const productLoading = useBoolean();
+
+  useEffect(() => {
+    productLoading.onTrue()
+    getProduct(id).then(product => {
+      if (product?.data?.product) {
+        setProduct(product?.data?.product)
+      }
+      productLoading.onFalse()
+    }).catch(e => {
+      setProductError(JSON.stringify(e))
+      enqueueSnackbar("Product Not found", { variant: "error" })
+      productLoading.onFalse()
+    }
+    )
+  }, [getProduct, id])
+
 
   const settings = useSettingsContext();
 
@@ -83,7 +109,7 @@ export default function ProductDetailsView({ id }: Props) {
   const renderError = (
     <EmptyContent
       filled
-      title={`${productError?.message}`}
+      title={`${productError}`}
       action={
         <Button
           component={RouterLink}
@@ -102,8 +128,8 @@ export default function ProductDetailsView({ id }: Props) {
     <>
       <ProductDetailsToolbar
         backLink={paths.dashboard.product.root}
-        editLink={paths.dashboard.product.edit(`${product?.id}`)}
-        liveLink={paths.product.details(`${product?.id}`)}
+        editLink={paths.dashboard.product.edit(`${product?._id}`)}
+        liveLink={paths.product.details(`${product?._id}`)}
         publish={publish || ''}
         onChangePublish={handleChangePublish}
         publishOptions={PRODUCT_PUBLISH_OPTIONS}
@@ -184,7 +210,7 @@ export default function ProductDetailsView({ id }: Props) {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {productLoading && renderSkeleton}
+      {productLoading.value && renderSkeleton}
 
       {productError && renderError}
 

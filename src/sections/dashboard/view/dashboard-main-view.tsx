@@ -13,6 +13,7 @@ import { View403 } from 'src/sections/error';
 import DashboardLeadView from '../dashboard-lead-view';
 import DashboardAdminView from '../dashboard-admin-view';
 import DashboardClientView from '../dashboard-client-view';
+import { IRole } from 'src/types/user_realm';
 
 
 // ----------------------------------------------------------------------
@@ -21,7 +22,7 @@ export default function DashboardView() {
     const settings = useSettingsContext();
 
     const realmApp = useRealmApp();
-    const role = useMemo(() => realmApp.currentUser?.customData.role ?? "user", [realmApp.currentUser?.customData.role])
+    const role = useMemo(() => realmApp.currentUser?.customData.role as unknown as IRole, [realmApp.currentUser?.customData.role])
     const renderDashboard = useCallback(() => {
         switch (role) {
             case 'admin':
@@ -29,6 +30,10 @@ export default function DashboardView() {
             case 'client':
                 return <DashboardClientView />;
             case 'lead':
+                return <DashboardLeadView />;
+            case 'merchant':
+                return <DashboardLeadView />;
+            case 'brand_ambassador':
                 return <DashboardLeadView />;
             default:
                 return <View403 />
