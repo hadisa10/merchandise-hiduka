@@ -35,7 +35,7 @@ export function useUsers(): IUserHook {
       query FetchAllUsers {
         users {
           _id
-          name
+          displayName
           createdAt
           updatedAt
         }
@@ -112,7 +112,8 @@ export function useUsers(): IUserHook {
       console.log(draftUser, 'DRAFT CLIENT')
       // draftUser.creator_id = realmApp.currentUser?.id as string;
       const dt = new Date();
-      const cpUser: Omit<IUser, "_id">= {
+      // @ts-expect-error expectd
+      const cpUser: IUser = {
         ...draftUser,
         createdAt: dt,
         updatedAt: dt
@@ -154,6 +155,70 @@ export function useUsers(): IUserHook {
     });
   };
 
+  const registerUser = async (user: Omit<IUser, "_id" | "createdAt" | "active" | "updatedAt">) => {
+    await graphql.mutate({
+      mutation: gql`
+        mutation RegisterUser(
+         $email: String!,
+         $displayName: String!,
+         $isPublic: Boolean!,
+         $city: String!,
+         $state: String!,
+         $about: String!,
+         $country: String!,
+         $address: String!,
+         $zipCode: String!,
+         $role: String!,
+         $phoneNumber: String!,
+         $photoURL: String!,
+         $isVerified: Boolean!,
+         $company: String!,
+         $status: String!,
+         ) {
+          updateManyUsers(query: { email: $email }, set: { 
+            displayName: $displayName,
+            isPublic:$isPublic,
+            city: $city,
+            state: $state,
+            about: $about,
+            country: $country,
+            address: $address,
+            zipCode: $zipCode,
+            role: $role,
+            phoneNumber: $phoneNumber,
+            photoURL: $photoURL,
+            isVerified: $isVerified,
+            isRegistered: true,
+            company: $company,
+            status: $status,
+            updatedAt: "${new Date().toISOString()}",
+             }) {
+            matchedCount
+            modifiedCount
+          }
+        }
+      `,
+      variables: {
+        displayName: user.displayName,
+        email: user.email,
+        isPublic: user.isPublic,
+        city: user.city,
+        state: user.state,
+        about: user.about,
+        country: user.country,
+        address: user.address,
+        zipCode: user.zipCode,
+        role: user.role,
+        phoneNumber: user.phoneNumber,
+        photoURL: user.photoURL,
+        active: true,
+        isVerified: user.isVerified,
+        company: user.company,
+        status: "active",
+      },
+    });
+  };
+
   const deleteUser = async (user: IUser) => {
     await graphql.mutate({
       mutation: gql`
@@ -173,5 +238,6 @@ export function useUsers(): IUserHook {
     saveUser,
     toggleUserStatus,
     deleteUser,
+    registerUser,
   };
 }
