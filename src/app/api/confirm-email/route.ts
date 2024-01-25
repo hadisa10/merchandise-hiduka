@@ -27,12 +27,9 @@ export async function GET(request: NextRequest) {
 
         // Call the confirmUser function
         await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
-        return NextResponse.json({ message: 'User Verified' }, { status: 200 })
-        // return NextResponse.redirect(new URL("/auth/main/verified", request.url))
+        return NextResponse.redirect(new URL("/auth/main/verified", request.url))
 
     } catch (error) {
-        return NextResponse.json({ error }, { status: 500 })
-
-        // return NextResponse.redirect(new URL("/auth/main/retry", request.url))
+        return NextResponse.redirect(new URL("/auth/main/retry", request.url))
     }
 }
