@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { m } from 'framer-motion';
 
 import Box from '@mui/material/Box';
@@ -12,12 +13,12 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
 import { varHover } from 'src/components/animate';
 import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
+import { IUserAccount } from 'src/types/user';
 
 // ----------------------------------------------------------------------
 
@@ -41,11 +42,25 @@ const OPTIONS = [
 export default function AccountPopover() {
   const router = useRouter();
 
-  const { user } = useMockedUser();
-
-  // const { logout } = useAuthContext();
-
   const realmApp = useRealmApp();
+
+  const realmUser = useMemo(() => {
+    const cpUser: IUserAccount = {
+      about: realmApp.currentUser?.customData?.about as string ?? 'User',
+      address: realmApp.currentUser?.customData?.address as string ?? 'Address',
+      city: realmApp.currentUser?.customData?.city as string ?? 'city',
+      country: realmApp.currentUser?.customData?.country as string ?? 'country',
+      displayName: realmApp.currentUser?.customData?.displayName as string ?? 'name',
+      email: realmApp.currentUser?.customData?.email as string ?? 'email',
+      isPublic: realmApp.currentUser?.customData?.about as boolean ?? true,
+      phoneNumber: realmApp.currentUser?.customData?.phoneNumber as string ?? 'phoneNumber',
+      photoURL: realmApp.currentUser?.customData?.photoURL as string ?? 'photoURL',
+      role: realmApp.currentUser?.customData?.role as string ?? 'role',
+      state: realmApp.currentUser?.customData?.state as string ?? 'state',
+      zipCode: realmApp.currentUser?.customData?.about as string ?? 'zipCode',
+    }
+    return cpUser;
+  }, [realmApp.currentUser?.customData])
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -55,9 +70,8 @@ export default function AccountPopover() {
     try {
       console.log("TEST")
       await realmApp.logOut();
-      // await logout();
       popover.onClose();
-      router.replace('/');
+      router.replace(paths.auth.main.login);
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Unable to logout!', { variant: 'error' });
@@ -88,26 +102,26 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={user?.photoURL}
-          alt={user?.displayName}
+          src={realmUser?.photoURL as string}
+          alt={realmUser?.displayName}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {user?.displayName.charAt(0).toUpperCase()}
+          {realmUser?.displayName.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+            {realmUser?.displayName}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email}
+            {realmUser?.email}
           </Typography>
         </Box>
 

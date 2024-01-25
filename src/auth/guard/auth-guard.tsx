@@ -38,8 +38,6 @@ function Container({ children }: Props) {
 
   const { currentUser } = useRealmApp();
 
-  console.log(currentUser, 'CURRENT')
-
   const [checked, setChecked] = useState(false);
 
   const check = useCallback(() => {
@@ -53,7 +51,12 @@ function Container({ children }: Props) {
       const href = `${loginPath}?${searchParams}`;
 
       router.replace(href);
-    } else {
+    }
+    else if(!(currentUser?.customData?.role)){
+      console.log(currentUser, )
+      router.replace(paths.dashboard.user.edit(currentUser.id));
+    }
+    else {
       setChecked(true);
     }
   }, [method, router, currentUser]);

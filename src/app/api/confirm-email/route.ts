@@ -30,6 +30,15 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(new URL("/auth/main/verified", request.url))
 
     } catch (error) {
+        let err = ""
+        if (error?.error) {
+            err = error?.error ?? error;
+        } else if (error?.message) {
+            err = error?.error ?? error;
+        } else {
+            err = error;
+        }
+        console.log(err, 'ERROR')
         return NextResponse.redirect(new URL("/auth/main/retry", request.url))
     }
 }
