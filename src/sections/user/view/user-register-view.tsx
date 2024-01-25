@@ -1,22 +1,20 @@
 'use client';
 
+import { useMemo } from 'react';
+import { enqueueSnackbar } from 'notistack';
+
+import { Button } from '@mui/material';
 import Container from '@mui/material/Container';
-import { use, useMemo } from 'react';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
-import { _userList } from 'src/_mock';
 import { useRealmApp } from 'src/components/realm';
-
 import { useSettingsContext } from 'src/components/settings';
 
 import UserNewEditForm from 'src/sections/user/user-new-edit-form';
 
-import { useRouter } from 'src/routes/hooks';
-
 import { IUser } from 'src/types/user_realm';
-import { paths } from 'src/routes/paths';
-import { enqueueSnackbar } from 'notistack';
-import { Button } from '@mui/material';
 
 // ----------------------------------------------------------------------
 

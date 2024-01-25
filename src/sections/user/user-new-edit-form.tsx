@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import { MenuItem } from '@mui/material';
 import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -16,27 +17,24 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
+
 import { fData } from 'src/utils/format-number';
 
 import { countries } from 'src/assets/data';
 
 import Label from 'src/components/label';
+import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFSwitch,
+  RHFSelect,
   RHFTextField,
   RHFUploadAvatar,
   RHFAutocomplete,
-  RHFSelect,
 } from 'src/components/hook-form';
 
-import { IUserItem } from 'src/types/user';
 import { IRole, IUser } from 'src/types/user_realm';
-import { MenuItem } from '@mui/material';
-import { useRealmApp } from 'src/components/realm';
-import { convertBlobToFile } from 'src/utils/helpers';
-import axiosInstance, { endpoints } from 'src/utils/axios';
-import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +45,7 @@ type Props = {
 const ROLES: IRole[] = ["client", "lead", "user"]
 export default function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
-  const { loading, users, ...userActions } = useUsers();
+  const { ...userActions } = useUsers();
 
   const realmApp = useRealmApp();
 
@@ -149,8 +147,8 @@ export default function UserNewEditForm({ currentUser }: Props) {
       }
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.user.root);
-      await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
+      return await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error) {
       enqueueSnackbar(currentUser ? 'Update failed!' : 'Update Failed!', { variant: "error" });
       console.error(error);
