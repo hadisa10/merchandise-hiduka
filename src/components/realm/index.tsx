@@ -6,7 +6,7 @@ import React, { useMemo, useState, useEffect, useCallback, createContext } from 
 import atlasConfig from "../../atlasConfig.json";
 
 interface AppContextProps extends globalThis.Realm.App {
-    registerUser: (registerUserDetails: globalThis.Realm.Auth.RegisterUserDetails & { name: string }) => Promise<void>
+    registerUser: (registerUserDetails: globalThis.Realm.Auth.RegisterUserDetails) => Promise<void>
     resendConfirmationEmail: (email: string) => Promise<void>
     logOut: () => Promise<void>
     loading: boolean;

@@ -20,6 +20,7 @@ type Props = {
 export default function UserEditView({ id }: Props) {
   const settings = useSettingsContext();
 
+  console.log("TESTING")
   const currentUser = _userList.find((user) => user.id === id);
 
   return (

@@ -1,38 +1,39 @@
 'use client';
 
-import Grid from '@mui/material/Unstable_Grid2';
+import { useMemo, useCallback } from 'react';
+
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import {
-    _analyticTasks,
-    _analyticPosts,
-    _analyticTraffic,
-    _analyticOrderTimeline,
-} from 'src/_mock';
-
+import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
+
+import { View403 } from 'src/sections/error';
+
+import DashboardLeadView from '../dashboard-lead-view';
 import DashboardAdminView from '../dashboard-admin-view';
 import DashboardClientView from '../dashboard-client-view';
-import DashboardLeadView from '../dashboard-lead-view';
 
 
 // ----------------------------------------------------------------------
 
 export default function DashboardView() {
     const settings = useSettingsContext();
-    // const renderDashboard = (role: "admin" | "client" | "lead") => {
-    //     switch (role) {
-    //         case 'admin':
-    //             return <DashboardAdminView />;
-    //         case 'client':
-    //             return <DashboardClientView />;
-    //         case 'lead':
-    //             return <DashboardLeadView />;
-    //         default:
-    //             return <>No Roles</>
-    //     }
-    // }
+
+    const realmApp = useRealmApp();
+    const role = useMemo(() => realmApp.currentUser?.customData.role ?? "user", [realmApp.currentUser?.customData.role])
+    const renderDashboard = useCallback(() => {
+        switch (role) {
+            case 'admin':
+                return <DashboardAdminView />;
+            case 'client':
+                return <DashboardClientView />;
+            case 'lead':
+                return <DashboardLeadView />;
+            default:
+                return <View403 />
+        }
+    }, [role])
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
             <Typography
@@ -43,7 +44,7 @@ export default function DashboardView() {
             >
                 Hi, Welcome back 👋
             </Typography>
-            {/* { renderDashboard("client") } */}
+            {renderDashboard()}
         </Container>
     );
 }

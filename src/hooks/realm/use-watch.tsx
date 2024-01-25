@@ -48,7 +48,7 @@ export function useWatch<T>(
     let stream: AsyncIterable<ChangeEvent<T>> | undefined;
 
     const watchTodos = async () => {
-      stream = await collection.watch({ filter });
+      stream = await collection?.watch({ filter });
 
       for await (const change of stream!) {
         switch (change.operationType) {

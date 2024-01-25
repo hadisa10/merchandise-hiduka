@@ -43,8 +43,8 @@ export default function MainRegisterView() {
   const confirmPassword = useBoolean();
 
   const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name required'),
-    lastName: Yup.string().required('Last name required'),
+    // firstName: Yup.string().required('First name required'),
+    // lastName: Yup.string().required('Last name required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
     confirmPassword: Yup.string()
@@ -53,8 +53,8 @@ export default function MainRegisterView() {
   });
 
   const defaultValues = {
-    firstName: '',
-    lastName: '',
+    // firstName: '',
+    // lastName: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -73,7 +73,7 @@ export default function MainRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await realmApp.registerUser({ email: data.email, password: data.password, name: `${data.firstName} ${data.lastName}` });
+      await realmApp.registerUser({ email: data.email, password: data.password });
       const searchParams = new URLSearchParams({
         email: data.email,
       }).toString();
@@ -154,10 +154,10 @@ export default function MainRegisterView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+      {/* <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
         <RHFTextField name="firstName" label="First name" />
         <RHFTextField name="lastName" label="Last name" />
-      </Stack>
+      </Stack> */}
 
       <RHFTextField name="email" label="Email address" />
 

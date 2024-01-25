@@ -119,6 +119,7 @@ export type IUserAccount = {
   country: string | null;
   address: string | null;
   zipCode: string | null;
+  role?: string;
   phoneNumber: string | null;
   photoURL: CustomFile | string | null;
 };
