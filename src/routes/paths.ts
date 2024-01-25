@@ -34,6 +34,7 @@ export const paths = {
   minimalUI: ROOTS.DASHBOARD,
   freeUI: ROOTS.DASHBOARD,
   figma: ROOTS.DASHBOARD,
+  register: `/complete-registration`,
   product: {
     root: `/product`,
     checkout: `/product/checkout`,

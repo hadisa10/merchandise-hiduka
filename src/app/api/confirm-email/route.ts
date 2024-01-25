@@ -26,8 +26,7 @@ export async function GET(request: NextRequest) {
         const app = new Realm.App({ id: appId, baseUrl: atlasConfig.baseUrl });
 
         // Call the confirmUser function
-        const test = await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
-        console.log(test, "TEST")
+        await app.emailPasswordAuth.confirmUser({ token: token as string, tokenId: tokenId as string });
         return NextResponse.redirect(new URL("/auth/main/verified", request.url))
 
     } catch (error) {
@@ -39,7 +38,6 @@ export async function GET(request: NextRequest) {
         } else {
             err = error;
         }
-        console.log(err, 'ERROR')
         return NextResponse.redirect(new URL("/auth/main/retry", request.url))
     }
 }
