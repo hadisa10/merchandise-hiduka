@@ -204,7 +204,7 @@ export default function HomeHero() {
             repeat: Infinity,
           }}
         >
-          Hokela
+          Hokela 3.0
         </StyledTextGradient>
       </m.div>
 
