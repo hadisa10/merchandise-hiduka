@@ -7,7 +7,7 @@ export interface IUserResponse {
 }
 
 export type IStatus = "pending" | "active" | "rejected" | "banned"
-export type IRole = "lead" | "client" | "admin" | "user"
+export type IRole = "lead" | "client" | "admin" | "user" | "brand_ambassador" | "merchant"
 
 
 export interface IUser {
@@ -29,7 +29,7 @@ export interface IUser {
     isVerified: boolean;
     isRegistered: boolean;
     company: string;
-    status: IRole;
+    status: IStatus;
     createdAt: Date;
     updatedAt: Date;
 }

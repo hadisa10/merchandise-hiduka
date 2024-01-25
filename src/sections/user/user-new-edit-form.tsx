@@ -42,7 +42,15 @@ type Props = {
   currentUser?: IUser;
 };
 
-const ROLES: IRole[] = ["client", "lead", "user"]
+const ROLES: {role: IRole, label: string}[] = [
+  { role: "client", label: "Client" },
+  { role: "lead", label: "Lead" },
+  { role: "admin", label: "Admin" },
+  { role: "user", label: "User"},
+  { role: "brand_ambassador", label: "Brand Ambassador" },
+  { role: "merchant", label: "Merchant" }
+];
+
 export default function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
   const { ...userActions } = useUsers();
@@ -287,9 +295,9 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 label="Role"
               // disabled={currentUser?.role !== "admin"}
               >
-                {ROLES.map((role) => (
+                {ROLES.map(({role, label}) => (
                   <MenuItem key={role} value={role}>
-                    {role}
+                    {label}
                   </MenuItem>
                 ))}
               </RHFSelect>
