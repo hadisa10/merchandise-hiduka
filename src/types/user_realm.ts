@@ -49,7 +49,7 @@ export interface IDraftUser {
     photoURL: CustomFile | string | null;
     isVerified: boolean;
     company: string;
-    status: IRole;
+    status: IStatus;
     active: boolean;
 }
 
