@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { IDraftUser, IDraftUsersHook } from "src/types/user_realm";
 
 import { createObjectId } from "src/utils/realm";
+
+import { IDraftUser, IDraftUsersHook } from "src/types/user_realm";
 
 export function useDraftUsers(): IDraftUsersHook {
   const [drafts, setDrafts] = useState<IDraftUser[]>([]);
