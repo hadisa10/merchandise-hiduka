@@ -109,33 +109,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // const fileName = data.photoURL?.path; // Extract the file name from your data
-      // const blobUrl = data.photoURL?.preview;
       const cpPhotoURL = data.photoURL?.path ?? "none"
-      // const file = await convertBlobToFile(blobUrl, fileName);
-      // const formData = new FormData();
-
-      // if (file) {
-      //   convertBlobToFile(blobUrl, fileName).then(file => {
-      //     if (file) {
-      //       formData.append('file', file);
-      //       axiosInstance.post(endpoints.spaces, formData, {
-      //         headers: {
-      //           'Content-Type': 'multipart/form-data'
-      //         },
-      //       }).then(response => {
-      //         const imageData: { url: string } = response.data;
-      //         enqueueSnackbar(`${fileName.toUpperCase()} uploaded!`, { variant: "success" })
-
-      //       }).catch(e => {
-      //         enqueueSnackbar(`${fileName.toUpperCase()} upload failed!`, { variant: "error" })
-      //       })
-      //     }
-      //   }).catch(e => {
-      //     enqueueSnackbar(`${fileName.toUpperCase()} upload failed!`, { variant: "error" })
-      //   })
-      // }
-
       if (!currentUser?.isRegistered) {
         // @ts-expect-error expected
         await userActions.registerUser({ ...data, photoURL: cpPhotoURL })
@@ -152,6 +126,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
     } catch (error) {
       enqueueSnackbar(currentUser ? 'Update failed!' : 'Update Failed!', { variant: "error" });
       console.error(error);
+      return await new Promise((resolve) => setTimeout(resolve, 500));
     }
   });
 
