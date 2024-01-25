@@ -2,17 +2,11 @@
 
 import Grid from '@mui/material/Unstable_Grid2';
 
-import {
-    _analyticTasks,
-    _analyticPosts,
-    _analyticTraffic,
-    _analyticOrderTimeline,
-} from 'src/_mock';
+import Iconify from 'src/components/iconify';
 
 import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
-import Iconify from 'src/components/iconify';
-import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
 import AnalyticsCurrentVisits from 'src/sections/overview/analytics/analytics-current-visits';
+import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
 
 
 // ----------------------------------------------------------------------

@@ -13,6 +13,7 @@ import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { bgBlur } from 'src/theme/css';
+import { VERSION } from 'src/config-global';
 
 import Logo from 'src/components/logo';
 import Label from 'src/components/label';
@@ -24,7 +25,6 @@ import { navConfig } from './config-navigation';
 import LoginButton from '../common/login-button';
 import HeaderShadow from '../common/header-shadow';
 import SettingsButton from '../common/settings-button';
-import { VERSION } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
