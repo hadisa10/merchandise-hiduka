@@ -27,23 +27,34 @@ import FormProvider, {
   RHFTextField,
   RHFUploadAvatar,
   RHFAutocomplete,
+  RHFSelect,
 } from 'src/components/hook-form';
 
 import { IUserItem } from 'src/types/user';
+import { IRole, IUser } from 'src/types/user_realm';
+import { MenuItem } from '@mui/material';
+import { useRealmApp } from 'src/components/realm';
+import { convertBlobToFile } from 'src/utils/helpers';
+import axiosInstance, { endpoints } from 'src/utils/axios';
+import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentUser?: IUserItem;
+  currentUser?: IUser;
 };
 
+const ROLES: IRole[] = ["client", "lead", "user"]
 export default function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
+  const { loading, users, ...userActions } = useUsers();
+
+  const realmApp = useRealmApp();
 
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
+    displayName: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     phoneNumber: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
@@ -53,15 +64,17 @@ export default function UserNewEditForm({ currentUser }: Props) {
     city: Yup.string().required('City is required'),
     role: Yup.string().required('Role is required'),
     zipCode: Yup.string().required('Zip code is required'),
-    avatarUrl: Yup.mixed<any>().nullable().required('Avatar is required'),
+    photoURL: Yup.mixed<any>().nullable().required('Avatar is required'),
     // not required
     status: Yup.string(),
     isVerified: Yup.boolean(),
+    isPublic: Yup.boolean(),
+    about: Yup.string(),
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
+      displayName: currentUser?.displayName || '',
       city: currentUser?.city || '',
       role: currentUser?.role || '',
       email: currentUser?.email || '',
@@ -70,10 +83,12 @@ export default function UserNewEditForm({ currentUser }: Props) {
       address: currentUser?.address || '',
       country: currentUser?.country || '',
       zipCode: currentUser?.zipCode || '',
-      company: currentUser?.company || '',
-      avatarUrl: currentUser?.avatarUrl || null,
+      company: currentUser?.company === "none" || !(currentUser?.company) ? '' : currentUser?.company,
+      photoURL: currentUser?.photoURL || null,
       phoneNumber: currentUser?.phoneNumber || '',
       isVerified: currentUser?.isVerified || true,
+      isPublic: currentUser?.isPublic || true,
+      about: currentUser?.about || ""
     }),
     [currentUser]
   );
@@ -96,12 +111,48 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      // const fileName = data.photoURL?.path; // Extract the file name from your data
+      // const blobUrl = data.photoURL?.preview;
+      const cpPhotoURL = data.photoURL?.path ?? "none"
+      // const file = await convertBlobToFile(blobUrl, fileName);
+      // const formData = new FormData();
+
+      // if (file) {
+      //   convertBlobToFile(blobUrl, fileName).then(file => {
+      //     if (file) {
+      //       formData.append('file', file);
+      //       axiosInstance.post(endpoints.spaces, formData, {
+      //         headers: {
+      //           'Content-Type': 'multipart/form-data'
+      //         },
+      //       }).then(response => {
+      //         const imageData: { url: string } = response.data;
+      //         enqueueSnackbar(`${fileName.toUpperCase()} uploaded!`, { variant: "success" })
+
+      //       }).catch(e => {
+      //         enqueueSnackbar(`${fileName.toUpperCase()} upload failed!`, { variant: "error" })
+      //       })
+      //     }
+      //   }).catch(e => {
+      //     enqueueSnackbar(`${fileName.toUpperCase()} upload failed!`, { variant: "error" })
+      //   })
+      // }
+
+      if (!currentUser?.isRegistered) {
+        // @ts-expect-error expected
+        await userActions.registerUser({ ...data, photoURL: cpPhotoURL })
+        await realmApp.currentUser?.refreshCustomData();
+        router.push(paths.dashboard.root);
+        enqueueSnackbar("Registration complete");
+        reset();
+        return await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+      enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.user.root);
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
-      enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.user.list);
-      console.info('DATA', data);
     } catch (error) {
+      enqueueSnackbar(currentUser ? 'Update failed!' : 'Update Failed!', { variant: "error" });
       console.error(error);
     }
   });
@@ -115,7 +166,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       });
 
       if (file) {
-        setValue('avatarUrl', newFile, { shouldValidate: true });
+        setValue('photoURL', newFile, { shouldValidate: true });
       }
     },
     [setValue]
@@ -141,7 +192,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
-                name="avatarUrl"
+                name="photoURL"
                 maxSize={3145728}
                 onDrop={handleDrop}
                 helperText={
@@ -169,10 +220,11 @@ export default function UserNewEditForm({ currentUser }: Props) {
                   <Controller
                     name="status"
                     control={control}
+                    disabled={currentUser?.role !== "admin"}
                     render={({ field }) => (
                       <Switch
                         {...field}
-                        checked={field.value !== 'active'}
+                        checked={field.value !== 'active' && field.value !== "pending"}
                         onChange={(event) =>
                           field.onChange(event.target.checked ? 'banned' : 'active')
                         }
@@ -197,6 +249,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
             <RHFSwitch
               name="isVerified"
               labelPlacement="start"
+              disabled={currentUser?.role !== "admin"}
               label={
                 <>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
@@ -212,7 +265,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
             {currentUser && (
               <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                <Button variant="soft" color="error">
+                <Button variant="soft" color="error" disabled={currentUser?.role !== "admin"}>
                   Delete User
                 </Button>
               </Stack>
@@ -231,8 +284,8 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="name" label="Full Name" />
-              <RHFTextField name="email" label="Email Address" />
+              <RHFTextField name="displayName" label="Full Name" />
+              <RHFTextField name="email" disabled label="Email Address" />
               <RHFTextField name="phoneNumber" label="Phone Number" />
 
               <RHFAutocomplete
@@ -250,7 +303,17 @@ export default function UserNewEditForm({ currentUser }: Props) {
               <RHFTextField name="address" label="Address" />
               <RHFTextField name="zipCode" label="Zip/Code" />
               <RHFTextField name="company" label="Company" />
-              <RHFTextField name="role" label="Role" />
+              <RHFSelect
+                name="role"
+                label="Role"
+              // disabled={currentUser?.role !== "admin"}
+              >
+                {ROLES.map((role) => (
+                  <MenuItem key={role} value={role}>
+                    {role}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

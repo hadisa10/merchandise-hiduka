@@ -27,6 +27,7 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 
 export const endpoints = {
   chat: '/api/chat',
+  spaces: '/api/spaces',
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {

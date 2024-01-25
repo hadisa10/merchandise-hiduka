@@ -6,6 +6,10 @@ export interface IUserResponse {
     users: IUser[];
 }
 
+export type IStatus = "pending" | "active" | "rejected" | "banned"
+export type IRole = "lead" | "client" | "admin" | "user"
+
+
 export interface IUser {
     _id: string;
     email: string;
@@ -17,10 +21,14 @@ export interface IUser {
     country: string | null;
     address: string | null;
     zipCode: string | null;
-    role?: string;
+    role: IRole;
     phoneNumber: string | null;
     photoURL: CustomFile | string | null;
     active: boolean;
+    isVerified: boolean;
+    isRegistered: boolean;
+    company: string;
+    status: IRole;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -39,6 +47,9 @@ export interface IDraftUser {
     role?: string;
     phoneNumber: string | null;
     photoURL: CustomFile | string | null;
+    isVerified: boolean;
+    company: string;
+    status: IRole;
     active: boolean;
 }
 
@@ -54,6 +65,8 @@ export interface IUserActions {
     saveUser: (draftUser: IDraftUser) => Promise<void>;
     toggleUserStatus: (user: IUser) => Promise<void>;
     deleteUser: (user: IUser) => Promise<void>;
+    registerUser: (user: Omit<IUser, "_id" | "createdAt" | "active" | "updatedAt">) => Promise<void>;
+
 }
 
 export interface IUserHook extends IUserActions {

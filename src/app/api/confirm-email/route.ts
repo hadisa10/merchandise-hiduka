@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
         } else {
             err = error;
         }
-        console.log(err, 'ERROR')
         return NextResponse.redirect(new URL("/auth/main/retry", request.url))
     }
 }

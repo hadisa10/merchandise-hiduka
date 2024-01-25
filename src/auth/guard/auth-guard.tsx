@@ -52,10 +52,9 @@ function Container({ children }: Props) {
 
       router.replace(href);
     }
-    // else if(!(currentUser?.customData?.role)){
-    //   console.log(currentUser, )
-    //   router.replace(paths.dashboard.user.edit(currentUser.id));
-    // }
+    else if(!(currentUser?.customData?.isRegistered)){
+      router.replace(paths.register);
+    }
     else {
       setChecked(true);
     }
