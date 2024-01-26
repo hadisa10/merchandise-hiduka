@@ -1,4 +1,3 @@
-import { _orders } from 'src/_mock/_order';
 
 import { OrderDetailsView } from 'src/sections/order/view';
 
