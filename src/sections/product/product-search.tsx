@@ -37,7 +37,7 @@ export default function ProductSearch({ query, results, onSearch, hrefItem, load
       if (event.key === 'Enter') {
         const selectItem = results.filter((product) => product.name === query)[0];
 
-        handleClick(selectItem.id);
+        handleClick(selectItem._id);
       }
     }
   };
@@ -52,7 +52,7 @@ export default function ProductSearch({ query, results, onSearch, hrefItem, load
       onInputChange={(event, newValue) => onSearch(newValue)}
       getOptionLabel={(option) => option.name}
       noOptionsText={<SearchNotFound query={query} sx={{ bgcolor: 'unset' }} />}
-      isOptionEqualToValue={(option, value) => option.id === value.id}
+      isOptionEqualToValue={(option, value) => option._id === value._id}
       slotProps={{
         popper: {
           placement: 'bottom-start',
@@ -94,9 +94,9 @@ export default function ProductSearch({ query, results, onSearch, hrefItem, load
         const parts = parse(product.name, matches);
 
         return (
-          <Box component="li" {...props} onClick={() => handleClick(product.id)} key={product.id}>
+          <Box component="li" {...props} onClick={() => handleClick(product._id)} key={product._id}>
             <Avatar
-              key={product.id}
+              key={product._id}
               alt={product.name}
               src={product.coverUrl}
               variant="rounded"

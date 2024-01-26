@@ -1,20 +1,21 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { enqueueSnackbar } from 'notistack';
+
 import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
-import { _invoices } from 'src/_mock';
+import { useInvoices } from 'src/hooks/realm';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import InvoiceNewEditForm from '../invoice-new-edit-form';
-import { useInvoices } from 'src/hooks/realm';
-import { useEffect, useState } from 'react';
 import { IInvoice } from 'src/types/invoice';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { enqueueSnackbar } from 'notistack';
+
+import InvoiceNewEditForm from '../invoice-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,8 @@ export default function InvoiceEditView({ id }: Props) {
   const { getInvoice } = useInvoices()
 
   const [currentInvoice, setInvoice] = useState<IInvoice | undefined>(undefined)
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [invoiceError, setOrderError] = useState<String | undefined>(undefined)
   console.log(currentInvoice, "CURRENT INVOICE")
   const orderLoading = useBoolean();
@@ -45,7 +48,7 @@ export default function InvoiceEditView({ id }: Props) {
       orderLoading.onFalse()
     }
     )
-  }, [getInvoice, id])
+  }, [getInvoice, id, orderLoading])
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>

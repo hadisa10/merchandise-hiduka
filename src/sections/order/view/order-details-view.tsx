@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { enqueueSnackbar } from 'notistack';
+import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
@@ -8,18 +9,19 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { paths } from 'src/routes/paths';
 
-import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useOrders } from 'src/hooks/realm/order/use-order-graphql';
+
+import { ORDER_STATUS_OPTIONS } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
+
+import { IOrderItem } from 'src/types/order';
 
 import OrderDetailsInfo from '../order-details-info';
 import OrderDetailsItems from '../order-details-item';
 import OrderDetailsToolbar from '../order-details-toolbar';
 import OrderDetailsHistory from '../order-details-history';
-import { useOrders } from 'src/hooks/realm/order/use-order-graphql';
-import { IOrderItem } from 'src/types/order';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +35,7 @@ export default function OrderDetailsView({ id }: Props) {
   const { getOrder } = useOrders()
 
   const [currentOrder, setOrder] = useState<IOrderItem | undefined>(undefined)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [orderError, setOrderError] = useState<String | undefined>(undefined)
   const orderLoading = useBoolean();
   const [status, setStatus] = useState(currentOrder?.status);
@@ -51,9 +54,10 @@ export default function OrderDetailsView({ id }: Props) {
       orderLoading.onFalse()
     }
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getOrder, id])
 
-  
+
 
   const handleChangeStatus = useCallback((newValue: string) => {
     setStatus(newValue);

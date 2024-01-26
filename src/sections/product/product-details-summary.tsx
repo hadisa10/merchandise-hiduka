@@ -47,7 +47,7 @@ export default function ProductDetailsSummary({
   const router = useRouter();
 
   const {
-    id,
+    _id,
     name,
     sizes,
     price,
@@ -63,14 +63,14 @@ export default function ProductDetailsSummary({
     subDescription,
   } = product;
 
-  const existProduct = !!items?.length && items.map((item) => item.id).includes(id);
+  const existProduct = !!items?.length && items.map((item) => item.id).includes(_id);
 
   const isMaxQuantity =
     !!items?.length &&
-    items.filter((item) => item.id === id).map((item) => item.quantity)[0] >= available;
+    items.filter((item) => item.id === _id).map((item) => item.quantity)[0] >= available;
 
   const defaultValues = {
-    id,
+    id: _id,
     name,
     coverUrl,
     available,
@@ -247,7 +247,7 @@ export default function ProductDetailsSummary({
           quantity={values.quantity}
           disabledDecrease={values.quantity <= 1}
           disabledIncrease={values.quantity >= available}
-          onIncrease={() => setValue('quantity', values.quantity + 1)}
+          onIncrease={() => values.quantity && setValue('quantity', values.quantity + 1)}
           onDecrease={() => setValue('quantity', values.quantity - 1)}
         />
 

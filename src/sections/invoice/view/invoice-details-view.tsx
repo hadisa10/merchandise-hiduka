@@ -1,20 +1,21 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { enqueueSnackbar } from 'notistack';
+
 import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
-import { _invoices } from 'src/_mock';
+import { useInvoices } from 'src/hooks/realm';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import InvoiceDetails from '../invoice-details';
-import { useInvoices } from 'src/hooks/realm';
-import { useEffect, useState } from 'react';
-import { useBoolean } from 'src/hooks/use-boolean';
 import { IInvoice } from 'src/types/invoice';
-import { enqueueSnackbar } from 'notistack';
+
+import InvoiceDetails from '../invoice-details';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,8 @@ export default function InvoiceDetailsView({ id }: Props) {
   const { getInvoice } = useInvoices()
 
   const [currentInvoice, setInvoice] = useState<IInvoice | undefined>(undefined)
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [invoiceError, setInvoiceError] = useState<String | undefined>(undefined)
   console.log(currentInvoice, "CURRENT INVOICE")
   const invoiceLoading = useBoolean();
@@ -45,6 +48,7 @@ export default function InvoiceDetailsView({ id }: Props) {
       invoiceLoading.onFalse()
     }
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getInvoice, id])
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>

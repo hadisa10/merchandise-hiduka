@@ -4,20 +4,20 @@ import { useState, useEffect } from "react";
 
 import {
   getClientIndex,
+  createObjectId,
   addValueAtIndex,
   updateValueAtIndex,
   removeValueAtIndex,
   replaceValueAtIndex,
-  createObjectId,
 } from "src/utils/realm";
 
 import atlasConfig from "src/atlasConfig.json";
 
+import { IOrderHook, IOrderItem, IOrderChange, IOrderGraphqlResponse, IOrdersGraphqlResponse } from "src/types/order";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
 import { useCustomApolloClient } from "../use-apollo-client";
-import { IOrderChange, IOrderGraphqlResponse, IOrderHook, IOrderItem, IOrdersGraphqlResponse } from "src/types/order";
 
 const { dataSourceName } = atlasConfig;
 
@@ -243,6 +243,8 @@ export function useOrders(): IOrderHook {
         );
       }
       console.error(err);
+      throw new Error(err.message)
+
     }
   }
   const updateOrder = async (order: IOrderItem) => {
@@ -297,6 +299,7 @@ export function useOrders(): IOrderHook {
                 cardNumber
               }
               status
+            }
         }
       `,
       variables: {

@@ -46,8 +46,8 @@ export default function InvoiceToolbar({
   const view = useBoolean();
 
   const handleEdit = useCallback(() => {
-    router.push(paths.dashboard.invoice.edit(invoice.id));
-  }, [invoice.id, router]);
+    router.push(paths.dashboard.invoice.edit(invoice._id));
+  }, [invoice._id, router]);
 
   return (
     <>
