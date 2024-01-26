@@ -109,7 +109,6 @@ export function useUsers(): IUserHook {
 
   const saveUser = async (draftUser: IDraftUser) => {
     if (draftUser.displayName) {
-      console.log(draftUser, 'DRAFT CLIENT')
       // draftUser.creator_id = realmApp.currentUser?.id as string;
       const dt = new Date();
       // @ts-expect-error expectd
@@ -141,21 +140,7 @@ export function useUsers(): IUserHook {
     }
   };
 
-  const toggleUserStatus = async (user: IUser) => {
-    await graphql.mutate({
-      mutation: gql`
-        mutation ToggleUserStatus($userId: ObjectId!) {
-          updateManyUsers(query: { _id: $userId }, set: { active: ${!user.active}, updatedAt: "${new Date().toISOString()}" }) {
-            matchedCount
-            modifiedCount
-          }
-        }
-      `,
-      variables: { userId: user._id },
-    });
-  };
-
-  const registerUser = async (user: Omit<IUser, "_id" | "createdAt" | "active" | "updatedAt">) => {
+  const registerUser = async (user: Omit<IUser, "_id" | "createdAt" | "updatedAt">) => {
     await graphql.mutate({
       mutation: gql`
         mutation RegisterUser(
@@ -165,6 +150,8 @@ export function useUsers(): IUserHook {
          $city: String!,
          $state: String!,
          $about: String!,
+         $firstname: String!,
+         $lastname: String!,
          $country: String!,
          $address: String!,
          $zipCode: String!,
@@ -181,6 +168,8 @@ export function useUsers(): IUserHook {
             city: $city,
             state: $state,
             about: $about,
+            firstname: $firstname,
+            lastname: $lastname,
             country: $country,
             address: $address,
             zipCode: $zipCode,
@@ -200,6 +189,8 @@ export function useUsers(): IUserHook {
       `,
       variables: {
         displayName: user.displayName,
+        firstname: user.firstname,
+        lastname: user.lastname,
         email: user.email,
         isPublic: user.isPublic,
         city: user.city,
@@ -236,7 +227,6 @@ export function useUsers(): IUserHook {
     loading,
     users,
     saveUser,
-    toggleUserStatus,
     deleteUser,
     registerUser,
   };

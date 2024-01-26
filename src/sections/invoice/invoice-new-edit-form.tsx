@@ -34,6 +34,7 @@ export default function InvoiceNewEditForm({ currentInvoice }: Props) {
   const loadingSave = useBoolean();
 
   const loadingSend = useBoolean();
+  console.log(currentInvoice?.items, "ITEMS")
 
   const NewInvoiceSchema = Yup.object().shape({
     invoiceTo: Yup.mixed<any>().nullable().required('Invoice to is required'),

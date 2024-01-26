@@ -26,7 +26,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { useGetProducts } from 'src/api/product';
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
@@ -47,6 +46,7 @@ import {
   RenderCellProduct,
   RenderCellCreatedAt,
 } from '../product-table-row';
+import { useProducts } from 'src/hooks/realm';
 
 // ----------------------------------------------------------------------
 
@@ -71,13 +71,14 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 export default function ProductListView() {
   const { enqueueSnackbar } = useSnackbar();
 
+  const { loading: productsLoading, products } = useProducts();
+
   const confirmRows = useBoolean();
 
   const router = useRouter();
 
   const settings = useSettingsContext();
 
-  const { products, productsLoading } = useGetProducts();
 
   const [tableData, setTableData] = useState<IProductItem[]>([]);
 
@@ -114,7 +115,7 @@ export default function ProductListView() {
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      const deleteRow = tableData.filter((row) => row._id !== id);
 
       enqueueSnackbar('Delete success!');
 
@@ -124,7 +125,7 @@ export default function ProductListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
+    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row._id));
 
     enqueueSnackbar('Delete success!');
 
@@ -204,20 +205,20 @@ export default function ProductListView() {
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
           label="View"
-          onClick={() => handleViewRow(params.row.id)}
+          onClick={() => handleViewRow(params.row._id)}
         />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
-          onClick={() => handleEditRow(params.row.id)}
+          onClick={() => handleEditRow(params.row._id)}
         />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:trash-bin-trash-bold" />}
           label="Delete"
           onClick={() => {
-            handleDeleteRow(params.row.id);
+            handleDeleteRow(params.row._id);
           }}
           sx={{ color: 'error.main' }}
         />,
@@ -284,6 +285,7 @@ export default function ProductListView() {
             loading={productsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 25]}
+            getRowId={(row) => row._id}
             initialState={{
               pagination: {
                 paginationModel: { pageSize: 10 },

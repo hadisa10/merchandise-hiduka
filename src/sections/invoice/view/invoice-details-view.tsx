@@ -10,6 +10,11 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import InvoiceDetails from '../invoice-details';
+import { useInvoices } from 'src/hooks/realm';
+import { useEffect, useState } from 'react';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { IInvoice } from 'src/types/invoice';
+import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -20,8 +25,27 @@ type Props = {
 export default function InvoiceDetailsView({ id }: Props) {
   const settings = useSettingsContext();
 
-  const currentInvoice = _invoices.filter((invoice) => invoice.id === id)[0];
+  const { getInvoice } = useInvoices()
 
+  const [currentInvoice, setInvoice] = useState<IInvoice | undefined>(undefined)
+  const [invoiceError, setInvoiceError] = useState<String | undefined>(undefined)
+  console.log(currentInvoice, "CURRENT INVOICE")
+  const invoiceLoading = useBoolean();
+
+  useEffect(() => {
+    invoiceLoading.onTrue()
+    getInvoice(id).then(invoice => {
+      if (invoice?.data?.invoice) {
+        setInvoice(invoice?.data?.invoice)
+      }
+      invoiceLoading.onFalse()
+    }).catch(e => {
+      setInvoiceError(JSON.stringify(e))
+      enqueueSnackbar("Order Not found", { variant: "error" })
+      invoiceLoading.onFalse()
+    }
+    )
+  }, [getInvoice, id])
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -40,7 +64,7 @@ export default function InvoiceDetailsView({ id }: Props) {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <InvoiceDetails invoice={currentInvoice} />
+      {currentInvoice && <InvoiceDetails invoice={currentInvoice} />}
     </Container>
   );
 }

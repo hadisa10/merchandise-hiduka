@@ -1,3 +1,4 @@
+import { ApolloQueryResult } from '@apollo/client';
 import { IAddressItem } from './address';
 
 // ----------------------------------------------------------------------
@@ -25,7 +26,7 @@ export type IInvoiceItem = {
 };
 
 export type IInvoice = {
-  id: string;
+  _id: string;
   sent: number;
   dueDate: Date;
   taxes: number;
@@ -40,3 +41,28 @@ export type IInvoice = {
   invoiceTo: IAddressItem;
   invoiceFrom: IAddressItem;
 };
+
+// API TYPES
+
+export interface IInvoiceChange {
+  fullDocument: IInvoice;
+}
+
+export interface IInvoicesGraphqlResponse {
+  invoices: IInvoice[];
+}
+
+export interface IInvoiceGraphqlResponse {
+  invoice: IInvoice;
+}
+export interface IInvoiceActions {
+  saveInvoice: (draftInvoice: IInvoice) => Promise<void>;
+  getInvoice: (id: string) => Promise<ApolloQueryResult<IInvoiceGraphqlResponse> | undefined>;
+  deleteInvoice: (invoice: IInvoice) => Promise<void>;
+  updateInvoice: (invoice: IInvoice) => Promise<void>;
+}
+
+export interface IInvoiceHook extends IInvoiceActions {
+  loading: boolean;
+  invoices: IInvoice[];
+}

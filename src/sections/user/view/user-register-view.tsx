@@ -3,14 +3,18 @@
 import { useMemo } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-import { Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import Iconify from 'src/components/iconify';
 import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import UserNewEditForm from 'src/sections/user/user-new-edit-form';
 
@@ -26,6 +30,8 @@ export default function UserRegistrationView() {
 
   const router = useRouter();
 
+  const loading = useBoolean();
+
   const currentUser: IUser | null = useMemo(() => {
     const usr = realmApp?.currentUser?.customData as unknown as IUser;
     if (!usr) return null;
@@ -34,6 +40,8 @@ export default function UserRegistrationView() {
       email: usr.email,
       isPublic: usr.isPublic,
       displayName: usr.displayName,
+      firstname: "",
+      lastname: "",
       city: usr.city,
       state: usr.state,
       about: usr.about,
@@ -44,7 +52,6 @@ export default function UserRegistrationView() {
       isRegistered: usr.isRegistered,
       phoneNumber: usr.phoneNumber,
       photoURL: usr.photoURL,
-      active: usr.active,
       isVerified: usr.isVerified,
       company: usr.company,
       status: usr.status,
@@ -55,26 +62,40 @@ export default function UserRegistrationView() {
   }, [realmApp?.currentUser?.customData])
   const handleLogout = async () => {
     try {
+      loading.onTrue()
       await realmApp.logOut();
+      loading.onFalse()
       router.replace(paths.auth.main.login);
     } catch (error) {
+      loading.onFalse()
       console.error(error);
       enqueueSnackbar('Unable to logout!', { variant: 'error' });
     }
   };
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth={settings.themeStretch ? false : 'lg'} sx={{ pb: 4}}>
 
-
-      <Button
-        color="inherit"
-        size="large"
-        variant="contained"
-        onClick={handleLogout}
-      >
-        Logout
-      </Button>
-
+      <CustomBreadcrumbs
+        heading="Complete Registration"
+        links={[
+          { name: 'Login', href: paths.auth.main.login },
+          { name: 'Complete registration' },
+        ]}
+        action={
+          <LoadingButton
+            color="error"
+            variant="contained"
+            onClick={handleLogout}
+            loading={loading.value}
+            startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
+          >
+            Cancel
+          </LoadingButton>
+        }
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+      />
       {
         currentUser && <UserNewEditForm currentUser={currentUser} />
       }
