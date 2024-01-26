@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { ApolloQueryResult } from "@apollo/client";
+
 export type IProductFilterValue = string | string[] | number | number[];
 
 export type IProductFilters = {
@@ -32,7 +34,7 @@ export type IProductReview = {
 };
 
 export type IProductItem = {
-  id: string;
+  _id: string;
   sku: string;
   name: string;
   code: string;
@@ -78,3 +80,29 @@ export type IProductTableFilters = {
   stock: string[];
   publish: string[];
 };
+
+
+// API TYPES
+
+export interface IProductChange {
+  fullDocument: IProductItem;
+}
+
+export interface IProductsGraphqlResponse {
+  products: IProductItem[];
+}
+
+export interface IProductGraphqlResponse {
+  product: IProductItem;
+}
+export interface IProductActions {
+  saveProduct: (draftUser: IProductItem) => Promise<void>;
+  getProduct: (id: string) => Promise<ApolloQueryResult<IProductGraphqlResponse> | undefined>;
+  deleteProduct: (product: IProductItem) => Promise<void>;
+  updateProduct: (product: IProductItem) => Promise<void>;
+}
+
+export interface IProductHook extends IProductActions {
+  loading: boolean;
+  products: IProductItem[];
+}

@@ -42,7 +42,15 @@ type Props = {
   currentUser?: IUser;
 };
 
-const ROLES: IRole[] = ["client", "lead", "user"]
+const ROLES: {role: IRole, label: string}[] = [
+  { role: "client", label: "Client" },
+  { role: "lead", label: "Lead" },
+  { role: "admin", label: "Admin" },
+  { role: "user", label: "User"},
+  { role: "brand_ambassador", label: "Brand Ambassador" },
+  { role: "merchant", label: "Merchant" }
+];
+
 export default function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
   const { ...userActions } = useUsers();
@@ -52,7 +60,9 @@ export default function UserNewEditForm({ currentUser }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required'),
+    firstname: Yup.string().required('First name is required'),
+    lastname: Yup.string().required('Last name is required'),
+    displayName: Yup.string().required('Username is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     phoneNumber: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
@@ -72,12 +82,14 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
   const defaultValues = useMemo(
     () => ({
+      firstname: currentUser?.firstname || '',
+      lastname: currentUser?.lastname || '',
       displayName: currentUser?.displayName || '',
       city: currentUser?.city || '',
       role: currentUser?.role || '',
       email: currentUser?.email || '',
       state: currentUser?.state || '',
-      status: currentUser?.status || '',
+      status: currentUser?.status || 'pending',
       address: currentUser?.address || '',
       country: currentUser?.country || '',
       zipCode: currentUser?.zipCode || '',
@@ -144,7 +156,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
     },
     [setValue]
   );
-
+  console.log(values, "VALUES")
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -257,6 +269,8 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              <RHFTextField name="firstname" label="First Name" />
+              <RHFTextField name="lastname" label="Last Name" />
               <RHFTextField name="displayName" label="Full Name" />
               <RHFTextField name="email" disabled label="Email Address" />
               <RHFTextField name="phoneNumber" label="Phone Number" />
@@ -281,9 +295,9 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 label="Role"
               // disabled={currentUser?.role !== "admin"}
               >
-                {ROLES.map((role) => (
+                {ROLES.map(({role, label}) => (
                   <MenuItem key={role} value={role}>
-                    {role}
+                    {label}
                   </MenuItem>
                 ))}
               </RHFSelect>

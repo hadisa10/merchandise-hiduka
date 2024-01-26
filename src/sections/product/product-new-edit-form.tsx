@@ -42,6 +42,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 
 import { IProductItem } from 'src/types/product';
+import { useProducts } from 'src/hooks/realm';
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,8 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
   const router = useRouter();
 
   const mdUp = useResponsive('up', 'md');
+
+  const { updateProduct, saveProduct } = useProducts()
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -67,6 +70,11 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     description: Yup.string().required('Description is required'),
     // not required
     taxes: Yup.number(),
+    sku: Yup.string(),
+    code: Yup.string(),
+    publish: Yup.boolean(),
+    quantity: Yup.number().required('Quantity is required'),
+    available: Yup.number().required('Available is required').max(Yup.ref('quantity'), 'Available cannot exceed Quantity'), // Validation against Quantity field
     newLabel: Yup.object().shape({
       enabled: Yup.boolean(),
       content: Yup.string(),
@@ -88,6 +96,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
       sku: currentProduct?.sku || '',
       price: currentProduct?.price || 0,
       quantity: currentProduct?.quantity || 0,
+      available: currentProduct?.quantity || 0,
       priceSale: currentProduct?.priceSale || 0,
       tags: currentProduct?.tags || [],
       taxes: currentProduct?.taxes || 0,
@@ -95,6 +104,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
       category: currentProduct?.category || '',
       colors: currentProduct?.colors || [],
       sizes: currentProduct?.sizes || [],
+      publish: currentProduct?.publish === "published",
       newLabel: currentProduct?.newLabel || { enabled: false, content: '' },
       saleLabel: currentProduct?.saleLabel || { enabled: false, content: '' },
     }),
@@ -130,15 +140,67 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     }
   }, [currentProduct?.taxes, includeTaxes, setValue]);
 
+  const calculateInventoryType = ({ quantity, available }: { quantity: number, available: number }) => {
+    if (quantity === 0 || available === 0) {
+      return 'out of stock';
+    }
+    const t = (available * 100) / quantity;
+    if (t < 1) {
+      return 'out of stock';
+    } else if (t < 20) {
+      return 'low stock';
+    } else {
+      return 'in stock';
+    }
+  }
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
+      const inventoryType = calculateInventoryType({ quantity: data.quantity, available: data.available });
+      // @ts-expect-error expected
+      const product: IProductItem = {
+        _id: currentProduct?._id || "",
+        ...data,
+        inventoryType,
+        publish: data?.publish ? "published" : "draft",
+        saleLabel: {
+          enabled: data.saleLabel.enabled ?? false,
+          content: data.saleLabel.content ?? ""
+        },
+        newLabel: {
+          enabled: data.newLabel.enabled ?? false,
+          content: data.newLabel.content ?? ""
+        }
+      }
+      if (currentProduct) {
+        await updateProduct(product)
+        enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
+        reset();
+        router.push(paths.dashboard.product.root);
+        return await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+
+      await saveProduct({
+        ...product,
+        images: [],
+        coverUrl: "",
+        totalRatings: 0,
+        totalReviews: 0,
+        totalSold: 0,
+        reviews: [],
+        ratings: []
+      })
+
       enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
+      reset();
       router.push(paths.dashboard.product.root);
       console.info('DATA', data);
+      return await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error) {
       console.error(error);
+      enqueueSnackbar(currentProduct ? 'Update error!' : 'Create error!', { variant: "error" });
+      return await new Promise((resolve) => setTimeout(resolve, 500));
+
     }
   });
 
@@ -253,6 +315,14 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
               <RHFTextField
                 name="quantity"
                 label="Quantity"
+                placeholder="0"
+                type="number"
+                InputLabelProps={{ shrink: true }}
+              />
+
+              <RHFTextField
+                name="available"
+                label="Available"
                 placeholder="0"
                 type="number"
                 InputLabelProps={{ shrink: true }}
@@ -423,10 +493,13 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControlLabel
-          control={<Switch defaultChecked />}
+      <Grid xs={12} md={8} sx={{
+        display: 'flex', alignItems: 'center', justifyContent: "space-between"
+      }}>
+        < RHFSwitch
+          name="publish"
           label="Publish"
+          defaultChecked
           sx={{ flexGrow: 1, pl: 3 }}
         />
 

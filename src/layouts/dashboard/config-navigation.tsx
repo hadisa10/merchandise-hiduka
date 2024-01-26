@@ -10,6 +10,7 @@ import Iconify from 'src/components/iconify';
 // import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 import { useRealmApp } from 'src/components/realm';
+import { IRole } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
 
@@ -143,12 +144,69 @@ const renderLead = (t: TFunction<"translation", undefined>) => ([
   },
 
 ])
+
+
+const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
+  // OVERVIEW
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('overview'),
+    items: [
+      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      {
+        title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard,
+        children: [
+          { title: 'overview', path: paths.dashboard.root },
+          { title: 'codelist', path: paths.dashboard.root },
+          { title: 'verify', path: paths.dashboard.root },
+        ]
+      }
+    ],
+  },
+
+  // MANAGEMENT
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('management'),
+    items: [
+      // CLIENT
+      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.client },
+      { title: t('campaigns'), path: paths.dashboard.campaign.root, icon: ICONS.client },
+      { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
+    ],
+  },
+
+])
+
+const renderMerchant = (t: TFunction<"translation", undefined>) => ([
+  // OVERVIEW
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('overview'),
+    items: [
+      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard }
+    ],
+  },
+
+  // MANAGEMENT
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('management'),
+    items: [
+      // CLIENT
+      { title: t('orders'), path: paths.dashboard.order.root, icon: ICONS.order },
+      { title: t('invoices'), path: paths.dashboard.invoice.root, icon: ICONS.invoice },
+      { title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product },
+    ],
+  },
+
+])
 // ----------------------------------------------------------------------
 
 export function useNavData() {
   const { t } = useTranslate();
   const realmApp = useRealmApp();
-  const role = useMemo(() => realmApp.currentUser?.customData?.role, [realmApp.currentUser?.customData?.role])
+  const role = useMemo(() => realmApp.currentUser?.customData?.role as unknown as IRole, [realmApp.currentUser?.customData?.role])
   const data = useMemo(
     () => {
       switch (role) {
@@ -156,6 +214,10 @@ export function useNavData() {
           return renderAdmin(t);
         case "client":
           return renderClient(t);
+        case "brand_ambassador":
+          return renderBrandAmbassador(t);
+        case "merchant":
+          return renderMerchant(t);
         case "lead":
         default:
           return renderLead(t);

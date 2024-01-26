@@ -17,8 +17,10 @@ function getLocaleCode() {
   } = getLocales();
 
   return {
-    code: code ?? 'ke',
-    currency: currency ?? 'KES',
+    // code: code ?? 'ke',
+    // currency: currency ?? 'KES',
+    code: 'ke',
+    currency: 'KES',
   };
 }
 
@@ -43,7 +45,6 @@ export function fNumber(inputValue: InputValue) {
 
 export function fCurrency(inputValue: InputValue) {
   const { code, currency } = getLocaleCode();
-  console.log(code, 'CODE')
   if (!inputValue) return '';
 
   const number = Number(inputValue);

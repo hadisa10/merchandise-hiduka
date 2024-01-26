@@ -10,6 +10,10 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import ProductNewEditForm from '../product-new-edit-form';
+import { useProducts } from 'src/hooks/realm';
+import { useEffect, useState } from 'react';
+import { IProductItem } from 'src/types/product';
+import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +24,17 @@ type Props = {
 export default function ProductEditView({ id }: Props) {
   const settings = useSettingsContext();
 
-  const { product: currentProduct } = useGetProduct(id);
+  const { getProduct } = useProducts()
+  
+  const [currentProduct, setCurrentProduct] = useState<IProductItem | undefined>(undefined)
+
+  useEffect(() => {
+    getProduct(id).then(product => {
+      if (product?.data?.product) {
+        setCurrentProduct(product?.data?.product)
+      }
+    }).catch(e => enqueueSnackbar("Product Not found", { variant: "error" }))
+  }, [getProduct, id])
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
