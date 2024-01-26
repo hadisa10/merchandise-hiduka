@@ -4,20 +4,20 @@ import { useState, useEffect } from "react";
 
 import {
   getClientIndex,
+  createObjectId,
   addValueAtIndex,
   updateValueAtIndex,
   removeValueAtIndex,
   replaceValueAtIndex,
-  createObjectId,
 } from "src/utils/realm";
 
 import atlasConfig from "src/atlasConfig.json";
 
+import { IInvoice, IInvoiceHook, IInvoiceChange, IInvoiceGraphqlResponse, IInvoicesGraphqlResponse } from "src/types/invoice";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
 import { useCustomApolloClient } from "../use-apollo-client";
-import { IInvoice, IInvoiceChange, IInvoiceGraphqlResponse, IInvoiceHook, IInvoicesGraphqlResponse } from "src/types/invoice";
 
 const { dataSourceName } = atlasConfig;
 
@@ -227,6 +227,7 @@ export function useInvoices(): IInvoiceHook {
         );
       }
       console.error(err);
+      throw new Error(err.message)
     }
   }
   const updateInvoice = async (invoice: IInvoice) => {

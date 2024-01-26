@@ -1,5 +1,6 @@
 'use client';
 
+import { enqueueSnackbar } from 'notistack';
 import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
@@ -15,12 +16,16 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProduct } from 'src/api/product';
+import { useProducts } from 'src/hooks/realm';
+import { useBoolean } from 'src/hooks/use-boolean';
+
 import { PRODUCT_PUBLISH_OPTIONS } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
+
+import { IProductItem } from 'src/types/product';
 
 import { ProductDetailsSkeleton } from '../product-skeleton';
 import ProductDetailsReview from '../product-details-review';
@@ -28,10 +33,6 @@ import ProductDetailsSummary from '../product-details-summary';
 import ProductDetailsToolbar from '../product-details-toolbar';
 import ProductDetailsCarousel from '../product-details-carousel';
 import ProductDetailsDescription from '../product-details-description';
-import { useProducts } from 'src/hooks/realm';
-import { enqueueSnackbar } from 'notistack';
-import { IProductItem } from 'src/types/product';
-import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
@@ -70,9 +71,9 @@ export default function ProductDetailsView({ id }: Props) {
 
   useEffect(() => {
     productLoading.onTrue()
-    getProduct(id).then(product => {
-      if (product?.data?.product) {
-        setProduct(product?.data?.product)
+    getProduct(id).then(res => {
+      if (res?.data?.product) {
+        setProduct(res?.data?.product)
       }
       productLoading.onFalse()
     }).catch(e => {
@@ -81,6 +82,7 @@ export default function ProductDetailsView({ id }: Props) {
       productLoading.onFalse()
     }
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getProduct, id])
 
 

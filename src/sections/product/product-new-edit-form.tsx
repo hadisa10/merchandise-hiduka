@@ -19,6 +19,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { useProducts } from 'src/hooks/realm';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import {
@@ -42,7 +43,6 @@ import FormProvider, {
 } from 'src/components/hook-form';
 
 import { IProductItem } from 'src/types/product';
-import { useProducts } from 'src/hooks/realm';
 
 // ----------------------------------------------------------------------
 
@@ -147,11 +147,11 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     const t = (available * 100) / quantity;
     if (t < 1) {
       return 'out of stock';
-    } else if (t < 20) {
+    } if (t < 20) {
       return 'low stock';
-    } else {
+    } 
       return 'in stock';
-    }
+    
   }
 
   const onSubmit = handleSubmit(async (data) => {

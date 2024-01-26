@@ -1,4 +1,3 @@
-import { _orders } from 'src/_mock/_order';
 
 import { OrderDetailsView } from 'src/sections/order/view';
 
@@ -20,8 +19,8 @@ export default function OrderDetailsPage({ params }: Props) {
   return <OrderDetailsView id={id} />;
 }
 
-export async function generateStaticParams() {
-  return _orders.map((order) => ({
-    id: order.id,
-  }));
-}
+// export async function generateStaticParams() {
+//   return _orders.map((order) => ({
+//     id: order._id,
+//   }));
+// }

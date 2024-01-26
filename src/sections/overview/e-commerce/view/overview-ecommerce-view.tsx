@@ -125,7 +125,7 @@ export default function OverviewEcommerceView() {
               ],
               series: [
                 {
-                  year: '2019',
+                  year: '2023',
                   data: [
                     {
                       name: 'Total Income',
@@ -138,7 +138,7 @@ export default function OverviewEcommerceView() {
                   ],
                 },
                 {
-                  year: '2020',
+                  year: '2024',
                   data: [
                     {
                       name: 'Total Income',

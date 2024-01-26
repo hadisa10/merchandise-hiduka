@@ -24,6 +24,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
+import { useProducts } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
@@ -46,7 +47,6 @@ import {
   RenderCellProduct,
   RenderCellCreatedAt,
 } from '../product-table-row';
-import { useProducts } from 'src/hooks/realm';
 
 // ----------------------------------------------------------------------
 

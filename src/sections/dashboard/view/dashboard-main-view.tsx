@@ -10,10 +10,11 @@ import { useSettingsContext } from 'src/components/settings';
 
 import { View403 } from 'src/sections/error';
 
+import { IRole } from 'src/types/user_realm';
+
 import DashboardLeadView from '../dashboard-lead-view';
 import DashboardAdminView from '../dashboard-admin-view';
 import DashboardClientView from '../dashboard-client-view';
-import { IRole } from 'src/types/user_realm';
 
 
 // ----------------------------------------------------------------------

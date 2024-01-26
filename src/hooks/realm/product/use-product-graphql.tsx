@@ -4,20 +4,20 @@ import { useState, useEffect } from "react";
 
 import {
   getClientIndex,
+  createObjectId,
   addValueAtIndex,
   updateValueAtIndex,
   removeValueAtIndex,
   replaceValueAtIndex,
-  createObjectId,
 } from "src/utils/realm";
 
 import atlasConfig from "src/atlasConfig.json";
 
+import { IProductHook, IProductItem, IProductChange, IProductGraphqlResponse, IProductsGraphqlResponse } from "src/types/product";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
 import { useCustomApolloClient } from "../use-apollo-client";
-import { IProductChange, IProductGraphqlResponse, IProductHook, IProductItem, IProductsGraphqlResponse } from "src/types/product";
 
 const { dataSourceName } = atlasConfig;
 
@@ -171,7 +171,7 @@ export function useProducts(): IProductHook {
           `The following error means that this app tried to insert a user multiple times (i.e. an existing client has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
         );
       }
-      throw new Error(err);
+      throw new Error(err.message);
     }
   }
 
@@ -236,6 +236,7 @@ export function useProducts(): IProductHook {
         );
       }
       console.error(err);
+      throw new Error(err.message)
     }
   }
   const updateProduct = async (product: IProductItem) => {
