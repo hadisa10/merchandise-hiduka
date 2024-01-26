@@ -17,8 +17,10 @@ function getLocaleCode() {
   } = getLocales();
 
   return {
-    code: code ?? 'ke',
-    currency: currency ?? 'KES',
+    // code: code ?? 'ke',
+    // currency: currency ?? 'KES',
+    code: 'ke',
+    currency: 'KES',
   };
 }
 

@@ -157,7 +157,6 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const inventoryType = calculateInventoryType({ quantity: data.quantity, available: data.available });
-
       // @ts-expect-error expected
       const product: IProductItem = {
         _id: currentProduct?._id || "",
@@ -174,19 +173,24 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
         }
       }
       if (currentProduct) {
-        const update = await updateProduct(product)
+        await updateProduct(product)
         enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
         reset();
         router.push(paths.dashboard.product.root);
         return await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
-      const create = await saveProduct({
+      await saveProduct({
         ...product,
         images: [],
-        coverUrl: ""
+        coverUrl: "",
+        totalRatings: 0,
+        totalReviews: 0,
+        totalSold: 0,
+        reviews: [],
+        ratings: []
       })
-      console.log(create, "CREATE")
+
       enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
       reset();
       router.push(paths.dashboard.product.root);

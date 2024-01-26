@@ -1,7 +1,7 @@
 'use client';
 
 import sumBy from 'lodash/sumBy';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -51,6 +51,7 @@ import InvoiceAnalytic from '../invoice-analytic';
 import InvoiceTableRow from '../invoice-table-row';
 import InvoiceTableToolbar from '../invoice-table-toolbar';
 import InvoiceTableFiltersResult from '../invoice-table-filters-result';
+import { useInvoices } from 'src/hooks/realm';
 
 // ----------------------------------------------------------------------
 
@@ -87,7 +88,15 @@ export default function InvoiceListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
+  const [tableData, setTableData] = useState<IInvoice[]>([]);
+
+  const { loading: ordersLoading, invoices } = useInvoices();
+
+  useEffect(() => {
+    if (invoices.length) {
+      setTableData(invoices);
+    }
+  }, [invoices, ordersLoading]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -172,7 +181,7 @@ export default function InvoiceListView() {
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      const deleteRow = tableData.filter((row) => row._id !== id);
 
       enqueueSnackbar('Delete success!');
 
@@ -184,7 +193,7 @@ export default function InvoiceListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+    const deleteRows = tableData.filter((row) => !table.selected.includes(row._id));
 
     enqueueSnackbar('Delete success!');
 
@@ -366,7 +375,7 @@ export default function InvoiceListView() {
               onSelectAllRows={(checked) => {
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id)
+                  dataFiltered.map((row) => row._id)
                 );
               }}
               action={
@@ -410,7 +419,7 @@ export default function InvoiceListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row.id)
+                      dataFiltered.map((row) => row._id)
                     )
                   }
                 />
@@ -423,13 +432,13 @@ export default function InvoiceListView() {
                     )
                     .map((row) => (
                       <InvoiceTableRow
-                        key={row.id}
+                        key={row._id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onViewRow={() => handleViewRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
                       />
                     ))}
 

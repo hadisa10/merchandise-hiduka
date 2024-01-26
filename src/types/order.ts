@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { ApolloQueryResult } from "@apollo/client";
+
 export type IOrderTableFilterValue = string | Date | null;
 
 export type IOrderTableFilters = {
@@ -56,7 +58,7 @@ export type IOrderProductItem = {
 };
 
 export type IOrderItem = {
-  id: string;
+  _id: string;
   taxes: number;
   status: string;
   shipping: number;
@@ -68,6 +70,34 @@ export type IOrderItem = {
   history: IOrderHistory;
   customer: IOrderCustomer;
   delivery: IOrderDelivery;
+  payment: IOrderPayment;
+  shippingAddress: IOrderShippingAddress;
   items: IOrderProductItem[];
   createdAt: Date;
 };
+
+
+// API TYPES
+
+export interface IOrderChange {
+  fullDocument: IOrderItem;
+}
+
+export interface IOrdersGraphqlResponse {
+  orders: IOrderItem[];
+}
+
+export interface IOrderGraphqlResponse {
+  order: IOrderItem;
+}
+export interface IOrderActions {
+  saveOrder: (draftOrder: IOrderItem) => Promise<void>;
+  getOrder: (id: string) => Promise<ApolloQueryResult<IOrderGraphqlResponse> | undefined>;
+  deleteOrder: (product: IOrderItem) => Promise<void>;
+  updateOrder: (product: IOrderItem) => Promise<void>;
+}
+
+export interface IOrderHook extends IOrderActions {
+  loading: boolean;
+  orders: IOrderItem[];
+}
