@@ -1,19 +1,20 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { enqueueSnackbar } from 'notistack';
+
 import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
-import { useGetProduct } from 'src/api/product';
+import { useProducts } from 'src/hooks/realm';
 
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import ProductNewEditForm from '../product-new-edit-form';
-import { useProducts } from 'src/hooks/realm';
-import { useEffect, useState } from 'react';
 import { IProductItem } from 'src/types/product';
-import { enqueueSnackbar } from 'notistack';
+
+import ProductNewEditForm from '../product-new-edit-form';
 
 // ----------------------------------------------------------------------
 

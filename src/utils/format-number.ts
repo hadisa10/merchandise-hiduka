@@ -12,6 +12,7 @@ type InputValue = string | number | null;
 function getLocaleCode() {
   const {
     currentLang: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       numberFormat: { code, currency },
     },
   } = getLocales();

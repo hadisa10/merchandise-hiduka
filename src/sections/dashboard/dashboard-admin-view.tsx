@@ -45,7 +45,7 @@ export default function DashboardAdminView() {
             <Grid xs={12} sm={6} md={3}>
                 <AnalyticsWidgetSummary
                     title="Net Income"
-                    total={100000}
+                    total={1000000}
                     color="error"
                     icon={<Iconify width={48} icon="icon-park:agreement" />}
                 />

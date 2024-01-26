@@ -39,6 +39,17 @@ import {
 
 export const allLangs = [
   {
+    label: 'Kiswahili',
+    value: 'en',
+    systemValue: merge(enUSDate, enUSDataGrid, enUSCore),
+    adapterLocale: enUSAdapter,
+    icon: 'flagpack:flagpack:ke',
+    numberFormat: {
+      code: 'en-KE',
+      currency: 'KSh',
+    },
+  },
+  {
     label: 'English',
     value: 'en',
     systemValue: merge(enUSDate, enUSDataGrid, enUSCore),

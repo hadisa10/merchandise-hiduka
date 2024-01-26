@@ -1,7 +1,7 @@
 'use client';
 
 import sumBy from 'lodash/sumBy';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -21,11 +21,12 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
+import { useInvoices } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { isAfter, isBetween } from 'src/utils/format-time';
 
-import { _invoices, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
+import { INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -51,7 +52,6 @@ import InvoiceAnalytic from '../invoice-analytic';
 import InvoiceTableRow from '../invoice-table-row';
 import InvoiceTableToolbar from '../invoice-table-toolbar';
 import InvoiceTableFiltersResult from '../invoice-table-filters-result';
-import { useInvoices } from 'src/hooks/realm';
 
 // ----------------------------------------------------------------------
 

@@ -10,6 +10,7 @@ import Iconify from 'src/components/iconify';
 // import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 import { useRealmApp } from 'src/components/realm';
+
 import { IRole } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
@@ -57,14 +58,7 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      {
-        title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard,
-        children: [
-          { title: 'overview', path: paths.dashboard.root },
-          { title: 'codelist', path: paths.dashboard.root },
-          { title: 'verify', path: paths.dashboard.root },
-        ]
-      }
+      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics }
     ],
   },
 
@@ -89,14 +83,7 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      {
-        title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard,
-        children: [
-          { title: 'overview', path: paths.dashboard.root },
-          { title: 'codelist', path: paths.dashboard.root },
-          { title: 'verify', path: paths.dashboard.root },
-        ]
-      }
+      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics }
     ],
   },
 
@@ -120,14 +107,7 @@ const renderLead = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      {
-        title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard,
-        children: [
-          { title: 'overview', path: paths.dashboard.root },
-          { title: 'codelist', path: paths.dashboard.root },
-          { title: 'verify', path: paths.dashboard.root },
-        ]
-      }
+      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics }
     ],
   },
 
@@ -153,14 +133,7 @@ const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      {
-        title: t('analytics'), path: paths.dashboard.root, icon: ICONS.dashboard,
-        children: [
-          { title: 'overview', path: paths.dashboard.root },
-          { title: 'codelist', path: paths.dashboard.root },
-          { title: 'verify', path: paths.dashboard.root },
-        ]
-      }
+      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics, }
     ],
   },
 
@@ -184,7 +157,8 @@ const renderMerchant = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('overview'),
     items: [
-      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard }
+      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      { title: t('analytics'), path: paths.dashboard.general.ecommerce, icon: ICONS.analytics }
     ],
   },
 
