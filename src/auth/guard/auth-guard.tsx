@@ -7,6 +7,7 @@ import { useRealmApp } from 'src/components/realm';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
+import { JwtPayload, jwtDecode } from 'jwt-decode';
 
 // ----------------------------------------------------------------------
 
@@ -39,26 +40,47 @@ function Container({ children }: Props) {
   const { currentUser } = useRealmApp();
 
   const [checked, setChecked] = useState(false);
+  
+
+  const redirectTo = () => {
+    const searchParams = new URLSearchParams({
+      returnTo: window.location.pathname,
+    }).toString();
+
+    const loginPath = loginPaths[method];
+
+    const href = `${loginPath}?${searchParams}`;
+
+    router.replace(href);
+  }
 
   const check = useCallback(() => {
-    if (!currentUser) {
-      const searchParams = new URLSearchParams({
-        returnTo: window.location.pathname,
-      }).toString();
+    try {
+      const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string  ?? "") || {};
 
-      const loginPath = loginPaths[method];
+      const isExpired = Date.now() >= (exp || 0) * 1000;
+      
+      console.log(exp, 'EXP')
+      
+      console.log(currentUser?.customData?.isRegistered, 'REGISTED ?')
+      
+      console.log(isExpired, 'EXPIRED')
+      if (!exp || isExpired) {
+        console.log("IS NOT LOGGEN IN")
+        redirectTo();
+      }
+      else if(!(currentUser?.customData?.isRegistered)){
+        router.replace(paths.register);
+      }
+      else {
+        setChecked(true);
+      }
+    } catch (error) {
+      console.log(error, "ERROR")
+      // redirectTo();
+    }
 
-      const href = `${loginPath}?${searchParams}`;
-
-      router.replace(href);
-    }
-    else if(!(currentUser?.customData?.isRegistered)){
-      router.replace(paths.register);
-    }
-    else {
-      setChecked(true);
-    }
-  }, [method, router, currentUser]);
+  }, [method, router, currentUser, redirectTo]);
 
   useEffect(() => {
     check();

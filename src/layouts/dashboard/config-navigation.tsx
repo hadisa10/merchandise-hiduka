@@ -171,6 +171,7 @@ const renderMerchant = (t: TFunction<"translation", undefined>) => ([
       { title: t('orders'), path: paths.dashboard.order.root, icon: ICONS.order },
       { title: t('invoices'), path: paths.dashboard.invoice.root, icon: ICONS.invoice },
       { title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product },
+      { title: t('routes'), path: paths.dashboard.userRoutes, icon: ICONS.analytics }
     ],
   },
 
