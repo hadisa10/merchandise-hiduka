@@ -1,3 +1,4 @@
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useState, useEffect, useCallback } from 'react';
 
 import { paths } from 'src/routes/paths';
@@ -7,7 +8,6 @@ import { useRealmApp } from 'src/components/realm';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
-import { JwtPayload, jwtDecode } from 'jwt-decode';
 
 // ----------------------------------------------------------------------
 
@@ -59,14 +59,8 @@ function Container({ children }: Props) {
       const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string  ?? "") || {};
 
       const isExpired = Date.now() >= (exp || 0) * 1000;
-      
-      console.log(exp, 'EXP')
-      
-      console.log(currentUser?.customData?.isRegistered, 'REGISTED ?')
-      
-      console.log(isExpired, 'EXPIRED')
+
       if (!exp || isExpired) {
-        console.log("IS NOT LOGGEN IN")
         redirectTo();
       }
       else if(!(currentUser?.customData?.isRegistered)){
@@ -77,9 +71,9 @@ function Container({ children }: Props) {
       }
     } catch (error) {
       console.log(error, "ERROR")
-      // redirectTo();
+      redirectTo();
     }
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [method, router, currentUser, redirectTo]);
 
   useEffect(() => {

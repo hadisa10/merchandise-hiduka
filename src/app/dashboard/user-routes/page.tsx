@@ -1,4 +1,3 @@
-import { ProductListView } from 'src/sections/product/view';
 import { UserRoutesView } from 'src/sections/user-routes/view';
 
 // ----------------------------------------------------------------------
