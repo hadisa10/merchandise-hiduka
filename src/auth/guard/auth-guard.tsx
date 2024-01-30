@@ -1,3 +1,4 @@
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useState, useEffect, useCallback } from 'react';
 
 import { paths } from 'src/routes/paths';
@@ -39,26 +40,41 @@ function Container({ children }: Props) {
   const { currentUser } = useRealmApp();
 
   const [checked, setChecked] = useState(false);
+  
+
+  const redirectTo = () => {
+    const searchParams = new URLSearchParams({
+      returnTo: window.location.pathname,
+    }).toString();
+
+    const loginPath = loginPaths[method];
+
+    const href = `${loginPath}?${searchParams}`;
+
+    router.replace(href);
+  }
 
   const check = useCallback(() => {
-    if (!currentUser) {
-      const searchParams = new URLSearchParams({
-        returnTo: window.location.pathname,
-      }).toString();
+    try {
+      const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string  ?? "") || {};
 
-      const loginPath = loginPaths[method];
+      const isExpired = Date.now() >= (exp || 0) * 1000;
 
-      const href = `${loginPath}?${searchParams}`;
-
-      router.replace(href);
+      if (!exp || isExpired) {
+        redirectTo();
+      }
+      else if(!(currentUser?.customData?.isRegistered)){
+        router.replace(paths.register);
+      }
+      else {
+        setChecked(true);
+      }
+    } catch (error) {
+      console.log(error, "ERROR")
+      redirectTo();
     }
-    else if(!(currentUser?.customData?.isRegistered)){
-      router.replace(paths.register);
-    }
-    else {
-      setChecked(true);
-    }
-  }, [method, router, currentUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [method, router, currentUser, redirectTo]);
 
   useEffect(() => {
     check();
