@@ -25,6 +25,7 @@ import { IProductItem } from 'src/types/product';
 import { ICheckoutItem } from 'src/types/checkout';
 
 import IncrementerButton from './common/incrementer-button';
+import { isNumber } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -125,20 +126,26 @@ export default function ProductDetailsSummary({
 
   const renderPrice = (
     <Box sx={{ typography: 'h5' }}>
-      {priceSale && (
-        <Box
-          component="span"
-          sx={{
-            color: 'text.disabled',
-            textDecoration: 'line-through',
-            mr: 0.5,
-          }}
-        >
-          {fCurrency(priceSale)}
-        </Box>
-      )}
+      {
+        isNumber(priceSale) && (
+          <>
+            <Box
+              component="span"
+              sx={{
+                color: 'text.disabled',
+                textDecoration: 'line-through',
+                mr: 0.5,
+              }}
+            >
+              {fCurrency(price)}
+            </Box>
+            {fCurrency(priceSale)}
+          </>
+        )
 
-      {fCurrency(price)}
+      }
+
+      {!isNumber(priceSale) && fCurrency(price)}
     </Box>
   );
 
