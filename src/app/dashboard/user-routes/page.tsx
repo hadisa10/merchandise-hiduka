@@ -1,4 +1,4 @@
-import { UserRoutesView } from 'src/sections/user-routes/view';
+import { UserRoutesListView } from 'src/sections/user-routes/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function ProductListPage() {
-  return <UserRoutesView />;
+  return <UserRoutesListView />;
 }

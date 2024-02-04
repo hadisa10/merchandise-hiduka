@@ -1,1 +1,2 @@
-export { default as UserRoutesView } from './user-routes-details-view';
+export { default as UserRoutesListView } from './user-routes-list-view';
+export { default as UserRoutesDetailsView } from './user-routes-details-view';
