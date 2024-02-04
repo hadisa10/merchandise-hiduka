@@ -4,7 +4,7 @@ import Map, { Layer, Source } from 'react-map-gl';
 import { useMemo, useState, useEffect } from 'react';
 
 import Typography from '@mui/material/Typography';
-import { Avatar, AvatarGroup } from '@mui/material';
+import { Avatar, AvatarGroup, Stack, Tooltip } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 
 import { MAPBOX_API } from 'src/config-global';
@@ -147,8 +147,8 @@ export default function UserRoutesMap({ contacts }: Props) {
       "line-cap": "round"
     },
     paint: {
-      "line-color": "blue",
-      "line-width": 4,
+      "line-color": lightMode ? theme.palette.primary.main : theme.palette.info.light,
+      "line-width": 6,
       "line-opacity": 0.75
     }
   }
@@ -212,12 +212,30 @@ export default function UserRoutesMap({ contacts }: Props) {
               <Iconify icon="solar:phone-bold" width={14} sx={{ mr: 0.5 }} />
               {popupInfo.phoneNumber}
             </Typography>
+            <Typography
+              component="div"
+              variant="caption"
+              color="success.main"
+              sx={{ mt: 1, display: 'flex', alignItems: 'center' }}
+            >
+              <Iconify icon="tdesign:money" width={14} sx={{ mr: 0.5 }} />
+              <Typography variant='caption'>Ksh {popupInfo.products.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0)}</Typography>
+            </Typography>
+
             {
               Array.isArray(popupInfo.products) &&
               <AvatarGroup total={popupInfo.products.length}>
                 {popupInfo.products.map((prd) =>
                 (
-                  <Avatar key={prd.id} alt={prd.name} src={prd.coverUrl} />
+                  <Tooltip title={
+                    <Stack>
+                      <Typography color="inherit" variant='body1'>{prd.name}</Typography>
+                      <Typography color="inherit" variant='caption'>Quantity x{prd.quantity}</Typography>
+                      <Typography color="inherit" variant='caption'>Total x{prd.quantity * prd.price}</Typography>
+                    </Stack>
+                  } arrow>
+                    <Avatar key={prd.id} alt={prd.name} src={prd.coverUrl} />
+                  </Tooltip>
                 ))}
               </AvatarGroup>
             }

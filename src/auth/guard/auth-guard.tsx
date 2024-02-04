@@ -8,6 +8,7 @@ import { useRealmApp } from 'src/components/realm';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
+import { isEmpty } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -40,7 +41,7 @@ function Container({ children }: Props) {
   const { currentUser } = useRealmApp();
 
   const [checked, setChecked] = useState(false);
-  
+
 
   const redirectTo = () => {
     const searchParams = new URLSearchParams({
@@ -56,12 +57,14 @@ function Container({ children }: Props) {
 
   const check = useCallback(() => {
     try {
-      const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string  ?? "") || {};
+      const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string ?? "") || {};
 
-      if (!exp) {
+      // const isExpired = Date.now() >= (exp || 0) * 1000;
+
+      if (isEmpty(exp)) {
         redirectTo();
       }
-      else if(!(currentUser?.customData?.isRegistered)){
+      else if (!(currentUser?.customData?.isRegistered)) {
         router.replace(paths.register);
       }
       else {
