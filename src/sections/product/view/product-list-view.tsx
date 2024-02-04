@@ -18,6 +18,7 @@ import {
   GridToolbarFilterButton,
   GridToolbarColumnsButton,
   GridColumnVisibilityModel,
+  GridToolbarDensitySelector,
 } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
@@ -283,7 +284,8 @@ export default function ProductListView() {
             rows={dataFiltered}
             columns={columns}
             loading={productsLoading}
-            getRowHeight={() => 'auto'}
+            getRowHeight={() => 'auto'} 
+            getEstimatedRowHeight={() => 150}
             pageSizeOptions={[5, 10, 25]}
             getRowId={(row) => row._id}
             initialState={{
@@ -308,7 +310,7 @@ export default function ProductListView() {
                     />
 
                     <GridToolbarQuickFilter />
-
+                    <GridToolbarDensitySelector />
                     <Stack
                       spacing={1}
                       flexGrow={1}

@@ -1,3 +1,4 @@
+import { isNumber } from 'lodash';
 import { useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -25,7 +26,6 @@ import { IProductItem } from 'src/types/product';
 import { ICheckoutItem } from 'src/types/checkout';
 
 import IncrementerButton from './common/incrementer-button';
-import { isNumber } from 'lodash';
 
 // ----------------------------------------------------------------------
 

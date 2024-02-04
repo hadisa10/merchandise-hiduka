@@ -3279,6 +3279,7 @@ __metadata:
     "@supabase/supabase-js": "npm:^2.39.0"
     "@svgr/webpack": "npm:^8.1.0"
     "@types/autosuggest-highlight": "npm:^3.2.3"
+    "@types/geojson": "npm:^0"
     "@types/lodash": "npm:^4.14.202"
     "@types/mapbox-gl": "npm:^2.7.19"
     "@types/node": "npm:^20.10.4"
@@ -3309,6 +3310,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:^3.0.0"
     firebase: "npm:^10.7.1"
     framer-motion: "npm:^10.16.16"
+    geojson: "npm:^0.5.0"
     graphql: "npm:^16.8.1"
     highlight.js: "npm:^11.9.0"
     i18next: "npm:^23.7.8"
@@ -5106,6 +5108,13 @@ __metadata:
   version: 7946.0.10
   resolution: "@types/geojson@npm:7946.0.10"
   checksum: 4abba554467494c1496a60622c2cb6f8c7f80b0dbb909ff898812a9f67799fd1b254802d7d266361974bd8b0c9ef32a7686183aac83b20c437f6d0eee89cd0a1
+  languageName: node
+  linkType: hard
+
+"@types/geojson@npm:^0":
+  version: 0.0.32
+  resolution: "@types/geojson@npm:0.0.32"
+  checksum: fb2ad12adf99589a9683eff3de46cc83e8efe88e81be113b3f7592cec7fa511e1572b8a93889a8f60a63ee1d887184e67d0c4a70a77ca30c1831a925bebc9915
   languageName: node
   linkType: hard
 
@@ -7849,6 +7858,13 @@ __metadata:
   version: 3.2.1
   resolution: "geojson-vt@npm:3.2.1"
   checksum: db2fc1a452067ee8436fa86e5a138f6ebd3d64893e0af097bc1cc960ec63d67c0ce77444711e9583036192d6bf9ce754bf9b56a76789684fc0fea4d52321fffc
+  languageName: node
+  linkType: hard
+
+"geojson@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "geojson@npm:0.5.0"
+  checksum: d7fd376c201933dea1307b7c08032f249f73b9399d6287211f6a523d0efa9260caf2a38319f55075682d53dc4cb4c52b9f9c845f2fd03bef9832903f16177ab0
   languageName: node
   linkType: hard
 

@@ -7,21 +7,22 @@ import Button from '@mui/material/Button';
 import Stack, { StackProps } from '@mui/material/Stack';
 
 import Iconify from 'src/components/iconify';
+import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
-import { IProductTableFilters, IProductTableFilterValue } from 'src/types/product';
+import { IOrderTableFilters, IOrderTableFilterValue } from 'src/types/order';
 
 // ----------------------------------------------------------------------
 
 type Props = StackProps & {
-  filters: IProductTableFilters;
-  onFilters: (name: string, value: IProductTableFilterValue) => void;
+  filters: IOrderTableFilters;
+  onFilters: (name: string, value: IOrderTableFilterValue) => void;
   //
   onResetFilters: VoidFunction;
   //
   results: number;
 };
 
-export default function ProductTableFiltersResult({
+export default function OrderTableFiltersResult({
   filters,
   onFilters,
   //
@@ -30,23 +31,20 @@ export default function ProductTableFiltersResult({
   results,
   ...other
 }: Props) {
-  const handleRemoveStock = useCallback(
-    (inputValue: string) => {
-      const newValue = filters.stock.filter((item) => item !== inputValue);
+  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
 
-      onFilters('stock', newValue);
-    },
-    [filters.stock, onFilters]
-  );
+  const handleRemoveKeyword = useCallback(() => {
+    onFilters('name', '');
+  }, [onFilters]);
 
-  const handleRemovePublish = useCallback(
-    (inputValue: string) => {
-      const newValue = filters.publish.filter((item) => item !== inputValue);
+  const handleRemoveStatus = useCallback(() => {
+    onFilters('status', 'all');
+  }, [onFilters]);
 
-      onFilters('publish', newValue);
-    },
-    [filters.publish, onFilters]
-  );
+  const handleRemoveDate = useCallback(() => {
+    onFilters('startDate', null);
+    onFilters('endDate', null);
+  }, [onFilters]);
 
   return (
     <Stack spacing={1.5} {...other}>
@@ -58,24 +56,21 @@ export default function ProductTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {!!filters.stock.length && (
-          <Block label="Stock:">
-            {filters.stock.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveStock(item)} />
-            ))}
+        {filters.status !== 'all' && (
+          <Block label="Status:">
+            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
-        {!!filters.publish.length && (
-          <Block label="Publish:">
-            {filters.publish.map((item) => (
-              <Chip
-                key={item}
-                label={item}
-                size="small"
-                onDelete={() => handleRemovePublish(item)}
-              />
-            ))}
+        {filters.startDate && filters.endDate && (
+          <Block label="Date:">
+            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
+          </Block>
+        )}
+
+        {!!filters.name && (
+          <Block label="Keyword:">
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
 
