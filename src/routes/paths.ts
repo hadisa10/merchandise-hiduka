@@ -108,7 +108,12 @@ export const paths = {
     calendar: `${ROOTS.DASHBOARD}/calendar`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
-    userRoutes: `${ROOTS.DASHBOARD}/user-routes`,
+    userRoutes: {
+      root: `${ROOTS.DASHBOARD}/user-routes`,
+      new: `${ROOTS.DASHBOARD}/user-routes/new`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}/edit`
+    },
     general: {
       main: `${ROOTS.DASHBOARD}/main`,
       app: `${ROOTS.DASHBOARD}/app`,

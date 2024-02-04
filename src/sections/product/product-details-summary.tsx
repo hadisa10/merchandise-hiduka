@@ -1,3 +1,4 @@
+import { isNumber } from 'lodash';
 import { useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -125,20 +126,26 @@ export default function ProductDetailsSummary({
 
   const renderPrice = (
     <Box sx={{ typography: 'h5' }}>
-      {priceSale && (
-        <Box
-          component="span"
-          sx={{
-            color: 'text.disabled',
-            textDecoration: 'line-through',
-            mr: 0.5,
-          }}
-        >
-          {fCurrency(priceSale)}
-        </Box>
-      )}
+      {
+        isNumber(priceSale) && (
+          <>
+            <Box
+              component="span"
+              sx={{
+                color: 'text.disabled',
+                textDecoration: 'line-through',
+                mr: 0.5,
+              }}
+            >
+              {fCurrency(price)}
+            </Box>
+            {fCurrency(priceSale)}
+          </>
+        )
 
-      {fCurrency(price)}
+      }
+
+      {!isNumber(priceSale) && fCurrency(price)}
     </Box>
   );
 

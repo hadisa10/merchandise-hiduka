@@ -58,9 +58,7 @@ function Container({ children }: Props) {
     try {
       const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string  ?? "") || {};
 
-      const isExpired = Date.now() >= (exp || 0) * 1000;
-
-      if (!exp || isExpired) {
+      if (!exp) {
         redirectTo();
       }
       else if(!(currentUser?.customData?.isRegistered)){

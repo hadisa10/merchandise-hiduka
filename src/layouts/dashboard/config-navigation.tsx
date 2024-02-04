@@ -48,7 +48,8 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
-  client: <Iconify icon="mdi:book-account" />
+  client: <Iconify icon="mdi:book-account" />,
+  route: <Iconify icon="eos-icons:route" />
 };
 
 const renderAdmin = (t: TFunction<"translation", undefined>) => ([
@@ -171,7 +172,7 @@ const renderMerchant = (t: TFunction<"translation", undefined>) => ([
       { title: t('orders'), path: paths.dashboard.order.root, icon: ICONS.order },
       { title: t('invoices'), path: paths.dashboard.invoice.root, icon: ICONS.invoice },
       { title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product },
-      { title: t('routes'), path: paths.dashboard.userRoutes, icon: ICONS.analytics }
+      { title: t('routes'), path: paths.dashboard.userRoutes.root, icon: ICONS.route }
     ],
   },
 
