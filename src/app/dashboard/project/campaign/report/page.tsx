@@ -5,6 +5,6 @@ export const metadata = {
   title: 'Dashboard: Project Reports',
 };
 
-export default function ProjectReportPage() {
-  return <>PROJECT REPORT</>;
+export default function CampaignReportPage() {
+  return <>CAMPAIGN REPORT LIST</>;
 }

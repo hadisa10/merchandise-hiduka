@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -24,6 +24,8 @@ import FormProvider, {
   RHFUploadAvatar,
   RHFAutocomplete,
 } from 'src/components/hook-form';
+import { IUser } from 'src/types/user_realm';
+import { useRealmApp } from 'src/components/realm';
 
 // ----------------------------------------------------------------------
 
@@ -46,6 +48,11 @@ export default function AccountGeneral() {
 
   const { user } = useMockedUser();
 
+  const realmApp = useRealmApp();
+
+  const userDetails = useMemo(() => !realmApp.currentUser ? null : realmApp.currentUser?.customData as unknown as IUser, [realmApp.currentUser?.customData])
+
+
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
@@ -62,17 +69,17 @@ export default function AccountGeneral() {
   });
 
   const defaultValues: UserType = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-    photoURL: user?.photoURL || null,
-    phoneNumber: user?.phoneNumber || '',
-    country: user?.country || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
+    displayName: userDetails?.displayName || '',
+    email: userDetails?.email || '',
+    photoURL: userDetails?.photoURL || null,
+    phoneNumber: userDetails?.phoneNumber || '',
+    country: userDetails?.country || '',
+    address: userDetails?.address || '',
+    state: userDetails?.state || '',
+    city: userDetails?.city || '',
+    zipCode: userDetails?.zipCode || '',
+    about: userDetails?.about || '',
+    isPublic: userDetails?.isPublic || false,
   };
 
   const methods = useForm({

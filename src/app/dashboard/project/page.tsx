@@ -1,4 +1,3 @@
-import { ClientListView } from 'src/sections/client/view';
 
 // ----------------------------------------------------------------------
 

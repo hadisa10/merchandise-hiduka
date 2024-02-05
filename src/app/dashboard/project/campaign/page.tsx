@@ -1,4 +1,3 @@
-import { AccountView } from 'src/sections/account/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +6,5 @@ export const metadata = {
 };
 
 export default function ProjectCampaignPage() {
-  return <>PROJECT CAMPAIGN</>;
+  return <>CAMPAIGN LIST</>;
 }

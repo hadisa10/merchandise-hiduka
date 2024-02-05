@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -19,6 +19,8 @@ import AccountBilling from '../account-billing';
 import AccountSocialLinks from '../account-social-links';
 import AccountNotifications from '../account-notifications';
 import AccountChangePassword from '../account-change-password';
+import { useRealmApp } from 'src/components/realm';
+import { IRole } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +59,11 @@ export default function AccountView() {
 
   const [currentTab, setCurrentTab] = useState('general');
 
+  const realmApp = useRealmApp();
+
+  const role = useMemo(() => realmApp.currentUser?.customData.role as unknown as IRole, [realmApp.currentUser?.customData.role])
+
+
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
@@ -83,13 +90,13 @@ export default function AccountView() {
         }}
       >
         {TABS.map((tab) => (
-          <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
+          <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} disabled={!(role === "admin" || role === "client") && tab.value === "billing"} />
         ))}
       </Tabs>
 
       {currentTab === 'general' && <AccountGeneral />}
 
-      {currentTab === 'billing' && (
+      {currentTab === 'billing' && (role === "admin" || role === "client") && (
         <AccountBilling
           plans={_userPlans}
           cards={_userPayment}

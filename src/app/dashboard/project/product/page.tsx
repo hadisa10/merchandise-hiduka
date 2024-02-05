@@ -1,11 +1,13 @@
-import { AccountView } from 'src/sections/account/view';
 
 // ----------------------------------------------------------------------
+
+import { ProductListView } from "src/sections/product/view";
 
 export const metadata = {
   title: 'Dashboard: Project product',
 };
 
 export default function ProjectProductPage() {
-  return <>PROJECT PRODUCT</>;
+  return <ProductListView
+  />;
 }

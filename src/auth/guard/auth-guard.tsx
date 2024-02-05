@@ -55,6 +55,10 @@ function Container({ children }: Props) {
 
   const check = useCallback(() => {
     try {
+      // const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string ?? "") || {};
+
+      // const isExpired = Date.now() >= (exp || 0) * 1000;
+      console.log(currentUser?.customData, 'CURRENT USER')
       if (!currentUser?.isLoggedIn) {
         redirectTo();
       }
