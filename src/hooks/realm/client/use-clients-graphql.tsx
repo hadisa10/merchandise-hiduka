@@ -12,8 +12,6 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
-import { useRealmApp } from "src/components/realm";
-
 import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse } from "src/types/client";
 
 import { useWatch } from "../use-watch";
@@ -23,9 +21,7 @@ import { useCustomApolloClient } from "../use-apollo-client";
 const { dataSourceName } = atlasConfig;
 
 
-export function useClients(lazy: true): IClientHook {
-  const realmApp = useRealmApp();
-
+export function useClients(lazy: boolean = true): IClientHook {
   const graphql = useCustomApolloClient();
   const [clients, setClients] = useState<IClient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +32,14 @@ export function useClients(lazy: true): IClientHook {
       query FetchAllClients {
         clients {
           _id
-          creator_id
+          creator{
+            name
+            email
+          }
+          users{
+            name
+            email
+          }
           name
           active
           client_plan

@@ -6,14 +6,13 @@ import {
     List,
     Card,
     Button,
-    Container,
-    Typography
+    Container
 } from "@mui/material";
 
 import { paths } from "src/routes/paths";
 import { RouterLink } from "src/routes/components";
 
-import { useClients, useShowLoader, useDraftClients } from "src/hooks/realm";
+import { useClients, useShowLoader } from "src/hooks/realm";
 
 import { getTodoId } from "src/utils/realm";
 
@@ -27,8 +26,7 @@ import { ClientTableRow } from "../client-table-row";
 export default function ClientListView() {
     const settings = useSettingsContext();
 
-    const { loading, clients, ...clientActions } = useClients();
-    const { ...draftClientActions } = useDraftClients();
+    const { loading, clients, ...clientActions } = useClients(false);
     const showLoader = useShowLoader(loading, 200);
 
     return (
@@ -79,28 +77,15 @@ export default function ClientListView() {
                 {loading && showLoader ? (
                     <LoadingScreen />
                 ) : (
-                    <div className="todo-items-container">
-                        <Typography component="p" variant="h5">
-                            Clients
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<Iconify icon="mingcute:add-line" />}
-                            onClick={() => draftClientActions.createDraftClient()}
-                        >
-                            Add Client
-                        </Button>
-                        <List style={{ width: "100%" }}>
-                            {clients?.map((client) => (
-                                <ClientTableRow
-                                    key={getTodoId(client)}
-                                    client={client}
-                                    clientActions={clientActions}
-                                />
-                            ))}
-                        </List>
-                    </div>
+                    <List style={{ width: "100%" }}>
+                        {clients?.map((client) => (
+                            <ClientTableRow
+                                key={getTodoId(client)}
+                                client={client}
+                                clientActions={clientActions}
+                            />
+                        ))}
+                    </List>
                 )}
             </Card>
         </Container>
