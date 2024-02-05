@@ -128,12 +128,12 @@ export const _userPlans = [
   },
   {
     subscription: 'starter',
-    price: 4.99,
-    primary: true,
+    price: 500,
+    primary: false,
   },
   {
     subscription: 'premium',
-    price: 9.99,
+    price: 1500,
     primary: false,
   },
 ];

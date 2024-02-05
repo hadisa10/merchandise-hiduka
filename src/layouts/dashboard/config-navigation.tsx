@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 // import Label from 'src/components/label';
 import { TFunction } from 'i18next';
 
+import { SxProps } from '@mui/system';
+
 import { paths } from 'src/routes/paths';
 
 import { useTranslate } from 'src/locales';
@@ -12,7 +14,6 @@ import SvgColor from 'src/components/svg-color';
 import { useRealmApp } from 'src/components/realm';
 
 import { IRole } from 'src/types/user_realm';
-import { SxProps } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -57,7 +58,7 @@ const ICONS = {
   campaign: <Iconify icon="ic:baseline-campaign" sx={style} />,
   report: <Iconify icon="iconoir:reports-solid" sx={styleSmall} />,
   create: <Iconify icon="ion:create-outline" sx={style} />,
-  productSmall: <SvgColor src={`/assets/icons/navbar/ic_product.svg`} sx={styleSmall} />,
+  productSmall: <SvgColor src="/assets/icons/navbar/ic_product.svg" sx={styleSmall} />,
   campaignSmall: <Iconify icon="ic:baseline-campaign" sx={styleSmall} />,
   projectSmall: <Iconify icon="material-symbols:construction-rounded" sx={styleSmall} />
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -11,16 +11,17 @@ import { paths } from 'src/routes/paths';
 import { _userAbout, _userPlans, _userPayment, _userInvoices, _userAddressBook } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import { IRole } from 'src/types/user_realm';
 
 import AccountGeneral from '../account-general';
 import AccountBilling from '../account-billing';
 import AccountSocialLinks from '../account-social-links';
 import AccountNotifications from '../account-notifications';
 import AccountChangePassword from '../account-change-password';
-import { useRealmApp } from 'src/components/realm';
-import { IRole } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
 

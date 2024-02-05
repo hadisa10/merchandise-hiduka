@@ -2,13 +2,14 @@ import * as Yup from 'yup';
 import { useMemo, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as Realm from "realm-web";
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import { MenuItem } from '@mui/material';
 import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
+import { Chip, Paper } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -21,86 +22,62 @@ import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 
 import { fData } from 'src/utils/format-number';
 
-import { countries } from 'src/assets/data';
+import { _userPlans } from 'src/_mock';
+import { PlanFreeIcon, PlanPremiumIcon, PlanStarterIcon } from 'src/assets/icons';
 
 import Label from 'src/components/label';
+import Iconify from 'src/components/iconify';
 import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFSwitch,
-  RHFSelect,
   RHFTextField,
   RHFUploadAvatar,
   RHFAutocomplete,
 } from 'src/components/hook-form';
 
-import { IRole, IUser } from 'src/types/user_realm';
+import { IClient, IDraftClient } from 'src/types/client';
+import { IRole } from 'src/types/user_realm';
+import { createObjectId } from 'src/utils/realm';
+import { useClients } from 'src/hooks/realm';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentUser?: IUser;
+  currentClient?: IClient;
 };
 
-const ROLES: {role: IRole, label: string}[] = [
-  { role: "client", label: "Client" },
-  { role: "lead", label: "Lead" },
-  { role: "admin", label: "Admin" },
-  { role: "user", label: "User"},
-  { role: "brand_ambassador", label: "Brand Ambassador" },
-  { role: "merchant", label: "Merchant" }
-];
-
-export default function ClientNewEditForm({ currentUser }: Props) {
+export default function ClientNewEditForm({ currentClient }: Props) {
   const router = useRouter();
-  const { ...userActions } = useUsers();
 
   const realmApp = useRealmApp();
+
+  const { users } = useUsers();
+
+  const { saveClient } = useClients(true);
+
+  const role = useMemo(() => realmApp.currentUser?.customData?.role as unknown as IRole, [realmApp.currentUser?.customData?.role])
 
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    firstname: Yup.string().required('First name is required'),
-    lastname: Yup.string().required('Last name is required'),
-    displayName: Yup.string().required('Username is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    address: Yup.string().required('Address is required'),
-    country: Yup.string().required('Country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role is required'),
-    zipCode: Yup.string().required('Zip code is required'),
-    photoURL: Yup.mixed<any>().nullable().required('Avatar is required'),
+    name: Yup.string().required('Name is required'),
+    client_icon: Yup.mixed<any>().nullable().required('Icon is required'),
+    client_plan: Yup.string().required('Plan is required'),
     // not required
-    status: Yup.string(),
-    isVerified: Yup.boolean(),
-    isPublic: Yup.boolean(),
-    about: Yup.string(),
+    active: Yup.boolean(),
+    users: Yup.lazy(() => Yup.array().of(Yup.string().required('User is required').email("Invalid email")).min(1, 'Select atleas one user'))
   });
 
   const defaultValues = useMemo(
     () => ({
-      firstname: currentUser?.firstname || '',
-      lastname: currentUser?.lastname || '',
-      displayName: currentUser?.displayName || '',
-      city: currentUser?.city || '',
-      role: currentUser?.role || '',
-      email: currentUser?.email || '',
-      state: currentUser?.state || '',
-      status: currentUser?.status || 'pending',
-      address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      zipCode: currentUser?.zipCode || '',
-      company: currentUser?.company === "none" || !(currentUser?.company) ? '' : currentUser?.company,
-      photoURL: currentUser?.photoURL || null,
-      phoneNumber: currentUser?.phoneNumber || '',
-      isVerified: currentUser?.isVerified || true,
-      isPublic: currentUser?.isPublic || true,
-      about: currentUser?.about || ""
+      name: currentClient?.name || '',
+      client_icon: currentClient?.client_icon || '',
+      client_plan: currentClient?.client_plan || '',
+      active: currentClient?.active || false,
+      users: currentClient?.users || [],
     }),
-    [currentUser]
+    [currentClient]
   );
 
   const methods = useForm({
@@ -114,29 +91,116 @@ export default function ClientNewEditForm({ currentUser }: Props) {
     control,
     setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
   const values = watch();
 
+  const handleSelectPlan = (clientPlan: string) => {
+    setValue("client_plan", clientPlan, { shouldValidate: true });
+  }
+
+  const renderPlans = useMemo(() => _userPlans.map((plan) => (
+    <Grid xs={12} md={4} key={plan.subscription}>
+      <Stack
+        component={Paper}
+        variant="outlined"
+        onClick={() => handleSelectPlan(plan.subscription)}
+        sx={{
+          p: 2.5,
+          position: 'relative',
+          cursor: 'pointer',
+          ...(plan.primary && {
+            opacity: 0.48,
+            cursor: 'default',
+          }),
+          ...((plan.subscription)?.toLowerCase() === (values.client_plan)?.toLowerCase() && {
+            boxShadow: (theme) => `0 0 0 2px ${theme.palette.text.primary}`,
+          }),
+        }}
+      >
+        {plan.primary && (
+          <Label
+            color="info"
+            startIcon={<Iconify icon="eva:star-fill" />}
+            sx={{ position: 'absolute', top: 8, right: 8 }}
+          >
+            Current
+          </Label>
+        )}
+
+        <Box sx={{ width: 48, height: 48 }}>
+          {plan.subscription === 'basic' && <PlanFreeIcon />}
+          {plan.subscription === 'starter' && <PlanStarterIcon />}
+          {plan.subscription === 'premium' && <PlanPremiumIcon />}
+        </Box>
+
+        <Box
+          sx={{
+            typography: 'subtitle2',
+            mt: 2,
+            mb: 0.5,
+            textTransform: 'capitalize',
+          }}
+        >
+          {plan.subscription}
+        </Box>
+
+        <Stack direction="row" alignItems="center" sx={{ typography: 'h4' }}>
+          {plan.subscription !== 'basic' && "Ksh "}{plan.price || 'Free'}
+
+          {!!plan.price && (
+            <Box component="span" sx={{ typography: 'body2', color: 'text.disabled', ml: 0.5 }}>
+              /mo
+            </Box>
+          )}
+        </Stack>
+      </Stack>
+    </Grid>
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  )), [values]);
+
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const cpPhotoURL = data.photoURL?.path ?? "none"
-      if (!currentUser?.isRegistered) {
-        // @ts-expect-error expected
-        await userActions.registerUser({ ...data, photoURL: cpPhotoURL })
-        await realmApp.currentUser?.refreshCustomData();
-        router.push(paths.dashboard.root);
-        enqueueSnackbar("Registration complete");
-        reset();
+      const cpPhotoURL = data.client_icon?.path ?? "none"
+      const dt = new Date();
+      if (!currentClient) {
+        console.log(realmApp.currentUser?.customData, "CUSTOM DATA")
+        if (realmApp.currentUser?.customData._id) {
+          const newClient: IDraftClient = {
+            ...data,
+            _id: createObjectId(),
+            creator: {
+              _id: realmApp.currentUser?.customData._id as Realm.BSON.ObjectId,
+              name: realmApp.currentUser?.customData.displayName as string,
+              email: realmApp.currentUser?.customData.email as string
+            },
+            users: data.users?.map(usr => ({
+              email: usr,
+              verified: false,
+              dateAdded: dt,
+            })) ?? [],
+            active: data.active ?? false,
+            client_icon: cpPhotoURL
+          }
+          const test = await saveClient(newClient);
+
+          console.log(data, 'DATA')
+          console.log(test, 'TEST')
+          // router.push(paths.dashboard.client.root);
+          enqueueSnackbar("Client Created");
+          reset();
+        }
+
         return await new Promise((resolve) => setTimeout(resolve, 500));
       }
-      enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
+      enqueueSnackbar(currentClient ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.user.root);
       reset();
       return await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error) {
-      enqueueSnackbar(currentUser ? 'Update failed!' : 'Update Failed!', { variant: "error" });
+      enqueueSnackbar(currentClient ? 'Update failed!' : 'Update Failed!', { variant: "error" });
       console.error(error);
       return await new Promise((resolve) => setTimeout(resolve, 500));
     }
@@ -151,33 +215,32 @@ export default function ClientNewEditForm({ currentUser }: Props) {
       });
 
       if (file) {
-        setValue('photoURL', newFile, { shouldValidate: true });
+        setValue('client_icon', newFile, { shouldValidate: true });
       }
     },
     [setValue]
   );
-  console.log(values, "VALUES")
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <Card sx={{ pt: 10, pb: 5, px: 3 }}>
-            {currentUser && (
+            {currentClient && (
               <Label
                 color={
-                  (values.status === 'active' && 'success') ||
-                  (values.status === 'banned' && 'error') ||
-                  'warning'
+                  (values.active && 'success') ||
+                  (!values.active && 'error') ||
+                  'error'
                 }
                 sx={{ position: 'absolute', top: 24, right: 24 }}
               >
-                {values.status}
+                {values.active ? "Active" : "In Active"}
               </Label>
             )}
 
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
-                name="photoURL"
+                name="client_icon"
                 maxSize={3145728}
                 onDrop={handleDrop}
                 helperText={
@@ -198,20 +261,19 @@ export default function ClientNewEditForm({ currentUser }: Props) {
               />
             </Box>
 
-            {currentUser && (
+            {currentClient && (
               <FormControlLabel
                 labelPlacement="start"
                 control={
                   <Controller
-                    name="status"
+                    name="active"
                     control={control}
-                    disabled={currentUser?.role !== "admin"}
                     render={({ field }) => (
                       <Switch
                         {...field}
-                        checked={field.value !== 'active' && field.value !== "pending"}
+                        checked={field.value}
                         onChange={(event) =>
-                          field.onChange(event.target.checked ? 'banned' : 'active')
+                          field.onChange(event.target.checked)
                         }
                       />
                     )}
@@ -232,26 +294,20 @@ export default function ClientNewEditForm({ currentUser }: Props) {
             )}
 
             <RHFSwitch
-              name="isVerified"
+              name="active"
               labelPlacement="start"
-              disabled={currentUser?.role !== "admin"}
               label={
-                <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    Email Verified
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Disabling this will automatically send the user a verification email
-                  </Typography>
-                </>
+                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  Active
+                </Typography>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
 
-            {currentUser && (
+            {currentClient && (
               <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                <Button variant="soft" color="error" disabled={currentUser?.role !== "admin"}>
-                  Delete User
+                <Button variant="soft" color="error" disabled={role !== "admin"}>
+                  Delete Client
                 </Button>
               </Stack>
             )}
@@ -269,43 +325,51 @@ export default function ClientNewEditForm({ currentUser }: Props) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="firstname" label="First Name" />
-              <RHFTextField name="lastname" label="Last Name" />
-              <RHFTextField name="displayName" label="Full Name" />
-              <RHFTextField name="email" disabled label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
-
+              <RHFTextField name="name" label="Name" />
               <RHFAutocomplete
-                name="country"
-                type="country"
-                label="Country"
-                placeholder="Choose a country"
-                fullWidth
-                options={countries.map((option) => option.label)}
-                getOptionLabel={(option) => option}
+                name="users"
+                label="Users"
+                placeholder="+ users"
+                multiple
+                freeSolo
+                disableCloseOnSelect
+                options={users}
+                getOptionLabel={(option) => typeof option === 'string' ? option : option.email}
+                isOptionEqualToValue={(option, value) => option.email === value.email}
+                onChange={(event, value) => {
+                  // Assuming `setValue` is available in the component's scope, 
+                  // e.g., from useForm() hook or passed as a prop
+                  const emails = value.map((val) => typeof val === 'string' ? val : val.email);
+                  setValue('users', emails, { shouldValidate: true });
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option._id}>
+                    {option.email}
+                  </li>
+                )}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option._id} // Ensure keys are unique if option is a string or has no `_id`
+                      label={typeof option === 'string' ? option : option.email}
+                      size="small"
+                      color="info"
+                      variant="soft"
+                    />
+                  ))
+                }
               />
-
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="address" label="Address" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
-              <RHFTextField name="company" label="Company" />
-              <RHFSelect
-                name="role"
-                label="Role"
-              // disabled={currentUser?.role !== "admin"}
-              >
-                {ROLES.map(({role, label}) => (
-                  <MenuItem key={role} value={role}>
-                    {label}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
             </Box>
-
+            <Grid container spacing={2} sx={{ my: 4, mx: 0.5, p: 1 }}
+              border={theme => `1px ${errors.client_plan ? theme.palette.error.main : theme.palette.text.disabled} dashed`}
+              borderRadius={1}>
+              {renderPlans}
+              {errors.client_plan && <Typography color="error" variant="caption" marginLeft={1}>Select a client plan</Typography>}
+            </Grid>
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? 'Create User' : 'Save Changes'}
+                {!currentClient ? 'Create Client' : 'Save Changes'}
               </LoadingButton>
             </Stack>
           </Card>

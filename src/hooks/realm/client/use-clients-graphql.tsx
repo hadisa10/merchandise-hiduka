@@ -23,7 +23,7 @@ import { useCustomApolloClient } from "../use-apollo-client";
 const { dataSourceName } = atlasConfig;
 
 
-export function useClients(): IClientHook {
+export function useClients(lazy: true): IClientHook {
   const realmApp = useRealmApp();
 
   const graphql = useCustomApolloClient();
@@ -31,7 +31,8 @@ export function useClients(): IClientHook {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const query = gql`
+    if (!lazy) {
+      const query = gql`
       query FetchAllClients {
         clients {
           _id
@@ -45,12 +46,13 @@ export function useClients(): IClientHook {
         }
       }
     `;
-    graphql.query<IGraphqlResponse>({ query }).then(({ data }) => {
-      console.log(data, 'DATA')
-      setClients(data.clients);
-      setLoading(false);
-    });
-  }, [graphql]);
+      graphql.query<IGraphqlResponse>({ query }).then(({ data }) => {
+        console.log(data, 'DATA')
+        setClients(data.clients);
+        setLoading(false);
+      });
+    }
+  }, [graphql, lazy]);
 
   const clientHidukaCollection = useCollection({
     cluster: dataSourceName,
@@ -114,9 +116,9 @@ export function useClients(): IClientHook {
   const saveClient = async (draftClient: IDraftClient) => {
     if (draftClient.name) {
       console.log(draftClient, 'DRAFT CLIENT')
-      draftClient.creator_id = realmApp.currentUser?.id as string;
+      // draftClient.creator_id = realmApp.currentUser?.id as string;
       const dt = new Date();
-      const cpClient: Omit<IClient, "_id">= {
+      const cpClient: IDraftClient & { createdAt: Date, updatedAt: Date } = {
         ...draftClient,
         createdAt: dt,
         updatedAt: dt
@@ -127,7 +129,9 @@ export function useClients(): IClientHook {
             mutation SaveClient($client: ClientInsertInput!) {
               insertOneClient(data: $client) {
                 _id
-                creator_id
+                creator {
+                name
+                }
                 name
                 active
               }
@@ -142,6 +146,7 @@ export function useClients(): IClientHook {
           );
         }
         console.error(err);
+        throw err;
       }
     }
   };

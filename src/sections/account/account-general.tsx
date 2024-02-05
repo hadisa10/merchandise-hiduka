@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
-import { useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useMemo, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
@@ -11,12 +11,11 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
 import { fData } from 'src/utils/format-number';
 
 import { countries } from 'src/assets/data';
 
+import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFSwitch,
@@ -24,8 +23,8 @@ import FormProvider, {
   RHFUploadAvatar,
   RHFAutocomplete,
 } from 'src/components/hook-form';
+
 import { IUser } from 'src/types/user_realm';
-import { useRealmApp } from 'src/components/realm';
 
 // ----------------------------------------------------------------------
 
@@ -46,11 +45,9 @@ type UserType = {
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useMockedUser();
-
   const realmApp = useRealmApp();
 
-  const userDetails = useMemo(() => !realmApp.currentUser ? null : realmApp.currentUser?.customData as unknown as IUser, [realmApp.currentUser?.customData])
+  const userDetails = useMemo(() => !realmApp.currentUser?.customData ? null : realmApp.currentUser?.customData as unknown as IUser, [realmApp.currentUser?.customData])
 
 
   const UpdateUserSchema = Yup.object().shape({

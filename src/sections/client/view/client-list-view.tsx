@@ -28,7 +28,7 @@ export default function ClientListView() {
     const settings = useSettingsContext();
 
     const { loading, clients, ...clientActions } = useClients();
-    const { draftClients, ...draftClientActions } = useDraftClients();
+    const { ...draftClientActions } = useDraftClients();
     const showLoader = useShowLoader(loading, 200);
 
     return (
