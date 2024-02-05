@@ -23,7 +23,6 @@ import { LoadingScreen } from "src/components/loading-screen";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 
 import { ClientTableRow } from "../client-table-row";
-import { ClientNewEditForm } from "../client-new-edit-form";
 
 export default function ClientListView() {
     const settings = useSettingsContext();
@@ -31,7 +30,7 @@ export default function ClientListView() {
     const { loading, clients, ...clientActions } = useClients();
     const { draftClients, ...draftClientActions } = useDraftClients();
     const showLoader = useShowLoader(loading, 200);
-    
+
     return (
         <Container
             maxWidth={settings.themeStretch ? false : 'lg'}
@@ -47,14 +46,14 @@ export default function ClientListView() {
                     { name: 'Dashboard', href: paths.dashboard.root },
                     {
                         name: 'Client',
-                        href: paths.dashboard.user.root,
+                        href: paths.dashboard.client.root,
                     },
                     { name: 'List' },
                 ]}
                 action={
                     <Button
                         component={RouterLink}
-                        href={paths.dashboard.user.new}
+                        href={paths.dashboard.client.new}
                         variant="contained"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                     >
@@ -98,14 +97,6 @@ export default function ClientListView() {
                                     key={getTodoId(client)}
                                     client={client}
                                     clientActions={clientActions}
-                                />
-                            ))}
-                            {draftClients.map((draft) => (
-                                <ClientNewEditForm
-                                    key={getTodoId(draft)}
-                                    draftClient={draft}
-                                    clientActions={clientActions}
-                                    draftClientActions={draftClientActions}
                                 />
                             ))}
                         </List>
