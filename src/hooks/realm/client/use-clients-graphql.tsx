@@ -116,7 +116,6 @@ export function useClients(lazy: true): IClientHook {
   const saveClient = async (draftClient: IDraftClient) => {
     if (draftClient.name) {
       console.log(draftClient, 'DRAFT CLIENT')
-      // draftClient.creator_id = realmApp.currentUser?.id as string;
       const dt = new Date();
       const cpClient: IDraftClient & { createdAt: Date, updatedAt: Date } = {
         ...draftClient,

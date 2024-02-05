@@ -184,11 +184,10 @@ export default function ClientNewEditForm({ currentClient }: Props) {
             active: data.active ?? false,
             client_icon: cpPhotoURL
           }
-          const test = await saveClient(newClient);
-
+          await saveClient(newClient);
+          
           console.log(data, 'DATA')
-          console.log(test, 'TEST')
-          // router.push(paths.dashboard.client.root);
+          router.push(paths.dashboard.client.root);
           enqueueSnackbar("Client Created");
           reset();
         }
