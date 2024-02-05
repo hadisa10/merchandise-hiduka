@@ -147,8 +147,10 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/project`,
       new: `${ROOTS.DASHBOARD}/project/new`,
       list: `${ROOTS.DASHBOARD}/project/list`,
-      cards: `${ROOTS.DASHBOARD}/project/cards`,
-      account: `${ROOTS.DASHBOARD}/project/account`,
+      product: `${ROOTS.DASHBOARD}/project/product`,
+      campaign: `${ROOTS.DASHBOARD}/project/campaign`,
+      report: `${ROOTS.DASHBOARD}/project/report`,
+      analysis: `${ROOTS.DASHBOARD}/project/analysis`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/project/${id}/edit`
     },
     campaign: {

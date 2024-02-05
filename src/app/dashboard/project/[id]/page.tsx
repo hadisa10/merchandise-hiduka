@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Project Edit',
+  title: 'Dashboard: Project Details',
 };
 
 type Props = {
@@ -10,8 +10,8 @@ type Props = {
   };
 };
 
-export default function ProjectEditPage({ params }: Props) {
+export default function ProjectDetailsPage({ params }: Props) {
   // const { id } = params;
 
-  return <>EDIT PROJECT</>;
+  return <>PROJECT DETAILS</>;
 }

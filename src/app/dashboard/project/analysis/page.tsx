@@ -3,9 +3,9 @@ import { AccountView } from 'src/sections/account/view';
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Client Account Settings',
+  title: 'Dashboard: Project Analysis',
 };
 
-export default function AccountPage() {
-  return <AccountView />;
+export default function ProjectAnalysisPage() {
+  return <>PROJECT ANALYSIS</>;
 }
