@@ -1,4 +1,3 @@
-import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useState, useEffect, useCallback } from 'react';
 
 import { paths } from 'src/routes/paths';
@@ -8,7 +7,6 @@ import { useRealmApp } from 'src/components/realm';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
-import { isEmpty } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -57,11 +55,7 @@ function Container({ children }: Props) {
 
   const check = useCallback(() => {
     try {
-      const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string ?? "") || {};
-
-      // const isExpired = Date.now() >= (exp || 0) * 1000;
-
-      if (isEmpty(exp)) {
+      if (!currentUser?.isLoggedIn) {
         redirectTo();
       }
       else if (!(currentUser?.customData?.isRegistered)) {

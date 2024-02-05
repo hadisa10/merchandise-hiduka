@@ -4,8 +4,8 @@ import Map, { Layer, Source } from 'react-map-gl';
 import { useMemo, useState, useEffect } from 'react';
 
 import Typography from '@mui/material/Typography';
-import { Avatar, AvatarGroup, Stack, Tooltip } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
+import { Stack, Avatar, Tooltip, AvatarGroup } from '@mui/material';
 
 import { MAPBOX_API } from 'src/config-global';
 import { useGetDirections } from 'src/api/routes';

@@ -15,6 +15,7 @@ import { IRole } from 'src/types/user_realm';
 import DashboardLeadView from '../dashboard-lead-view';
 import DashboardAdminView from '../dashboard-admin-view';
 import DashboardClientView from '../dashboard-client-view';
+import DashboardMerchantView from '../dashboard-merchant-view';
 
 
 // ----------------------------------------------------------------------
@@ -33,9 +34,9 @@ export default function DashboardView() {
             case 'lead':
                 return <DashboardLeadView />;
             case 'merchant':
-                return <DashboardLeadView />;
+                return <DashboardMerchantView />;
             case 'brand_ambassador':
-                return <DashboardLeadView />;
+                return <DashboardMerchantView />;
             default:
                 return <View403 />
         }
