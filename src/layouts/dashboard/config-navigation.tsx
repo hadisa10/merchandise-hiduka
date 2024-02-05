@@ -137,6 +137,7 @@ const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      { title: t('product'), path: paths.dashboard.general.ecommerce, icon: ICONS.product },
       { title: t('analytics'), path: paths.dashboard.general.ecommerce, icon: ICONS.analytics }
     ],
   },
@@ -171,6 +172,7 @@ const renderMerchant = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      { title: t('product'), path: paths.dashboard.general.ecommerce, icon: ICONS.analytics },
       { title: t('analytics'), path: paths.dashboard.general.ecommerce, icon: ICONS.analytics }
     ],
   },
