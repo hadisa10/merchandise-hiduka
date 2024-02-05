@@ -129,6 +129,7 @@ const renderLead = (t: TFunction<"translation", undefined>) => ([
 ])
 
 
+
 const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
   // OVERVIEW
   // ----------------------------------------------------------------------
@@ -136,7 +137,7 @@ const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics, }
+      { title: t('analytics'), path: paths.dashboard.general.ecommerce, icon: ICONS.analytics }
     ],
   },
 
@@ -146,9 +147,18 @@ const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
     subheader: t('management'),
     items: [
       // CLIENT
-      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.client },
-      { title: t('campaigns'), path: paths.dashboard.campaign.root, icon: ICONS.client },
-      { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
+      {
+        title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.project,
+        children: [
+          { title: t('list'), path: paths.dashboard.project.root, icon: ICONS.project },
+          { title: t('products'), path: paths.dashboard.project.product, icon: ICONS.product },
+          { title: t('campaigns'), path: paths.dashboard.project.campaign, icon: ICONS.campaign },
+          { title: t('reports'), path: paths.dashboard.project.report, icon: ICONS.report },
+        ]
+      },
+      { title: t('account'), path: paths.dashboard.invoice.root, icon: ICONS.user },
+      // { title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product },
+      // { title: t('routes'), path: paths.dashboard.userRoutes.root, icon: ICONS.route }
     ],
   },
 
