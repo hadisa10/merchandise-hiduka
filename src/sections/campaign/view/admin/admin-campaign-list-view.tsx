@@ -41,7 +41,7 @@ export default function CampaignAdminListView() {
                 action={
                     <Button
                         component={RouterLink}
-                        href={paths.dashboard.client.project.campaign.new}
+                        href={paths.dashboard.campaign.new}
                         variant="contained"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                     >

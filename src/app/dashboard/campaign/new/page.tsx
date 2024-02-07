@@ -1,11 +1,12 @@
-import { UserCreateView } from 'src/sections/user/view';
 
 // ----------------------------------------------------------------------
 
+import { CampaignCreateView } from "src/sections/campaign/view";
+
 export const metadata = {
-  title: 'Dashboard: Create a new client',
+    title: 'Dashboard: Project New Campaign',
 };
 
-export default function ClientCreatePage() {
-  return <UserCreateView />;
+export default function ProjectCampaignNewPage() {
+    return <CampaignCreateView />;
 }

@@ -43,9 +43,8 @@ type Props = {
 //   { role: "merchant", label: "Merchant" }
 // ];
 
-const count = 5;
 
-type IRoute = Array<any>
+export type IRoute = Array<any>
 
 export default function CampaignNewEditForm({ currentCampaign }: Props) {
   const router = useRouter();
@@ -54,8 +53,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   const realmApp = useRealmApp();
 
   const { enqueueSnackbar } = useSnackbar();
-
-  const [routes, setRoutes] = useState<IRoute[]>([])
+  // @ts-expect-error expected
+  const [routes, setRoutes] = useState<IRoute[]>([2, 3, 4, 5, 6, 7, 8, 89, 7, 4, 4232, 32, 32])
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -163,7 +162,7 @@ function RoutesList({ routes }: { routes: IRoute[] }) {
           </>
         ))}
       </List>
-      <Pagination shape="rounded" count={count} showFirstButton showLastButton />
+      <Pagination shape="rounded" count={Math.ceil(routes.length / 10)} showFirstButton showLastButton />
 
 
       <Stack justifyContent="center" alignItems="start" sx={{ mt: 3 }}>

@@ -178,6 +178,7 @@ export default function CampaignRoutesMap({ contacts }: Props) {
             {/** @ts-expect-error expected * */}
             <Layer {...lineStyle} />
           </Source>
+          
           <MapControl />
 
           {Array.isArray(contacts) && [userLocation, ...contacts].map((country, index) => (

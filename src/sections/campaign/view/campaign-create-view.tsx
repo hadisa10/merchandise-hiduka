@@ -25,7 +25,7 @@ export default function UserCreateView() {
           },
           {
             name: 'Campaign',
-            href: paths.dashboard.client.project.campaign.root,
+            href: paths.dashboard.campaign.root,
           },
           { name: 'New Campaign' },
         ]}
