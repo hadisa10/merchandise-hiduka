@@ -24,7 +24,6 @@ import FormProvider, {
   RHFTextField,
 } from 'src/components/hook-form';
 
-import { IRole } from 'src/types/user_realm';
 import { ICampaign } from 'src/types/realm/realm-types';
 
 import CampaignRoutesMap from './campaign-routes-map';
