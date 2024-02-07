@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useState, useEffect, useCallback } from 'react';
 
 import { paths } from 'src/routes/paths';
@@ -55,11 +57,10 @@ function Container({ children }: Props) {
 
   const check = useCallback(() => {
     try {
-      // const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string ?? "") || {};
+      const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string ?? "") || {};
 
       // const isExpired = Date.now() >= (exp || 0) * 1000;
-      console.log(currentUser?.customData, 'CURRENT USER')
-      if (!currentUser?.isLoggedIn) {
+      if (!isEmpty(exp) || !currentUser?.isLoggedIn) {
         redirectTo();
       }
       else if (!(currentUser?.customData?.isRegistered)) {

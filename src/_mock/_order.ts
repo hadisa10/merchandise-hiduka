@@ -13,7 +13,6 @@ export const USER_ROUTE_STATUS_OPTIONS = [
   { value: 'pending', label: 'Pending' },
   { value: 'active', label: 'Active' },
   { value: 'cancelled', label: 'Cancelled' },
-  { value: 'refunded', label: 'Refunded' },
 ];
 
 const ITEMS = [...Array(6)].map((_, index) => ({

@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
 import { isNumber } from "lodash";
+import { cloneElement } from "react";
 
 export async function convertBlobToFile(blob: string, fileName: string): Promise<File | null> {
     try {
@@ -60,5 +61,13 @@ export const calculateTax = (price: number, tax: number, quantity: number): { ta
     };
 }
 
+export const generate = (element: React.ReactElement, size: number = 3) => {
+    const arr = Array.from({ length: size }, (_, index) => index + 1)
+    return arr.map((value) =>
+      cloneElement(element, {
+        key: value,
+      }),
+    );
+  }
 export const hyphenateEvery4Letters = (input: string) => input?.replace(/(.{4})(?=.{1,})/g, '$1-');
 

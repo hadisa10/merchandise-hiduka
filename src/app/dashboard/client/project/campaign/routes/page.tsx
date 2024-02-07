@@ -1,10 +1,12 @@
 
 // ----------------------------------------------------------------------
 
+import { UserRoutesListView } from "src/sections/user-routes/view";
+
 export const metadata = {
   title: 'Dashboard: Campaign Routes',
 };
 
-export default function CampaignReportPage() {
-  return <>CAMPAIGN ROUTES LIST</>;
+export default function CampaignRoutesPage() {
+  return <UserRoutesListView />;
 }

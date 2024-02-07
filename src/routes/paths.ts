@@ -149,6 +149,7 @@ export const paths = {
         campaign: {
           root: `${ROOTS.DASHBOARD}/client/project/campaign`,
           list: `${ROOTS.DASHBOARD}/client/project/campaign/list`,
+          new: `${ROOTS.DASHBOARD}/client/project/campaign/new`,
           report: {
             root: `${ROOTS.DASHBOARD}/client/project/campaign/report`,
             new: `${ROOTS.DASHBOARD}/client/project/campaign/report/new`,
