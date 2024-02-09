@@ -93,6 +93,9 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
           { title: t('create'), path: paths.dashboard.project.new }
         ]
       },
+      {
+        title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
+      },
       // CAMPAIGNS
       {
         title: t('campaign'), path: paths.dashboard.campaign.root, icon: ICONS.campaign,

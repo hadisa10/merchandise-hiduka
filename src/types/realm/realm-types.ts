@@ -36,6 +36,25 @@ export type ICampaign = {
     updatedAt: Date;
 };
 
+
+export type campaign = {
+    _id: Realm.BSON.ObjectId;
+    access_code: string;
+    client_id: Realm.BSON.ObjectId;
+    createdAt: Date;
+    endDate: Date;
+    products: Array<Realm.BSON.ObjectId>;
+    project_id: Realm.BSON.ObjectId;
+    routes: Array<ICampaign_routes>;
+    startDate: Date;
+    title: string;
+    today_checkin: number;
+    total_checkin: number;
+    type: string;
+    updatedAt: Date;
+    users: Array<Realm.BSON.ObjectId>;
+  };
+  
 export const ICampaignSchema = {
     name: 'ICampaign',
     properties: {
@@ -80,12 +99,14 @@ export const ICampaign_routesSchema = {
 export type ICampaign_routes_routeAddress = {
     _id: Realm.BSON.ObjectId;
     fullAddress: string;
-    latitude: string;
-    longitude: string;
+    location?: ICampaign_routes_routeAddress_location;
     phoneNumber: string;
     road: string;
 };
-
+export type ICampaign_routes_routeAddress_location = {
+    coordinates: Array<number>;
+    type: string;
+  };
 export const ICampaign_routes_routeAddressSchema = {
     name: 'ICampaign_routes_routeAddress',
     embedded: true,

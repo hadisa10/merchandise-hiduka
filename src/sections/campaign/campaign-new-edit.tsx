@@ -20,6 +20,8 @@ import { CampaignReportList } from './list';
 import CampaignDetailsToolbar from './campaign-details-toolbar';
 import CampaignNewEditRouteForm from './edit/campaign-new-edit-route';
 import CampaignNewEditDetailsForm from './edit/campaign-new-edit-details-form';
+import { createObjectId } from 'src/utils/realm';
+import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
 
@@ -38,11 +40,19 @@ export const CAMPAING_DETAILS_TABS = [
 
 export type IRoute = Array<any>
 
+
+function generateAccessCode() {
+  return Math.floor(10000000 + Math.random() * 90000000).toString();
+}
+
 export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const router = useRouter();
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { saveCampaign } = useCampaigns();
+
 
   const [currentTab, setCurrentTab] = useState('details');
 
@@ -96,11 +106,75 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
+      const campaign: ICampaign = {
+        _id: createObjectId(),
+        access_code: generateAccessCode(),
+        client_id: createObjectId(),
+        products: [],
+        users: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        startDate: new Date(),
+        endDate: new Date(),
+        project_id: createObjectId(),
+        routes: [
+          {
+            _id: createObjectId(),
+            routeNumber: "Route001",
+            routeAddress: {
+              _id: createObjectId(),
+              fullAddress: "Naivas Supermarket-Mountain View, PPMR+7QF, Mountain View Mall, Off Waiyaki Way, Nairobi",
+              location: {
+                type: "Point",
+                coordinates: [
+                  36.740946588285425,
+                  -1.2594064822986786
+                ]
+              },
+              phoneNumber: "+254712345679",
+              road: "Waiyaki Way",
+            },
+            checkins: [],
+            totalQuantity: 0,
+            updatedAt: new Date(),
+            createdAt: new Date()
+          },
+          {
+            _id: createObjectId(),
+            routeNumber: "Route002",
+            routeAddress: {
+              _id: createObjectId(),
+              fullAddress: "Naivas, Waiyaki Way, Nairobi",
+              location: {
+                type: "Point",
+                coordinates: [
+                  36.80199644276411,
+                  -1.264780592401393
+                ]
+              },
+              phoneNumber: "+254712345678",
+              road: "Waiyaki Way"
+            },
+            checkins: [],
+            totalQuantity: 0,
+            updatedAt: new Date(),
+            createdAt: new Date()
+          }
+        ],
+        title: data.title,
+        today_checkin: 0,
+        total_checkin: 0,
+        type: "RSM"
+      };
       console.log(data, "DATA");
+
+      await saveCampaign(campaign)
+
       enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.campaign.root);
+      router.push(paths.dashboard.campaign.root);
       console.info('DATA', data);
     } catch (error) {
+      enqueueSnackbar(currentCampaign ? 'Update failed!' : 'Failed to create campaign!');
       console.error(error);
     }
   });

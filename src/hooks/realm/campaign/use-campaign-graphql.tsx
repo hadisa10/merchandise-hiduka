@@ -37,7 +37,18 @@ export function useCampaigns(): ICampaignHook {
           products
           project_id
           routes {
+           _id
            routeNumber
+           routeAddress {
+            _id
+            fullAddress
+            location {
+              type
+              coordinates
+            }
+            phoneNumber
+            road
+           }
           }
           title
           today_checkin
@@ -123,12 +134,10 @@ export function useCampaigns(): ICampaignHook {
       try {
         await graphql.mutate({
           mutation: gql`
-            mutation SaveCampaign($campaign: campaignInsertInput!) {
+            mutation SaveCampaign($campaign: CampaignInsertInput!) {
               insertOneCampaign(data: $campaign) {
                 _id
-                creator_id
-                name
-                active
+                title
               }
             }
           `,
@@ -141,6 +150,7 @@ export function useCampaigns(): ICampaignHook {
           );
         }
         console.error(err);
+        throw err;
       }
   };
 

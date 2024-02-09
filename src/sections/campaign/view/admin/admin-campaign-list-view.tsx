@@ -25,7 +25,7 @@ import { CampaignTableRow } from "../../campaign-table-row";
 export default function CampaignAdminListView() {
     const { loading, campaigns, ...campaignActions } = useCampaigns();
     const showLoader = useShowLoader(loading, 200);
-
+    console.log(JSON.stringify(campaigns[0]), 'CAMPAIGNS')
     return (
         <>
             <CustomBreadcrumbs
