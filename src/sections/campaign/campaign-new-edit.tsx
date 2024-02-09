@@ -96,8 +96,9 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
+      console.log(data, "DATA");
       enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.job.root);
+      // router.push(paths.dashboard.campaign.root);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
