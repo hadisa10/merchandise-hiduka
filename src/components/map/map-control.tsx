@@ -1,9 +1,7 @@
-import { ScaleControl, GeolocateControl, NavigationControl, FullscreenControl, useControl } from 'react-map-gl';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import { useControl, ScaleControl, GeolocateControl, NavigationControl, FullscreenControl } from 'react-map-gl';
 
 import { StyledMapControls } from './styles';
-import { IconButton } from '@mui/material';
-import Iconify from '../iconify';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 // ----------------------------------------------------------------------
 
@@ -14,11 +12,10 @@ type Props = {
   hideNavigationnControl?: boolean;
   onToggleInteractivity?: () => void; // New prop for custom control
 };
-
-function DrawControl(props: MapboxDraw.MapboxDrawOptions) {
+// @ts-expect-error expected
+function DrawControl({ position, ...props }: MapboxDraw.MapboxDrawOptions) {
   useControl(() => new MapboxDraw(props), {
-    // @ts-expect-error expected
-    position: props.position
+    position
   });
 
   return null;
