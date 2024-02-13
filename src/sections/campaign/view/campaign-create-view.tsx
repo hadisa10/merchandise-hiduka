@@ -23,13 +23,12 @@ export const CAMPAIGN_PUBLISH_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function UserCreateView() {
+export default function CampaignCreateView() {
   const settings = useSettingsContext();
 
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-
       <CampaignNewEdit />
     </Container>
   );

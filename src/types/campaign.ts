@@ -9,6 +9,7 @@ export interface IGraphqlResponse {
 }
 export interface ICampaignActions {
     saveCampaign: (draftCampaign: ICampaign) => Promise<void>;
+    updateCampaign: (campaign: ICampaign) => Promise<void>;
     // toggleCampaignStatus: (campaign: ICampaign) => Promise<void>;
     // deleteCampaign: (campaign: ICampaign) => Promise<void>;
 }

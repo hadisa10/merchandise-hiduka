@@ -4,16 +4,23 @@ import React from "react";
 
 import {
   Checkbox,
+  IconButton,
   ListItem,
   ListItemIcon,
+  ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
 
 import { ICampaignItem } from "src/types/campaign";
+import Iconify from "src/components/iconify";
+import { useRouter } from 'src/routes/hooks';
+import { paths } from "src/routes/paths";
 
 
 
 export function CampaignTableRow({ campaign, campaignActions }: ICampaignItem) {
+  const router = useRouter();
+
   return (
     <ListItem>
       <ListItemIcon>
@@ -28,6 +35,8 @@ export function CampaignTableRow({ campaign, campaignActions }: ICampaignItem) {
         />
       </ListItemIcon>
       <ListItemText>{campaign.title}</ListItemText>
+      <ListItemText>{campaign.access_code}</ListItemText>
+
 
       {/* <ListItemText>{client.active === true ? "true" : "false"}</ListItemText> */}
 
@@ -35,18 +44,19 @@ export function CampaignTableRow({ campaign, campaignActions }: ICampaignItem) {
 
       <ListItemText>{client.client_plan}</ListItemText> */}
 
-      {/* <ListItemSecondaryAction>
+      <ListItemSecondaryAction>
         <IconButton
           data-testid="todo-delete-button"
           edge="end"
           size="small"
           onClick={() => {
-            campaignActions.deleteClient(campaign);
+            console.log(campaign._id.toString(), 'CAMPAIGN')
+            router.push(paths.dashboard.campaign.edit(campaign._id.toString()));
           }}
         >
-          <Iconify icon="mingcute:close-line" />
+          <Iconify icon="solar:pen-bold" />
         </IconButton>
-      </ListItemSecondaryAction> */}
+      </ListItemSecondaryAction>
     </ListItem>
   );
 }

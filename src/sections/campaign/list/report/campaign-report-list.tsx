@@ -33,7 +33,6 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import EmptyContent from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { useSettingsContext } from 'src/components/settings';
 
 import { IProductItem, IProductTableFilters, IProductTableFilterValue } from 'src/types/product';
 

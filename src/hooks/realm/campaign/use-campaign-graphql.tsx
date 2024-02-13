@@ -153,6 +153,21 @@ export function useCampaigns(): ICampaignHook {
         throw err;
       }
   };
+  const updateCampaign = async (campaign: ICampaign) => {
+    await graphql.mutate({
+      mutation: gql`
+        mutation UpdateProduct($id: ObjectId!, $campaignUpdateInput: CampaignUpdateInput!) {
+          updateOneCampaign(query: { _id: $id }, set: $campaignUpdateInput) {
+            name
+          }
+        }
+      `,
+      variables: {
+        id: campaign._id,
+        campaignUpdateInput: { ...campaign }
+      },
+    });
+  };
 
   // const togglecampaignStatus = async (campaign: ICampaign) => {
   //   await graphql.mutate({
@@ -185,6 +200,7 @@ export function useCampaigns(): ICampaignHook {
     loading,
     campaigns,
     saveCampaign,
+    updateCampaign
     // togglecampaignStatus,
     // deletecampaign,
   };

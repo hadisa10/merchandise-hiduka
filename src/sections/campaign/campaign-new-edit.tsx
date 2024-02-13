@@ -2,8 +2,8 @@
 
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { Tab, Tabs } from '@mui/material';
@@ -11,19 +11,24 @@ import { Tab, Tabs } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
+
+import { createObjectId } from 'src/utils/realm';
+
 import Label from 'src/components/label';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import { ICampaign } from 'src/types/realm/realm-types';
+import { IRoute, ICampaign, ICampaign_routes } from 'src/types/realm/realm-types';
 
 import { CampaignReportList } from './list';
 import CampaignDetailsToolbar from './campaign-details-toolbar';
+import RouteCreateEditForm from './edit/route-create-edit-form';
 import CampaignNewEditRouteForm from './edit/campaign-new-edit-route';
 import CampaignNewEditDetailsForm from './edit/campaign-new-edit-details-form';
-import { createObjectId } from 'src/utils/realm';
-import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
+const ROUTES_FIELDS = ['routes']
 
 // ----------------------------------------------------------------------
 
@@ -38,11 +43,9 @@ export const CAMPAING_DETAILS_TABS = [
   { value: 'routes', label: 'Routes' },
 ];
 
-export type IRoute = Array<any>
-
 
 function generateAccessCode() {
-  return Math.floor(10000000 + Math.random() * 90000000).toString();
+  return Math.floor(10000 + Math.random() * 90000).toString();
 }
 
 export default function CampaignNewEditForm({ currentCampaign }: Props) {
@@ -51,42 +54,131 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { saveCampaign } = useCampaigns();
+  const { saveCampaign, updateCampaign } = useCampaigns();
+
+  const open = useBoolean();
+
+  const [newGeoLocation, setNewGeoLocation] = useState<{ lat: number, lng: number } | null>(null);
+
+
+  const handleNewRouteOpen = useCallback(({ lat, lng }: { lat: number, lng: number }) => {
+    console.log(lat, "LATITUDE")
+    console.log(lng, "LONGITUDE")
+    setNewGeoLocation({ lat, lng });
+    open.onTrue()
+  }, [])
+
 
 
   const [currentTab, setCurrentTab] = useState('details');
 
+  const routeAddressSchema = Yup.object().shape({
+    fullAddress: Yup.string().required('Full address is required'),
+    _id: Yup.string().required('Address ID is required'),
+    phoneNumber: Yup.string().required('Phone number is required'),
+    road: Yup.string().required('Road is required'),
+    location: Yup.object().shape({
+      type: Yup.string().required('Location type is required'),
+      coordinates: Yup.array()
+        .of(Yup.number().required('Coordinate is required'))
+        .min(2, 'At least two coordinates are required')
+        .max(2, 'Only two coordinates are required (longitude and latitude)'),
+    }),
+  });
+
   const NewCurrectSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
-    users: Yup.lazy(() => Yup.array().of(Yup.string().required('User is required')).min(1, 'Select atleas one user'))
+    description: Yup.string().required('Description is required'),
+    users: Yup.lazy(() => Yup.array().of(Yup.string().required('User is required')).min(1, 'Select atleas one user')),
+    routes: Yup.lazy(() =>
+      Yup.array().of(
+        Yup.object().shape({
+          _id: Yup.string().required('Id is required'),
+          createdAt: Yup.date().required('Creation date is required'),
+          updatedAt: Yup.date().required('Update date is required'),
+          routeNumber: Yup.number().required('Route number is required'),
+          totalQuantity: Yup.number().required('Total quantity is required'),
+          routeAddress: routeAddressSchema,
+        })
+      )
+    ),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: currentCampaign?.title || '',
-      users: currentCampaign?.users.map(user => user.toString()) || []
+      description: currentCampaign?.description || '',
+      users: currentCampaign?.users?.map(user => user.toString()) || [],
+      routes: currentCampaign?.routes?.map(r => {
+        const _id = r._id.toString()
+        if (r.routeAddress) {
+          const addrs = {
+            ...r.routeAddress,
+            _id: r.routeAddress?._id.toString()
+          }
+          return {
+            ...r,
+            _id,
+            routeAddress: addrs
+          }
+        }
+        return {
+          ...r
+        }
+
+      }) || [],
     }),
     [currentCampaign]
   );
 
   const methods = useForm({
+    // @ts-expect-error expected
     resolver: yupResolver(NewCurrectSchema),
     defaultValues,
   });
 
   const {
     reset,
-    // control,
+    control,
     // setValue,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;
 
+  const { fields: campaignRoutes, append, remove } = useFieldArray({
+    control,
+    name: "routes",
+  });
+
+  const handleAddNewRoute = useCallback((route: IRoute) => {
+    // Convert route details to match the form's expected structure
+    const rtAddrs = {
+      _id: route._id,
+      fullAddress: route.fullAddress,
+      location: route.location,
+      phoneNumber: "+254701332013",
+      road: "road"
+    }
+    const dt = new Date();
+    const routeForForm: ICampaign_routes = {
+      _id: createObjectId(), // Ensure _id is a string to match the form's expectation
+      routeAddress: rtAddrs,
+      routeNumber: 1,
+      totalQuantity: 0,
+      createdAt: dt,
+      updatedAt: dt,
+    };
+    append(routeForForm);
+  }, [append]);
+
   const tabErrors = useCallback((tab: string) => {
     const y = Object.entries(errors).filter(([key, val]) => {
+      console.log(key, "ERROR KEYS")
       switch (tab) {
         case 'details':
           return DETAILS_FIELDS.includes(key)
+        case 'routes':
+            return ROUTES_FIELDS.includes(key)
         default:
           return false
       }
@@ -101,78 +193,60 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       reset(defaultValues);
     }
   }, [currentCampaign, defaultValues, reset]);
-
+  
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      const campaign: ICampaign = {
-        _id: createObjectId(),
-        access_code: generateAccessCode(),
-        client_id: createObjectId(),
-        products: [],
-        users: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        startDate: new Date(),
-        endDate: new Date(),
-        project_id: createObjectId(),
-        routes: [
-          {
-            _id: createObjectId(),
-            routeNumber: "Route001",
-            routeAddress: {
-              _id: createObjectId(),
-              fullAddress: "Naivas Supermarket-Mountain View, PPMR+7QF, Mountain View Mall, Off Waiyaki Way, Nairobi",
-              location: {
-                type: "Point",
-                coordinates: [
-                  36.740946588285425,
-                  -1.2594064822986786
-                ]
-              },
-              phoneNumber: "+254712345679",
-              road: "Waiyaki Way",
-            },
-            checkins: [],
-            totalQuantity: 0,
-            updatedAt: new Date(),
-            createdAt: new Date()
-          },
-          {
-            _id: createObjectId(),
-            routeNumber: "Route002",
-            routeAddress: {
-              _id: createObjectId(),
-              fullAddress: "Naivas, Waiyaki Way, Nairobi",
-              location: {
-                type: "Point",
-                coordinates: [
-                  36.80199644276411,
-                  -1.264780592401393
-                ]
-              },
-              phoneNumber: "+254712345678",
-              road: "Waiyaki Way"
-            },
-            checkins: [],
-            totalQuantity: 0,
-            updatedAt: new Date(),
-            createdAt: new Date()
-          }
-        ],
-        title: data.title,
-        today_checkin: 0,
-        total_checkin: 0,
-        type: "RSM"
-      };
-      console.log(data, "DATA");
+      if (!currentCampaign) {
+        const campaign: ICampaign = {
+          _id: createObjectId(),
+          access_code: generateAccessCode(),
+          client_id: createObjectId(),
+          description: data.description ?? '',
+          products: [],
+          users: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          startDate: new Date(),
+          endDate: new Date(),
+          project_id: createObjectId(),
+          // @ts-expect-error expected
+          routes: data.routes,
+          title: data.title,
+          today_checkin: 0,
+          total_checkin: 0,
+          type: "RSM"
+        };
+        console.log(data, "DATA");
 
-      await saveCampaign(campaign)
+        await saveCampaign(campaign)
+        reset();
+        enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
+        router.push(paths.dashboard.campaign.root);
+        console.info('DATA', data);
+      } else {
+        const campaign: ICampaign = {
+          description: data.description ?? '',
+          products: [],
+          users: [],
+          updatedAt: new Date(),
+          startDate: new Date(),
+          endDate: new Date(),
+          project_id: createObjectId(),
+          // @ts-expect-error expected
+          routes: data.routes,
+          title: data.title,
+          today_checkin: 0,
+          total_checkin: 0,
+          type: "RSM"
+        };
+        console.log(data, "DATA");
 
-      enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.campaign.root);
-      console.info('DATA', data);
+        await updateCampaign(campaign)
+        reset();
+        enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
+        router.push(paths.dashboard.campaign.root);
+        console.info('DATA', data);
+      }
     } catch (error) {
       enqueueSnackbar(currentCampaign ? 'Update failed!' : 'Failed to create campaign!');
       console.error(error);
@@ -182,6 +256,10 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
+
+  const handleAddRoute = useCallback(() => {
+
+  }, [])
 
   const renderTabs = (
     <Tabs
@@ -209,17 +287,20 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   );
 
   return (
-
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <CampaignDetailsToolbar
-        currentCampaign={currentCampaign}
-        isSubmitting={isSubmitting}
-        backLink={paths.dashboard.campaign.root}
-      />
-      {renderTabs}
-      {currentTab === 'details' && <CampaignNewEditDetailsForm currentCampaign={currentCampaign} />}
-      {currentTab === 'reports' && <CampaignReportList />}
-      {currentTab === 'routes' && <CampaignNewEditRouteForm currentCampaign={currentCampaign} />}
-    </FormProvider>
+    <>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <CampaignDetailsToolbar
+          currentCampaign={currentCampaign}
+          isSubmitting={isSubmitting}
+          backLink={paths.dashboard.campaign.root}
+        />
+        {renderTabs}
+        {currentTab === 'details' && <CampaignNewEditDetailsForm currentCampaign={currentCampaign} />}
+        {currentTab === 'reports' && <CampaignReportList />}
+        {/* @ts-expect-error expected */}
+        {currentTab === 'routes' && <CampaignNewEditRouteForm currentCampaign={currentCampaign} handleNewRouteOpen={handleNewRouteOpen} campaignRoutes={campaignRoutes} />}
+      </FormProvider>
+      {newGeoLocation && <RouteCreateEditForm newGeoLocation={newGeoLocation} handleAddNewRoute={handleAddNewRoute} open={open.value} onClose={open.onFalse} />}
+    </>
   );
 }

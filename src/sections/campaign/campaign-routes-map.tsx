@@ -16,6 +16,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { MapPopup, MapMarker, MapControl } from 'src/components/map';
 
 import { IUserRouteProductItem } from 'src/types/user-routes';
+import GeocoderControl from 'src/components/map/geocoder-controller';
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -40,16 +41,16 @@ type CountryData = {
 
 type Props = {
   contacts: CountryData[];
+  handleNewRouteOpen: ({ lng, lat }: { lng: number, lat: number }) => void
 };
 
-const NairobiCoord: {longitude: number, latitude: number} = {
+const NairobiCoord: { longitude: number, latitude: number } = {
   latitude: -1.286389,
   longitude: 36.817223
 }
 
-export default function CampaignRoutesMap({ contacts }: Props) {
+export default function CampaignRoutesMap({ contacts, handleNewRouteOpen }: Props) {
   const theme = useTheme();
-
   const { currentUser } = useRealmApp();
 
   const lightMode = theme.palette.mode === 'light';
@@ -97,8 +98,8 @@ export default function CampaignRoutesMap({ contacts }: Props) {
   }, [currentUser]);
 
   const directionsCoord = useMemo(() => ([userLocation, ...contacts].map(x => ([x.latlng[1], x.latlng[0]]))), [contacts, userLocation])
-
   const { directions } = useGetDirections(directionsCoord);
+
 
   const initialState = useMemo(() => {
     if (!Array.isArray(contacts) && userLocation) {
@@ -159,7 +160,13 @@ export default function CampaignRoutesMap({ contacts }: Props) {
       "line-opacity": 0.75
     }
   }
-
+  // Adjusted onClick handler to check for Ctrl + Click
+  const handleMapClick = (event: mapboxgl.MapLayerMouseEvent) => {
+    // Extract latitude and longitude from the map click event
+    const { lngLat } = event;
+    //         // Call handleNewRouteOpen and pass the clickDetails object
+    handleNewRouteOpen(lngLat);
+  };
 
   return (
     <StyledRoot>
@@ -170,15 +177,17 @@ export default function CampaignRoutesMap({ contacts }: Props) {
         userLocation &&
         <Map
           initialViewState={initialState}
+          onClick={handleMapClick}
           // mapStyle={`mapbox://styles/mapbox/${lightMode ? 'light' : 'dark'}-v10`}
           mapStyle={`mapbox://styles/mapbox/navigation-${lightMode ? 'day' : 'night'}-v1`}
           mapboxAccessToken={MAPBOX_API}
         >
+          <GeocoderControl mapboxAccessToken={MAPBOX_API ?? ""} position="top-left" />
           <Source id='route-source' type='geojson' data={geojson}>
             {/** @ts-expect-error expected * */}
             <Layer {...lineStyle} />
           </Source>
-          
+
           <MapControl />
 
           {Array.isArray(contacts) && [userLocation, ...contacts].map((country, index) => (

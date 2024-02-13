@@ -1,8 +1,9 @@
 "use client"
 
 import * as Yup from 'yup';
+import { first } from 'lodash';
 import { useForm } from 'react-hook-form';
-import { useMemo, useState } from 'react';
+import { useMemo, Fragment } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Card from '@mui/material/Card';
@@ -10,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { List, Avatar, Divider, ListItem, IconButton, Pagination, ListItemText, ListItemAvatar} from '@mui/material';
+import { List, Avatar, Divider, ListItem, IconButton, Pagination, ListItemText, ListItemAvatar } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -24,7 +25,7 @@ import FormProvider, {
   RHFTextField,
 } from 'src/components/hook-form';
 
-import { ICampaign } from 'src/types/realm/realm-types';
+import { ICampaign, ICampaign_routes } from 'src/types/realm/realm-types';
 
 import CampaignRoutesMap from '../campaign-routes-map';
 
@@ -33,29 +34,19 @@ import CampaignRoutesMap from '../campaign-routes-map';
 
 type Props = {
   currentCampaign?: ICampaign;
+  handleNewRouteOpen: ({ lng, lat }: { lng: number, lat: number }) => void
+  campaignRoutes: ICampaign_routes[];
 };
 
-// const ROLES: { role: IRole, label: string }[] = [
-//   { role: "client", label: "Client" },
-//   { role: "lead", label: "Lead" },
-//   { role: "admin", label: "Admin" },
-//   { role: "user", label: "User" },
-//   { role: "brand_ambassador", label: "Brand Ambassador" },
-//   { role: "merchant", label: "Merchant" }
-// ];
 
-
-export type IRoute = Array<any>
-
-export default function CampaignNewEditRouteForm({ currentCampaign }: Props) {
+export default function CampaignNewEditRouteForm({ currentCampaign, handleNewRouteOpen, campaignRoutes }: Props) {
   const router = useRouter();
   const { ...userActions } = useUsers();
 
   const realmApp = useRealmApp();
 
   const { enqueueSnackbar } = useSnackbar();
-  // @ts-expect-error expected
-  const [routes, setRoutes] = useState<IRoute[]>([2, 3, 4, 5, 6, 7, 8, 89, 7, 4, 4232, 32, 32])
+  // const [routes, setRoutes] = useState<ICampaign_routes[]>(campaignRoutes)
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -106,7 +97,6 @@ export default function CampaignNewEditRouteForm({ currentCampaign }: Props) {
     }
   });
 
-
   const renderRouteForm = (
     <Grid xs={12} md={4}>
       <Card sx={{ p: 2, mb: 2 }}>
@@ -124,8 +114,8 @@ export default function CampaignNewEditRouteForm({ currentCampaign }: Props) {
         </Typography>
         <RHFTextField name="search" label="Search" size="small" />
         <List dense sx={{ maxHeight: 250, overflowY: 'auto', }}>
-          {Array.isArray(routes) && routes.map(route => (
-            <>
+          {Array.isArray(campaignRoutes) && campaignRoutes.map((campaignRoute) => (
+            <Fragment key={typeof campaignRoute._id === "string" ? campaignRoute._id: campaignRoute._id.toString()}>
               <ListItem
                 secondaryAction={<Stack direction="row" justifyContent="space-between">
                   <IconButton edge="end" aria-label="details" size="small">
@@ -138,18 +128,18 @@ export default function CampaignNewEditRouteForm({ currentCampaign }: Props) {
               >
                 <ListItemAvatar>
                   <Avatar variant='rounded'>
-                    R
+                    { first(campaignRoute.routeAddress?.fullAddress) }
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                  primary="Route item"
-                  secondary="details" />
+                  primary={campaignRoute.routeAddress?.fullAddress ?? ""}
+                  secondary={campaignRoute.routeAddress?.road} />
               </ListItem>
               <Divider variant="inset" component="li" />
-            </>
+            </Fragment>
           ))}
         </List>
-        <Pagination shape="rounded" count={Math.ceil(routes.length / 10)} showFirstButton showLastButton />
+        <Pagination shape="rounded" count={Math.ceil(campaignRoutes.length / 10)} showFirstButton showLastButton />
 
 
         <Stack justifyContent="center" alignItems="start" sx={{ mt: 3 }}>
@@ -160,21 +150,33 @@ export default function CampaignNewEditRouteForm({ currentCampaign }: Props) {
       </Card>
     </Grid>
   )
+  const contacts = useMemo(() => {
+    if(!Array.isArray(campaignRoutes)) return [];
+    return campaignRoutes.map(campaignRoute => ({
+      latlng: campaignRoute.routeAddress?.location?.coordinates,
+      address: campaignRoute.routeAddress?.fullAddress,
+      phoneNumber: "",
+      products: []
+    }))
+  },[campaignRoutes])
 
   const renderMap = (
     <Grid xs={12} md={8}>
       <Card sx={{ p: 0 }}>
-        <CampaignRoutesMap contacts={[]} />
+          {/** @ts-expect-error expected * */}
+          <CampaignRoutesMap contacts={contacts} handleNewRouteOpen={handleNewRouteOpen} />
       </Card>
     </Grid>
   )
 
+
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        {renderMap}
-        {renderRouteForm}
-      </Grid>
-    </FormProvider>
+        <Grid container spacing={3}>
+          {renderMap}
+          {renderRouteForm}
+        </Grid>
+      </FormProvider>
   );
 }

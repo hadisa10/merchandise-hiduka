@@ -18,6 +18,32 @@ export const ItemSchema = {
     primaryKey: '_id',
 };
 
+// ROUTES
+export type IRoute = {
+    _id: Realm.BSON.ObjectId;
+    businessSector: string;
+    campaigns?: Array<Realm.BSON.ObjectId>;
+    createdAt: Date;
+    fullAddress: string;
+    location?: IRouteLocation;
+    phoneNumber?: string;
+    products?: IRouteProducts;
+    road?: string;
+    updatedAt: Date;
+    users: Array<Realm.BSON.ObjectId>;
+  };
+
+export type IRouteLocation = {
+    coordinates: Array<number>;
+    type: string;
+  };
+
+export type IRouteProducts = {
+    name: string;
+    product_id?: Realm.BSON.ObjectId;
+    quantity: number;
+};
+
 export type ICampaign = {
     _id: Realm.BSON.ObjectId;
     access_code: string;
@@ -30,6 +56,7 @@ export type ICampaign = {
     routes: Array<ICampaign_routes>;
     startDate: Date;
     title: string;
+    description?: string;
     today_checkin: number;
     total_checkin: number;
     type: string;
@@ -37,23 +64,6 @@ export type ICampaign = {
 };
 
 
-export type campaign = {
-    _id: Realm.BSON.ObjectId;
-    access_code: string;
-    client_id: Realm.BSON.ObjectId;
-    createdAt: Date;
-    endDate: Date;
-    products: Array<Realm.BSON.ObjectId>;
-    project_id: Realm.BSON.ObjectId;
-    routes: Array<ICampaign_routes>;
-    startDate: Date;
-    title: string;
-    today_checkin: number;
-    total_checkin: number;
-    type: string;
-    updatedAt: Date;
-    users: Array<Realm.BSON.ObjectId>;
-  };
   
 export const ICampaignSchema = {
     name: 'ICampaign',
@@ -74,10 +84,10 @@ export const ICampaignSchema = {
 
 export type ICampaign_routes = {
     _id: Realm.BSON.ObjectId;
-    checkins: Array<Realm.BSON.ObjectId>;
+    // checkins: Array<Realm.BSON.ObjectId>;
     createdAt: Date;
     routeAddress?: ICampaign_routes_routeAddress;
-    routeNumber: string;
+    routeNumber: number;
     totalQuantity: number;
     updatedAt: Date;
 };
@@ -104,7 +114,7 @@ export type ICampaign_routes_routeAddress = {
     road: string;
 };
 export type ICampaign_routes_routeAddress_location = {
-    coordinates: Array<number>;
+    coordinates?: Array<number>;
     type: string;
   };
 export const ICampaign_routes_routeAddressSchema = {
