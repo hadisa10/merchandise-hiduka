@@ -166,7 +166,6 @@ export default function ClientNewEditForm({ currentClient }: Props) {
       const cpPhotoURL = data.client_icon?.path ?? "none"
       const dt = new Date();
       if (!currentClient) {
-        console.log(realmApp.currentUser?.customData, "CUSTOM DATA")
         if (realmApp.currentUser?.customData._id) {
           const newClient: IDraftClient = {
             ...data,

@@ -132,7 +132,6 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
   const onSubmit = handleSubmit(async (data) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      console.log(data, "DATA")
       const dt = new Date();
 
       const route: IRoute = {

@@ -4,11 +4,13 @@ import GlobalStyles from '@mui/material/GlobalStyles';
 import { styled, useTheme } from '@mui/material/styles';
 
 import { bgBlur } from 'src/theme/css';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 
 export function StyledMapControls() {
   const theme = useTheme();
+  const mdUp = useResponsive('up', 'md');
 
   const inputGlobalStyles = (
     <GlobalStyles
@@ -30,6 +32,9 @@ export function StyledMapControls() {
         },
         '.mapboxgl-ctrl-group button+button': {
           borderTop: `1px solid ${theme.palette.divider}`,
+        },
+        '.mapboxgl-ctrl-geocoder': {
+          width: mdUp ? "100%" : "60%"
         },
         '.mapboxgl-ctrl.mapboxgl-ctrl-scale': {
           border: 'none',

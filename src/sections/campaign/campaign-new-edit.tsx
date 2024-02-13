@@ -1,6 +1,7 @@
 "use client"
 
 import * as Yup from 'yup';
+import { isNumber } from 'lodash';
 import { useSnackbar } from 'notistack';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -66,7 +67,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     console.log(lng, "LONGITUDE")
     setNewGeoLocation({ lat, lng });
     open.onTrue()
-  }, [])
+  }, [open])
 
 
 
@@ -140,7 +141,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   const {
     reset,
     control,
-    // setValue,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;
@@ -156,8 +156,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       _id: route._id,
       fullAddress: route.fullAddress,
       location: route.location,
-      phoneNumber: "+254701332013",
-      road: "road"
+      phoneNumber: route.phoneNumber ?? '',
+      road: route.road ?? ''
     }
     const dt = new Date();
     const routeForForm: ICampaign_routes = {
@@ -171,6 +171,12 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     append(routeForForm);
   }, [append]);
 
+  const handleRemoveNewRoute = useCallback((routeIndex: number) => {
+    if (isNumber(routeIndex)) {
+      remove(routeIndex)
+    }
+  }, [remove])
+
   const tabErrors = useCallback((tab: string) => {
     const y = Object.entries(errors).filter(([key, val]) => {
       console.log(key, "ERROR KEYS")
@@ -178,7 +184,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         case 'details':
           return DETAILS_FIELDS.includes(key)
         case 'routes':
-            return ROUTES_FIELDS.includes(key)
+          return ROUTES_FIELDS.includes(key)
         default:
           return false
       }
@@ -193,7 +199,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       reset(defaultValues);
     }
   }, [currentCampaign, defaultValues, reset]);
-  
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (!currentCampaign) {
@@ -216,8 +222,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           total_checkin: 0,
           type: "RSM"
         };
-        console.log(data, "DATA");
-
         await saveCampaign(campaign)
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
@@ -239,8 +243,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           total_checkin: 0,
           type: "RSM"
         };
-        console.log(data, "DATA");
-
         await updateCampaign(campaign)
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
@@ -257,9 +259,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     setCurrentTab(newValue);
   }, []);
 
-  const handleAddRoute = useCallback(() => {
-
-  }, [])
 
   const renderTabs = (
     <Tabs
@@ -297,8 +296,17 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         {renderTabs}
         {currentTab === 'details' && <CampaignNewEditDetailsForm currentCampaign={currentCampaign} />}
         {currentTab === 'reports' && <CampaignReportList />}
-        {/* @ts-expect-error expected */}
-        {currentTab === 'routes' && <CampaignNewEditRouteForm currentCampaign={currentCampaign} handleNewRouteOpen={handleNewRouteOpen} campaignRoutes={campaignRoutes} />}
+        {
+          currentTab === 'routes' &&
+          <CampaignNewEditRouteForm
+            currentCampaign={currentCampaign}
+            handleNewRouteOpen={handleNewRouteOpen}
+            handleRemoveNewRoute={handleRemoveNewRoute}
+            // @ts-expect-error campaign routes typescript error
+            campaignRoutes={campaignRoutes}
+
+          />
+        }
       </FormProvider>
       {newGeoLocation && <RouteCreateEditForm newGeoLocation={newGeoLocation} handleAddNewRoute={handleAddNewRoute} open={open.value} onClose={open.onFalse} />}
     </>
