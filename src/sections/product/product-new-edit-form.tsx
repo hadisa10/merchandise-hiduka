@@ -390,7 +390,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
                 name="saleLabel.content"
                 label="Sale Label"
                 fullWidth
-                disabled={!values.saleLabel.enabled}
+                disabled={!values.saleLabel?.enabled}
               />
             </Stack>
 
@@ -400,7 +400,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
                 name="newLabel.content"
                 label="New Label"
                 fullWidth
-                disabled={!values.newLabel.enabled}
+                disabled={!values.newLabel?.enabled}
               />
             </Stack>
           </Stack>

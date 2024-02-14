@@ -104,7 +104,7 @@ export default function AccountNotifications() {
                           control={
                             <Switch
                               checked={field.value.includes(item.id)}
-                              onChange={() => field.onChange(getSelected(values.selected, item.id))}
+                              onChange={() => field.onChange(getSelected(values.selected ?? [], item.id))}
                             />
                           }
                           sx={{

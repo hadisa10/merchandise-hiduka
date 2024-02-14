@@ -85,7 +85,7 @@ export default function AmplifyNewPasswordView() {
   const handleResendCode = useCallback(async () => {
     try {
       startCountdown();
-      await forgotPassword?.(values.email);
+      await forgotPassword?.(values.email ?? "");
     } catch (error) {
       console.error(error);
     }

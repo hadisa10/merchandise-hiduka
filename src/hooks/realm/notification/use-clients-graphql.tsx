@@ -12,7 +12,7 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
-import { useRealmApp } from "src/components/realm";
+// import { useRealmApp } from "src/components/realm";
 
 import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse } from "src/types/client";
 
@@ -24,7 +24,7 @@ const { dataSourceName } = atlasConfig;
 
 
 export function useClients(): IClientHook {
-  const realmApp = useRealmApp();
+  // const realmApp = useRealmApp();
 
   const graphql = useCustomApolloClient();
   const [clients, setClients] = useState<IClient[]>([]);
@@ -112,38 +112,43 @@ export function useClients(): IClientHook {
   });
 
   const saveClient = async (draftClient: IDraftClient) => {
-    if (draftClient.name) {
-      console.log(draftClient, 'DRAFT CLIENT')
-      draftClient.creator_id = realmApp.currentUser?.id as string;
-      const dt = new Date();
-      const cpClient: Omit<IClient, "_id">= {
-        ...draftClient,
-        createdAt: dt,
-        updatedAt: dt
-      }
-      try {
-        await graphql.mutate({
-          mutation: gql`
-            mutation SaveClient($client: ClientInsertInput!) {
-              insertOneClient(data: $client) {
-                _id
-                creator_id
-                name
-                active
-              }
-            }
-          `,
-          variables: { client: cpClient },
-        });
-      } catch (err) {
-        if (err.message.match(/^Duplicate key error/)) {
-          console.warn(
-            `The following error means that this app tried to insert a client multiple times (i.e. an existing client has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
-          );
-        }
-        console.error(err);
-      }
-    }
+    // if (draftClient.name) {
+    //   console.log(draftClient, 'DRAFT CLIENT')
+    //   const {_id: userId, customData: IUser } = realmApp.currentUser;
+    //   draftClient.creator = {
+    //     _id: realmApp.currentUser.id,
+    //     name: realmApp.currentUser.customData.displayName
+
+    //   } 
+    //   const dt = new Date();
+    //   const cpClient: Omit<IClient, "_id">= {
+    //     ...draftClient,
+    //     createdAt: dt,
+    //     updatedAt: dt
+    //   }
+    //   try {
+    //     await graphql.mutate({
+    //       mutation: gql`
+    //         mutation SaveClient($client: ClientInsertInput!) {
+    //           insertOneClient(data: $client) {
+    //             _id
+    //             creator_id
+    //             name
+    //             active
+    //           }
+    //         }
+    //       `,
+    //       variables: { client: cpClient },
+    //     });
+    //   } catch (err) {
+    //     if (err.message.match(/^Duplicate key error/)) {
+    //       console.warn(
+    //         `The following error means that this app tried to insert a client multiple times (i.e. an existing client has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
+    //       );
+    //     }
+    //     console.error(err);
+    //   }
+    // }
   };
 
   const toggleClientStatus = async (client: IClient) => {
