@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -11,8 +11,11 @@ import { paths } from 'src/routes/paths';
 import { _userAbout, _userPlans, _userPayment, _userInvoices, _userAddressBook } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import { IRole } from 'src/types/user_realm';
 
 import AccountGeneral from '../account-general';
 import AccountBilling from '../account-billing';
@@ -57,6 +60,11 @@ export default function AccountView() {
 
   const [currentTab, setCurrentTab] = useState('general');
 
+  const realmApp = useRealmApp();
+
+  const role = useMemo(() => realmApp.currentUser?.customData.role as unknown as IRole, [realmApp.currentUser?.customData.role])
+
+
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
@@ -83,13 +91,13 @@ export default function AccountView() {
         }}
       >
         {TABS.map((tab) => (
-          <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
+          <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} disabled={!(role === "admin" || role === "client") && tab.value === "billing"} />
         ))}
       </Tabs>
 
       {currentTab === 'general' && <AccountGeneral />}
 
-      {currentTab === 'billing' && (
+      {currentTab === 'billing' && (role === "admin" || role === "client") && (
         <AccountBilling
           plans={_userPlans}
           cards={_userPayment}

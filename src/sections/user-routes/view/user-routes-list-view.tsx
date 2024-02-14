@@ -84,6 +84,8 @@ export default function UserRoutesListView() {
 
   const [tableData, setTableData] = useState<IUserRouteItem[]>(_user_routes);
 
+  console.log(JSON.stringify(_user_routes[0]), 'ROUTES')
+
   // const { loading: ordersLoading, orders } = useOrders();
 
   // useEffect(() => {

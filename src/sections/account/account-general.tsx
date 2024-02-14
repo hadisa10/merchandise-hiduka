@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
-import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
+import { useMemo, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
@@ -11,12 +11,11 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
 import { fData } from 'src/utils/format-number';
 
 import { countries } from 'src/assets/data';
 
+import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFSwitch,
@@ -24,6 +23,8 @@ import FormProvider, {
   RHFUploadAvatar,
   RHFAutocomplete,
 } from 'src/components/hook-form';
+
+import { IUser } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +45,10 @@ type UserType = {
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useMockedUser();
+  const realmApp = useRealmApp();
+
+  const userDetails = useMemo(() => !realmApp.currentUser?.customData ? null : realmApp.currentUser?.customData as unknown as IUser, [realmApp.currentUser?.customData])
+
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),
@@ -62,17 +66,17 @@ export default function AccountGeneral() {
   });
 
   const defaultValues: UserType = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-    photoURL: user?.photoURL || null,
-    phoneNumber: user?.phoneNumber || '',
-    country: user?.country || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
+    displayName: userDetails?.displayName || '',
+    email: userDetails?.email || '',
+    photoURL: userDetails?.photoURL || null,
+    phoneNumber: userDetails?.phoneNumber || '',
+    country: userDetails?.country || '',
+    address: userDetails?.address || '',
+    state: userDetails?.state || '',
+    city: userDetails?.city || '',
+    zipCode: userDetails?.zipCode || '',
+    about: userDetails?.about || '',
+    isPublic: userDetails?.isPublic || false,
   };
 
   const methods = useForm({

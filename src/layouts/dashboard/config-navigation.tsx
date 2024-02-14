@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 // import Label from 'src/components/label';
 import { TFunction } from 'i18next';
 
+import { SxProps } from '@mui/system';
+
 import { paths } from 'src/routes/paths';
 
 import { useTranslate } from 'src/locales';
@@ -22,6 +24,8 @@ const icon = (name: string) => (
   // https://icon-sets.iconify.design/solar/
   // https://www.streamlinehq.com/icons
 );
+const styleSmall: SxProps = { width: 0.7, height: 0.7 }
+const style: SxProps = { width: 1, height: 1 }
 
 const ICONS = {
   job: icon('ic_job'),
@@ -48,10 +52,16 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
-  client: <Iconify icon="mdi:book-account" />,
-  route: <Iconify icon="eos-icons:route" />
+  client: <Iconify icon="mdi:book-account" sx={style} />,
+  route: <Iconify icon="eos-icons:route" sx={styleSmall} />,
+  project: <Iconify icon="material-symbols:construction-rounded" sx={style} />,
+  campaign: <Iconify icon="ic:baseline-campaign" sx={style} />,
+  report: <Iconify icon="iconoir:reports-solid" sx={styleSmall} />,
+  create: <Iconify icon="ion:create-outline" sx={style} />,
+  productSmall: <SvgColor src="/assets/icons/navbar/ic_product.svg" sx={styleSmall} />,
+  campaignSmall: <Iconify icon="ic:baseline-campaign" sx={styleSmall} />,
+  projectSmall: <Iconify icon="material-symbols:construction-rounded" sx={styleSmall} />
 };
-
 const renderAdmin = (t: TFunction<"translation", undefined>) => ([
   // OVERVIEW
   // ----------------------------------------------------------------------
@@ -59,7 +69,6 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics }
     ],
   },
 
@@ -69,8 +78,48 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
     subheader: t('management'),
     items: [
       // CLIENT
-      { title: t('clients'), path: paths.dashboard.client.root, icon: ICONS.client },
-      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.client },
+      {
+        title: t('clients'), path: paths.dashboard.client.root, icon: ICONS.client,
+        children: [
+          { title: t('list'), path: paths.dashboard.client.root },
+          { title: t('create'), path: paths.dashboard.client.new },
+        ]
+      },
+      // PROJECTS
+      {
+        title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.project,
+        children: [
+          { title: t('list'), path: paths.dashboard.project.root },
+          { title: t('create'), path: paths.dashboard.project.new }
+        ]
+      },
+      {
+        title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
+      },
+      // CAMPAIGNS
+      {
+        title: t('campaign'), path: paths.dashboard.campaign.root, icon: ICONS.campaign,
+        children: [
+          { title: t('list'), path: paths.dashboard.campaign.root },
+          { title: t('create'), path: paths.dashboard.campaign.new }
+        ]
+      },
+      // REPORTS
+      {
+        title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
+        children: [
+          { title: t('list'), path: paths.dashboard.report.root },
+          { title: t('create'), path: paths.dashboard.report.new },
+        ]
+      },
+      // ROUTES
+      {
+        title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
+        children: [
+          { title: t('list'), path: paths.dashboard.routes.root },
+          { title: t('create'), path: paths.dashboard.routes.new },
+        ]
+      },
       // { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
     ],
   },
@@ -84,7 +133,6 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics }
     ],
   },
 
@@ -118,13 +166,14 @@ const renderLead = (t: TFunction<"translation", undefined>) => ([
     subheader: t('management'),
     items: [
       // CLIENT
-      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.client },
+      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.project },
       { title: t('campaigns'), path: paths.dashboard.campaign.root, icon: ICONS.client },
       { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
     ],
   },
 
 ])
+
 
 
 const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
@@ -134,7 +183,6 @@ const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics, }
     ],
   },
 
@@ -143,13 +191,30 @@ const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('management'),
     items: [
-      // CLIENT
-      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.client },
-      { title: t('campaigns'), path: paths.dashboard.campaign.root, icon: ICONS.client },
-      { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
+      // MERCHANT
+      {
+        title: t('campaign'), path: paths.dashboard.campaign.root, icon: ICONS.campaign,
+        children: [
+          { title: t('list'), path: paths.dashboard.campaign.root },
+          {
+            title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
+            children: [
+              { title: t('list'), path: paths.dashboard.routes.root },
+              { title: t('create'), path: paths.dashboard.routes.new },
+            ]
+          },
+          {
+            title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
+            children: [
+              { title: t('list'), path: paths.dashboard.report.root },
+              { title: t('create'), path: paths.dashboard.report.new },
+            ]
+          },
+        ]
+      },
+      { title: t('account'), path: paths.dashboard.user.account, icon: ICONS.user }
     ],
   },
-
 ])
 
 const renderMerchant = (t: TFunction<"translation", undefined>) => ([
@@ -159,7 +224,6 @@ const renderMerchant = (t: TFunction<"translation", undefined>) => ([
     subheader: t('overview'),
     items: [
       { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.general.ecommerce, icon: ICONS.analytics }
     ],
   },
 
@@ -168,14 +232,31 @@ const renderMerchant = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('management'),
     items: [
-      // CLIENT
-      { title: t('orders'), path: paths.dashboard.order.root, icon: ICONS.order },
-      { title: t('invoices'), path: paths.dashboard.invoice.root, icon: ICONS.invoice },
-      { title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product },
-      { title: t('routes'), path: paths.dashboard.userRoutes.root, icon: ICONS.route }
+      // MERCHANT
+      {
+        title: t('campaign'), path: paths.dashboard.campaign.root, icon: ICONS.campaign,
+        children: [
+          { title: t('list'), path: paths.dashboard.campaign.root },
+        ]
+      },
+      {
+        title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
+        children: [
+          { title: t('list'), path: paths.dashboard.routes.root },
+          { title: t('create'), path: paths.dashboard.routes.new },
+        ]
+      },
+
+      {
+        title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
+        children: [
+          { title: t('list'), path: paths.dashboard.report.root },
+          { title: t('create'), path: paths.dashboard.report.new },
+        ]
+      },
+      { title: t('account'), path: paths.dashboard.user.account, icon: ICONS.user }
     ],
   },
-
 ])
 // ----------------------------------------------------------------------
 
