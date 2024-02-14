@@ -38,3 +38,11 @@ export interface IDraftCampaignItem {
     campaignActions: ICampaignActions;
     draftCampaignActions: IDraftCampaignActions;
 }
+
+// ============================================
+
+export type ICampaignTableFilterValue = string | string[];
+
+export type ICampaignTableFilters = {
+  type: string[];
+};

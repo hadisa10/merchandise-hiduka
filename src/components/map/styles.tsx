@@ -3,8 +3,9 @@ import { Popup } from 'react-map-gl';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import { styled, useTheme } from '@mui/material/styles';
 
-import { bgBlur } from 'src/theme/css';
 import { useResponsive } from 'src/hooks/use-responsive';
+
+import { bgBlur } from 'src/theme/css';
 
 // ----------------------------------------------------------------------
 

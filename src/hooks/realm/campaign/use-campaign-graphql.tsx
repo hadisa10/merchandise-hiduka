@@ -51,6 +51,7 @@ export function useCampaigns(): ICampaignHook {
            }
           }
           title
+          createdAt
           today_checkin
           total_checkin
           type
@@ -125,15 +126,15 @@ export function useCampaigns(): ICampaignHook {
 
   const saveCampaign = async (draftCampaign: ICampaign) => {
     // draftCampaign.creator_id = realmApp.currentUser?.id as string;
-      const dt = new Date();
-      const cpCampaign: Omit<ICampaign, "_id">= {
-        ...draftCampaign,
-        createdAt: dt,
-        updatedAt: dt
-      }
-      try {
-        await graphql.mutate({
-          mutation: gql`
+    const dt = new Date();
+    const cpCampaign: Omit<ICampaign, "_id"> = {
+      ...draftCampaign,
+      createdAt: dt,
+      updatedAt: dt
+    }
+    try {
+      await graphql.mutate({
+        mutation: gql`
             mutation SaveCampaign($campaign: CampaignInsertInput!) {
               insertOneCampaign(data: $campaign) {
                 _id
@@ -141,17 +142,17 @@ export function useCampaigns(): ICampaignHook {
               }
             }
           `,
-          variables: { campaign: cpCampaign },
-        });
-      } catch (err) {
-        if (err.message.match(/^Duplicate key error/)) {
-          console.warn(
-            `The following error means that this app tried to insert a campaign multiple times (i.e. an existing campaign has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
-          );
-        }
-        console.error(err);
-        throw err;
+        variables: { campaign: cpCampaign },
+      });
+    } catch (err) {
+      if (err.message.match(/^Duplicate key error/)) {
+        console.warn(
+          `The following error means that this app tried to insert a campaign multiple times (i.e. an existing campaign has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
+        );
       }
+      console.error(err);
+      throw err;
+    }
   };
   const updateCampaign = async (campaign: ICampaign) => {
     await graphql.mutate({

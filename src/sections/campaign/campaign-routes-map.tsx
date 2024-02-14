@@ -5,7 +5,10 @@ import Map, { Layer, MapRef, Marker, Source } from 'react-map-gl';
 
 import Typography from '@mui/material/Typography';
 import { styled, useTheme } from '@mui/material/styles';
-import { Stack, Avatar, Tooltip, AvatarGroup, Button, IconButton } from '@mui/material';
+import { Stack, Avatar, Tooltip, IconButton, AvatarGroup } from '@mui/material';
+
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import { MAPBOX_API } from 'src/config-global';
 import { useGetDirections } from 'src/api/routes';
@@ -17,8 +20,6 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import GeocoderControl from 'src/components/map/geocoder-controller';
 
 import { IUserRouteProductItem } from 'src/types/user-routes';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -235,8 +236,7 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
       }
       {
         userLocation &&
-        <>
-          <Map
+        <Map
             ref={mapRef}
             {...settings}
             initialViewState={initialState}
@@ -353,7 +353,6 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
               </MapPopup>
             )}
           </Map>
-        </>
       }
 
     </StyledRoot>
