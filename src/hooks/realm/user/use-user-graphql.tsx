@@ -36,6 +36,7 @@ export function useUsers(): IUserHook {
         users {
           _id
           displayName
+          email
           createdAt
           updatedAt
         }

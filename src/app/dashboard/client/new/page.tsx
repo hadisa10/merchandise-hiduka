@@ -1,4 +1,4 @@
-import { UserCreateView } from 'src/sections/user/view';
+import { ClientCreateView } from 'src/sections/client/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function ClientCreatePage() {
-  return <UserCreateView />;
+  return <ClientCreateView />;
 }

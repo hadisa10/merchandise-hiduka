@@ -12,9 +12,10 @@ export function useDraftClients(): IDraftClientsHook {
     const draftTodo: IDraftClient = {
       _id: createObjectId(),
       name: "",
-      creator_id: "",
+      // @ts-expect-error expected
+      creator: "",
       client_icon: "no-icon",
-      client_plan: 1,
+      client_plan: "",
       active: false,
     };
     setDrafts((d) => [...d, draftTodo]);

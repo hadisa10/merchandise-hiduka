@@ -1,6 +1,6 @@
 import { _userList } from 'src/_mock/_user';
 
-import { UserEditView } from 'src/sections/user/view';
+import { CampaignEditView } from 'src/sections/campaign/view';
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ type Props = {
 export default function ClientEditPage({ params }: Props) {
   const { id } = params;
 
-  return <UserEditView id={id} />;
+  return <CampaignEditView id={id} />;
 }
 
 export async function generateStaticParams() {

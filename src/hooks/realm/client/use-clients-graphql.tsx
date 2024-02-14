@@ -12,8 +12,6 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
-import { useRealmApp } from "src/components/realm";
-
 import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse } from "src/types/client";
 
 import { useWatch } from "../use-watch";
@@ -23,19 +21,25 @@ import { useCustomApolloClient } from "../use-apollo-client";
 const { dataSourceName } = atlasConfig;
 
 
-export function useClients(): IClientHook {
-  const realmApp = useRealmApp();
-
+export function useClients(lazy: boolean = true): IClientHook {
   const graphql = useCustomApolloClient();
   const [clients, setClients] = useState<IClient[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const query = gql`
+    if (!lazy) {
+      const query = gql`
       query FetchAllClients {
         clients {
           _id
-          creator_id
+          creator{
+            name
+            email
+          }
+          users{
+            name
+            email
+          }
           name
           active
           client_plan
@@ -45,12 +49,13 @@ export function useClients(): IClientHook {
         }
       }
     `;
-    graphql.query<IGraphqlResponse>({ query }).then(({ data }) => {
-      console.log(data, 'DATA')
-      setClients(data.clients);
-      setLoading(false);
-    });
-  }, [graphql]);
+      graphql.query<IGraphqlResponse>({ query }).then(({ data }) => {
+        console.log(data, 'DATA')
+        setClients(data.clients);
+        setLoading(false);
+      });
+    }
+  }, [graphql, lazy]);
 
   const clientHidukaCollection = useCollection({
     cluster: dataSourceName,
@@ -114,9 +119,8 @@ export function useClients(): IClientHook {
   const saveClient = async (draftClient: IDraftClient) => {
     if (draftClient.name) {
       console.log(draftClient, 'DRAFT CLIENT')
-      draftClient.creator_id = realmApp.currentUser?.id as string;
       const dt = new Date();
-      const cpClient: Omit<IClient, "_id">= {
+      const cpClient: IDraftClient & { createdAt: Date, updatedAt: Date } = {
         ...draftClient,
         createdAt: dt,
         updatedAt: dt
@@ -127,7 +131,9 @@ export function useClients(): IClientHook {
             mutation SaveClient($client: ClientInsertInput!) {
               insertOneClient(data: $client) {
                 _id
-                creator_id
+                creator {
+                name
+                }
                 name
                 active
               }
@@ -142,6 +148,7 @@ export function useClients(): IClientHook {
           );
         }
         console.error(err);
+        throw err;
       }
     }
   };

@@ -82,6 +82,7 @@ export type IProductTableFilters = {
 };
 
 
+
 // API TYPES
 
 export interface IProductChange {

@@ -1,11 +1,7 @@
-import { _userList } from 'src/_mock/_user';
-
-import { UserEditView } from 'src/sections/user/view';
-
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Client Edit',
+  title: 'Dashboard: Project Edit',
 };
 
 type Props = {
@@ -14,14 +10,8 @@ type Props = {
   };
 };
 
-export default function ClientEditPage({ params }: Props) {
-  const { id } = params;
+export default function ProjectEditPage({ params }: Props) {
+  // const { id } = params;
 
-  return <UserEditView id={id} />;
-}
-
-export async function generateStaticParams() {
-  return _userList.map((user) => ({
-    id: user.id,
-  }));
+  return <>EDIT PROJECT</>;
 }

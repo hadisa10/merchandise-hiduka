@@ -1,7 +1,7 @@
 {
     "appId": "hiduka-app-kavgm",
-    "appUrl": "https://realm.mongodb.com/groups/657ca9d242b2045ff6146e4f/apps/6580358550d8c84be48808b6",
-    "baseUrl": "https://realm.mongodb.com",
+    "appUrl": "https://services.cloud.mongodb.com/groups/657ca9d242b2045ff6146e4f/apps/6580358550d8c84be48808b6",
+    "baseUrl": "https://services.cloud.mongodb.com",
     "clientApiBaseUrl": "https://ap-south-1.aws.realm.mongodb.com",
     "dataApiBaseUrl": "https://ap-south-1.aws.data.mongodb-api.com",
     "dataExplorerLink": "https://cloud.mongodb.com/links/657ca9d242b2045ff6146e4f/explorer/Cluster0/database/collection/find",

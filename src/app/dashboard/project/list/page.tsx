@@ -1,11 +1,10 @@
-import { ClientListView } from 'src/sections/client/view';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Client List',
+  title: 'Dashboard: Project List',
 };
 
 export default function ClientListPage() {
-  return <ClientListView />;
+  return <>PROJECT LIST</>;
 }
