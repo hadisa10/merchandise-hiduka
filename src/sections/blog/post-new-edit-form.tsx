@@ -299,9 +299,9 @@ export default function PostNewEditForm({ currentPost }: Props) {
       </Grid>
 
       <PostDetailsPreview
-        title={values.title}
-        content={values.content}
-        description={values.description}
+        title={values.title ?? ""}
+        content={values.content ?? ""}
+        description={values.description ?? ""}
         coverUrl={
           typeof values.coverUrl === 'string'
             ? values.coverUrl

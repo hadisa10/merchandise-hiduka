@@ -71,7 +71,7 @@ export default function AmplifyVerifyView() {
   const handleResendCode = useCallback(async () => {
     try {
       startCountdown();
-      await resendCodeRegister?.(values.email);
+      await resendCodeRegister?.(values.email ?? "");
     } catch (error) {
       console.error(error);
     }
