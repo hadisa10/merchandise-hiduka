@@ -69,7 +69,7 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
           latitude: lat ?? 0,
           location: {
             type: currentRoute?.location?.type || 'Point', // Default to 'Point' if not specified
-            coordinates: [lat, lng] || [0, 0], // Default coordinates if not specified
+            coordinates: [lng, lat] || [0, 0], // Default coordinates if not specified
           },
           phoneNumber: currentRoute?.phoneNumber || '',
           road: currentRoute?.road || '',

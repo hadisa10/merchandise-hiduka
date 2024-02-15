@@ -15,6 +15,7 @@ import { useRealmApp } from 'src/components/realm';
 import { MapPopup, MapMarker, MapControl } from 'src/components/map';
 
 import { IUserRouteProductItem } from 'src/types/user-routes';
+import { CountryData } from 'src/types/campaign';
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -30,13 +31,6 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-type CountryData = {
-  latlng: number[];
-  address: string;
-  phoneNumber: string;
-  products: IUserRouteProductItem[]
-};
-
 type Props = {
   contacts: CountryData[];
 };
@@ -50,7 +44,7 @@ export default function UserRoutesMap({ contacts }: Props) {
 
   const [popupInfo, setPopupInfo] = useState<CountryData | null>(null);
   const [userLocation, setUserLocation] = useState<CountryData>({
-    latlng: [-1.447, 37.805],
+    lnglat: [37.805, -1.447],
     address: currentUser?.customData?.displayName as string ?? 'ME',
     phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
     products: [],
@@ -61,10 +55,8 @@ export default function UserRoutesMap({ contacts }: Props) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { longitude, latitude } = position.coords;
-          console.log(longitude, 'LONGITUDE');
-          console.log(latitude, 'LATITUDE');
           setUserLocation({
-            latlng: [latitude, longitude],
+            lnglat: [longitude, latitude],
             address: currentUser?.customData?.displayName as string ?? 'ME',
             phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
             products: [],
@@ -73,7 +65,7 @@ export default function UserRoutesMap({ contacts }: Props) {
         (error) => {
           console.error('Error getting location:', error);
           setUserLocation({
-            latlng: [-1.447, 37.805],
+            lnglat: [37.805, -1.447],
             address: currentUser?.customData?.displayName as string ?? 'ME',
             phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
             products: [],
@@ -82,7 +74,7 @@ export default function UserRoutesMap({ contacts }: Props) {
       );
     } else {
       setUserLocation({
-        latlng: [-1.447, 37.805],
+        lnglat: [37.805, -1.447],
         address: currentUser?.customData?.displayName as string ?? 'ME',
         phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
         products: [],
@@ -90,7 +82,7 @@ export default function UserRoutesMap({ contacts }: Props) {
     }
   }, [currentUser]);
 
-  const directionsCoord = useMemo(() => ([userLocation, ...contacts].map(x => ([x.latlng[1], x.latlng[0]]))), [contacts, userLocation])
+  const directionsCoord = useMemo(() => ([userLocation, ...contacts].map(x => ([x.lnglat[0], x.lnglat[1]]))), [contacts, userLocation])
 
   const { directions } = useGetDirections(directionsCoord);
 
@@ -104,7 +96,7 @@ export default function UserRoutesMap({ contacts }: Props) {
     };
     const startPoint = first(contacts)
     if (startPoint) {
-      const [latitude, longitude] = startPoint.latlng;
+      const [latitude, longitude] = startPoint.lnglat;
       return {
         latitude,
         longitude,
@@ -171,8 +163,8 @@ export default function UserRoutesMap({ contacts }: Props) {
         {Array.isArray(contacts) && [userLocation, ...contacts].map((country, index) => (
           <MapMarker
             key={`marker-${index}`}
-            latitude={country.latlng[0]}
-            longitude={country.latlng[1]}
+            latitude={country.lnglat[1]}
+            longitude={country.lnglat[0]}
             onClick={(event) => {
               event.originalEvent.stopPropagation();
               setPopupInfo(country);
@@ -182,8 +174,8 @@ export default function UserRoutesMap({ contacts }: Props) {
 
         {popupInfo && (
           <MapPopup
-            longitude={popupInfo.latlng[1]}
-            latitude={popupInfo.latlng[0]}
+            longitude={popupInfo.lnglat[0]}
+            latitude={popupInfo.lnglat[1]}
             onClose={() => setPopupInfo(null)}
             sx={{
               '& .mapboxgl-popup-content': { bgcolor: 'common.white', color: 'common.black' },

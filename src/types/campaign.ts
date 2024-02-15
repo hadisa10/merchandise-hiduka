@@ -1,4 +1,5 @@
 import { ICampaign } from "./realm/realm-types";
+import { IUserRouteProductItem } from "./user-routes";
 
 export interface ICampaignChange {
     fullDocument: ICampaign;
@@ -45,4 +46,11 @@ export type ICampaignTableFilterValue = string | string[];
 
 export type ICampaignTableFilters = {
   type: string[];
+};
+
+export type CountryData = {
+    lnglat: number[];
+    address: string;
+    phoneNumber: string;
+    products: IUserRouteProductItem[]
 };

@@ -19,7 +19,7 @@ import { MapPopup, MapControl } from 'src/components/map';
 import { LoadingScreen } from 'src/components/loading-screen';
 import GeocoderControl from 'src/components/map/geocoder-controller';
 
-import { IUserRouteProductItem } from 'src/types/user-routes';
+import { CountryData } from 'src/types/campaign';
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -35,12 +35,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-type CountryData = {
-  latlng: number[];
-  address: string;
-  phoneNumber: string;
-  products: IUserRouteProductItem[]
-};
+
 
 type Props = {
   contacts: CountryData[];
@@ -73,7 +68,7 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
 
   const [userLocation, setUserLocation] = useState<CountryData>({
-    latlng: [NairobiCoord.latitude, NairobiCoord.longitude],
+    lnglat: [NairobiCoord.longitude, NairobiCoord.latitude],
     address: currentUser?.customData?.displayName as string ?? 'ME',
     phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
     products: [],
@@ -84,10 +79,9 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { longitude, latitude } = position.coords;
-          console.log(longitude, 'LONGITUDE');
-          console.log(latitude, 'LATITUDE');
+          console.log(longitude, 'LONGITUDE')
           setUserLocation({
-            latlng: [latitude, longitude],
+            lnglat: [longitude, latitude],
             address: currentUser?.customData?.displayName as string ?? 'ME',
             phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
             products: [],
@@ -96,7 +90,7 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
         (error) => {
           console.error('Error getting location:', error);
           setUserLocation({
-            latlng: [NairobiCoord.latitude, NairobiCoord.longitude],
+            lnglat: [NairobiCoord.longitude, NairobiCoord.latitude],
             address: currentUser?.customData?.displayName as string ?? 'ME',
             phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
             products: [],
@@ -105,7 +99,7 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
       );
     } else {
       setUserLocation({
-        latlng: [-1.447, 37.805],
+        lnglat: [37.805, -1.447],
         address: currentUser?.customData?.displayName as string ?? 'ME',
         phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
         products: [],
@@ -113,7 +107,7 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
     }
   }, [currentUser]);
 
-  const directionsCoord = useMemo(() => ([userLocation, ...contacts].map(x => ([x.latlng[1], x.latlng[0]]))), [contacts, userLocation])
+  const directionsCoord = useMemo(() => ([userLocation, ...contacts].map(x => ([x.lnglat[0], x.lnglat[1]]))), [contacts, userLocation])
 
   const { directions } = useGetDirections(directionsCoord, fetchDirections);
 
@@ -132,29 +126,31 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
   }, [isLocked.value]);
 
   const initialState = useMemo(() => {
-    if (!Array.isArray(contacts) && userLocation) {
-      const [latitude, longitude] = userLocation.latlng;
+    if (!Array.isArray(contacts) || !contacts.length) {
       return {
-        latitude,
-        longitude,
+        latitude: NairobiCoord.latitude,
+        longitude: NairobiCoord.longitude,
         zoom: 12
-      }
+      };
     }
-    const startPoint = first(contacts)
+
+    const startPoint = first(contacts);
+
     if (startPoint) {
-      const [latitude, longitude] = startPoint.latlng;
+      const [longitude, latitude] = startPoint.lnglat;
       return {
         latitude,
         longitude,
         zoom: 12
-      }
+      };
     }
+
     return {
       latitude: NairobiCoord.latitude,
       longitude: NairobiCoord.longitude,
       zoom: 12
-    }
-  }, [contacts, userLocation])
+    };
+  }, [contacts]);
 
   const coordinates = useMemo(() => {
     if (Array.isArray(directions)) {
@@ -228,7 +224,8 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
       window.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
-
+  console.log(initialState, 'INITIAL STATE')
+  console.log(contacts, "CONTACTS")
   return (
     <StyledRoot>
       {
@@ -237,122 +234,122 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
       {
         userLocation &&
         <Map
-            ref={mapRef}
-            {...settings}
-            initialViewState={initialState}
-            onClick={handleMapClick}
-            // mapStyle={`mapbox://styles/mapbox/${lightMode ? 'light' : 'dark'}-v10`}
-            mapStyle={`mapbox://styles/mapbox/navigation-${lightMode ? 'day' : 'night'}-v1`}
-            mapboxAccessToken={MAPBOX_API}
-          >
-            {/* Lock button */}
-            <IconButton
-              onClick={isLocked.onToggle}
-              sx={{
-                position: 'absolute',
-                top: mdUp ? 10 : 15,
-                right: mdUp ? 10 : 5,
-                zIndex: 1,
+          ref={mapRef}
+          {...settings}
+          initialViewState={initialState}
+          onClick={handleMapClick}
+          // mapStyle={`mapbox://styles/mapbox/${lightMode ? 'light' : 'dark'}-v10`}
+          mapStyle={`mapbox://styles/mapbox/navigation-${lightMode ? 'day' : 'night'}-v1`}
+          mapboxAccessToken={MAPBOX_API}
+        >
+          {/* Lock button */}
+          <IconButton
+            onClick={isLocked.onToggle}
+            sx={{
+              position: 'absolute',
+              top: mdUp ? 10 : 15,
+              right: mdUp ? 10 : 5,
+              zIndex: 1,
+              bgcolor: 'common.white',
+              color: 'common.black',
+              p: 0.5,
+              borderRadius: theme.spacing(1),
+              '&:hover': {
                 bgcolor: 'common.white',
-                color: 'common.black',
-                p: 0.5,
-                borderRadius: theme.spacing(1),
-                '&:hover': {
-                  bgcolor: 'common.white',
-                  color: 'common.black'
-                }
-              }}>
-              {
-                isLocked.value ?
-                  <Iconify icon="basil:lock-solid" width={24} />
-                  :
-                  <Iconify icon="basil:unlock-solid" width={24} />
+                color: 'common.black'
               }
-            </IconButton>
-            <GeocoderControl mapboxAccessToken={MAPBOX_API ?? ""} position="top-left" />
-            <Source id='route-source' type='geojson' data={geojson}>
-              {/** @ts-expect-error expected * */}
-              <Layer {...lineStyle} />
-            </Source>
+            }}>
+            {
+              isLocked.value ?
+                <Iconify icon="basil:lock-solid" width={24} />
+                :
+                <Iconify icon="basil:unlock-solid" width={24} />
+            }
+          </IconButton>
+          <GeocoderControl mapboxAccessToken={MAPBOX_API ?? ""} position="top-left" />
+          <Source id='route-source' type='geojson' data={geojson}>
+            {/** @ts-expect-error expected * */}
+            <Layer {...lineStyle} />
+          </Source>
 
-            <MapControl />
+          <MapControl />
 
-            {Array.isArray(contacts) && [userLocation, ...contacts].map((country, index) => (
-              <Marker
-                key={`marker-${index}`}
-                latitude={country.latlng[0]}
-                longitude={country.latlng[1]}
-                onClick={(event) => {
-                  event.originalEvent.stopPropagation();
-                  setPopupInfo(country);
-                }}
-              />
-            ))}
-            {markerPosition && <Marker longitude={markerPosition[0]} latitude={markerPosition[1]} />}
+          {Array.isArray(contacts) && [userLocation, ...contacts].map((country, index) => (
+            <Marker
+              key={`marker-${index}`}
+              latitude={country.lnglat[1]}
+              longitude={country.lnglat[0]}
+              onClick={(event) => {
+                event.originalEvent.stopPropagation();
+                setPopupInfo(country);
+              }}
+            />
+          ))}
+          {markerPosition && <Marker longitude={markerPosition[0]} latitude={markerPosition[1]} />}
 
-            {popupInfo && (
-              <MapPopup
-                longitude={popupInfo.latlng[1]}
-                latitude={popupInfo.latlng[0]}
-                onClose={() => setPopupInfo(null)}
-                sx={{
-                  '& .mapboxgl-popup-content': { bgcolor: 'common.white', color: 'common.black' },
-                  '&.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip': {
-                    borderTopColor: '#FFF',
-                  },
-                  '&.mapboxgl-popup-anchor-top .mapboxgl-popup-tip': {
-                    borderBottomColor: '#FFF',
-                  },
-                }}
+          {popupInfo && (
+            <MapPopup
+              longitude={popupInfo.lnglat[0]}
+              latitude={popupInfo.lnglat[1]}
+              onClose={() => setPopupInfo(null)}
+              sx={{
+                '& .mapboxgl-popup-content': { bgcolor: 'common.white', color: 'common.black' },
+                '&.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip': {
+                  borderTopColor: '#FFF',
+                },
+                '&.mapboxgl-popup-anchor-top .mapboxgl-popup-tip': {
+                  borderBottomColor: '#FFF',
+                },
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                Address
+              </Typography>
+
+
+              <Typography component="div" variant="caption">
+                {popupInfo.address}
+              </Typography>
+
+              <Typography
+                component="div"
+                variant="caption"
+                sx={{ mt: 1, display: 'flex', alignItems: 'center' }}
               >
-                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                  Address
-                </Typography>
+                <Iconify icon="solar:phone-bold" width={14} sx={{ mr: 0.5 }} />
+                {popupInfo.phoneNumber}
+              </Typography>
+              <Typography
+                component="div"
+                variant="caption"
+                color="success.main"
+                sx={{ mt: 1, display: 'flex', alignItems: 'center' }}
+              >
+                <Iconify icon="tdesign:money" width={14} sx={{ mr: 0.5 }} />
+                <Typography variant='caption'>Ksh {popupInfo.products.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0)}</Typography>
+              </Typography>
 
+              {
+                Array.isArray(popupInfo.products) &&
+                <AvatarGroup total={popupInfo.products.length}>
+                  {popupInfo.products.map((prd) =>
+                  (
+                    <Tooltip title={
+                      <Stack>
+                        <Typography color="inherit" variant='body1'>{prd.name}</Typography>
+                        <Typography color="inherit" variant='caption'>Quantity x{prd.quantity}</Typography>
+                        <Typography color="inherit" variant='caption'>Total x{prd.quantity * prd.price}</Typography>
+                      </Stack>
+                    } arrow>
+                      <Avatar key={prd.id} alt={prd.name} src={prd.coverUrl} />
+                    </Tooltip>
+                  ))}
+                </AvatarGroup>
+              }
 
-                <Typography component="div" variant="caption">
-                  {popupInfo.address}
-                </Typography>
-
-                <Typography
-                  component="div"
-                  variant="caption"
-                  sx={{ mt: 1, display: 'flex', alignItems: 'center' }}
-                >
-                  <Iconify icon="solar:phone-bold" width={14} sx={{ mr: 0.5 }} />
-                  {popupInfo.phoneNumber}
-                </Typography>
-                <Typography
-                  component="div"
-                  variant="caption"
-                  color="success.main"
-                  sx={{ mt: 1, display: 'flex', alignItems: 'center' }}
-                >
-                  <Iconify icon="tdesign:money" width={14} sx={{ mr: 0.5 }} />
-                  <Typography variant='caption'>Ksh {popupInfo.products.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0)}</Typography>
-                </Typography>
-
-                {
-                  Array.isArray(popupInfo.products) &&
-                  <AvatarGroup total={popupInfo.products.length}>
-                    {popupInfo.products.map((prd) =>
-                    (
-                      <Tooltip title={
-                        <Stack>
-                          <Typography color="inherit" variant='body1'>{prd.name}</Typography>
-                          <Typography color="inherit" variant='caption'>Quantity x{prd.quantity}</Typography>
-                          <Typography color="inherit" variant='caption'>Total x{prd.quantity * prd.price}</Typography>
-                        </Stack>
-                      } arrow>
-                        <Avatar key={prd.id} alt={prd.name} src={prd.coverUrl} />
-                      </Tooltip>
-                    ))}
-                  </AvatarGroup>
-                }
-
-              </MapPopup>
-            )}
-          </Map>
+            </MapPopup>
+          )}
+        </Map>
       }
 
     </StyledRoot>
