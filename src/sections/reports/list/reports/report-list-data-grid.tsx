@@ -72,7 +72,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 export default function ReportListDataGrid() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { loading, reports } = useReports();
+  const { loading, reports } = useReports(false);
 
   const showLoader = useShowLoader(loading, 200);
 
@@ -95,6 +95,7 @@ export default function ReportListDataGrid() {
 
   useEffect(() => {
     if (Array.isArray(reports)) {
+      console.log(reports, "REPORTS")
       setTableData(reports);
     }
   }, [reports]);

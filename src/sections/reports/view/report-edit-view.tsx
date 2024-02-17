@@ -1,19 +1,19 @@
 'use client';
 
 
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 import Container from '@mui/material/Container';
 
-import { useShowLoader } from 'src/hooks/realm';
-import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 
 import { useSettingsContext } from 'src/components/settings';
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { ICampaign } from 'src/types/realm/realm-types';
+import { IReport } from 'src/types/realm/realm-types';
 
-import CampaignNewEdit from '../campaign-new-edit';
+import CampaignNewEdit from '../report-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -31,22 +31,28 @@ export const CAMPAIGN_PUBLISH_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function CampaignEditView({ id }: { id: string }) {
+export default function ReportEditView({ id }: { id: string }) {
   const settings = useSettingsContext();
 
-  const { loading, campaigns } = useCampaigns();
-  const showLoader = useShowLoader(loading, 500);
-  const campaign = useMemo<ICampaign | null>(() => {
-    if (!loading && Array.isArray(campaigns)) {
-      const cmpg = campaigns.find(c => c._id.toString() === id);
-      if (cmpg) return cmpg;
-    }
-    return null;
-  }, [id, loading, campaigns])
+  const { getReport } = useReports();
+
+  const showLoader = useBoolean();
+
+  const [error, setError] = useState<any>(null);
+  const [report, setReport] = useState<IReport | null>(null)
+
+  useEffect(() => {
+    showLoader.onTrue();
+    setError(null);
+    getReport(id).then(rep => setReport(rep)).catch(e => setError(e))
+      .finally(() => showLoader.onFalse())
+  }, [id])
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {showLoader && <LoadingScreen />}
-      {campaign && !showLoader && <CampaignNewEdit currentCampaign={campaign} />}
+      {showLoader.value && <LoadingScreen />}
+      {!showLoader.value && error && <>Failed to fetch report</>}
+      {report && !showLoader.value && !error && <CampaignNewEdit currentReport={report} />}
     </Container>
   );
 }

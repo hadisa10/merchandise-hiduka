@@ -4,12 +4,17 @@ export interface IReportChange {
     fullDocument: IReport;
 }
 
-export interface IGraphqlReportResponse {
+export interface IGraphqlReportsResponse {
     reports: IReport[];
+}
+
+export interface IGraphqlReportResponse {
+    report: IReport;
 }
 export interface IReportActions {
     saveReport: (draftReport: IReport) => Promise<void>;
     updateReport: (report: IReport) => Promise<void>;
+    getReport: (id: string) => Promise<IReport>;
     // toggleReportStatus: (Report: IReport) => Promise<void>;
     // deleteReport: (Report: IReport) => Promise<void>;
 }

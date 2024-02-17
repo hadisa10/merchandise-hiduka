@@ -13,7 +13,7 @@ import {
 import atlasConfig from "src/atlasConfig.json";
 
 import { IReport } from "src/types/realm/realm-types";
-import { IReportHook, IReportChange, IGraphqlReportResponse } from "src/types/report";
+import { IReportHook, IReportChange, IGraphqlReportResponse, IGraphqlReportsResponse } from "src/types/report";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
@@ -27,9 +27,11 @@ export function useReports(lazy: boolean = true): IReportHook {
   const [reports, setReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState(null);
+  
+  console.log(errors, 'ERRORS')
 
   useEffect(() => {
-    if (lazy) {
+    if (!lazy) {
       const query = gql`
         query FetchUserReports {
           reports {
@@ -41,6 +43,10 @@ export function useReports(lazy: boolean = true): IReportHook {
             project_id
             campaign_id
             campaign_title
+            category{
+              _id
+              title
+            }
             questions {
               _id
               text
@@ -51,6 +57,11 @@ export function useReports(lazy: boolean = true): IReportHook {
               options
               unique
               updatedAt
+              dependencies {
+                questionId
+                triggerValue
+                operator
+              }
               validation {
                 required
                 minLength
@@ -69,14 +80,13 @@ export function useReports(lazy: boolean = true): IReportHook {
           }
         }
       `;
-      graphql.query<IGraphqlReportResponse>({ query })
+      graphql.query<IGraphqlReportsResponse>({ query })
         .then(({ data }) => {
           setReports(data.reports);
           setLoading(false);
         })
         .catch((err) => {
           setErrors(err);
-          console.log(errors, 'ERRORS')
         })
         .finally(() => {
           setLoading(false);
@@ -190,6 +200,69 @@ export function useReports(lazy: boolean = true): IReportHook {
     });
   };
 
+  const getReport = async (id: string) => {
+    try {
+      const resp = await graphql.query<IGraphqlReportResponse>({
+        query: gql`
+          query FetchReport($id: ObjectId!) {
+            report(query: { _id: $id }) {
+                _id
+                title
+                template_id
+                responses
+                client_id
+                project_id
+                campaign_id
+                campaign_title
+                category{
+                  _id
+                  title
+                }
+                questions {
+                  _id
+                  text
+                  order
+                  input_type
+                  placeholder
+                  initialValue
+                  options
+                  unique
+                  updatedAt
+                  dependencies {
+                    questionId
+                    triggerValue
+                    operator
+                  }
+                  validation {
+                    required
+                    minLength
+                    maxLength
+                    minValue
+                    maxValue
+                    regex {
+                      matches
+                      message
+                    }
+                    fileTypes
+                  }
+                }
+                createdAt
+                updatedAt
+              }
+          }
+        `,
+        variables: {
+          id
+        },
+      });
+      console.log(resp, 'RESP')
+      return resp.data.report;
+    } catch (error) {
+      console.log(error, "REPORT FETCH ERROR")
+      throw new Error("Failed to get report")
+    }
+  };
+
   // const toggleReportstatus = async (Report: IReport) => {
   //   await graphql.mutate({
   //     mutation: gql`
@@ -221,7 +294,8 @@ export function useReports(lazy: boolean = true): IReportHook {
     loading,
     reports,
     saveReport,
-    updateReport
+    updateReport,
+    getReport
     // toggleReportstatus,
     // deleteReport,
   };

@@ -20,7 +20,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useClients, useProducts, useShowLoader } from 'src/hooks/realm';
+import { useClients, useProducts } from 'src/hooks/realm';
 
 import { uploadImages } from 'src/utils/helpers';
 
@@ -341,6 +341,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
                 name="client_id"
                 label="Client"
                 placeholder="Select client"
+                loading={loading}
                 freeSolo
                 options={clients?.map(clnt => clnt._id?.toString()) ?? []}
                 getOptionLabel={(option) => {

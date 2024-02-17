@@ -1,4 +1,6 @@
 
+import { useFormContext } from 'react-hook-form';
+
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -7,7 +9,7 @@ import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
+import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import {
   JOB_WORKING_SCHEDULE_OPTIONS,
@@ -20,18 +22,18 @@ import {
   RHFMultiCheckbox,
 } from 'src/components/hook-form';
 
-import { ICampaign } from 'src/types/realm/realm-types';
-
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentCampaign?: ICampaign;
-};
 
-export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
-  const { users } = useUsers();
+export default function ReportNewEditDetailsForm() {
+  const { setValue, watch } = useFormContext();
+
+  const campaingsValue = watch("campaign_id");
 
   const mdUp = useResponsive('up', 'md');
+
+  const { campaigns, loading } = useCampaigns();
+
 
   const renderDetails = (
     <>
@@ -85,7 +87,7 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
-              <Typography variant="subtitle2">Users Details</Typography>
+              <Typography variant="subtitle2">Report Details</Typography>
               <RHFMultiCheckbox
                 row
                 spacing={4}
@@ -95,53 +97,41 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
             </Stack>
 
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Users</Typography>
+              <Typography variant="subtitle2">Campaign</Typography>
 
               <RHFAutocomplete
-                name="users"
-                label="Users"
-                placeholder="+ users"
-                multiple
-                freeSolo
-                disableCloseOnSelect
-                options={users.map(usr => usr._id)}
+                name="campaign_id"
+                label="Campaign"
+                placeholder="Search campaign..."
+                loading={loading}
+                options={campaigns.map(cmpg => cmpg._id)}
                 getOptionLabel={(option) => {
-                  const user = users?.find((usr) => usr._id === option);
-                  if (user) {
-                    return user?.displayName
+                  const campaign = campaigns?.find((cmpg) => cmpg._id === option);
+                  if (campaign) {
+                    return campaign?.title
                   }
+                  console.log(option, "option")
                   return option
                 }}
                 renderOption={(props, option) => {
-                  const user = users?.filter(
-                    (usr) => usr._id === option
+                  const campaign = campaigns?.filter(
+                    (cmpg) => cmpg._id === option
                   )[0];
 
-                  if (!user?._id) {
+                  if (!campaign?._id) {
                     return null;
                   }
 
                   return (
-                    <li {...props} key={user._id}>
-                      {user?.displayName}
+                    <li {...props} key={campaign._id.toString()}>
+                      {campaign?.title}
                     </li>
                   );
                 }}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => {
-                    const user = users?.find((usr) => usr._id === option);
-                    return (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={user?._id ?? ""}
-                        label={user?.displayName ?? ""}
-                        size="small"
-                        color="info"
-                        variant="soft"
-                      />
-                    )
-                  })
-                }
+                value={campaingsValue || null} // Ensures the value is always an array, even if it's initially undefined
+                onChange={(event, newValue) => {
+                  setValue("campaign_id", newValue);
+                }}
               />
             </Stack>
 
@@ -190,7 +180,7 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
   //         loading={isSubmitting}
   //         sx={{ ml: 2 }}
   //       >
-  //         {!currentCampaign ? 'Create Campaign' : 'Save Changes'}
+  //         {!currentReport ? 'Create Campaign' : 'Save Changes'}
   //       </LoadingButton>
   //     </Grid>
   //   </>

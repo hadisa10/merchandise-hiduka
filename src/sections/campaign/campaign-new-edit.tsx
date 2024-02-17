@@ -169,7 +169,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       updatedAt: dt,
     };
     append(routeForForm);
-  }, [append]);
+  }, [append, campaignRoutes]);
 
   const handleRemoveNewRoute = useCallback((routeIndex: number) => {
     if (isNumber(routeIndex)) {

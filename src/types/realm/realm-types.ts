@@ -64,50 +64,65 @@ export type ICampaign = {
 };
 
 // =================================================
-// REPORTS
+// UPDATED REPORTS TYPE
 export type IReport = {
     _id: Realm.BSON.ObjectId;
+    title: string;
+    template_id?: Realm.BSON.ObjectId; // Optional based on schema
+    responses: number;
+    client_id: Realm.BSON.ObjectId;
+    project_id: Realm.BSON.ObjectId;
     campaign_id: Realm.BSON.ObjectId;
     campaign_title: string;
-    client_id: Realm.BSON.ObjectId;
-    createdAt: Date;
-    project_id: Realm.BSON.ObjectId;
+    category_id: Realm.BSON.ObjectId; // Assuming single category association
+    product_id?: Realm.BSON.ObjectId; // Optional product association
     questions: Array<IReportQuestions>;
-    responses: number;
-    template_id?: Realm.BSON.ObjectId;
-    title: string;
+    createdAt: Date;
     updatedAt: Date;
-};
-
-// REPORT QUESTIONS
-export type IReportQuestions = {
+  };
+  
+  // UPDATED REPORT QUESTIONS TYPE
+  export type IReportQuestions = {
     _id: Realm.BSON.ObjectId;
-    initialValue?: string;
-    input_type: string;
-    options: Array<string>;
-    placeholder?: string;
     text: string;
+    order: number;
+    input_type: string;
+    placeholder?: string;
+    initialValue?: string;
+    options: Array<string>;
     unique: boolean;
     updatedAt: Date;
+    dependencies?: Array<IQuestionDependency>; // Optional dependencies
     validation?: IReportQuestionsValidation;
   };
+  
+  // NEW DEPENDENCY TYPE
+  export type IQuestionDependency = {
+    questionId: Realm.BSON.ObjectId;
+    triggerValue: string;
+    operator: string;
+  };
 
-export type IReportQuestionsValidation = {
-    fileTypes: Array<string>;
-    maxLength?: number;
-    maxValue?: number;
-    minLength?: number;
-    minValue?: number;
-    regex?: IReportQuestionsValidationRegex;
+  export type IOperator = 'equals' | 'notEquals' | 'greaterThan' | 'lessThan';
+  
+  // UPDATED VALIDATION TYPE
+  export type IReportQuestionsValidation = {
     required?: boolean;
-};
-
-export type IReportQuestionsValidationRegex = {
+    minLength?: number;
+    maxLength?: number;
+    minValue?: number;
+    maxValue?: number;
+    regex?: IReportQuestionsValidationRegex;
+    fileTypes?: Array<string>; // Made optional to align with possible absence
+  };
+  
+  // REGEX VALIDATION TYPE (unchanged, included for completeness)
+  export type IReportQuestionsValidationRegex = {
     matches?: string;
     message?: string;
-};
-
-// ===============================================
+  };
+  // =================================================
+  
 
 
 

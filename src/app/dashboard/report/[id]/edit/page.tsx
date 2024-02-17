@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { ReportEditView } from "src/sections/reports/view";
+
 export const metadata = {
   title: 'Dashboard: Report Edit',
 };
@@ -13,5 +15,5 @@ type Props = {
 export default function ReportEditPage({ params }: Props) {
   const { id } = params;
 
-  return <>REPORT EDIT {id}</>;
+  return <ReportEditView id={id} />;
 }

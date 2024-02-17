@@ -7,14 +7,14 @@ import { RouterLink } from 'src/routes/components';
 
 import Iconify from 'src/components/iconify';
 
-import { ICampaign } from 'src/types/realm/realm-types';
+import { IReport } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 
 type Props = StackProps & {
   backLink: string;
   // publish: string;
-  currentCampaign: ICampaign | undefined;
+  currentReport: IReport | undefined;
   isSubmitting: boolean;
   // onChangePublish: (newValue: string) => void;
   // publishOptions: {
@@ -23,9 +23,9 @@ type Props = StackProps & {
   // }[];
 };
 
-export default function CampaignDetailsToolbar({
+export default function ReportDetailsToolbar({
   backLink,
-  currentCampaign,
+  currentReport,
   isSubmitting,
   // onChangePublish,
   sx,
@@ -68,7 +68,7 @@ export default function CampaignDetailsToolbar({
           variant="contained"
           loading={isSubmitting}
         >
-          {!currentCampaign ? 'Create Campaign' : 'Save Changes'}
+          {!currentReport ? 'Create Report' : 'Save Changes'}
         </LoadingButton>
       </Stack>
 
