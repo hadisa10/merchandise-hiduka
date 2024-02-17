@@ -19,8 +19,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useProducts } from 'src/hooks/realm';
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useClients, useProducts, useShowLoader } from 'src/hooks/realm';
+
+import { uploadImages } from 'src/utils/helpers';
 
 import {
   _tags,
@@ -30,6 +32,7 @@ import {
   PRODUCT_CATEGORY_GROUP_OPTIONS,
 } from 'src/_mock';
 
+import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFSelect,
@@ -55,14 +58,20 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
 
   const mdUp = useResponsive('up', 'md');
 
+  const { currentUser } = useRealmApp();
+
   const { updateProduct, saveProduct } = useProducts()
 
   const { enqueueSnackbar } = useSnackbar();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
+  const { loading, clients } = useClients(false);
+  const showClientsLoader = useShowLoader(loading, 200);
+
   const NewProductSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
+    client_id: Yup.string().required('Client is required'),
     images: Yup.array().min(1, 'Images is required'),
     tags: Yup.array().min(2, 'Must have at least 2 tags'),
     category: Yup.string().required('Category is required'),
@@ -90,6 +99,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
       name: currentProduct?.name || '',
       description: currentProduct?.description || '',
       subDescription: currentProduct?.subDescription || '',
+      client_id: currentProduct?.client_id || '',
       images: currentProduct?.images || [],
       //
       code: currentProduct?.code || '',
@@ -149,16 +159,33 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
       return 'out of stock';
     } if (t < 20) {
       return 'low stock';
-    } 
-      return 'in stock';
-    
+    }
+    return 'in stock';
+  }
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // Use a type assertion to tell TypeScript `result` is a string
+        const {result} = reader;
+        if (typeof result === "string") {
+          // Now that TypeScript knows `result` is a string, `replace` can be used
+          const base64String = result.replace(/^data:.+;base64,/, '');
+          resolve(base64String);
+        } else {
+          reject(new Error("File read result is not a string"));
+        }
+      };
+      reader.onerror = error => reject(error);
+    });
   }
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const inventoryType = calculateInventoryType({ quantity: data.quantity, available: data.available });
       // @ts-expect-error expected
-      const product: IProductItem = {
+      let product: IProductItem = {
         _id: currentProduct?._id || "",
         ...data,
         inventoryType,
@@ -172,6 +199,27 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
           content: data.newLabel.content ?? ""
         }
       }
+      if (!currentUser) {
+        console.error('No user is currently logged in.');
+        return { error: 'You must be logged in to upload files.' };
+      }
+
+      // Check if `data.images` exists and is an array before proceeding
+      if (data.images && Array.isArray(data.images)) {
+        console.log(data.images, 'IMAGES')
+        // @ts-expect-error expected
+        const imageObj = await uploadImages({ images: data.images }, currentUser);
+        product = {
+          ...product,
+          images: imageObj.images,
+          coverUrl: imageObj.images[0]
+        };
+      } else {
+        console.log('No images to upload');
+        // Handle the case where there are no images to upload
+        // Proceed with the submission of the rest of the form data as necessary
+      }
+
       if (currentProduct) {
         await updateProduct(product)
         enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
@@ -182,8 +230,6 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
 
       await saveProduct({
         ...product,
-        images: [],
-        coverUrl: "",
         totalRatings: 0,
         totalReviews: 0,
         totalSold: 0,
@@ -308,6 +354,50 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
                 md: 'repeat(2, 1fr)',
               }}
             >
+              <RHFAutocomplete
+                name="client_id"
+                label="Client"
+                placeholder="Select client"
+                freeSolo
+                options={clients?.map(clnt => clnt._id?.toString()) ?? []}
+                getOptionLabel={(option) => {
+                  const client = clients?.find((clnt) => clnt._id?.toString() === option);
+                  if (client) {
+                    return client?.name
+                  }
+                  return option
+                }}
+                renderOption={(props, option) => {
+                  const client = clients?.filter(
+                    (clnt) => clnt._id?.toString() === option
+                  )[0];
+
+                  if (!client?._id) {
+                    return null;
+                  }
+
+                  return (
+                    <li {...props} key={client._id?.toString()}>
+                      {client?.name}
+                    </li>
+                  );
+                }}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => {
+                    const user = clients?.find((clnt) => clnt._id?.toString() === option);
+                    return (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={user?._id?.toString() ?? ""}
+                        label={user?.name ?? ""}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    )
+                  })
+                }
+              />
               <RHFTextField name="code" label="Product Code" />
 
               <RHFTextField name="sku" label="Product SKU" />

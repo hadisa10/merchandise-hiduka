@@ -14,7 +14,6 @@ import Iconify from 'src/components/iconify';
 import { useRealmApp } from 'src/components/realm';
 import { MapPopup, MapMarker, MapControl } from 'src/components/map';
 
-import { IUserRouteProductItem } from 'src/types/user-routes';
 import { CountryData } from 'src/types/campaign';
 // ----------------------------------------------------------------------
 
