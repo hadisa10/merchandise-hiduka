@@ -13,5 +13,5 @@ type Props = {
 export default function ReportEditPage({ params }: Props) {
   const { id } = params;
 
-  return <>REPORT EDIT</>;
+  return <>REPORT EDIT {id}</>;
 }

@@ -63,7 +63,7 @@ export const calculateTax = (price: number, tax: number, quantity: number): { ta
 }
 
 export const generate = (element: React.ReactElement, size: number = 3) => {
-    const arr = Array.from({ length: size }, (_, index) => index + 1)
+    const arr = Array.from({ length: size }, (__, index) => index + 1)
     return arr.map((value) =>
         cloneElement(element, {
             key: value,

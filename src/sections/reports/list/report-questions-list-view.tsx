@@ -1,6 +1,7 @@
 // ReportList.tsx
-import React, { useCallback, useState } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import React, { useState, useCallback } from 'react';
+import { Droppable, Draggable, DropResult, DragDropContext } from '@hello-pangea/dnd';
+
 import { List, ListItem, ListItemText } from '@mui/material';
 
 interface ReportListProps {
@@ -9,12 +10,12 @@ interface ReportListProps {
 
 const AdminReportQuestionList: React.FC<ReportListProps> = ({ id }) => {
 
-
+  
   const [reports, setReports] = useState<string[]>(["Annual Report 2024", "Q1 Sales Analysis"]);
 
-  const onAddReport = (newReport: string) => {
-    setReports([...reports, newReport]);
-  };
+  // const onAddReport = (newReport: string) => {
+  //   setReports([...reports, newReport]);
+  // };
 
   const onDragEnd = useCallback((result: DropResult) => {
     if (!result.destination) {
@@ -34,11 +35,11 @@ const AdminReportQuestionList: React.FC<ReportListProps> = ({ id }) => {
           <List ref={provided.innerRef} {...provided.droppableProps}>
             {reports.map((report, index) => (
               <Draggable key={report} draggableId={report} index={index}>
-                {(provided) => (
+                {(p) => (
                   <ListItem
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
+                    ref={p.innerRef}
+                    {...p.draggableProps}
+                    {...p.dragHandleProps}
                   >
                     <ListItemText primary={report} />
                   </ListItem>

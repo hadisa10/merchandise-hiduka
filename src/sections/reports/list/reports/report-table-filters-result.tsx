@@ -8,8 +8,8 @@ import Stack, { StackProps } from '@mui/material/Stack';
 
 import Iconify from 'src/components/iconify';
 
-import { IProductTableFilterValue } from 'src/types/product';
 import { IReportTableFilters } from 'src/types/report';
+import { IProductTableFilterValue } from 'src/types/product';
 
 // ----------------------------------------------------------------------
 

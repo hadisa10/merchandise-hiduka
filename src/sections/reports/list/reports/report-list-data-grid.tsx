@@ -27,6 +27,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -36,18 +37,17 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import FormProvider from 'src/components/hook-form/form-provider';
 
 import { IReport } from 'src/types/realm/realm-types';
+import { IReportTableFilters, IReportTableFilterValue } from 'src/types/report';
 
 import CampaignTableToolbar from './report-table-toolbar';
 import CampaignReportTableFiltersResult from './report-table-filters-result';
 import {
   // RenderCellStock,
+  RenderCellReport,
   // RenderCellPrice,
   RenderCellResponses,
-  RenderCellReport,
   RenderCellCreatedAt,
 } from './report-table-row';
-import { useReports } from 'src/hooks/realm/report/use-report-graphql';
-import { IReportTableFilterValue, IReportTableFilters } from 'src/types/report';
 
 // ----------------------------------------------------------------------
 

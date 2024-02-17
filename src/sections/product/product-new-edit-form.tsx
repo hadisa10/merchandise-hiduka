@@ -67,7 +67,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
   const { loading, clients } = useClients(false);
-  const showClientsLoader = useShowLoader(loading, 200);
+  // const showClientsLoader = useShowLoader(loading, 200);
 
   const NewProductSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -162,24 +162,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     }
     return 'in stock';
   }
-  function fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        // Use a type assertion to tell TypeScript `result` is a string
-        const {result} = reader;
-        if (typeof result === "string") {
-          // Now that TypeScript knows `result` is a string, `replace` can be used
-          const base64String = result.replace(/^data:.+;base64,/, '');
-          resolve(base64String);
-        } else {
-          reject(new Error("File read result is not a string"));
-        }
-      };
-      reader.onerror = error => reject(error);
-    });
-  }
+
 
   const onSubmit = handleSubmit(async (data) => {
     try {

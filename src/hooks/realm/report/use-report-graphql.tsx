@@ -12,11 +12,12 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
+import { IReport } from "src/types/realm/realm-types";
+import { IReportHook, IReportChange, IGraphqlReportResponse } from "src/types/report";
+
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
 import { useCustomApolloClient } from "../use-apollo-client";
-import { IGraphqlReportResponse, IReportChange, IReportHook } from "src/types/report";
-import { IReport } from "src/types/realm/realm-types";
 
 const { dataSourceName } = atlasConfig;
 
@@ -75,6 +76,7 @@ export function useReports(lazy: boolean = true): IReportHook {
         })
         .catch((err) => {
           setErrors(err);
+          console.log(errors, 'ERRORS')
         })
         .finally(() => {
           setLoading(false);

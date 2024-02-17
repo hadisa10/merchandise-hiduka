@@ -163,7 +163,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     const routeForForm: ICampaign_routes = {
       _id: createObjectId(), // Ensure _id is a string to match the form's expectation
       routeAddress: rtAddrs,
-      routeNumber: Array.isArray(campaignRoutes.length) ? campaignRoutes.length + 1 : 1,
+      routeNumber: Array.isArray(campaignRoutes) ? campaignRoutes.length + 1 : 1,
       totalQuantity: 0,
       createdAt: dt,
       updatedAt: dt,

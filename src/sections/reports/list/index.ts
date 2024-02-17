@@ -1,1 +1,1 @@
-export { default as CampaignReportList } from './report/campaign-report-list';
+export { default as ReportDataGrid } from './reports/report-list-data-grid';

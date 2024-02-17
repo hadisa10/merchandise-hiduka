@@ -1,6 +1,7 @@
 import React, { useState, useCallback, ChangeEvent, KeyboardEvent } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { Button, TextField, List, ListItem, ListItemText, Container } from '@mui/material';
+import { Droppable, Draggable, DropResult, DragDropContext } from '@hello-pangea/dnd';
+
+import { List, Button, ListItem, TextField, Container, ListItemText } from '@mui/material';
 
 const ReportList: React.FC = () => {
   const [reports, setReports] = useState<string[]>([]);
@@ -52,11 +53,11 @@ const ReportList: React.FC = () => {
             <List ref={provided.innerRef} {...provided.droppableProps}>
               {reports.map((report, index) => (
                 <Draggable key={report} draggableId={report} index={index}>
-                  {(provided) => (
+                  {(p) => (
                     <ListItem
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
+                      ref={p.innerRef}
+                      {...p.draggableProps}
+                      {...p.dragHandleProps}
                     >
                       <ListItemText primary={report} />
                     </ListItem>
