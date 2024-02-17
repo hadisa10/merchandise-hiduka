@@ -1,63 +1,48 @@
-import * as Realm from "realm-web";
+import { IReport } from "./realm/realm-types";
 
-
-export interface IClient {
-    _id: string;
-    creator_id: string;
-    name: string;
-    active: boolean;
-    client_icon: string;
-    client_plan: number;
-    createdAt: Date;
-    updatedAt: Date;
-
+export interface IReportChange {
+    fullDocument: IReport;
 }
 
-export interface IDraftClient {
-    _id: Realm.BSON.ObjectId;
-    name: string;
-    creator_id: string;
-    active: boolean;
-    client_icon: string;
-    client_plan: number;
+export interface IGraphqlReportResponse {
+    reports: IReport[];
+}
+export interface IReportActions {
+    saveReport: (draftReport: IReport) => Promise<void>;
+    updateReport: (report: IReport) => Promise<void>;
+    // toggleReportStatus: (Report: IReport) => Promise<void>;
+    // deleteReport: (Report: IReport) => Promise<void>;
 }
 
-
-export interface IClientChange {
-    fullDocument: IClient;
-}
-
-export interface IGraphqlResponse {
-    clients: IClient[];
-}
-export interface IClientActions {
-    saveClient: (draftClient: IDraftClient) => Promise<void>;
-    toggleClientStatus: (client: IClient) => Promise<void>;
-    deleteClient: (client: IClient) => Promise<void>;
-}
-
-export interface IClientHook extends IClientActions {
+export interface IReportHook extends IReportActions {
     loading: boolean;
-    clients: IClient[];
+    reports: IReport[];
 }
 
-export interface IDraftClientsHook extends IDraftClientActions {
-    draftClients: IDraftClient[];
+export interface IDraftReportHook extends IDraftReportActions {
+    draftReports: IReport[];
 
 }
-export interface IDraftClientActions {
-    createDraftClient: () => void;
-    setDraftClientName: (draft: IDraftClient, summary: string) => void;
-    deleteDraftClient: (draft: IDraftClient) => void;
+export interface IDraftReportActions {
+    createDraftReport: () => void;
+    setDraftReportName: (draft: IReport, summary: string) => void;
 }
 
-export interface IClientItem {
-    client: IClient;
-    clientActions: IClientActions;
+export interface IReportItem {
+    report: IReport;
+    reportActions: IReportActions;
 }
 
-export interface IDraftClientItem {
-    draftClient: IDraftClient;
-    clientActions: IClientActions;
-    draftClientActions: IDraftClientActions;
+export interface IDraftReportItem {
+    draftReport: IReport;
+    reportActions: IReportActions;
+    draftReportActions: IDraftReportActions;
 }
+
+
+// ====================================
+export type IReportTableFilterValue = string | string[];
+
+export type IReportTableFilters = {
+    type: string[];
+};

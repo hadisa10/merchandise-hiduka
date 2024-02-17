@@ -63,6 +63,53 @@ export type ICampaign = {
     updatedAt: Date;
 };
 
+// =================================================
+// REPORTS
+export type IReport = {
+    _id: Realm.BSON.ObjectId;
+    campaign_id: Realm.BSON.ObjectId;
+    campaign_title: string;
+    client_id: Realm.BSON.ObjectId;
+    createdAt: Date;
+    project_id: Realm.BSON.ObjectId;
+    questions: Array<IReportQuestions>;
+    responses: number;
+    template_id?: Realm.BSON.ObjectId;
+    title: string;
+    updatedAt: Date;
+};
+
+// REPORT QUESTIONS
+export type IReportQuestions = {
+    _id: Realm.BSON.ObjectId;
+    initialValue?: string;
+    input_type: string;
+    options: Array<string>;
+    placeholder?: string;
+    text: string;
+    unique: boolean;
+    updatedAt: Date;
+    validation?: IReportQuestionsValidation;
+  };
+
+export type IReportQuestionsValidation = {
+    fileTypes: Array<string>;
+    maxLength?: number;
+    maxValue?: number;
+    minLength?: number;
+    minValue?: number;
+    regex?: IReportQuestionsValidationRegex;
+    required?: boolean;
+};
+
+export type IReportQuestionsValidationRegex = {
+    matches?: string;
+    message?: string;
+};
+
+// ===============================================
+
+
 
   
 export const ICampaignSchema = {

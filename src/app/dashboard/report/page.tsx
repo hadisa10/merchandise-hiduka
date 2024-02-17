@@ -1,3 +1,4 @@
+import { ReportListView } from "src/sections/reports/view";
 
 // ----------------------------------------------------------------------
 
@@ -6,5 +7,5 @@ export const metadata = {
 };
 
 export default function ProjectReportPage() {
-  return <>PROJECT REPORT</>;
+  return <ReportListView />;
 }
