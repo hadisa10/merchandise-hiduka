@@ -14,8 +14,8 @@ import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 
-import { IReportQuestionActions, QuestionError } from 'src/types/report';
 import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
+import { QuestionError, IReportQuestionActions } from 'src/types/report';
 
 import QuestionDetails from './question/question-item-details';
 
