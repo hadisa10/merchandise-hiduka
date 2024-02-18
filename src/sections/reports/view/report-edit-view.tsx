@@ -46,6 +46,7 @@ export default function ReportEditView({ id }: { id: string }) {
     setError(null);
     getReport(id).then(rep => setReport(rep)).catch(e => setError(e))
       .finally(() => showLoader.onFalse())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   return (

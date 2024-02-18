@@ -14,10 +14,9 @@ import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 
-import { QuestionError } from 'src/types/report';
+import { IReportQuestionActions, QuestionError } from 'src/types/report';
 import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
 
-import { IReportQuestionActions } from './questions-new-edit';
 import QuestionDetails from './question/question-item-details';
 
 // import KanbanDetails from './kanban-details';
@@ -97,25 +96,7 @@ export default function QuestionItem({
   );
 
 
-  const renderImg = (
-    <Box
-      sx={{
-        p: theme.spacing(1, 1, 0, 1),
-      }}
-    >
-      <Box
-        component="img"
-        alt={question.text}
-        src={question.text}
-        sx={{
-          borderRadius: 1.5,
-          ...(openDetails.value && {
-            opacity: 0.8,
-          }),
-        }}
-      />
-    </Box>
-  );
+
   const renderInfo = (
     <Stack direction="row" alignItems="center" sx={{ typography: 'caption', color: 'text.secondary', ml: -1 }}>
       <IconButton

@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMemo, useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { lazy, useMemo, useState, Suspense, useEffect, useCallback } from 'react';
 
 import { Tab, Tabs } from '@mui/material';
 
@@ -23,14 +23,16 @@ import { IReport } from 'src/types/realm/realm-types';
 // import QuestionsNewEditList from './edit/questions-new-edit';
 // import CampaignDetailsToolbar from './report-details-toolbar';
 // import ReportNewEditDetailsForm from './edit/report-new-edit-details-form';
-import { isEmpty } from 'lodash';
-import { removeAndFormatNullFields, removeNullFields, safeDateFormatter } from 'src/utils/helpers';
+
 import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
+
 import { createObjectId } from 'src/utils/realm';
+import { safeDateFormatter, removeAndFormatNullFields } from 'src/utils/helpers';
+
+import { RHFFormFiller } from 'src/components/hook-form';
 // import { RHFFormFiller, RHFTextField } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { RHFFormFiller } from 'src/components/hook-form';
 // import { RHFFormFiller } from 'src/components/hook-form';
 
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
@@ -137,7 +139,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
   const {
     reset,
     watch,
-    control,
+    // control,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;

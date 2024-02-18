@@ -10,23 +10,13 @@ import { Box, List, Paper, Typography } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { ActualInputType } from 'src/types/report';
+import { ActualInputType, IReportQuestionActions } from 'src/types/report';
 import { IReport, ICampaign, IReportQuestions, IQuestionDependency, IReportQuestionsValidation } from 'src/types/realm/realm-types';
 
 import QuestionItem from './question-item';
 import QuestionAdd from './question/question-add';
 import QuestionsColumnToolBar from './question/question-column-tool-bar';
 
-
-export interface IReportQuestionActions {
-  handleAddValidation: (questionIndex: number, newValidation: Partial<IReportQuestionsValidation>) => void;
-  handleChangeInputType: (questionIndex: number, newInputType: ActualInputType) => void;
-  handleAddDependency: (questionIndex: number, newDependency: IQuestionDependency) => void;
-  handleChangeQuestionText: (questionIndex: number, text: string) => void;
-  handleRemoveQuestion: (index: number) => void;
-  handleRemoveValidation: (questionIndex: number, validationKey: keyof IReportQuestionsValidation) => void;
-  // You can add more actions here as needed
-}
 
 const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICampaign[], campaignsLoading?: boolean }) => {
 
@@ -61,6 +51,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     move(source.index, destination.index);
     dragStarted.onFalse()
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [move, questions, update]);
 
   const addQuestion = (newQuestion: IReportQuestions) => {
@@ -77,7 +68,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
         update(index, { ...question, order: index + 1 });
       });
     }
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragStarted.value])
 
 
@@ -185,7 +176,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
                     question={q}
                     register={register}
                     questionError={errors.questions?.[index]} // Pass the corresponding error
-                    onUpdateQuestion={(q) => console.log(q)}
+                    onUpdateQuestion={(qs) => console.log(qs)}
                     onDeleteQuestion={() => console.log("QUESTION DELETED")}
                   />
                 ))}

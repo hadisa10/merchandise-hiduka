@@ -12,11 +12,10 @@ import { fDateTime } from 'src/utils/format-time';
 
 import Scrollbar from 'src/components/scrollbar';
 
-import { QuestionError, ActualInputType } from 'src/types/report';
 import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
+import { QuestionError, ActualInputType, IReportQuestionActions } from 'src/types/report';
 
 import QuestionInputName from './question-input-name';
-import { IReportQuestionActions } from '../questions-new-edit';
 import QuestionDetailsToolbar from './question-details-toolbar';
 import QuestionDetailsInputType from './question-details-input-type';
 
@@ -185,7 +184,8 @@ export default function QuestionDetails({
         }
         return val
       })
-  ), [question])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [question, index, inputType])
 
 
 

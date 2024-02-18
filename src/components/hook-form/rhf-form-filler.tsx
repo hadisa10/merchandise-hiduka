@@ -1,23 +1,28 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
+import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import { Grid, MenuItem, Stack, Typography } from '@mui/material';
+
+import { LoadingButton } from '@mui/lab';
+import { Grid, Stack, MenuItem, Typography } from '@mui/material';
+
+import { useResponsive } from 'src/hooks/use-responsive';
+
+import { IReportQuestions } from 'src/types/realm/realm-types';
+
 import FormProvider from './form-provider'; // Adjust the import path as needed
+
+import RHFCode from './rhf-code';
+import RHFSwitch from './rhf-switch';
+import RHFSlider from './rhf-slider';
+import RHFEditor from './rhf-editor';
+import { RHFSelect } from './rhf-select';
+import { RHFUpload } from './rhf-upload';
 // Import your custom RHF components
 import RHFTextField from './rhf-text-field';
 import { RHFCheckbox } from './rhf-checkbox';
-import { RHFSelect } from './rhf-select';
 import RHFRadioGroup from './rhf-radio-group';
-import RHFSwitch from './rhf-switch';
 import RHFAutocomplete from './rhf-autocomplete';
-import RHFSlider from './rhf-slider';
-import RHFCode from './rhf-code';
-import RHFEditor from './rhf-editor';
-import { RHFUpload } from './rhf-upload';
-import { useResponsive } from 'src/hooks/use-responsive';
-import { LoadingButton } from '@mui/lab';
-import { IReportQuestions } from 'src/types/realm/realm-types';
 
 
 
@@ -29,11 +34,9 @@ type DynamicFormProps = {
 const RHFFormFiller: React.FC<DynamicFormProps> = ({ questions, onSubmit }) => {
     const mdUp = useResponsive('up', 'md');
 
-    console.log(questions, 'QUESTIONS')
 
-    const generateSchema = (questions: IReportQuestions[]) => {
-        return Yup.object().shape(
-            questions.reduce((acc, question) => {
+    const generateSchema = (q: IReportQuestions[]) => Yup.object().shape(
+            q.reduce((acc, question) => {
                 let validator;
                 switch (typeof question.validation) {
                     case 'object':
@@ -66,7 +69,6 @@ const RHFFormFiller: React.FC<DynamicFormProps> = ({ questions, onSubmit }) => {
                 return acc;
             }, {})
         );
-    };
 
 
     const validationSchema = React.useMemo(() => generateSchema(questions), [questions]);

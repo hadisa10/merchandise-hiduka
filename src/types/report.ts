@@ -1,7 +1,7 @@
 import { BSON } from "realm-web";
 import { FieldErrors } from "react-hook-form";
 
-import { IReport, IReportQuestions } from "./realm/realm-types";
+import { IReport, IReportQuestions, IQuestionDependency, IReportQuestionsValidation } from "./realm/realm-types";
 
 export interface IReportChange {
     fullDocument: IReport;
@@ -60,3 +60,12 @@ export type ActualInputType = 'text' | 'number' | 'select' | 'radio' | 'checkbox
 
 export type QuestionError = FieldErrors<IReportQuestions>;
 
+export interface IReportQuestionActions {
+    handleAddValidation: (questionIndex: number, newValidation: Partial<IReportQuestionsValidation>) => void;
+    handleChangeInputType: (questionIndex: number, newInputType: ActualInputType) => void;
+    handleAddDependency: (questionIndex: number, newDependency: IQuestionDependency) => void;
+    handleChangeQuestionText: (questionIndex: number, text: string) => void;
+    handleRemoveQuestion: (index: number) => void;
+    handleRemoveValidation: (questionIndex: number, validationKey: keyof IReportQuestionsValidation) => void;
+    // You can add more actions here as needed
+}
