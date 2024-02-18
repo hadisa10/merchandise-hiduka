@@ -36,6 +36,7 @@ export type IProductReview = {
 export type IProductItem = {
   _id: string;
   sku: string;
+  client_id: string;
   name: string;
   code: string;
   price: number;

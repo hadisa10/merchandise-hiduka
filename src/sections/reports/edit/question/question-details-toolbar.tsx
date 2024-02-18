@@ -1,9 +1,7 @@
-import { useState, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -11,42 +9,23 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  liked: boolean;
-  taskName: string;
-  taskStatus: string;
-  onLike: VoidFunction;
+  questionName: string;
   onDelete: VoidFunction;
   onCloseDetails: VoidFunction;
 };
 
-export default function KanbanDetailsToolbar({
-  liked,
-  onLike,
-  taskName,
+export default function QuestionDetailsToolbar({
+  questionName,
   onDelete,
-  taskStatus,
   onCloseDetails,
 }: Props) {
   const smUp = useResponsive('up', 'sm');
 
   const confirm = useBoolean();
-
-  const popover = usePopover();
-
-  const [status, setStatus] = useState(taskStatus);
-
-  const handleChangeStatus = useCallback(
-    (newValue: string) => {
-      popover.onClose();
-      setStatus(newValue);
-    },
-    [popover]
-  );
 
   return (
     <>
@@ -65,23 +44,9 @@ export default function KanbanDetailsToolbar({
           </Tooltip>
         )}
 
-        <Button
-          size="small"
-          variant="soft"
-          endIcon={<Iconify icon="eva:arrow-ios-downward-fill" width={16} sx={{ ml: -0.5 }} />}
-          onClick={popover.onOpen}
-        >
-          {status}
-        </Button>
-
         <Stack direction="row" justifyContent="flex-end" flexGrow={1}>
-          <Tooltip title="Like">
-            <IconButton color={liked ? 'default' : 'primary'} onClick={onLike}>
-              <Iconify icon="ic:round-thumb-up" />
-            </IconButton>
-          </Tooltip>
 
-          <Tooltip title="Delete task">
+          <Tooltip title="Delete question">
             <IconButton onClick={confirm.onTrue}>
               <Iconify icon="solar:trash-bin-trash-bold" />
             </IconButton>
@@ -93,32 +58,13 @@ export default function KanbanDetailsToolbar({
         </Stack>
       </Stack>
 
-      <CustomPopover
-        open={popover.open}
-        onClose={popover.onClose}
-        arrow="top-right"
-        sx={{ width: 140 }}
-      >
-        {['To Do', 'In Progress', 'Ready To Test', 'Done'].map((option) => (
-          <MenuItem
-            key={option}
-            selected={status === option}
-            onClick={() => {
-              handleChangeStatus(option);
-            }}
-          >
-            {option}
-          </MenuItem>
-        ))}
-      </CustomPopover>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
         content={
           <>
-            Are you sure want to delete <strong> {taskName} </strong>?
+            Are you sure want to delete <strong> {questionName} </strong>?
           </>
         }
         action={

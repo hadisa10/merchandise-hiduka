@@ -22,13 +22,14 @@ import { useCustomApolloClient } from "../use-apollo-client";
 const { dataSourceName } = atlasConfig;
 
 
-export function useCampaigns(): ICampaignHook {
+export function useCampaigns(lazy = false): ICampaignHook {
   const graphql = useCustomApolloClient();
   const [campaigns, setCampaigns] = useState<ICampaign[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const query = gql`
+    if (!lazy) {
+      const query = gql`
       query FetchUserCampaigns {
         UserCampaigns {
           _id
@@ -58,12 +59,13 @@ export function useCampaigns(): ICampaignHook {
         }
       }
     `;
-    graphql.query<IGraphqlResponse>({ query }).then(({ data }) => {
-      console.log(data, 'DATA')
-      setCampaigns(data.UserCampaigns);
-      setLoading(false);
-    });
-  }, [graphql]);
+      graphql.query<IGraphqlResponse>({ query }).then(({ data }) => {
+        console.log(data, 'DATA')
+        setCampaigns(data.UserCampaigns);
+        setLoading(false);
+      });
+    }
+  }, [graphql, lazy]);
 
   const campaignHidukaCollection = useCollection({
     cluster: dataSourceName,

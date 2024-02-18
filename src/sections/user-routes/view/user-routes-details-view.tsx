@@ -82,7 +82,7 @@ export default function UserRoutesDetailsView({ id }: { id: string }) {
         status={status}
       />
       <UserRoutesMap contacts={route.map((addrs) => ({
-        latlng: [Number(addrs.longitude), Number(addrs.latitude)],
+        lnglat: [Number(addrs.longitude), Number(addrs.latitude)],
         address: addrs.fullAddress,
         phoneNumber: addrs.phoneNumber,
         products: addrs.products

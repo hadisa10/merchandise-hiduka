@@ -31,12 +31,12 @@ export type IRoute = {
     road?: string;
     updatedAt: Date;
     users: Array<Realm.BSON.ObjectId>;
-  };
+};
 
 export type IRouteLocation = {
     coordinates: Array<number>;
     type: string;
-  };
+};
 
 export type IRouteProducts = {
     name: string;
@@ -63,8 +63,91 @@ export type ICampaign = {
     updatedAt: Date;
 };
 
+// Exporting the generic type for operators
+export type IOperator = 'equals' | 'notEquals' | 'greaterThan' | 'lessThan';
 
-  
+// Exporting the Main Report Interface with Generics
+export interface IReport<T = Realm.BSON.ObjectId> {
+    _id: T;
+    title: string;
+    template_id?: T;
+    responses: number;
+    client_id: T;
+    project_id: T;
+    campaign_id: T;
+    campaign_title: string;
+    category_id: T;
+    product_id?: T;
+    questions: Array<IReportQuestions<T>>;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+// Exporting the Main Report Questions Interface with Generics
+export interface IReportQuestions<T = Realm.BSON.ObjectId> {
+    _id: T;
+    text: string;
+    order: number;
+    input_type: string;
+    placeholder?: string;
+    initialValue?: string;
+    options: Array<string>;
+    unique: boolean;
+    updatedAt: Date;
+    dependencies?: Array<IQuestionDependency<T>>;
+    validation?: IReportQuestionsValidation;
+}
+
+// Exporting the Main Dependency Interface with Generics
+export interface IQuestionDependency<T = Realm.BSON.ObjectId> {
+    questionId: T;
+    triggerValue: string;
+    operator: IOperator;
+}
+
+// Exporting the Main Validation Interface
+export interface IReportQuestionsValidation {
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    minValue?: number;
+    maxValue?: number;
+    regex?: IReportQuestionsValidationRegex;
+    fileTypes?: Array<string>;
+}
+
+// Exporting the Regex Validation Interface
+export interface IReportQuestionsValidationRegex {
+    matches?: string;
+    message?: string;
+}
+
+// Exporting the Draft Report Interface, inheriting from IReport with string type for IDs
+export interface IDraftReport extends IReport<string> {
+    questions: Array<IDraftReportQuestions>;
+}
+
+// Exporting the Draft Report Questions Interface, inheriting from IReportQuestions with string type for IDs
+export interface IDraftReportQuestions extends IReportQuestions<string> {
+    // Additional properties specific to draft questions can be added here
+}
+
+// Exporting the Draft Question Dependency Interface, inheriting from IQuestionDependency with string type for IDs
+export interface IDraftQuestionDependency extends IQuestionDependency<string> {
+    // Additional properties specific to draft dependencies can be added here
+}
+
+// Exporting the Draft Validation Interface, directly inheriting from IReportQuestionsValidation as no ID type change is needed
+export interface IDraftReportQuestionsValidation extends IReportQuestionsValidation {
+    // Additional properties specific to draft validation can be added here
+}
+
+// Exporting the Draft Regex Validation Interface, directly inheriting from IReportQuestionsValidationRegex as no ID type change is needed
+export interface IDraftReportQuestionsValidationRegex extends IReportQuestionsValidationRegex {
+    // Additional properties specific to draft regex validation can be added here
+}
+
+
 export const ICampaignSchema = {
     name: 'ICampaign',
     properties: {
@@ -116,7 +199,7 @@ export type ICampaign_routes_routeAddress = {
 export type ICampaign_routes_routeAddress_location = {
     coordinates?: Array<number>;
     type: string;
-  };
+};
 export const ICampaign_routes_routeAddressSchema = {
     name: 'ICampaign_routes_routeAddress',
     embedded: true,

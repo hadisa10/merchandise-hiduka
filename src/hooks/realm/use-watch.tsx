@@ -47,7 +47,7 @@ export function useWatch<T>(
   useEffect(() => {
     let stream: AsyncIterable<ChangeEvent<T>> | undefined;
 
-    const watchTodos = async () => {
+    const watchSteam = async () => {
       stream = await collection?.watch({ filter });
 
       for await (const change of stream!) {
@@ -77,7 +77,7 @@ export function useWatch<T>(
       }
     };
 
-    watchTodos();
+    watchSteam();
 
     return () => {
       // Close the change stream in the effect cleanup

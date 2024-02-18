@@ -99,7 +99,7 @@ export default function CampaignNewEditRouteForm({ handleNewRouteOpen, handleRem
   const contacts = useMemo(() => {
     if (!Array.isArray(campaignRoutes)) return [];
     return campaignRoutes.map(campaignRoute => ({
-      latlng: campaignRoute.routeAddress?.location?.coordinates,
+      lnglat: campaignRoute.routeAddress?.location?.coordinates,
       address: campaignRoute.routeAddress?.fullAddress,
       phoneNumber: "",
       products: []

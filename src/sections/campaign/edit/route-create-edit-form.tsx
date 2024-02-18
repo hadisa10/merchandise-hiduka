@@ -69,7 +69,7 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
           latitude: lat ?? 0,
           location: {
             type: currentRoute?.location?.type || 'Point', // Default to 'Point' if not specified
-            coordinates: [lat, lng] || [0, 0], // Default coordinates if not specified
+            coordinates: [lng, lat] || [0, 0], // Default coordinates if not specified
           },
           phoneNumber: currentRoute?.phoneNumber || '',
           road: currentRoute?.road || '',
@@ -82,7 +82,7 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
           latitude: lat,
           location: {
             type: 'Point', // Default to 'Point' if not specified
-            coordinates: [lat, lng], // Default coordinates if not specified
+            coordinates: [lng, lat], // Default coordinates if not specified
           },
           phoneNumber: '',
           road: '',
@@ -116,7 +116,7 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
       latitude: newGeoLocation.lat,
       location: {
         type: 'Point',
-        coordinates: [newGeoLocation.lat, newGeoLocation.lng],
+        coordinates: [newGeoLocation.lng, newGeoLocation.lat],
       },
       phoneNumber: currentRoute?.phoneNumber || '',
       road: currentRoute?.road || '',
