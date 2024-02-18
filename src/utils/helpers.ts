@@ -77,18 +77,18 @@ export async function uploadImages(data: { images: File[] }, currentUser: Realm.
     // Your existing code for checks...
 
     const uploadResults = await Promise.all(data.images.map(file =>
-      uploadImage(file, currentUser).catch(error => ({ error: error.toString() }))
+        uploadImage(file, currentUser).catch(error => ({ error: error.toString() }))
     ));
 
     // Filter out successfully uploaded images and extract URLs
     const imageUrls: string[] = uploadResults
-      .filter((result): result is { url: string } => result && 'url' in result)
-      .map(result => result.url);
+        .filter((result): result is { url: string } => result && 'url' in result)
+        .map(result => result.url);
 
     // Optionally, collect errors for reporting
     const errors = uploadResults
-      .filter((result): result is { error: string } => result && 'error' in result)
-      .map(result => result.error);
+        .filter((result): result is { error: string } => result && 'error' in result)
+        .map(result => result.error);
 
     return {
         images: imageUrls,
@@ -138,3 +138,66 @@ export async function fileToBase64(file: File): Promise<string> {
         reader.readAsDataURL(file);
     });
 }
+export const removeAndFormatNullFields = <T>(
+    data: T,
+    formatOptionsArray?: { key: keyof T; formatter: (value: any) => any }[],
+    removeFields?: (keyof T)[]
+): T | undefined => {
+    // Check if the data is an object and not null
+    if (typeof data === 'object' && data !== null) {
+        // Use generics to preserve the structure of arrays or objects
+        return Object.entries(data).reduce((acc: any, [key, value]) => {
+            // Skip any field that is in the removeFields list or has key __typename
+            if (key === '__typename' || removeFields?.includes(key as keyof T)) {
+                return acc;
+            }
+            // Check if the current key has a specified format option
+            const formatOption = formatOptionsArray?.find(option => option.key === key);
+            if (formatOption) {
+                // Apply the formatter function if found
+                value = formatOption.formatter(value);
+            }
+            // Recursively clean the value
+            const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields);
+            // If the cleaned value is not undefined, add it to the accumulator
+            if (cleanedValue !== undefined) {
+                acc[key] = cleanedValue;
+            }
+            return acc;
+        }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
+    } 
+        // Return the value if it's not null, otherwise return undefined
+        return data !== null ? data : undefined;
+    
+};
+export const safeDateFormatter = (value: string): string => {
+    // Check if the value is a valid date string
+    const timestamp = Date.parse(value);
+    if (!Number.isNaN(timestamp)) {
+        // If valid, return a Date object for the value
+        return new Date(value).toISOString();
+    } 
+        // If not valid, return a new Date object
+        return new Date().toISOString();
+    
+};
+
+
+export const removeNullFields = <T>(data: T): T | undefined => {
+    // Check if the data is an object and not null
+    if (typeof data === 'object' && data !== null) {
+        // Use generics to preserve the structure of arrays or objects
+        return Object.entries(data).reduce((acc: any, [key, value]) => {
+            // Recursively clean the value
+            const cleanedValue = removeNullFields(value);
+            // If the cleaned value is not undefined, add it to the accumulator
+            if (cleanedValue !== undefined) { // Adjusted to check against undefined
+                acc[key] = cleanedValue;
+            }
+            return acc;
+        }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
+    } 
+        // Return the value if it's not null, otherwise return undefined
+        return data !== null ? data : undefined;
+    
+};

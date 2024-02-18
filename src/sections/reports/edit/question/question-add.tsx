@@ -1,18 +1,15 @@
 import { useMemo, useState, useCallback } from 'react';
 
 import Paper from '@mui/material/Paper';
+import { IconButton } from '@mui/material';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import InputBase, { inputBaseClasses } from '@mui/material/InputBase';
 
-import uuidv4 from 'src/utils/uuidv4';
-
-import { _mock } from 'src/_mock';
-
-import { IKanbanTask } from 'src/types/kanban';
-import { IReportQuestions } from 'src/types/realm/realm-types';
 import { createObjectId } from 'src/utils/realm';
-import { IconButton } from '@mui/material';
+
 import Iconify from 'src/components/iconify';
+
+import { IReportQuestions } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +31,7 @@ export default function QuestionAdd({ onAddQuestion, onCloseQuestion }: Props) {
       unique: false,
       updatedAt: new Date(),
     }),
-    [text, createObjectId]
+    [text]
   );
 
   // const handleKeyUpAddQuestion = useCallback(

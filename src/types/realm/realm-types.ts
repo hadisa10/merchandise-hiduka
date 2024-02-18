@@ -31,12 +31,12 @@ export type IRoute = {
     road?: string;
     updatedAt: Date;
     users: Array<Realm.BSON.ObjectId>;
-  };
+};
 
 export type IRouteLocation = {
     coordinates: Array<number>;
     type: string;
-  };
+};
 
 export type IRouteProducts = {
     name: string;
@@ -63,27 +63,29 @@ export type ICampaign = {
     updatedAt: Date;
 };
 
-// =================================================
-// UPDATED REPORTS TYPE
-export type IReport = {
-    _id: Realm.BSON.ObjectId;
+// Exporting the generic type for operators
+export type IOperator = 'equals' | 'notEquals' | 'greaterThan' | 'lessThan';
+
+// Exporting the Main Report Interface with Generics
+export interface IReport<T = Realm.BSON.ObjectId> {
+    _id: T;
     title: string;
-    template_id?: Realm.BSON.ObjectId; // Optional based on schema
+    template_id?: T;
     responses: number;
-    client_id: Realm.BSON.ObjectId;
-    project_id: Realm.BSON.ObjectId;
-    campaign_id: Realm.BSON.ObjectId;
+    client_id: T;
+    project_id: T;
+    campaign_id: T;
     campaign_title: string;
-    category_id: Realm.BSON.ObjectId; // Assuming single category association
-    product_id?: Realm.BSON.ObjectId; // Optional product association
-    questions: Array<IReportQuestions>;
+    category_id: T;
+    product_id?: T;
+    questions: Array<IReportQuestions<T>>;
     createdAt: Date;
     updatedAt: Date;
-  };
-  
-  // UPDATED REPORT QUESTIONS TYPE
-  export type IReportQuestions = {
-    _id: Realm.BSON.ObjectId;
+}
+
+// Exporting the Main Report Questions Interface with Generics
+export interface IReportQuestions<T = Realm.BSON.ObjectId> {
+    _id: T;
     text: string;
     order: number;
     input_type: string;
@@ -92,41 +94,60 @@ export type IReport = {
     options: Array<string>;
     unique: boolean;
     updatedAt: Date;
-    dependencies?: Array<IQuestionDependency>; // Optional dependencies
+    dependencies?: Array<IQuestionDependency<T>>;
     validation?: IReportQuestionsValidation;
-  };
-  
-  // NEW DEPENDENCY TYPE
-  export type IQuestionDependency = {
-    questionId: Realm.BSON.ObjectId;
-    triggerValue: string;
-    operator: string;
-  };
+}
 
-  export type IOperator = 'equals' | 'notEquals' | 'greaterThan' | 'lessThan';
-  
-  // UPDATED VALIDATION TYPE
-  export type IReportQuestionsValidation = {
+// Exporting the Main Dependency Interface with Generics
+export interface IQuestionDependency<T = Realm.BSON.ObjectId> {
+    questionId: T;
+    triggerValue: string;
+    operator: IOperator;
+}
+
+// Exporting the Main Validation Interface
+export interface IReportQuestionsValidation {
     required?: boolean;
     minLength?: number;
     maxLength?: number;
     minValue?: number;
     maxValue?: number;
     regex?: IReportQuestionsValidationRegex;
-    fileTypes?: Array<string>; // Made optional to align with possible absence
-  };
-  
-  // REGEX VALIDATION TYPE (unchanged, included for completeness)
-  export type IReportQuestionsValidationRegex = {
+    fileTypes?: Array<string>;
+}
+
+// Exporting the Regex Validation Interface
+export interface IReportQuestionsValidationRegex {
     matches?: string;
     message?: string;
-  };
-  // =================================================
-  
+}
+
+// Exporting the Draft Report Interface, inheriting from IReport with string type for IDs
+export interface IDraftReport extends IReport<string> {
+    questions: Array<IDraftReportQuestions>;
+}
+
+// Exporting the Draft Report Questions Interface, inheriting from IReportQuestions with string type for IDs
+export interface IDraftReportQuestions extends IReportQuestions<string> {
+    // Additional properties specific to draft questions can be added here
+}
+
+// Exporting the Draft Question Dependency Interface, inheriting from IQuestionDependency with string type for IDs
+export interface IDraftQuestionDependency extends IQuestionDependency<string> {
+    // Additional properties specific to draft dependencies can be added here
+}
+
+// Exporting the Draft Validation Interface, directly inheriting from IReportQuestionsValidation as no ID type change is needed
+export interface IDraftReportQuestionsValidation extends IReportQuestionsValidation {
+    // Additional properties specific to draft validation can be added here
+}
+
+// Exporting the Draft Regex Validation Interface, directly inheriting from IReportQuestionsValidationRegex as no ID type change is needed
+export interface IDraftReportQuestionsValidationRegex extends IReportQuestionsValidationRegex {
+    // Additional properties specific to draft regex validation can be added here
+}
 
 
-
-  
 export const ICampaignSchema = {
     name: 'ICampaign',
     properties: {
@@ -178,7 +199,7 @@ export type ICampaign_routes_routeAddress = {
 export type ICampaign_routes_routeAddress_location = {
     coordinates?: Array<number>;
     type: string;
-  };
+};
 export const ICampaign_routes_routeAddressSchema = {
     name: 'ICampaign_routes_routeAddress',
     embedded: true,

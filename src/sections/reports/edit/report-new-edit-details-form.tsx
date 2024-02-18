@@ -9,7 +9,6 @@ import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import {
   JOB_WORKING_SCHEDULE_OPTIONS,
@@ -22,17 +21,18 @@ import {
   RHFMultiCheckbox,
 } from 'src/components/hook-form';
 
+import { ICampaign } from 'src/types/realm/realm-types';
+
 // ----------------------------------------------------------------------
 
 
-export default function ReportNewEditDetailsForm() {
+export default function ReportNewEditDetailsForm({campaigns, campaignsLoading}: { campaigns?: ICampaign[], campaignsLoading?: boolean }) {
   const { setValue, watch } = useFormContext();
 
   const campaingsValue = watch("campaign_id");
 
   const mdUp = useResponsive('up', 'md');
 
-  const { campaigns, loading } = useCampaigns();
 
 
   const renderDetails = (
@@ -103,8 +103,8 @@ export default function ReportNewEditDetailsForm() {
                 name="campaign_id"
                 label="Campaign"
                 placeholder="Search campaign..."
-                loading={loading}
-                options={campaigns.map(cmpg => cmpg._id)}
+                loading={campaignsLoading}
+                options={Array.isArray(campaigns) ? campaigns.map(cmpg => cmpg._id) : []}
                 getOptionLabel={(option) => {
                   const campaign = campaigns?.find((cmpg) => cmpg._id === option);
                   if (campaign) {

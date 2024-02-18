@@ -1,21 +1,24 @@
-import { useState, useCallback, useMemo } from 'react';
+import { capitalize } from 'lodash';
+import { UseFormRegister } from 'react-hook-form';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
+import { styled } from '@mui/material/styles';
+import { List, ListItem, Typography } from '@mui/material';
 
-import { useBoolean } from 'src/hooks/use-boolean';
+import { fDateTime } from 'src/utils/format-time';
 
 import Scrollbar from 'src/components/scrollbar';
 
-import { IReportQuestions } from 'src/types/realm/realm-types';
+import { QuestionError, ActualInputType } from 'src/types/report';
+import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
 
 import QuestionInputName from './question-input-name';
+import { IReportQuestionActions } from '../questions-new-edit';
 import QuestionDetailsToolbar from './question-details-toolbar';
-import { alpha, styled } from '@mui/material/styles';
-import { List, ListItem, ListItemSecondaryAction, Typography } from '@mui/material';
-import { capitalize, flatten } from 'lodash';
-import { fDateTime } from 'src/utils/format-time';
+import QuestionDetailsInputType from './question-details-input-type';
 
 // ----------------------------------------------------------------------
 
@@ -35,8 +38,12 @@ type Props = {
   question: IReportQuestions;
   openDetails: boolean;
   onCloseDetails: VoidFunction;
+  actions: IReportQuestionActions;
+  questionError?: QuestionError;
+  register: UseFormRegister<IReport>;
+  index: number;
   //
-  onUpdateQuestion: (onUpdateQuestion: IReportQuestions) => void;
+  // onUpdateQuestion: (onUpdateQuestion: IReportQuestions) => void;
   onDeleteQuestion: VoidFunction;
 };
 
@@ -44,43 +51,44 @@ export default function QuestionDetails({
   question,
   openDetails,
   onCloseDetails,
+  questionError,
+  actions,
+  index,
+  register,
   //
-  onUpdateQuestion,
   onDeleteQuestion,
 }: Props) {
 
   const [questionText, setQuestionText] = useState(question.text);
 
-  const like = useBoolean();
-
-  const contacts = useBoolean();
 
   // const [taskDescription, setTaskDescription] = useState(task.description);
 
   // const rangePicker = useDateRangePicker(task.due[0], task.due[1]);
 
   const handleChangeQuestionName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuestionText(event.target.value);
+    setQuestionText(event.target.value)
   }, []);
 
   const handleUpdateTask = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       try {
         if (event.key === 'Enter') {
+
           if (questionText) {
-            onUpdateQuestion({
-              ...question,
-              text: questionText,
-            });
+            actions.handleChangeQuestionText(index, questionText)
           }
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [onUpdateQuestion, question, questionText]
+    [questionText, index, actions]
   );
 
+  const handleChangeInputType = (inputType: ActualInputType) => {
+    actions.handleChangeInputType(index, inputType)
+  }
   const renderHead = (
     <QuestionDetailsToolbar
       questionName={question.text}
@@ -89,13 +97,37 @@ export default function QuestionDetails({
     />
   );
 
+  useEffect(() => {
+    setQuestionText(question.text)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openDetails])
+
+  const textErrorMessage = useMemo(() => questionError?.text?.message, [questionError?.text?.message]);
+
   const renderName = (
     <QuestionInputName
       placeholder="Question"
       value={questionText}
+      name={`questions.${index}.text`}
+      register={register}
       onChange={handleChangeQuestionName}
       onKeyUp={handleUpdateTask}
+      error={!!textErrorMessage}
+      helperText={textErrorMessage}
+      fullWidth // Assuming you want the input to take the full width
     />
+  );
+
+  const inputType = useMemo(() => question.input_type, [question.input_type])
+
+
+  const renderInputType = (
+    <Stack direction="row" alignItems="start">
+      <StyledLabel>Input Type</StyledLabel>
+
+      <QuestionDetailsInputType inputType={inputType as unknown as ActualInputType} onChangeInputType={handleChangeInputType} />
+    </Stack>
   );
 
   const details = useMemo(() => (
@@ -110,17 +142,18 @@ export default function QuestionDetails({
         && key !== "text"
         && key !== "__typename"
       )
-      ).map(([key, value]) => {
+      ).map(([key, value], i) => {
         let val;
+        const idx = key + i;
         switch (key.toLowerCase()) {
           case "options":
             val =
-              <Stack direction="row" key={key} alignItems="start">
+              <Stack direction="row" key={idx} alignItems="start">
                 <StyledLabel>{capitalize(key)}</StyledLabel>
                 <List disablePadding>
                   {Array.isArray(value) &&
-                    value.map((v, i) => (
-                      <ListItem disableGutters disablePadding key={v.toString() + i}>
+                    value.map((v, indx) => (
+                      <ListItem disableGutters disablePadding key={v.toString() + indx}>
                         <Typography variant="caption" sx={{ mb: 0.5 }}>
                           {v.toString()}
                         </Typography>
@@ -132,23 +165,19 @@ export default function QuestionDetails({
 
             break;
           case "input_type":
-            val =
-              <Stack direction="row" key={key} alignItems="center">
-                <StyledLabel>{"Input Type"}</StyledLabel>
-                <Typography variant='caption'>{capitalize(value.toString())}</Typography>
-              </Stack>;
+            val = renderInputType;
             break;
           case "updatedat":
             val =
-              <Stack direction="row" key={key} alignItems="center">
-                <StyledLabel>{"Updated At"}</StyledLabel>
+              <Stack direction="row" key={index} alignItems="center">
+                <StyledLabel>Updated At</StyledLabel>
                 <Typography variant='caption'>{fDateTime(value.toLocaleString())}</Typography>
               </Stack>;
             break;
           case "string":
           default:
             val =
-              <Stack direction="row" key={key} alignItems="center">
+              <Stack direction="row" key={index} alignItems="center">
                 <StyledLabel>{capitalize(key)}</StyledLabel>
                 <Typography variant='caption'>{capitalize(typeof value !== "string" ? value.toString() : value)}</Typography>
               </Stack>;
@@ -164,137 +193,23 @@ export default function QuestionDetails({
   const renderDetails = (details)
 
   const renderValidations = (
-    question.validation && Object.entries(question.validation).filter(([key, value]) => key !== "__typename" && value !== null).map(([key, value]) => (
-      <Stack direction="row" key={key} alignItems="center">
+    question.validation && Object.entries(question.validation).filter(([key, value]) => key !== "__typename" && value !== null).map(([key, value], i) => (
+      <Stack direction="row" key={key + i} alignItems="center">
         <StyledLabel>{capitalize(key)}</StyledLabel>
         <Typography variant='caption'>{JSON.stringify(value)}</Typography>
       </Stack>
     ))
   )
+
 
   const renderDependencies = (
-    question.dependencies && Object.entries(question.dependencies).filter(([key, value]) => key !== "__typename" && value !== null).map(([key, value]) => (
-      <Stack direction="row" key={key} alignItems="center">
+    question.dependencies && Object.entries(question.dependencies).filter(([key, value]) => key !== "__typename" && value !== null).map(([key, value], i) => (
+      <Stack direction="row" key={key + i} alignItems="center">
         <StyledLabel>{capitalize(key)}</StyledLabel>
         <Typography variant='caption'>{JSON.stringify(value)}</Typography>
       </Stack>
     ))
   )
-
-  // const renderAssignee = (
-  //   <Stack direction="row">
-  //     <StyledLabel sx={{ height: 40, lineHeight: '40px' }}>Assignee</StyledLabel>
-
-  //     <Stack direction="row" flexWrap="wrap" alignItems="center" spacing={1}>
-  //       {task.assignee.map((user) => (
-  //         <Avatar key={user.id} alt={user.name} src={user.avatarUrl} />
-  //       ))}
-
-  //       <Tooltip title="Add assignee">
-  //         <IconButton
-  //           onClick={contacts.onTrue}
-  //           sx={{
-  //             bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-  //             border: (theme) => `dashed 1px ${theme.palette.divider}`,
-  //           }}
-  //         >
-  //           <Iconify icon="mingcute:add-line" />
-  //         </IconButton>
-  //       </Tooltip>
-
-  //       <KanbanContactsDialog
-  //         assignee={task.assignee}
-  //         open={contacts.value}
-  //         onClose={contacts.onFalse}
-  //       />
-  //     </Stack>
-  //   </Stack>
-  // );
-
-  // const renderLabel = (
-  //   <Stack direction="row">
-  //     <StyledLabel sx={{ height: 24, lineHeight: '24px' }}>Labels</StyledLabel>
-
-  //     {!!task.labels.length && (
-  //       <Stack direction="row" flexWrap="wrap" alignItems="center" spacing={1}>
-  //         {task.labels.map((label) => (
-  //           <Chip key={label} color="info" label={label} size="small" variant="soft" />
-  //         ))}
-  //       </Stack>
-  //     )}
-  //   </Stack>
-  // );
-
-  // const renderDueDate = (
-  //   <Stack direction="row" alignItems="center">
-  //     <StyledLabel> Due date </StyledLabel>
-
-  //     {rangePicker.selected ? (
-  //       <Button size="small" onClick={rangePicker.onOpen}>
-  //         {rangePicker.shortLabel}
-  //       </Button>
-  //     ) : (
-  //       <Tooltip title="Add due date">
-  //         <IconButton
-  //           onClick={rangePicker.onOpen}
-  //           sx={{
-  //             bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-  //             border: (theme) => `dashed 1px ${theme.palette.divider}`,
-  //           }}
-  //         >
-  //           <Iconify icon="mingcute:add-line" />
-  //         </IconButton>
-  //       </Tooltip>
-  //     )}
-
-  //     <CustomDateRangePicker
-  //       variant="calendar"
-  //       title="Choose due date"
-  //       startDate={rangePicker.startDate}
-  //       endDate={rangePicker.endDate}
-  //       onChangeStartDate={rangePicker.onChangeStartDate}
-  //       onChangeEndDate={rangePicker.onChangeEndDate}
-  //       open={rangePicker.open}
-  //       onClose={rangePicker.onClose}
-  //       selected={rangePicker.selected}
-  //       error={rangePicker.error}
-  //     />
-  //   </Stack>
-  // );
-
-  // const renderPriority = (
-  //   <Stack direction="row" alignItems="center">
-  //     <StyledLabel>Priority</StyledLabel>
-
-  //     <KanbanDetailsPriority priority={priority} onChangePriority={handleChangePriority} />
-  //   </Stack>
-  // );
-
-  // const renderDescription = (
-  //   <Stack direction="row">
-  //     <StyledLabel> Description </StyledLabel>
-
-  //     <TextField
-  //       fullWidth
-  //       multiline
-  //       size="small"
-  //       value={taskDescription}
-  //       onChange={handleChangeTaskDescription}
-  //       InputProps={{
-  //         sx: { typography: 'body2' },
-  //       }}
-  //     />
-  //   </Stack>
-  // );
-
-  // const renderAttachments = (
-  //   <Stack direction="row">
-  //     <StyledLabel>Attachments</StyledLabel>
-  //     <KanbanDetailsAttachments attachments={task.attachments} />
-  //   </Stack>
-  // );
-
-  // const renderComments = <KanbanDetailsCommentList comments={task.comments} />;
 
   return (
     <Drawer
@@ -355,25 +270,10 @@ export default function QuestionDetails({
 
           {renderDependencies}
 
-          {/* {renderReporter}
-
-          {renderAssignee}
-
-          {renderLabel}
-
-          {renderDueDate}
-
-          {renderPriority}
-
-          {renderDescription}
-
-          {renderAttachments} */}
         </Stack>
 
-        {/* {!!task.comments.length && renderComments} */}
       </Scrollbar>
 
-      {/* <KanbanDetailsCommentInput /> */}
     </Drawer>
   );
 }

@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 
 import {
   getClientIndex,
+  createObjectId,
   addValueAtIndex,
+  convertObjectId,
   updateValueAtIndex,
   removeValueAtIndex,
   replaceValueAtIndex,
@@ -27,7 +29,7 @@ export function useReports(lazy: boolean = true): IReportHook {
   const [reports, setReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState(null);
-  
+
   console.log(errors, 'ERRORS')
 
   useEffect(() => {
@@ -154,7 +156,7 @@ export function useReports(lazy: boolean = true): IReportHook {
     },
   });
 
-  const saveReport = async (draftReport: IReport) => {
+  const saveReport = async (draftReport: IReport): Promise<BSON.ObjectId> => {
     // draftReport.creator_id = realmApp.currentUser?.id as string;
     const dt = new Date();
     const cpReport: Omit<IReport, "_id"> = {
@@ -163,7 +165,7 @@ export function useReports(lazy: boolean = true): IReportHook {
       updatedAt: dt
     }
     try {
-      await graphql.mutate({
+      const resp = await graphql.mutate<{ _id: string }>({
         mutation: gql`
             mutation SaveReport($report: ReportInsertInput!) {
               insertOneReport(data: $report) {
@@ -174,6 +176,8 @@ export function useReports(lazy: boolean = true): IReportHook {
           `,
         variables: { report: cpReport },
       });
+      return resp.data?._id ? convertObjectId(resp.data._id) : createObjectId();
+
     } catch (err) {
       if (err.message.match(/^Duplicate key error/)) {
         console.warn(
@@ -184,21 +188,49 @@ export function useReports(lazy: boolean = true): IReportHook {
       throw err;
     }
   };
-  const updateReport = async (report: IReport) => {
-    await graphql.mutate({
-      mutation: gql`
-        mutation UpdateProduct($id: ObjectId!, $ReportUpdateInput: ReportUpdateInput!) {
-          updateOneReport(query: { _id: $id }, set: $ReportUpdateInput) {
-            _id
+
+  const updateReport = async (report: IReport): Promise<BSON.ObjectId> => {
+    try {
+      const resp = await graphql.mutate<{ _id: string }>({
+        mutation: gql`
+          mutation UpdateProduct($id: ObjectId!, $ReportUpdateInput: ReportUpdateInput!) {
+            updateOneReport(query: { _id: $id }, set: $ReportUpdateInput) {
+              _id
+            }
           }
-        }
-      `,
-      variables: {
-        id: report._id,
-        ReportUpdateInput: { ...report }
-      },
-    });
+        `,
+        variables: {
+          id: report._id,
+          ReportUpdateInput: { ...report }
+        },
+      });
+      return resp.data?._id ? convertObjectId(resp.data._id) : createObjectId();
+
+    } catch (err) {
+      if (err.message.match(/^Duplicate key error/)) {
+        console.warn(
+          `The following error means that this app tried to insert a Report multiple times (i.e. an existing Report has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
+        );
+      }
+      console.error(err);
+      throw err;
+    }
   };
+  // const updateReport = async (report: IReport) => {
+  //   await graphql.mutate({
+  //     mutation: gql`
+  //       mutation UpdateProduct($id: ObjectId!, $ReportUpdateInput: ReportUpdateInput!) {
+  //         updateOneReport(query: { _id: $id }, set: $ReportUpdateInput) {
+  //           _id
+  //         }
+  //       }
+  //     `,
+  //     variables: {
+  //       id: report._id,
+  //       ReportUpdateInput: { ...report }
+  //     },
+  //   });
+  // };
 
   const getReport = async (id: string) => {
     try {

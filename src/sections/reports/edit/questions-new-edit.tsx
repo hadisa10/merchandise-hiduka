@@ -1,31 +1,45 @@
+import { isString } from 'lodash';
+// import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Droppable, DropResult, DragDropContext } from '@hello-pangea/dnd';
-// import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
-import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
 
 import Grid from '@mui/material/Unstable_Grid2';
-import { Box, Button, List, Paper, Stack, Typography } from '@mui/material';
+import { Box, List, Paper, Typography } from '@mui/material';
 
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
+import { ActualInputType } from 'src/types/report';
+import { IReport, ICampaign, IReportQuestions, IQuestionDependency, IReportQuestionsValidation } from 'src/types/realm/realm-types';
 
 import QuestionItem from './question-item';
-import Iconify from 'src/components/iconify';
-import { useBoolean } from 'src/hooks/use-boolean';
 import QuestionAdd from './question/question-add';
 import QuestionsColumnToolBar from './question/question-column-tool-bar';
-import { isString } from 'lodash';
 
-const QuestionsNewEditList: React.FC = () => {
+
+export interface IReportQuestionActions {
+  handleAddValidation: (questionIndex: number, newValidation: Partial<IReportQuestionsValidation>) => void;
+  handleChangeInputType: (questionIndex: number, newInputType: ActualInputType) => void;
+  handleAddDependency: (questionIndex: number, newDependency: IQuestionDependency) => void;
+  handleChangeQuestionText: (questionIndex: number, text: string) => void;
+  handleRemoveQuestion: (index: number) => void;
+  handleRemoveValidation: (questionIndex: number, validationKey: keyof IReportQuestionsValidation) => void;
+  // You can add more actions here as needed
+}
+
+const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICampaign[], campaignsLoading?: boolean }) => {
 
   const mdUp = useResponsive('up', 'md');
 
   const openAddQuestion = useBoolean();
 
-  const { control, watch } = useFormContext<IReport>(); // TypeScript assertion
+  const dragStarted = useBoolean();
 
-  const { fields: questions, prepend, remove, move } = useFieldArray({
+  const { control, watch, formState: { errors }, register } = useFormContext<IReport>();
+
+
+  const { fields: questions, prepend, remove, move, update } = useFieldArray({
     control,
     name: "questions",
   });
@@ -39,13 +53,15 @@ const QuestionsNewEditList: React.FC = () => {
     const { source, destination } = result;
 
     // Do nothing if the item is dropped outside the list or dropped into the same place
-    if (!destination || (source.index === destination.index)) {
+    if (!destination || source.index === destination.index) {
       return;
     }
 
-    // Use the `move` method to reorder the questions
+    // Perform the move operation
     move(source.index, destination.index);
-  }, [move]);
+    dragStarted.onFalse()
+
+  }, [move, questions, update]);
 
   const addQuestion = (newQuestion: IReportQuestions) => {
     if (!isString(newQuestion.text)) return;
@@ -54,8 +70,61 @@ const QuestionsNewEditList: React.FC = () => {
   };
 
 
+  useEffect(() => {
+    if (!dragStarted.value) {
+      questions.forEach((question, index) => {
+        // Assuming the order starts at 1 and matches the array index + 1
+        update(index, { ...question, order: index + 1 });
+      });
+    }
+
+  }, [dragStarted.value])
 
 
+  const handleAddValidation = useCallback((questionIndex: number, newValidation: Partial<IReportQuestionsValidation>) => {
+    const question = questions[questionIndex];
+    const updatedValidation = { ...question.validation, ...newValidation };
+    update(questionIndex, { ...question, validation: updatedValidation });
+  }, [questions, update]); // Add other dependencies as needed
+
+  const handleChangeInputType = useCallback((questionIndex: number, newInputType: ActualInputType) => {
+    const question = questions[questionIndex];
+    update(questionIndex, { ...question, input_type: newInputType });
+  }, [questions, update]);
+
+  const handleChangeQuestionText = useCallback((questionIndex: number, text: string) => {
+    const question = questions[questionIndex];
+    console.log(question, "question")
+    update(questionIndex, { ...question, text });
+  }, [questions, update]);
+
+  const handleAddDependency = useCallback((questionIndex: number, newDependency: IQuestionDependency) => {
+    const question = questions[questionIndex];
+    const updatedDependencies = question.dependencies ? [...question.dependencies, newDependency] : [newDependency];
+    update(questionIndex, { ...question, dependencies: updatedDependencies });
+  }, [questions, update]);
+
+  const handleRemoveQuestion = useCallback((index: number) => {
+    remove(index);
+  }, [remove]);
+
+  const handleRemoveValidation = useCallback((questionIndex: number, validationKey: keyof IReportQuestionsValidation) => {
+    const question = questions[questionIndex];
+    const updatedValidation = { ...question.validation, [validationKey]: undefined };
+    update(questionIndex, { ...question, validation: updatedValidation });
+  }, [questions, update]);
+
+
+  // Then you can group these into an actions object if you like, or pass them directly as props.
+
+  const actions: IReportQuestionActions = {
+    handleAddDependency,
+    handleAddValidation,
+    handleChangeQuestionText,
+    handleChangeInputType,
+    handleRemoveQuestion,
+    handleRemoveValidation
+  }
   const renderSummary = (
     <>
       {mdUp && (
@@ -104,16 +173,19 @@ const QuestionsNewEditList: React.FC = () => {
           onClearQuestions={() => console.log("Clear Questions")}
         />
         {renderAddTask}
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={onDragEnd} onDragStart={dragStarted.onTrue}>
           <Droppable droppableId="reports">
             {(provided) => (
               <List ref={provided.innerRef} sx={{ maxHeight: "60vh", overflowY: "auto" }} {...provided.droppableProps}>
-                {(Array.isArray(questions)) && questions.map((question, index) => (
+                {(Array.isArray(questions)) && questions.map((q, index) => (
                   <QuestionItem
-                    key={question._id.toString()}
+                    key={q._id.toString()}
                     index={index}
-                    question={question}
-                    onUpdateQuestion={(question) => console.log(question)}
+                    actions={actions}
+                    question={q}
+                    register={register}
+                    questionError={errors.questions?.[index]} // Pass the corresponding error
+                    onUpdateQuestion={(q) => console.log(q)}
                     onDeleteQuestion={() => console.log("QUESTION DELETED")}
                   />
                 ))}

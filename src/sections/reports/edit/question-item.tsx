@@ -1,13 +1,12 @@
 import { Draggable } from '@hello-pangea/dnd';
+import { UseFormRegister } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { ListItem } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { ListItem, IconButton } from '@mui/material';
 import Paper, { PaperProps } from '@mui/material/Paper';
-import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -15,8 +14,10 @@ import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 
-import { IReportQuestions } from 'src/types/realm/realm-types';
+import { QuestionError } from 'src/types/report';
+import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
 
+import { IReportQuestionActions } from './questions-new-edit';
 import QuestionDetails from './question/question-item-details';
 
 // import KanbanDetails from './kanban-details';
@@ -28,6 +29,9 @@ type Props = PaperProps & {
   question: IReportQuestions;
   onUpdateQuestion: (question: IReportQuestions) => void;
   onDeleteQuestion: VoidFunction;
+  questionError?: QuestionError;
+  register: UseFormRegister<IReport>;
+  actions: IReportQuestionActions;
 };
 
 export default function QuestionItem({
@@ -35,6 +39,9 @@ export default function QuestionItem({
   index,
   onDeleteQuestion,
   onUpdateQuestion,
+  questionError,
+  register,
+  actions,
   sx,
   ...other
 }: Props) {
@@ -42,27 +49,53 @@ export default function QuestionItem({
 
   const openDetails = useBoolean();
 
-  const renderPriority = (
+  const handleToggleUnique = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation(); // Prevent click event from bubbling up
+    console.log("TOGGLE");
+    // Your toggle logic here
+  }
+  const renderInputType = (
     <Iconify
       icon={
-        (question.validation?.required && 'solar:double-alt-arrow-down-bold-duotone') ||
-        (!question.validation?.required && 'solar:double-alt-arrow-right-bold-duotone') ||
-        'solar:double-alt-arrow-up-bold-duotone'
+        (question.input_type === 'text' && 'ic:baseline-text-fields') ||
+        (question.input_type === 'number' && 'ic:baseline-numeric') ||
+        (question.input_type === 'select' && 'ic:baseline-arrow-drop-down-circle') ||
+        (question.input_type === 'radio' && 'ic:baseline-radio-button-checked') ||
+        (question.input_type === 'checkbox' && 'ic:baseline-check-box') ||
+        (question.input_type === 'date' && 'ic:baseline-event') ||
+        (question.input_type === 'email' && 'ic:baseline-email') ||
+        (question.input_type === 'file' && 'ic:baseline-attach-file') ||
+        (question.input_type === 'password' && 'ic:baseline-password') ||
+        (question.input_type === 'range' && 'ic:baseline-tune') ||
+        (question.input_type === 'url' && 'ic:baseline-link') ||
+        'ic:baseline-help-outline' // Default icon if no match
       }
       sx={{
         position: 'absolute',
         top: 4,
         right: 4,
-        ...(question.validation?.required && {
-          color: 'error.main',
-        }),
-        ...(isNaN(question.order) && {
-          color: 'info.main',
-        })
-
+        color: (() => {
+          switch (question.input_type) {
+            case 'text':
+            case 'number':
+            case 'select':
+            case 'radio':
+            case 'checkbox':
+            case 'date':
+            case 'email':
+            case 'file':
+            case 'password':
+            case 'range':
+            case 'url':
+              return 'primary.main'; // Change color based on input type if needed
+            default:
+              return 'action.active';
+          }
+        })()
       }}
     />
   );
+
 
   const renderImg = (
     <Box
@@ -83,39 +116,19 @@ export default function QuestionItem({
       />
     </Box>
   );
-
   const renderInfo = (
-    <Stack direction="row" alignItems="center">
-      <Stack
-        flexGrow={1}
-        direction="row"
-        alignItems="center"
+    <Stack direction="row" alignItems="center" sx={{ typography: 'caption', color: 'text.secondary', ml: -1 }}>
+      <IconButton
+        onClick={handleToggleUnique}
         sx={{
-          typography: 'caption',
-          color: 'text.disabled',
+          color: question.unique ? 'success.main' : 'inherit',
         }}
       >
-        <Iconify width={16} icon="solar:chat-round-dots-bold" sx={{ mr: 0.25 }} />
-        <Box component="span" sx={{ mr: 1 }}>
-          {question.validation?.maxLength ?? 0}
-        </Box>
-
-        <Iconify width={16} icon="eva:attach-2-fill" sx={{ mr: 0.25 }} />
-        <Box component="span">{question.validation?.maxLength ?? 0}</Box>
-      </Stack>
-
-      <AvatarGroup
-        sx={{
-          [`& .${avatarGroupClasses.avatar}`]: {
-            width: 24,
-            height: 24,
-          },
-        }}
-      >
-        {/* {question.t.map((user) => ( */}
-        <Avatar key="T" alt="T" src="T" />
-        {/* ))} */}
-      </AvatarGroup>
+        <Iconify icon={question.unique ? "akar-icons:circle-check-fill" : "akar-icons:circle-x-fill"} />
+      </IconButton>
+      <Box component="span">
+        {`Unique: ${question.unique}`}
+      </Box>
     </Stack>
   );
 
@@ -157,7 +170,7 @@ export default function QuestionItem({
               {/* {!!question..length && renderImg} */}
 
               <Stack spacing={2} sx={{ px: 2, py: 2.5, position: 'relative' }}>
-                {renderPriority}
+                {renderInputType}
 
                 <Typography variant="subtitle2">{question.text}</Typography>
 
@@ -170,9 +183,13 @@ export default function QuestionItem({
 
       <QuestionDetails
         question={question}
+        index={index}
+        questionError={questionError}
+        register={register}
+        actions={actions}
         openDetails={openDetails.value}
         onCloseDetails={openDetails.onFalse}
-        onUpdateQuestion={onUpdateQuestion}
+        // onUpdateQuestion={onUpdateQuestion}
         onDeleteQuestion={onDeleteQuestion}
       />
     </>

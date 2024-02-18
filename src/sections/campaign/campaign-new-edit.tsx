@@ -179,7 +179,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const tabErrors = useCallback((tab: string) => {
     const y = Object.entries(errors).filter(([key, val]) => {
-      console.log(key, "ERROR KEYS")
       switch (tab) {
         case 'details':
           return DETAILS_FIELDS.includes(key)
