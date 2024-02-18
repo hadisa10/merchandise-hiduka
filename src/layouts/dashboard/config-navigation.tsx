@@ -66,9 +66,10 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
   // OVERVIEW
   // ----------------------------------------------------------------------
   {
-    subheader: t('overview'),
+    subheader: t('Analysis'),
     items: [
-      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      { title: t('Dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      { title: t('Reports Analysis'), path: paths.dashboard.analytics, icon: ICONS.file },
     ],
   },
 

@@ -163,13 +163,13 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     const routeForForm: ICampaign_routes = {
       _id: createObjectId(), // Ensure _id is a string to match the form's expectation
       routeAddress: rtAddrs,
-      routeNumber: 1,
+      routeNumber: Array.isArray(campaignRoutes) ? campaignRoutes.length + 1 : 1,
       totalQuantity: 0,
       createdAt: dt,
       updatedAt: dt,
     };
     append(routeForForm);
-  }, [append]);
+  }, [append, campaignRoutes]);
 
   const handleRemoveNewRoute = useCallback((routeIndex: number) => {
     if (isNumber(routeIndex)) {
@@ -179,7 +179,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const tabErrors = useCallback((tab: string) => {
     const y = Object.entries(errors).filter(([key, val]) => {
-      console.log(key, "ERROR KEYS")
       switch (tab) {
         case 'details':
           return DETAILS_FIELDS.includes(key)

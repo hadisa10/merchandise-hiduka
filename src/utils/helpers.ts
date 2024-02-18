@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
-import { isNumber } from "lodash";
+import * as Realm from 'realm-web';
+import _, { isNumber } from 'lodash';
 import { cloneElement } from "react";
 
 export async function convertBlobToFile(blob: string, fileName: string): Promise<File | null> {
@@ -62,12 +63,141 @@ export const calculateTax = (price: number, tax: number, quantity: number): { ta
 }
 
 export const generate = (element: React.ReactElement, size: number = 3) => {
-    const arr = Array.from({ length: size }, (_, index) => index + 1)
+    const arr = Array.from({ length: size }, (__, index) => index + 1)
     return arr.map((value) =>
-      cloneElement(element, {
-        key: value,
-      }),
+        cloneElement(element, {
+            key: value,
+        }),
     );
-  }
+}
 export const hyphenateEvery4Letters = (input: string) => input?.replace(/(.{4})(?=.{1,})/g, '$1-');
 
+
+export async function uploadImages(data: { images: File[] }, currentUser: Realm.User) {
+    // Your existing code for checks...
+
+    const uploadResults = await Promise.all(data.images.map(file =>
+        uploadImage(file, currentUser).catch(error => ({ error: error.toString() }))
+    ));
+
+    // Filter out successfully uploaded images and extract URLs
+    const imageUrls: string[] = uploadResults
+        .filter((result): result is { url: string } => result && 'url' in result)
+        .map(result => result.url);
+
+    // Optionally, collect errors for reporting
+    const errors = uploadResults
+        .filter((result): result is { error: string } => result && 'error' in result)
+        .map(result => result.error);
+
+    return {
+        images: imageUrls,
+        coverUrl: imageUrls[0] ?? '', // Fallback to an empty string if there's no image
+        errors, // You can return errors for further handling if needed
+    };
+}
+
+export async function uploadImage(file: File, currentUser: Realm.User): Promise<{ url?: string, error?: string }> {
+    const base64FileContent = await fileToBase64(file);
+    const fileDetails = {
+        base64FileContent,
+        name: file.name,
+        path: '', // Adjust based on your file organization needs
+        contentType: file.type,
+    };
+
+    try {
+        const url = await currentUser.functions.uploadFile(fileDetails);
+
+        // Check for structured error responses
+        if (_.isArray(url) && _.some(url, obj => _.has(obj, 'error'))) {
+            return { error: `Upload failed: ${_.get(url, '[0].error', 'Unknown error')}` };
+        }
+
+        if (_.has(url, 'error')) {
+            console.error('Upload failed:', url.error);
+            return { error: `Upload failed: ${url.error}` };
+        }
+
+        // Assuming url is a string if there's no error
+        return { url };
+    } catch (error) {
+        console.error('Upload failed:', error);
+        return { error: error instanceof Error ? error.message : 'Unknown upload error' };
+    }
+}
+
+export async function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = _.replace(reader.result as string, /^data:.+;base64,/, '');
+            resolve(base64String);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+export const removeAndFormatNullFields = <T>(
+    data: T,
+    formatOptionsArray?: { key: keyof T; formatter: (value: any) => any }[],
+    removeFields?: (keyof T)[]
+): T | undefined => {
+    // Check if the data is an object and not null
+    if (typeof data === 'object' && data !== null) {
+        // Use generics to preserve the structure of arrays or objects
+        return Object.entries(data).reduce((acc: any, [key, value]) => {
+            // Skip any field that is in the removeFields list or has key __typename
+            if (key === '__typename' || removeFields?.includes(key as keyof T)) {
+                return acc;
+            }
+            // Check if the current key has a specified format option
+            const formatOption = formatOptionsArray?.find(option => option.key === key);
+            if (formatOption) {
+                // Apply the formatter function if found
+                value = formatOption.formatter(value);
+            }
+            // Recursively clean the value
+            const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields);
+            // If the cleaned value is not undefined, add it to the accumulator
+            if (cleanedValue !== undefined) {
+                acc[key] = cleanedValue;
+            }
+            return acc;
+        }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
+    } 
+        // Return the value if it's not null, otherwise return undefined
+        return data !== null ? data : undefined;
+    
+};
+export const safeDateFormatter = (value: string): string => {
+    // Check if the value is a valid date string
+    const timestamp = Date.parse(value);
+    if (!Number.isNaN(timestamp)) {
+        // If valid, return a Date object for the value
+        return new Date(value).toISOString();
+    } 
+        // If not valid, return a new Date object
+        return new Date().toISOString();
+    
+};
+
+
+export const removeNullFields = <T>(data: T): T | undefined => {
+    // Check if the data is an object and not null
+    if (typeof data === 'object' && data !== null) {
+        // Use generics to preserve the structure of arrays or objects
+        return Object.entries(data).reduce((acc: any, [key, value]) => {
+            // Recursively clean the value
+            const cleanedValue = removeNullFields(value);
+            // If the cleaned value is not undefined, add it to the accumulator
+            if (cleanedValue !== undefined) { // Adjusted to check against undefined
+                acc[key] = cleanedValue;
+            }
+            return acc;
+        }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
+    } 
+        // Return the value if it's not null, otherwise return undefined
+        return data !== null ? data : undefined;
+    
+};

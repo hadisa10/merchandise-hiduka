@@ -275,9 +275,9 @@ export default function CampaignListDataGrid() {
     }
   });
   return (
+    <FormProvider methods={methods} onSubmit={onSubmit}>
 
-    <Grid container spacing={3} height="100%">
-      <FormProvider methods={methods} onSubmit={onSubmit}>
+      <Grid container spacing={3} height="100%">
 
         <Card
           sx={{
@@ -396,8 +396,8 @@ export default function CampaignListDataGrid() {
             </Button>
           }
         />
-      </FormProvider>
-    </Grid>
+      </Grid>
+    </FormProvider>
   );
 }
 
