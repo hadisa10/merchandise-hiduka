@@ -1,33 +1,39 @@
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Droppable, DropResult, DragDropContext } from '@hello-pangea/dnd';
+// import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
 import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
 
 import Grid from '@mui/material/Unstable_Grid2';
-import { List, Paper, Typography } from '@mui/material';
+import { Box, Button, List, Paper, Stack, Typography } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { IReportQuestions } from 'src/types/realm/realm-types';
+import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
 
 import QuestionItem from './question-item';
+import Iconify from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
+import QuestionAdd from './question/question-add';
+import QuestionsColumnToolBar from './question/question-column-tool-bar';
+import { isString } from 'lodash';
 
 const QuestionsNewEditList: React.FC = () => {
 
   const mdUp = useResponsive('up', 'md');
 
-  const { control } = useFormContext<{ questions: IReportQuestions[] }>(); // TypeScript assertion
+  const openAddQuestion = useBoolean();
 
-  const { fields: questions, append, remove, move } = useFieldArray({
+  const { control, watch } = useFormContext<IReport>(); // TypeScript assertion
+
+  const { fields: questions, prepend, remove, move } = useFieldArray({
     control,
     name: "questions",
   });
 
-  useEffect(() => {
-    console.log(questions, 'QUESTIONS')
-  }, [questions])
+  const reportName = watch("title");
 
-  const [reports, setReports] = useState<string[]>([]);
-  const [newReport, setNewReport] = useState<string>('');
+  // const [reports, setReports] = useState<string[]>([]);
+  // const [newReport, setNewReport] = useState<string>('');
 
   const onDragEnd = useCallback((result: DropResult) => {
     const { source, destination } = result;
@@ -41,19 +47,14 @@ const QuestionsNewEditList: React.FC = () => {
     move(source.index, destination.index);
   }, [move]);
 
-  const addReport = () => {
-    if (!newReport.trim()) return;
-    setReports((prevReports) => [...prevReports, newReport]);
-    setNewReport('');
+  const addQuestion = (newQuestion: IReportQuestions) => {
+    if (!isString(newQuestion.text)) return;
+    if (!newQuestion.text.trim()) return;
+    prepend(newQuestion)
   };
 
-  const handleNewReportChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setNewReport(event.target.value);
-  };
 
-  const handleNewReportKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter') addReport();
-  };
+
 
   const renderSummary = (
     <>
@@ -69,21 +70,44 @@ const QuestionsNewEditList: React.FC = () => {
       )}
     </>
   )
+
+  const renderAddTask = (
+    openAddQuestion.value && (
+      <Box
+        sx={{
+          py: 2,
+          px: 2
+        }}
+      >
+        <QuestionAdd
+          onAddQuestion={addQuestion}
+          onCloseQuestion={openAddQuestion.onFalse}
+        />
+      </Box>
+    )
+  );
   const renderQuestions = (
     <Grid xs={12} md={8}>
+
       <Paper
         sx={{
           p: mdUp ? 0.5 : 0.1,
           borderRadius: 2,
+          position: "relative",
           bgcolor: 'background.neutral',
-          maxHeight: "60vh",
-          overflowY: "auto"
+
         }}
       >
+        <QuestionsColumnToolBar
+          openAddQuestion={openAddQuestion.onTrue}
+          reportName={reportName as unknown as string ?? ""}
+          onClearQuestions={() => console.log("Clear Questions")}
+        />
+        {renderAddTask}
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="reports">
             {(provided) => (
-              <List ref={provided.innerRef} {...provided.droppableProps}>
+              <List ref={provided.innerRef} sx={{ maxHeight: "60vh", overflowY: "auto" }} {...provided.droppableProps}>
                 {(Array.isArray(questions)) && questions.map((question, index) => (
                   <QuestionItem
                     key={question._id.toString()}

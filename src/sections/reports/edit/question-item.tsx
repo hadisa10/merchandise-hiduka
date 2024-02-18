@@ -45,23 +45,21 @@ export default function QuestionItem({
   const renderPriority = (
     <Iconify
       icon={
-        (isNaN(question.order) && 'solar:double-alt-arrow-down-bold-duotone') ||
-        (question.order === 0 && 'solar:double-alt-arrow-right-bold-duotone') ||
+        (question.validation?.required && 'solar:double-alt-arrow-down-bold-duotone') ||
+        (!question.validation?.required && 'solar:double-alt-arrow-right-bold-duotone') ||
         'solar:double-alt-arrow-up-bold-duotone'
       }
       sx={{
         position: 'absolute',
         top: 4,
         right: 4,
-        ...(isNaN(question.order) && {
-          color: 'info.main',
-        }),
-        ...(question.order === 0 && {
-          color: 'warning.main',
-        }),
-        ...(question.order === 1 && {
+        ...(question.validation?.required && {
           color: 'error.main',
         }),
+        ...(isNaN(question.order) && {
+          color: 'info.main',
+        })
+
       }}
     />
   );

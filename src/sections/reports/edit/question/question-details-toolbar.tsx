@@ -30,7 +30,6 @@ export default function QuestionDetailsToolbar({
 
   const confirm = useBoolean();
 
-
   return (
     <>
       <Stack
@@ -48,6 +47,18 @@ export default function QuestionDetailsToolbar({
           </Tooltip>
         )}
 
+        <Stack direction="row" justifyContent="flex-end" flexGrow={1}>
+
+          <Tooltip title="Delete question">
+            <IconButton onClick={confirm.onTrue}>
+              <Iconify icon="solar:trash-bin-trash-bold" />
+            </IconButton>
+          </Tooltip>
+
+          <IconButton>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        </Stack>
       </Stack>
 
       <ConfirmDialog

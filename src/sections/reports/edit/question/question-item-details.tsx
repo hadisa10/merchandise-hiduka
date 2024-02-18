@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
@@ -12,7 +12,22 @@ import { IReportQuestions } from 'src/types/realm/realm-types';
 
 import QuestionInputName from './question-input-name';
 import QuestionDetailsToolbar from './question-details-toolbar';
+import { alpha, styled } from '@mui/material/styles';
+import { List, ListItem, ListItemSecondaryAction, Typography } from '@mui/material';
+import { capitalize, flatten } from 'lodash';
+import { fDateTime } from 'src/utils/format-time';
 
+// ----------------------------------------------------------------------
+
+const StyledLabel = styled('span')(({ theme }) => ({
+  ...theme.typography.caption,
+  width: 100,
+  flexShrink: 0,
+  color: theme.palette.text.secondary,
+  fontWeight: theme.typography.fontWeightSemiBold,
+}));
+
+// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 
@@ -68,11 +83,8 @@ export default function QuestionDetails({
 
   const renderHead = (
     <QuestionDetailsToolbar
-      liked={like.value}
       questionName={question.text}
-      onLike={like.onToggle}
       onDelete={onDeleteQuestion}
-      questionStatus=""
       onCloseDetails={onCloseDetails}
     />
   );
@@ -86,12 +98,88 @@ export default function QuestionDetails({
     />
   );
 
-  // const renderReporter = (
-  //   <Stack direction="row" alignItems="center">
-  //     <StyledLabel>Reporter</StyledLabel>
-  //     <Avatar alt={task.reporter.name} src={task.reporter.avatarUrl} />
-  //   </Stack>
-  // );
+  const details = useMemo(() => (
+    Object.entries(question)
+      .filter(([key, value]) =>
+      (key !== "__typename"
+        && value !== null
+        && key !== "validation"
+        && key !== "dependencies"
+        && key !== "id"
+        && key !== "_id"
+        && key !== "text"
+        && key !== "__typename"
+      )
+      ).map(([key, value]) => {
+        let val;
+        switch (key.toLowerCase()) {
+          case "options":
+            val =
+              <Stack direction="row" key={key} alignItems="start">
+                <StyledLabel>{capitalize(key)}</StyledLabel>
+                <List disablePadding>
+                  {Array.isArray(value) &&
+                    value.map((v, i) => (
+                      <ListItem disableGutters disablePadding key={v.toString() + i}>
+                        <Typography variant="caption" sx={{ mb: 0.5 }}>
+                          {v.toString()}
+                        </Typography>
+                      </ListItem>
+                    ))
+                  }
+                </List>
+              </Stack>;
+
+            break;
+          case "input_type":
+            val =
+              <Stack direction="row" key={key} alignItems="center">
+                <StyledLabel>{"Input Type"}</StyledLabel>
+                <Typography variant='caption'>{capitalize(value.toString())}</Typography>
+              </Stack>;
+            break;
+          case "updatedat":
+            val =
+              <Stack direction="row" key={key} alignItems="center">
+                <StyledLabel>{"Updated At"}</StyledLabel>
+                <Typography variant='caption'>{fDateTime(value.toLocaleString())}</Typography>
+              </Stack>;
+            break;
+          case "string":
+          default:
+            val =
+              <Stack direction="row" key={key} alignItems="center">
+                <StyledLabel>{capitalize(key)}</StyledLabel>
+                <Typography variant='caption'>{capitalize(typeof value !== "string" ? value.toString() : value)}</Typography>
+              </Stack>;
+            break;
+        }
+        return val
+      })
+  ), [question])
+
+
+
+
+  const renderDetails = (details)
+
+  const renderValidations = (
+    question.validation && Object.entries(question.validation).filter(([key, value]) => key !== "__typename" && value !== null).map(([key, value]) => (
+      <Stack direction="row" key={key} alignItems="center">
+        <StyledLabel>{capitalize(key)}</StyledLabel>
+        <Typography variant='caption'>{JSON.stringify(value)}</Typography>
+      </Stack>
+    ))
+  )
+
+  const renderDependencies = (
+    question.dependencies && Object.entries(question.dependencies).filter(([key, value]) => key !== "__typename" && value !== null).map(([key, value]) => (
+      <Stack direction="row" key={key} alignItems="center">
+        <StyledLabel>{capitalize(key)}</StyledLabel>
+        <Typography variant='caption'>{JSON.stringify(value)}</Typography>
+      </Stack>
+    ))
+  )
 
   // const renderAssignee = (
   //   <Stack direction="row">
@@ -248,6 +336,24 @@ export default function QuestionDetails({
           }}
         >
           {renderName}
+
+          <Divider>
+            <Typography variant='caption' > <StyledLabel>Details</StyledLabel></Typography>
+          </Divider>
+
+          {renderDetails}
+
+          <Divider>
+            <Typography variant='caption' > <StyledLabel>Validations</StyledLabel></Typography>
+          </Divider>
+
+          {renderValidations}
+
+          <Divider>
+            <Typography variant='caption' > <StyledLabel>Dependencies</StyledLabel></Typography>
+          </Divider>
+
+          {renderDependencies}
 
           {/* {renderReporter}
 
