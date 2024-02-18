@@ -1,12 +1,12 @@
 import { capitalize } from 'lodash';
 import { UseFormRegister } from 'react-hook-form';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, ChangeEvent } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
-import { List, ListItem, Typography } from '@mui/material';
+import { FormControlLabel, List, ListItem, Switch, TextField, Typography } from '@mui/material';
 
 import { fDateTime } from 'src/utils/format-time';
 
@@ -46,6 +46,17 @@ type Props = {
   onDeleteQuestion: VoidFunction;
 };
 
+
+const VALIDATION_OPTIONS = [
+  { id: 'required', label: 'Required', type: 'boolean', value: null },
+  { id: 'minLength', label: 'Minimum Length', type: 'number', value: null },
+  { id: 'maxLength', label: 'Maximum Length', type: 'number', value: null },
+  { id: 'minValue', label: 'Minimum Value', type: 'number', value: null },
+  { id: 'maxValue', label: 'Maximum Value', type: 'number', value: null },
+  { id: 'regex', label: 'Regex', type: 'object', value: null },
+
+  // Add more validation options as needed
+];
 export default function QuestionDetails({
   question,
   openDetails,
@@ -59,6 +70,19 @@ export default function QuestionDetails({
 }: Props) {
 
   const [questionText, setQuestionText] = useState(question.text);
+
+  const [maxValue, setMaxValue] = useState<number | null>(null);
+
+  const [minValue, setMinValue] = useState<number | null>(null);
+
+  const [regexMatches, setRegexMatches] = useState<number | null>(null);
+
+  const [regexMessage, setRegexMessage] = useState<number | null>(null);
+
+
+  const [maxLength, setMaxLength] = useState<number | null>(null);
+
+  const [minLength, setMinLength] = useState<number | null>(null);
 
 
   // const [taskDescription, setTaskDescription] = useState(task.description);
@@ -85,9 +109,102 @@ export default function QuestionDetails({
     [questionText, index, actions]
   );
 
+  const handleUpdateMaxValue = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      try {
+        if (event.key === 'Enter') {
+
+          if (maxValue) {
+            actions.handleChangeQuestionMaxValue(index, maxValue)
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [maxValue, index, actions]
+  );
+
+  const handleUpdateMinValue = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      try {
+        if (event.key === 'Enter') {
+
+          if (minValue) {
+            actions.handleChangeQuestionMinValue(index, minValue)
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [minValue, index, actions]
+  );
+
+  const handleUpdateMaxLength = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      try {
+        if (event.key === 'Enter') {
+
+          if (maxValue) {
+            actions.handleChangeQuestionMaxLength(index, maxValue)
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [maxValue, index, actions]
+  );
+
+  const handleUpdateMinLength = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      try {
+        if (event.key === 'Enter') {
+
+          if (maxValue) {
+            actions.handleChangeQuestionMinLength(index, maxValue)
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [maxValue, index, actions]
+  );
+
+
   const handleChangeInputType = (inputType: ActualInputType) => {
     actions.handleChangeInputType(index, inputType)
   }
+
+  const handleChangeQuestionRequired = () => {
+    actions.handleChangeQuestionRequired(index)
+  }
+
+  const handleChangeQuestionUnique = () => {
+    actions.handleChangeQuestionUnique(index)
+  }
+
+  const onChangeMaxValue = ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const v = e.target.value as unknown as number
+    if (!Number.isNaN(v)) setMaxValue(v);
+  })
+
+  const onChangeMinValue = ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const v = e.target.value as unknown as number
+    if (!Number.isNaN(v)) setMinValue(v);
+  })
+
+  const onChangeMaxLength = ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const v = e.target.value as unknown as number
+    if (!Number.isNaN(v)) setMaxLength(v);
+  })
+
+  const onChangeMinLength = ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const v = e.target.value as unknown as number
+    if (!Number.isNaN(v)) setMinLength(v);
+  })
   const renderHead = (
     <QuestionDetailsToolbar
       questionName={question.text}
@@ -129,11 +246,135 @@ export default function QuestionDetails({
     </Stack>
   );
 
+  const renderRequired = (
+    <Stack direction="row" alignItems="start">
+      <StyledLabel>Required</StyledLabel>
+      <Switch size="small" checked={question.validation?.required} onClick={handleChangeQuestionRequired} />
+    </Stack>
+  );
+
+  const renderMaxLength = (
+    <Stack direction="row" alignItems="start">
+      <StyledLabel>Max Length</StyledLabel>
+      <QuestionInputName
+        placeholder=""
+        value={maxLength}
+        size="small"
+        type='number'
+        inputProps={{ min: 1, step: 1 }}
+        name={`questions.${index}.validation.maxLength`}
+        register={register}
+        onChange={onChangeMaxLength}
+        onKeyUp={handleUpdateMaxLength}
+        error={!!questionError?.validation?.maxLength?.message}
+        helperText={questionError?.validation?.maxLength?.message}
+      />
+    </Stack>
+  );
+
+  const renderMinLength = (
+    <Stack direction="row" alignItems="start">
+      <StyledLabel>Min Length</StyledLabel>
+      <QuestionInputName
+        placeholder=""
+        value={minLength}
+        size="small"
+        type='number'
+        inputProps={{ min: 1, step: 1 }}
+        name={`questions.${index}.validation.minLength`}
+        register={register}
+        onChange={onChangeMinLength}
+        onKeyUp={handleUpdateMinLength}
+        error={!!questionError?.validation?.minLength?.message}
+        helperText={questionError?.validation?.minLength?.message}
+      />
+    </Stack>
+  );
+
+  const renderMaxValue = (
+    <Stack direction="row" alignItems="start">
+      <StyledLabel>Max Value</StyledLabel>
+      <QuestionInputName
+        placeholder=""
+        value={maxValue}
+        size="small"
+        type='number'
+        inputProps={{ min: 1, step: 1 }}
+        name={`questions.${index}.validation.maxValue`}
+        register={register}
+        onChange={onChangeMaxValue}
+        onKeyUp={handleUpdateMaxValue}
+        error={!!questionError?.validation?.maxValue?.message}
+        helperText={questionError?.validation?.maxValue?.message}
+      />
+    </Stack>
+  );
+
+
+  const renderMinValue = (
+    <Stack direction="row" alignItems="start">
+      <StyledLabel>Min Value</StyledLabel>
+      <QuestionInputName
+        placeholder=""
+        value={minValue}
+        size="small"
+        type='number'
+        inputProps={{ min: 1, step: 1 }}
+        name={`questions.${index}.validation.minValue`}
+        register={register}
+        onChange={onChangeMinValue}
+        onKeyUp={handleUpdateMinValue}
+        error={!!questionError?.validation?.minValue?.message}
+        helperText={questionError?.validation?.minValue?.message}
+      />
+    </Stack>
+  );
+  const renderRegex = (
+    <Stack direction="row" alignItems="start">
+      <StyledLabel>Regex</StyledLabel>
+      <Stack spacing={1}>
+        <QuestionInputName
+          placeholder=""
+          value={regexMatches}
+          size="small"
+          name={`questions.${index}.validation.regex.matches`}
+          register={register}
+          onChange={onChangeMinValue}
+          onKeyUp={handleUpdateMinValue}
+          error={!!questionError?.validation?.minValue?.message}
+          helperText={questionError?.validation?.minValue?.message}
+        />
+        <QuestionInputName
+          placeholder=""
+          value={regexMessage}
+          size="small"
+          name={`questions.${index}.validation.regex.message`}
+          register={register}
+          onChange={onChangeMinValue}
+          onKeyUp={handleUpdateMinValue}
+          error={!!questionError?.validation?.regex?.matches?.message}
+          // @ts-expect-error expected
+          helperText={questionError?.validation?.regex?.message?.message ?? ""}
+        />
+      </Stack>
+    </Stack>
+  );
+
+
+
+
+  const renderUnique = (
+    <Stack direction="row" alignItems="start">
+      <StyledLabel>Unique</StyledLabel>
+      <Switch size="small" checked={question.unique} onClick={handleChangeQuestionUnique} />
+    </Stack>
+  );
+
   const details = useMemo(() => (
     Object.entries(question)
       .filter(([key, value]) =>
       (key !== "__typename"
-        && value !== null
+        // && value !== null
         && key !== "validation"
         && key !== "dependencies"
         && key !== "id"
@@ -166,25 +407,28 @@ export default function QuestionDetails({
           case "input_type":
             val = renderInputType;
             break;
+          case "unique":
+            val = renderUnique;
+            break;
           case "updatedat":
             val =
-              <Stack direction="row" key={index} alignItems="center">
+              <Stack direction="row" key={idx} alignItems="center">
                 <StyledLabel>Updated At</StyledLabel>
-                <Typography variant='caption'>{fDateTime(value.toLocaleString())}</Typography>
+                <Typography variant='caption'>{value && fDateTime(value.toLocaleString())}</Typography>
               </Stack>;
             break;
           case "string":
           default:
             val =
-              <Stack direction="row" key={index} alignItems="center">
+              <Stack direction="row" key={idx} alignItems="center">
                 <StyledLabel>{capitalize(key)}</StyledLabel>
-                <Typography variant='caption'>{capitalize(typeof value !== "string" ? value.toString() : value)}</Typography>
+                <Typography variant='caption'>{value && capitalize(typeof value !== "string" ? value.toString() : value)}</Typography>
               </Stack>;
             break;
         }
         return val
       })
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [question, index, inputType])
 
 
@@ -192,8 +436,8 @@ export default function QuestionDetails({
 
   const renderDetails = (details)
 
-  const renderValidations = (
-    question.validation && Object.entries(question.validation).filter(([key, value]) => key !== "__typename" && value !== null).map(([key, value], i) => (
+  const renderDependencies = (
+    question.dependencies && Object.entries(question.dependencies).filter(([key]) => key !== "__typename").map(([key, value], i) => (
       <Stack direction="row" key={key + i} alignItems="center">
         <StyledLabel>{capitalize(key)}</StyledLabel>
         <Typography variant='caption'>{JSON.stringify(value)}</Typography>
@@ -201,14 +445,42 @@ export default function QuestionDetails({
     ))
   )
 
+  const validationOptions = useMemo(() => {
+    // @ts-expect-error expected
+    return VALIDATION_OPTIONS.map(({ id, label }) => ({ id, label, value: question.validation ? (question.validation[id] ?? null) : null }))
+  }, [question.validation])
 
-  const renderDependencies = (
-    question.dependencies && Object.entries(question.dependencies).filter(([key, value]) => key !== "__typename" && value !== null).map(([key, value], i) => (
-      <Stack direction="row" key={key + i} alignItems="center">
-        <StyledLabel>{capitalize(key)}</StyledLabel>
-        <Typography variant='caption'>{JSON.stringify(value)}</Typography>
-      </Stack>
-    ))
+  const renderValidations = (
+    validationOptions.map(({ id, label, value }, i) => {
+      switch (id.toLowerCase()) {
+        case "required":
+          return renderRequired;
+
+        case "maxlength":
+          return renderMaxLength;
+
+        case "minlength":
+          return renderMinLength;
+
+        case "maxvalue":
+          return renderMaxValue;
+
+        case "minvalue":
+          return renderMinValue;
+
+        case "regex":
+          return renderRegex;
+
+        default:
+          return (
+            <Stack direction="row" key={id} alignItems="center">
+              <StyledLabel>{label}</StyledLabel>
+              <Typography variant='caption'>{value && (JSON.stringify(value))}</Typography>
+            </Stack>
+          );
+      }
+
+    })
   )
 
   return (
