@@ -1,25 +1,22 @@
 'use client';
 
-import { use, useMemo } from 'react';
+import { useMemo } from 'react';
+import { first, shuffle } from 'lodash';
 
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 
-import Iconify from 'src/components/iconify';
+import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
+
+import { _mock } from 'src/_mock';
+
 import { useSettingsContext } from 'src/components/settings';
+
+import AppWidgetSummary from 'src/sections/overview/app/app-widget-summary';
+import EcommerceBestSalesman from 'src/sections/overview/e-commerce/ecommerce-best-salesman';
 
 import { IReport } from 'src/types/realm/realm-types';
 
-import AnalyticsTasks from '../../analytics-tasks';
-import AnalyticsCurrentVisits from '../../analytics-current-visits';
-import AnalyticsWebsiteVisits from '../../analytics-website-visits';
-import AnalyticsWidgetSummary from '../../analytics-widget-summary';
-import AnalyticsTrafficBySite from '../../analytics-traffic-by-site';
-import EcommerceBestSalesman from 'src/sections/overview/e-commerce/ecommerce-best-salesman';
-import { _ecommerceBestSalesman, _mock } from 'src/_mock';
-import AppWidgetSummary from 'src/sections/overview/app/app-widget-summary';
-import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
-import { first, shuffle } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +25,7 @@ export default function UserDailyActivityView({ reports }: { reports: IReport[] 
 
     const { users } = useUsers();
 
-    const reportsColl = useMemo(() => reports.reduce((acc, r) => acc + r.responses, 0), [reports])
+    // const reportsColl = useMemo(() => reports.reduce((acc, r) => acc + r.responses, 0), [reports])
 
     const merchant = Array.isArray(users) ? shuffle(users).map((user, i) => ({
         id: user._id,

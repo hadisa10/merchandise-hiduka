@@ -81,6 +81,7 @@ import { Box, Tab, Tabs, Stack, TextField, IconButton, Autocomplete, InputAdornm
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
+import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
@@ -91,12 +92,9 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { IReport, ICampaign } from 'src/types/realm/realm-types';
 
-import CampaignCostView from './campaign/demo-campaign-cost';
-import CampaignEngagmentView from './campaign/demo-campaign-engagement';
-import CampaignConversionView from './campaign/demo-campaign-convertion';
-import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
-import UserDailyActivityView from './campaign/demo-user-daily-activity';
 import AnalyticsComingSoon from './campaign/coming-soon';
+import CampaignCostView from './campaign/demo-campaign-cost';
+import UserDailyActivityView from './campaign/demo-user-daily-activity';
 
 // ----------------------------------------------------------------------
 
@@ -115,7 +113,7 @@ export default function SalesRevenueAnalyticsView() {
 
   const { campaigns, loading } = useCampaigns();
 
-  const { users, loading: usersLoading } = useUsers();
+  // const { users, loading: usersLoading } = useUsers();
 
   const { getCampaignReport } = useReports();
 
