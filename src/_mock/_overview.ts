@@ -127,6 +127,33 @@ export const _analyticTraffic = [
   },
 ];
 
+export const _analyticTraffic2 = [
+  {
+    value: 'facebook',
+    label: 'FaceBook',
+    total: 0,
+    icon: 'eva:facebook-fill',
+  },
+  {
+    value: 'google',
+    label: 'Google',
+    total: 0,
+    icon: 'eva:google-fill',
+  },
+  {
+    value: 'linkedin',
+    label: 'Linkedin',
+    total: 0,
+    icon: 'eva:linkedin-fill',
+  },
+  {
+    value: 'twitter',
+    label: 'Twitter',
+    total: 0,
+    icon: 'eva:twitter-fill',
+  },
+];
+
 // ECOMMERCE
 // ----------------------------------------------------------------------
 

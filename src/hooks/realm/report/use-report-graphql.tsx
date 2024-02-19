@@ -295,6 +295,69 @@ export function useReports(lazy: boolean = true): IReportHook {
     }
   };
 
+  const getCampaignReport = async (id: string) => {
+    try {
+      const resp = await graphql.query<IGraphqlReportsResponse>({
+        query: gql`
+          query FetchReport($id: ObjectId!) {
+            reports(query: { campaign_id: $id }) {
+                _id
+                title
+                template_id
+                responses
+                client_id
+                project_id
+                campaign_id
+                campaign_title
+                category{
+                  _id
+                  title
+                }
+                questions {
+                  _id
+                  text
+                  order
+                  input_type
+                  placeholder
+                  initialValue
+                  options
+                  unique
+                  updatedAt
+                  dependencies {
+                    questionId
+                    triggerValue
+                    operator
+                  }
+                  validation {
+                    required
+                    minLength
+                    maxLength
+                    minValue
+                    maxValue
+                    regex {
+                      matches
+                      message
+                    }
+                    fileTypes
+                  }
+                }
+                createdAt
+                updatedAt
+              }
+          }
+        `,
+        variables: {
+          id
+        },
+      });
+      console.log(resp, 'RESP')
+      return resp.data.reports;
+    } catch (error) {
+      console.log(error, "REPORT FETCH ERROR")
+      throw new Error("Failed to get report")
+    }
+  };
+
   // const toggleReportstatus = async (Report: IReport) => {
   //   await graphql.mutate({
   //     mutation: gql`
@@ -327,7 +390,8 @@ export function useReports(lazy: boolean = true): IReportHook {
     reports,
     saveReport,
     updateReport,
-    getReport
+    getReport,
+    getCampaignReport
     // toggleReportstatus,
     // deleteReport,
   };

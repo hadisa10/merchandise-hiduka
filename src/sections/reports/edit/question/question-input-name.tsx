@@ -19,17 +19,18 @@ const ErrorText = styled(Typography)({
   fontSize: '0.75rem',
 });
 
-export default function QuestionInputName({ name, error, helperText, sx, register, ...other }: QuestionInputNameProps) {
+export default function QuestionInputName({ name, error, helperText, sx, register, size, ...other }: QuestionInputNameProps) {
   const registerProps = register(name as keyof IReport);
+  const small = size === "small"
   return (
     <div>
       <InputBase
         {...registerProps}
         sx={{
           [`&.${inputBaseClasses.root}`]: {
-            py: 0.75,
+            py: small ? 0 : 0.75,
             borderRadius: 1,
-            typography: 'h6',
+            typography: small ? 'caption' : 'h6',
             borderWidth: 2,
             borderStyle: 'solid',
             borderColor: error ? 'error.main' : 'transparent', // Use the theme's error color if there's an error
@@ -40,7 +41,7 @@ export default function QuestionInputName({ name, error, helperText, sx, registe
             },
           },
           [`& .${inputBaseClasses.input}`]: {
-            typography: 'h6',
+            typography: small ? "caption " : 'h6',
           },
           ...sx,
         }}

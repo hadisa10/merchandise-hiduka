@@ -66,7 +66,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export default function CampaignReportListView() {
+export default function CampaignReportListView({ id }: { id: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { loading: productsLoading, products } = useProducts();
@@ -110,8 +110,8 @@ export default function CampaignReportListView() {
   }, []);
 
   const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter((row) => row._id !== id);
+    (_id: string) => {
+      const deleteRow = tableData.filter((row) => row._id !== _id);
 
       enqueueSnackbar('Delete success!');
 
@@ -129,15 +129,15 @@ export default function CampaignReportListView() {
   }, [enqueueSnackbar, selectedRowIds, tableData]);
 
   const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
+    (_id: string) => {
+      router.push(paths.dashboard.product.edit(_id));
     },
     [router]
   );
 
   const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.product.details(id));
+    (_id: string) => {
+      router.push(paths.dashboard.product.details(_id));
     },
     [router]
   );

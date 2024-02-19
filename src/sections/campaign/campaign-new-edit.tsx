@@ -22,11 +22,11 @@ import FormProvider from 'src/components/hook-form/form-provider';
 
 import { IRoute, ICampaign, ICampaign_routes } from 'src/types/realm/realm-types';
 
-import { CampaignReportList } from './list';
 import CampaignDetailsToolbar from './campaign-details-toolbar';
 import RouteCreateEditForm from './edit/route-create-edit-form';
 import CampaignNewEditRouteForm from './edit/campaign-new-edit-route';
 import CampaignNewEditDetailsForm from './edit/campaign-new-edit-details-form';
+import CampaignReportListDataGrid from '../reports/list/reports/report-list-data-grid-campaign';
 
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
 const ROUTES_FIELDS = ['routes']
@@ -89,16 +89,17 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const NewCurrectSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
-    description: Yup.string().required('Description is required'),
-    users: Yup.lazy(() => Yup.array().of(Yup.string().required('User is required')).min(1, 'Select atleas one user')),
+    description: Yup.string(),
+    // users: Yup.lazy(() => Yup.array().of(Yup.string()).min(1, 'Select atleas one user')).nullable(),
+    users: Yup.array(),
     routes: Yup.lazy(() =>
       Yup.array().of(
         Yup.object().shape({
           _id: Yup.string().required('Id is required'),
-          createdAt: Yup.date().required('Creation date is required'),
-          updatedAt: Yup.date().required('Update date is required'),
-          routeNumber: Yup.number().required('Route number is required'),
-          totalQuantity: Yup.number().required('Total quantity is required'),
+          createdAt: Yup.date(),
+          updatedAt: Yup.date(),
+          routeNumber: Yup.number(),
+          totalQuantity: Yup.number(),
           routeAddress: routeAddressSchema,
         })
       )
@@ -199,8 +200,11 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     }
   }, [currentCampaign, defaultValues, reset]);
 
+  console.log(errors, 'ERRORS')
+
   const onSubmit = handleSubmit(async (data) => {
     try {
+      console.log(data, "DATA")
       if (!currentCampaign) {
         const campaign: ICampaign = {
           _id: createObjectId(),
@@ -267,7 +271,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         mb: { xs: 3, md: 5 },
       }}
     >
-      {CAMPAING_DETAILS_TABS.map((tab) => (
+      {CAMPAING_DETAILS_TABS.filter(x => !(x.label === "routes" && !currentCampaign)).map((tab) => (
         <Tab
           key={tab.value}
           iconPosition="end"
@@ -294,7 +298,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         />
         {renderTabs}
         {currentTab === 'details' && <CampaignNewEditDetailsForm currentCampaign={currentCampaign} />}
-        {currentTab === 'reports' && <CampaignReportList />}
+        {currentTab === 'reports' && <CampaignReportListDataGrid id={currentCampaign?._id.toString() ?? ""} />}
         {
           currentTab === 'routes' &&
           <CampaignNewEditRouteForm
@@ -303,7 +307,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
             handleRemoveNewRoute={handleRemoveNewRoute}
             // @ts-expect-error campaign routes typescript error
             campaignRoutes={campaignRoutes}
-
           />
         }
       </FormProvider>

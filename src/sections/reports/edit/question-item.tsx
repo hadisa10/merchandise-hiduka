@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { UseFormRegister } from 'react-hook-form';
 
@@ -33,7 +34,7 @@ type Props = PaperProps & {
   actions: IReportQuestionActions;
 };
 
-export default function QuestionItem({
+const QuestionItem = forwardRef<HTMLDivElement, Props>(({
   question,
   index,
   onDeleteQuestion,
@@ -43,7 +44,7 @@ export default function QuestionItem({
   actions,
   sx,
   ...other
-}: Props) {
+}, ref) => {
   const theme = useTheme();
 
   const openDetails = useBoolean();
@@ -124,6 +125,7 @@ export default function QuestionItem({
             onClick={openDetails.onTrue}
           >
             <Paper
+              ref={ref}
               sx={{
                 width: 1,
                 borderRadius: 1.5,
@@ -175,4 +177,6 @@ export default function QuestionItem({
       />
     </>
   );
-}
+})
+
+export default QuestionItem;

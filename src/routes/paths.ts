@@ -102,7 +102,16 @@ export const paths = {
   dashboard: {
     root: `${ROOTS.DASHBOARD}`,
     ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
-    analytics: `${ROOTS.DASHBOARD}/analytics`,
+    analytics: {
+      root: `${ROOTS.DASHBOARD}/analytics`,
+      userPerformance: `${ROOTS.DASHBOARD}/analytics/user-performance`,
+      userEngagment: `${ROOTS.DASHBOARD}/analytics/user-engagement`,
+      campaignPerformance: `${ROOTS.DASHBOARD}/analytics/campaign-performance`,
+      marketingCompetitive: `${ROOTS.DASHBOARD}/analytics/marketing-competitive`,
+      merchandiseAnalysis: `${ROOTS.DASHBOARD}/analytics/merchandise`,
+      customerSegmentation: `${ROOTS.DASHBOARD}/analytics/customer-segmentation`,
+    },
+
     mail: `${ROOTS.DASHBOARD}/mail`,
     chat: `${ROOTS.DASHBOARD}/chat`,
     blank: `${ROOTS.DASHBOARD}/blank`,

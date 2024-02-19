@@ -18,6 +18,8 @@ export interface IReportActions {
     saveReport: (draftReport: IReport) => Promise<BSON.ObjectId>;
     updateReport: (report: IReport) => Promise<BSON.ObjectId>;
     getReport: (id: string) => Promise<IReport>;
+    getCampaignReport: (id: string) => Promise<IReport[]>;
+
     // toggleReportStatus: (Report: IReport) => Promise<void>;
     // deleteReport: (Report: IReport) => Promise<void>;
 }
@@ -65,6 +67,12 @@ export interface IReportQuestionActions {
     handleChangeInputType: (questionIndex: number, newInputType: ActualInputType) => void;
     handleAddDependency: (questionIndex: number, newDependency: IQuestionDependency) => void;
     handleChangeQuestionText: (questionIndex: number, text: string) => void;
+    handleChangeQuestionRequired: (questionIndex: number) => void;
+    handleChangeQuestionMaxValue: (questionIndex: number, text: number) => void;
+    handleChangeQuestionMinValue: (questionIndex: number, text: number) => void;
+    handleChangeQuestionMaxLength: (questionIndex: number, text: number) => void;
+    handleChangeQuestionMinLength: (questionIndex: number, text: number) => void;
+    handleChangeQuestionUnique: (questionIndex: number) => void;
     handleRemoveQuestion: (index: number) => void;
     handleRemoveValidation: (questionIndex: number, validationKey: keyof IReportQuestionsValidation) => void;
     // You can add more actions here as needed
