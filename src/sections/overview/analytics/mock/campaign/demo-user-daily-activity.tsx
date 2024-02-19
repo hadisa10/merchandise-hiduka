@@ -72,10 +72,10 @@ export default function UserDailyActivityView({ reports }: { reports: IReport[] 
                 <Grid xs={12} md={4}>
                     <AppWidgetSummary
                         title="Total Active Users"
-                        percent={2.6}
-                        total={18765}
+                        percent={0.6}
+                        total={users.length ?? 0}
                         chart={{
-                            series: [5, 18, 12, 51, 68, 11, 39, 37, 27, 20],
+                            series: [8],
                         }}
                     />
                 </Grid>

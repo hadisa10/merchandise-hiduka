@@ -96,6 +96,7 @@ import CampaignEngagmentView from './campaign/demo-campaign-engagement';
 import CampaignConversionView from './campaign/demo-campaign-convertion';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 import UserDailyActivityView from './campaign/demo-user-daily-activity';
+import AnalyticsComingSoon from './campaign/coming-soon';
 
 // ----------------------------------------------------------------------
 
@@ -299,7 +300,7 @@ export default function SalesRevenueAnalyticsView() {
 
       {currentTab === "active" && !loadingReport.value && selectCampaign && reports && <UserDailyActivityView reports={reports} />}
 
-      {currentTab === "task" && !loadingReport.value && selectCampaign && reports && <CampaignConversionView reports={reports} />}
+      {currentTab === "task" && !loadingReport.value && selectCampaign && reports && <AnalyticsComingSoon reports={reports} />}
 
       {currentTab === "engagement" && !loadingReport.value && reports && selectCampaign && <CampaignCostView reports={reports} />}
 
