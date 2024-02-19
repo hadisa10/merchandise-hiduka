@@ -53,6 +53,11 @@ const ICONS = {
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
   client: <Iconify icon="mdi:book-account" sx={style} />,
+  marketAnalysis: <Iconify icon="icon-park-outline:market-analysis" />,
+  customerSegmentation: <Iconify icon="carbon:heat-map" />,
+  userEngagement: <Iconify icon="dashicons:buddicons-groups" />,
+  userPerformace: <Iconify icon="fluent:live-20-regular" />,
+  merchandiging: <Iconify icon="dicon-park-outline:sales-report" />,
   route: <Iconify icon="eos-icons:route" sx={styleSmall} />,
   project: <Iconify icon="material-symbols:construction-rounded" sx={style} />,
   campaign: <Iconify icon="ic:baseline-campaign" sx={style} />,
@@ -68,8 +73,11 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('Analysis'),
     items: [
-      { title: t('Dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('Reports Analysis'), path: paths.dashboard.analytics, icon: ICONS.file },
+      { title: t('Campaign Performance'), path: paths.dashboard.analytics.campaignPerformance, icon: ICONS.campaign },
+      { title: t('Activity Tracker'), path: paths.dashboard.analytics.userPerformance, icon: ICONS.userPerformace },
+      { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
+      { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
+      { title: t('Market and Competitive'), path: paths.dashboard.analytics.marketingCompetitive, icon: ICONS.marketAnalysis }
     ],
   },
 

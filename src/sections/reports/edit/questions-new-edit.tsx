@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { isString } from 'lodash';
 // import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
-import React, { useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Droppable, DropResult, DragDropContext } from '@hello-pangea/dnd';
 
@@ -24,7 +25,12 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
 
   const openAddQuestion = useBoolean();
 
+  const openSearchQuestion = useBoolean();
+
   const dragStarted = useBoolean();
+
+
+  const questionRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   const { control, watch, formState: { errors }, register } = useFormContext<IReport>();
 
@@ -76,7 +82,21 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     const question = questions[questionIndex];
     const updatedValidation = { ...question.validation, ...newValidation };
     update(questionIndex, { ...question, validation: updatedValidation });
-  }, [questions, update]); // Add other dependencies as needed
+  }, [questions, update]);
+
+  // Add other dependencies as needed
+
+  const handleChangeQuestionRequired = useCallback((questionIndex: number) => {
+    const question = questions[questionIndex];
+    const valid = question.validation ?? {}
+    update(questionIndex, { ...question, validation: { ...valid, required: !question.validation?.required } });
+  }, [questions, update]);
+
+
+  const handleChangeQuestionUnique = useCallback((questionIndex: number) => {
+    const question = questions[questionIndex];
+    update(questionIndex, { ...question, unique: !question.unique });
+  }, [questions, update]);
 
   const handleChangeInputType = useCallback((questionIndex: number, newInputType: ActualInputType) => {
     const question = questions[questionIndex];
@@ -85,8 +105,31 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
 
   const handleChangeQuestionText = useCallback((questionIndex: number, text: string) => {
     const question = questions[questionIndex];
-    console.log(question, "question")
     update(questionIndex, { ...question, text });
+  }, [questions, update]);
+
+  const handleChangeQuestionMaxValue = useCallback((questionIndex: number, val: number) => {
+    const question = questions[questionIndex];
+    const valid = question.validation ?? {}
+    update(questionIndex, { ...question, validation: { ...valid, maxValue: val } });
+  }, [questions, update]);
+
+  const handleChangeQuestionMinValue = useCallback((questionIndex: number, val: number) => {
+    const question = questions[questionIndex];
+    const valid = question.validation ?? {}
+    update(questionIndex, { ...question, validation: { ...valid, minValue: val } });
+  }, [questions, update]);
+
+  const handleChangeQuestionMaxLength = useCallback((questionIndex: number, val: number) => {
+    const question = questions[questionIndex];
+    const valid = question.validation ?? {}
+    update(questionIndex, { ...question, validation: { ...valid, maxLength: val } });
+  }, [questions, update]);
+
+  const handleChangeQuestionMinLength = useCallback((questionIndex: number, val: number) => {
+    const question = questions[questionIndex];
+    const valid = question.validation ?? {}
+    update(questionIndex, { ...question, validation: { ...valid, minValue: val } });
   }, [questions, update]);
 
   const handleAddDependency = useCallback((questionIndex: number, newDependency: IQuestionDependency) => {
@@ -106,6 +149,23 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
   }, [questions, update]);
 
 
+  useEffect(() => {
+    // Adjust the refs array to match the number of questions, initializing with null
+    questionRefs.current = questions.map((_, i) => questionRefs.current[i] || null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions.length]);
+
+  const scrollToQuestion = useCallback((index: number) => {
+    const ref = questionRefs.current[index];
+    if (ref) {
+      ref.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, []);
+
+
   // Then you can group these into an actions object if you like, or pass them directly as props.
 
   const actions: IReportQuestionActions = {
@@ -114,6 +174,12 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     handleChangeQuestionText,
     handleChangeInputType,
     handleRemoveQuestion,
+    handleChangeQuestionMaxValue,
+    handleChangeQuestionMinValue,
+    handleChangeQuestionMaxLength,
+    handleChangeQuestionMinLength,
+    handleChangeQuestionRequired,
+    handleChangeQuestionUnique,
     handleRemoveValidation
   }
   const renderSummary = (
@@ -159,7 +225,11 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
         }}
       >
         <QuestionsColumnToolBar
+          handleClick={scrollToQuestion}
+          openSearch={openSearchQuestion.value}
           openAddQuestion={openAddQuestion.onTrue}
+          questions={questions}
+          openSearchQuestion={openSearchQuestion.onToggle}
           reportName={reportName as unknown as string ?? ""}
           onClearQuestions={() => console.log("Clear Questions")}
         />
@@ -170,13 +240,15 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
               <List ref={provided.innerRef} sx={{ maxHeight: "60vh", overflowY: "auto" }} {...provided.droppableProps}>
                 {(Array.isArray(questions)) && questions.map((q, index) => (
                   <QuestionItem
+                    // eslint-disable-next-line
+                    ref={(el: HTMLDivElement | null) => { const t = questionRefs.current[index] = el; return t; }}
                     key={q._id.toString()}
                     index={index}
                     actions={actions}
                     question={q}
                     register={register}
                     questionError={errors.questions?.[index]} // Pass the corresponding error
-                    onUpdateQuestion={(qs) => console.log(qs)}
+                    onUpdateQuestion={(qs: IReportQuestions) => console.log(qs)}
                     onDeleteQuestion={() => console.log("QUESTION DELETED")}
                   />
                 ))}

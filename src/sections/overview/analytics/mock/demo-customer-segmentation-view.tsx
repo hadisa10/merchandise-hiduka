@@ -8,20 +8,21 @@ import Typography from '@mui/material/Typography';
 
 import { useSettingsContext } from 'src/components/settings';
 
+import AnalyticsComingSoon from './campaign/coming-soon';
+
 // ----------------------------------------------------------------------
 
 export const ANALYTICS_OVERVIEW_DETAILS_TABS = [
-  { value: 'sales', label: 'Sales Analytics' },
-  { value: 'competitor', label: 'Competitor Analytics ' },
-  { value: 'user', label: 'User Analytics ' },
-  { value: 'product', label: 'Product Analytics' },
+  { value: 'engagement', label: 'Segment Engagement Performance' },
+  { value: 'clv', label: 'Customer Lifetime Value (CLV) Segments' },
+  { value: 'targeting', label: 'Targeting Effectiveness' }
 ];
 
 // ----------------------------------------------------------------------
 
-export default function OverviewAnalyticsView() {
+export default function CustomerEngagementAnalyticsView() {
   const settings = useSettingsContext();
-  const [currentTab, setCurrentTab] = useState('sales');
+  const [currentTab, setCurrentTab] = useState('engagement');
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
@@ -59,6 +60,9 @@ export default function OverviewAnalyticsView() {
 
 
       {renderTabs}
+      {currentTab === "engagement" && <AnalyticsComingSoon />}
+      {currentTab === "clv" && <AnalyticsComingSoon />}
+      {currentTab === "targeting" && <AnalyticsComingSoon />}
     </Container>
   );
 }

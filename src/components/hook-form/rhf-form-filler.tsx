@@ -34,41 +34,39 @@ type DynamicFormProps = {
 const RHFFormFiller: React.FC<DynamicFormProps> = ({ questions, onSubmit }) => {
     const mdUp = useResponsive('up', 'md');
 
-
     const generateSchema = (q: IReportQuestions[]) => Yup.object().shape(
-            q.reduce((acc, question) => {
-                let validator;
-                switch (typeof question.validation) {
-                    case 'object':
-                        validator = Yup.string();
-                        if (question.validation?.required) {
-                            validator = validator.required('This field is required');
-                        }
-                        if (question.validation?.minLength !== undefined) {
-                            validator = validator.min(question.validation.minLength, `Minimum length is ${question.validation.minLength}`);
-                        }
-                        if (question.validation?.maxLength !== undefined) {
-                            validator = validator.max(question.validation.maxLength, `Maximum length is ${question.validation.maxLength}`);
-                        }
-                        if (question.validation?.minValue !== undefined) {
-                            validator = validator.min(question.validation.minValue, `Minimum value is ${question.validation.minValue}`);
-                        }
-                        if (question.validation?.maxValue !== undefined) {
-                            validator = validator.max(question.validation.maxValue, `Maximum value is ${question.validation.maxValue}`);
-                        }
-                        if (question.validation?.regex?.matches !== undefined) {
-                            // @ts-expect-error expected
-                            validator = validator.matches(question.validation.regex.matches, question.validation?.regex?.message ?? "Invalid Input");
-                        }
-                        break;
-                    default:
-                        validator = Yup.string();
+        q.reduce((acc, question) => {
+            let validator: Yup.StringSchema | Yup.NumberSchema = Yup.string(); // Default to string validator
+
+            if (question.input_type === 'number') {
+                validator = Yup.number();
+                // Numeric validations
+                if (question.validation?.minValue !== undefined) {
+                    validator = validator.min(question.validation.minValue, `Minimum value is ${question.validation.minValue}`);
                 }
-                // @ts-expect-error expected
-                acc[question._id] = validator;
-                return acc;
-            }, {})
-        );
+                if (question.validation?.maxValue !== undefined) {
+                    validator = validator.max(question.validation.maxValue, `Maximum value is ${question.validation.maxValue}`);
+                }
+            } else {
+                // String validations
+                if (question.validation?.required) {
+                    validator = validator.required('This field is required');
+                }
+                if (question.validation?.minLength !== undefined) {
+                    validator = validator.min(question.validation.minLength, `Minimum length is ${question.validation.minLength}`);
+                }
+                if (question.validation?.maxLength !== undefined) {
+                    validator = validator.max(question.validation.maxLength, `Maximum length is ${question.validation.maxLength}`);
+                }
+                if (question.validation?.regex?.matches !== undefined) {
+                    validator = validator.matches(new RegExp(question.validation.regex.matches), question.validation?.regex?.message ?? "Invalid Input");
+                }
+            }
+            // @ts-expect-error expected
+            acc[question._id] = validator;
+            return acc;
+        }, {} as Record<string, Yup.StringSchema | Yup.NumberSchema>)
+    );
 
 
     const validationSchema = React.useMemo(() => generateSchema(questions), [questions]);
@@ -90,59 +88,9 @@ const RHFFormFiller: React.FC<DynamicFormProps> = ({ questions, onSubmit }) => {
             <Grid container spacing={3}>
                 <Grid item xs={12} md={8}>
                     <Stack spacing={3}>
-                        {/* {questions.map((question) => (
-                            <Controller
-                                key={question._id.toString()}
-                                // @ts-expect-error expected
-                                name={question._id}
-                                control={control}
-                                render={({ field }) => {
-                                    const InputComponent = {
-                                        text: RHFTextField,
-                                        checkbox: RHFCheckbox,
-                                        select: RHFSelect,
-                                        radio: RHFRadioGroup,
-                                        switch: RHFSwitch,
-                                        autocomplete: RHFAutocomplete,
-                                        slider: RHFSlider,
-                                        range: RHFSlider,
-                                        code: RHFCode,
-                                        editor: RHFEditor,
-                                        upload: RHFUpload,
-                                    }[question.input_type] || RHFTextField;
-                                    return question.input_type === "select" ?
-                                        (
-                                            <RHFSelect
-                                                {...field}
-                                                label={question.text}
-                                                type={question.text}
-                                                // @ts-expect-error expected
-                                                error={errors[question._id]?.message}
-                                            >
-                                                {question.options?.map((option) => (
-                                                    <MenuItem key={option} value={option}>
-                                                        {option}
-                                                    </MenuItem>
-                                                ))}
-                                            </RHFSelect>
-                                        )
-                                        :                                         // @ts-expect-error expected
-                                        <InputComponent
-                                            {...field}
-                                            label={question.text}
-                                            type={question.text}
-                                            options={question.options?.map(opt => ({ label: opt, value: opt })) ?? []}
-                                            // @ts-expect-error expected
-                                            error={errors[question._id]?.message}
-                                        />
-                                        ;
-                                }}
-                            />
-                        ))} */}
                         {questions.map((question) => (
                             <Controller
                                 key={question._id.toString()}
-                                // @ts-expect-error
                                 name={question._id.toString()}
                                 control={control}
                                 render={({ field, fieldState: { error } }) => {
@@ -152,6 +100,7 @@ const RHFFormFiller: React.FC<DynamicFormProps> = ({ questions, onSubmit }) => {
 
                                     switch (question.input_type) {
                                         case 'text':
+                                        case 'email':
                                             InputComponent = RHFTextField;
                                             break;
                                         case 'checkbox':
@@ -207,6 +156,7 @@ const RHFFormFiller: React.FC<DynamicFormProps> = ({ questions, onSubmit }) => {
                                             InputComponent = RHFEditor;
                                             break;
                                         case 'upload':
+                                        case 'file':
                                             // @ts-expect-error
                                             InputComponent = RHFUpload;
                                             break;
