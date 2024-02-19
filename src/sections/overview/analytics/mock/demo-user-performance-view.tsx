@@ -94,6 +94,8 @@ import { IReport, ICampaign } from 'src/types/realm/realm-types';
 import CampaignCostView from './campaign/demo-campaign-cost';
 import CampaignEngagmentView from './campaign/demo-campaign-engagement';
 import CampaignConversionView from './campaign/demo-campaign-convertion';
+import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
+import UserDailyActivityView from './campaign/demo-user-daily-activity';
 
 // ----------------------------------------------------------------------
 
@@ -108,9 +110,11 @@ export const ANALYTICS_OVERVIEW_DETAILS_TABS = [
 export default function SalesRevenueAnalyticsView() {
   const settings = useSettingsContext();
 
-  const [currentTab, setCurrentTab] = useState('engagement');
+  const [currentTab, setCurrentTab] = useState('active');
 
   const { campaigns, loading } = useCampaigns();
+
+  const { users, loading: usersLoading } = useUsers();
 
   const { getCampaignReport } = useReports();
 
@@ -174,9 +178,6 @@ export default function SalesRevenueAnalyticsView() {
       }
     }
   };
-
-  console.log(reportError, 'REPORT ERROR')
-
 
   const renderSearch = (
     <Autocomplete
@@ -296,7 +297,7 @@ export default function SalesRevenueAnalyticsView() {
       {selectCampaign && !loadingReport.value && renderTabs}
 
 
-      {currentTab === "active" && !loadingReport.value && selectCampaign && reports && <CampaignEngagmentView reports={reports} />}
+      {currentTab === "active" && !loadingReport.value && selectCampaign && reports && <UserDailyActivityView reports={reports} />}
 
       {currentTab === "task" && !loadingReport.value && selectCampaign && reports && <CampaignConversionView reports={reports} />}
 
