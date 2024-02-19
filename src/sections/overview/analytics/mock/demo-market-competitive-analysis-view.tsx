@@ -7,6 +7,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import { useSettingsContext } from 'src/components/settings';
+
 import AnalyticsComingSoon from './campaign/coming-soon';
 
 // ----------------------------------------------------------------------
@@ -21,7 +22,7 @@ export const ANALYTICS_OVERVIEW_DETAILS_TABS = [
 
 export default function InventoryAnalyticsView() {
   const settings = useSettingsContext();
-  const [currentTab, setCurrentTab] = useState('sales');
+  const [currentTab, setCurrentTab] = useState('brandSentiment');
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);

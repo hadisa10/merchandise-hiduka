@@ -7,6 +7,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import { useSettingsContext } from 'src/components/settings';
+
 import AnalyticsComingSoon from './campaign/coming-soon';
 
 // ----------------------------------------------------------------------

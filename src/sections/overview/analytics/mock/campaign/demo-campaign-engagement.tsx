@@ -1,36 +1,26 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 
-import {
-    _analyticTasks,
-    _analyticPosts,
-    _analyticTraffic,
-    _analyticOrderTimeline,
-} from 'src/_mock';
-
+import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
-import AnalyticsNews from '../../analytics-news';
+import { IReport } from 'src/types/realm/realm-types';
+
 import AnalyticsTasks from '../../analytics-tasks';
 import AnalyticsCurrentVisits from '../../analytics-current-visits';
-import AnalyticsOrderTimeline from '../../analytics-order-timeline';
 import AnalyticsWebsiteVisits from '../../analytics-website-visits';
 import AnalyticsWidgetSummary from '../../analytics-widget-summary';
 import AnalyticsTrafficBySite from '../../analytics-traffic-by-site';
-import AnalyticsCurrentSubject from '../../analytics-current-subject';
-import AnalyticsConversionRates from '../../analytics-conversion-rates';
-import { IReport } from 'src/types/realm/realm-types';
-import { useMemo } from 'react';
-import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 export default function CampaignEngagmentView({ reports }: { reports: IReport[] }) {
     const settings = useSettingsContext();
-    const reportsColl = useMemo(() => reports.reduce((acc, r) => { return acc + r.responses }, 0), [reports])
+    const reportsColl = useMemo(() => reports.reduce((acc, r) => acc + r.responses, 0), [reports])
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
             <Grid container spacing={3}>

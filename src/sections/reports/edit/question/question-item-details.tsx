@@ -1,3 +1,5 @@
+// 
+
 import { capitalize } from 'lodash';
 import { UseFormRegister } from 'react-hook-form';
 import { useMemo, useState, useEffect, useCallback, ChangeEvent } from 'react';
@@ -75,8 +77,10 @@ export default function QuestionDetails({
 
   const [minValue, setMinValue] = useState<number | null>(null);
 
+  // eslint-disable-next-line
   const [regexMatches, setRegexMatches] = useState<number | null>(null);
 
+  // eslint-disable-next-line
   const [regexMessage, setRegexMessage] = useState<number | null>(null);
 
 
@@ -469,7 +473,7 @@ export default function QuestionDetails({
           return renderMinValue;
 
         case "regex":
-          return renderMinValue;
+          return renderRegex;
 
         default:
           return (

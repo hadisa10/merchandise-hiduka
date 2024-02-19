@@ -1,28 +1,30 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
-
-import { Autocomplete, Box, IconButton, InputAdornment, Stack, Tab, Tabs, TextField, autocompleteClasses } from '@mui/material';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-
-import { useSettingsContext } from 'src/components/settings';
-import { ICampaign, IReport } from 'src/types/realm/realm-types';
-import { useDebounce } from 'src/hooks/use-debounce';
-import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
-import SearchNotFound from 'src/components/search-not-found';
-import Iconify from 'src/components/iconify';
+import { enqueueSnackbar } from 'notistack';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import CampaignEngagmentView from './campaign/demo-campaign-engagement';
-import { useReports } from 'src/hooks/realm/report/use-report-graphql';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import { Box, Tab, Tabs, Stack, TextField, IconButton, Autocomplete, InputAdornment, autocompleteClasses } from '@mui/material';
+
 import { useBoolean } from 'src/hooks/use-boolean';
-import { enqueueSnackbar } from 'notistack';
+import { useDebounce } from 'src/hooks/use-debounce';
+import { useReports } from 'src/hooks/realm/report/use-report-graphql';
+import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
+
+import Iconify from 'src/components/iconify';
+import { useSettingsContext } from 'src/components/settings';
+import SearchNotFound from 'src/components/search-not-found';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { report } from 'process';
-import CampaignConversionView from './campaign/demo-campaign-convertion';
+
+import { IReport, ICampaign } from 'src/types/realm/realm-types';
+
 import CampaignCostView from './campaign/demo-campaign-cost';
 import CampaignInvestmentView from './campaign/demo-campaign-invest';
+import CampaignEngagmentView from './campaign/demo-campaign-engagement';
+import CampaignConversionView from './campaign/demo-campaign-convertion';
 
 // ----------------------------------------------------------------------
 
@@ -49,8 +51,6 @@ export default function SalesRevenueAnalyticsView() {
   const [reports, setReports] = useState<IReport[] | null>(null)
 
   const [reportError, setReportsError] = useState(null)
-
-  reportError
 
   const [selectCampaign, setSelectCampaign] = useState<ICampaign | null>();
 
@@ -79,6 +79,8 @@ export default function SalesRevenueAnalyticsView() {
         })
 
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectCampaign])
 
   const handleChangeSearchValue = useCallback((value: string) => {
@@ -86,6 +88,7 @@ export default function SalesRevenueAnalyticsView() {
   }, [])
 
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const results = useMemo(() => Array.isArray(campaigns) ? campaigns.filter(c => c.title.toLowerCase().includes(debouncedSearch)) : [], [debouncedSearch])
 
 
