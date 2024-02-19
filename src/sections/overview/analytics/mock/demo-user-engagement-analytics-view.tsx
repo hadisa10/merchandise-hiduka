@@ -7,19 +7,19 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import { useSettingsContext } from 'src/components/settings';
+import AnalyticsComingSoon from './campaign/coming-soon';
 
 // ----------------------------------------------------------------------
 
 export const ANALYTICS_OVERVIEW_DETAILS_TABS = [
-  { value: 'sales', label: 'Sales Analytics' },
-  { value: 'competitor', label: 'Competitor Analytics ' },
-  { value: 'user', label: 'User Analytics ' },
-  { value: 'product', label: 'Product Analytics' },
+  { value: 'content', label: 'Content Engagement Score' },
+  { value: 'interaction', label: 'User Interaction Trends' },
+  { value: 'social', label: 'Social Media Metrics' },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function OverviewAnalyticsView() {
+export default function CustomerEngagementAnalyticsView() {
   const settings = useSettingsContext();
   const [currentTab, setCurrentTab] = useState('sales');
 
@@ -59,6 +59,10 @@ export default function OverviewAnalyticsView() {
 
 
       {renderTabs}
+      {currentTab === "content" && <AnalyticsComingSoon />}
+      {currentTab === "interaction" && <AnalyticsComingSoon />}
+      {currentTab === "social" && <AnalyticsComingSoon />}
+
     </Container>
   );
 }

@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { UseFormRegister } from 'react-hook-form';
 
@@ -18,7 +19,6 @@ import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
 import { QuestionError, IReportQuestionActions } from 'src/types/report';
 
 import QuestionDetails from './question/question-item-details';
-import { forwardRef } from 'react';
 
 // import KanbanDetails from './kanban-details';
 

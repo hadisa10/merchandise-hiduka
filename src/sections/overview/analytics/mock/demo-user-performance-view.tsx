@@ -7,21 +7,22 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import { useSettingsContext } from 'src/components/settings';
+import AnalyticsComingSoon from './campaign/coming-soon';
 
 // ----------------------------------------------------------------------
 
 export const ANALYTICS_OVERVIEW_DETAILS_TABS = [
-  { value: 'sales', label: 'Sales Analytics' },
-  { value: 'competitor', label: 'Competitor Analytics ' },
-  { value: 'user', label: 'User Analytics ' },
-  { value: 'product', label: 'Product Analytics' },
+  { value: 'active', label: 'Daily Active Users' },
+  { value: 'task', label: 'Task Completion Rate' },
+  { value: 'engagement', label: 'User Engagement Score' },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function OverviewAnalyticsView() {
+export default function UserPerformanceAnalyticsView() {
   const settings = useSettingsContext();
-  const [currentTab, setCurrentTab] = useState('sales');
+
+  const [currentTab, setCurrentTab] = useState('active');
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
@@ -59,6 +60,10 @@ export default function OverviewAnalyticsView() {
 
 
       {renderTabs}
+      {currentTab === "active" && <AnalyticsComingSoon />}
+      {currentTab === "task" && <AnalyticsComingSoon />}
+      {currentTab === "engagement" && <AnalyticsComingSoon />}
+
     </Container>
   );
 }

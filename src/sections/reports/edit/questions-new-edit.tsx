@@ -1,11 +1,11 @@
 import { isString } from 'lodash';
 // import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
-import React, { useEffect, useCallback, useState, useRef } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Droppable, DropResult, DragDropContext } from '@hello-pangea/dnd';
 
 import Grid from '@mui/material/Unstable_Grid2';
-import { Box, IconButton, List, Paper, Typography } from '@mui/material';
+import { Box, List, Paper, Typography } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -16,8 +16,6 @@ import { IReport, ICampaign, IReportQuestions, IQuestionDependency, IReportQuest
 import QuestionItem from './question-item';
 import QuestionAdd from './question/question-add';
 import QuestionsColumnToolBar from './question/question-column-tool-bar';
-import { useDebounce } from 'src/hooks/use-debounce';
-import Iconify from 'src/components/iconify';
 
 
 const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICampaign[], campaignsLoading?: boolean }) => {

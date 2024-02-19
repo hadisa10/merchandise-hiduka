@@ -18,6 +18,8 @@ export interface IReportActions {
     saveReport: (draftReport: IReport) => Promise<BSON.ObjectId>;
     updateReport: (report: IReport) => Promise<BSON.ObjectId>;
     getReport: (id: string) => Promise<IReport>;
+    getCampaignReport: (id: string) => Promise<IReport[]>;
+
     // toggleReportStatus: (Report: IReport) => Promise<void>;
     // deleteReport: (Report: IReport) => Promise<void>;
 }

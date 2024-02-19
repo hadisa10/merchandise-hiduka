@@ -34,9 +34,8 @@ type DynamicFormProps = {
 const RHFFormFiller: React.FC<DynamicFormProps> = ({ questions, onSubmit }) => {
     const mdUp = useResponsive('up', 'md');
 
-    questions.map(q => q.validation?.regex?.matches && console.log(`${q.text} : ${q.validation?.regex?.matches}`), "WITH REGEX")
-    const generateSchema = (questions: IReportQuestions[]) => Yup.object().shape(
-        questions.reduce((acc, question) => {
+    const generateSchema = (q: IReportQuestions[]) => Yup.object().shape(
+        q.reduce((acc, question) => {
             let validator: Yup.StringSchema | Yup.NumberSchema = Yup.string(); // Default to string validator
 
             if (question.input_type === 'number') {

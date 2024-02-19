@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
-import { FormControlLabel, List, ListItem, Switch, TextField, Typography } from '@mui/material';
+import { List, Switch, ListItem, Typography } from '@mui/material';
 
 import { fDateTime } from 'src/utils/format-time';
 
@@ -445,10 +445,10 @@ export default function QuestionDetails({
     ))
   )
 
-  const validationOptions = useMemo(() => {
+  const validationOptions = useMemo(() => 
     // @ts-expect-error expected
-    return VALIDATION_OPTIONS.map(({ id, label }) => ({ id, label, value: question.validation ? (question.validation[id] ?? null) : null }))
-  }, [question.validation])
+     VALIDATION_OPTIONS.map(({ id, label }) => ({ id, label, value: question.validation ? (question.validation[id] ?? null) : null }))
+  , [question.validation])
 
   const renderValidations = (
     validationOptions.map(({ id, label, value }, i) => {
@@ -469,7 +469,7 @@ export default function QuestionDetails({
           return renderMinValue;
 
         case "regex":
-          return renderRegex;
+          return renderMinValue;
 
         default:
           return (
