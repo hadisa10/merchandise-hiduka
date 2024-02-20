@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { Suspense, forwardRef, lazy } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { UseFormRegister } from 'react-hook-form';
 
@@ -17,8 +17,10 @@ import Iconify from 'src/components/iconify';
 
 import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
 import { QuestionError, IReportQuestionActions } from 'src/types/report';
+import { LoadingScreen } from 'src/components/loading-screen';
 
-import QuestionDetails from '../question-component/question-item-details';
+// import QuestionDetails from '../question-component/question-item-details';
+const QuestionDetails = lazy(() => import('../question-component/question-item-details'));
 
 // import KanbanDetails from './kanban-details';
 
@@ -115,7 +117,8 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
   );
 
   return (
-    <>
+
+    <Suspense key={index} fallback={<LoadingScreen />}>
       <Draggable draggableId={question._id.toString()} index={index}>
         {(provided, snapshot) => (
           <ListItem
@@ -175,7 +178,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
         // onUpdateQuestion={onUpdateQuestion}
         onDeleteQuestion={onDeleteQuestion}
       />
-    </>
+    </Suspense>
   );
 })
 

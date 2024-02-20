@@ -108,8 +108,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     update(questionIndex, { ...question, text });
   }, [questions, update]);
 
-  const handleChangeQuestionMaxValue = useCallback((questionIndex: number, val: string) => {
-    const numericVal = Number(val); // Convert string to number
+  const handleChangeQuestionMaxValue = useCallback((questionIndex: number, val: number) => {
     if (!Number.isNaN(numericVal)) { // Ensure conversion was successful
       const question = questions[questionIndex];
       const valid = question.validation ?? {};
@@ -117,8 +116,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     }
   }, [questions, update]);
 
-  const handleChangeQuestionMinValue = useCallback((questionIndex: number, val: string) => {
-    const numericVal = Number(val); // Convert string to number
+  const handleChangeQuestionMinValue = useCallback((questionIndex: number, val: number) => {
     if (!Number.isNaN(numericVal)) { // Ensure conversion was successful
       const question = questions[questionIndex];
       const valid = question.validation ?? {};
@@ -126,8 +124,25 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     }
   }, [questions, update]);
 
-  const handleChangeQuestionMaxLength = useCallback((questionIndex: number, val: string) => {
-    const numericVal = parseInt(val, 10); // Convert string to integer
+  const handleChangeQuestionRegexMatches = useCallback((questionIndex: number, val: string) => {
+    if (!(val)) { // Ensure conversion was successful
+      const question = questions[questionIndex];
+      const valid = question.validation ?? {};
+      console.log(val, "VALUE")
+      update(questionIndex, { ...question, validation: { ...valid, regex: { ...valid.regex, matches: val } } });
+    }
+  }, [questions, update]);
+
+  const handleChangeQuestionRegexMessage = useCallback((questionIndex: number, val: string) => {
+    if (!(val)) { // Ensure conversion was successful
+      const question = questions[questionIndex];
+      const valid = question.validation ?? {};
+      update(questionIndex, { ...question, validation: { ...valid, regex: { ...valid.regex, message: val } } });
+    }
+  }, [questions, update]);
+
+
+  const handleChangeQuestionMaxLength = useCallback((questionIndex: number, val: number) => {
     if (!Number.isNaN(numericVal)) { // Ensure conversion was successful
       const question = questions[questionIndex];
       const valid = question.validation ?? {};
@@ -135,8 +150,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     }
   }, [questions, update]);
 
-  const handleChangeQuestionMinLength = useCallback((questionIndex: number, val: string) => {
-    const numericVal = parseInt(val, 10); // Convert string to integer
+  const handleChangeQuestionMinLength = useCallback((questionIndex: number, val: number) => {
     if (!Number.isNaN(numericVal)) { // Ensure conversion was successful
       const question = questions[questionIndex];
       const valid = question.validation ?? {};
@@ -190,6 +204,8 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     handleChangeQuestionMaxValue,
     handleChangeQuestionMinValue,
     handleChangeQuestionMaxLength,
+    handleChangeQuestionRegexMatches,
+    handleChangeQuestionRegexMessage,
     handleChangeQuestionMinLength,
     handleChangeQuestionRequired,
     handleChangeQuestionUnique,
@@ -276,7 +292,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
 
   return (
     <Grid container spacing={3}>
-      
+
       {renderQuestions}
 
       {renderSummary}

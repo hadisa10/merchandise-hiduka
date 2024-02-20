@@ -70,6 +70,8 @@ export interface IReportQuestionActions {
     handleChangeQuestionRequired: (questionIndex: number) => void;
     handleChangeQuestionMaxValue: (questionIndex: number, text: number) => void;
     handleChangeQuestionMinValue: (questionIndex: number, text: number) => void;
+    handleChangeQuestionRegexMatches: (questionIndex: number, text: string) => void;
+    handleChangeQuestionRegexMessage: (questionIndex: number, text: string) => void;
     handleChangeQuestionMaxLength: (questionIndex: number, text: number) => void;
     handleChangeQuestionMinLength: (questionIndex: number, text: number) => void;
     handleChangeQuestionUnique: (questionIndex: number) => void;
