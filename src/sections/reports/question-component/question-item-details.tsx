@@ -14,13 +14,9 @@ import { fDateTime } from 'src/utils/format-time';
 
 import Scrollbar from 'src/components/scrollbar';
 
-import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
+import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, ActualInputType, IReportQuestionActions } from 'src/types/report';
 import { LoadingScreen } from 'src/components/loading-screen';
-
-// import QuestionInputName from './question-input-name';
-// import QuestionDetailsToolbar from './question-details-toolbar';
-// import QuestionDetailsInputType from './question-details-input-type';
 
 const QuestionInputName = lazy(() => import('./question-input-name'));
 const QuestionDetailsToolbar = lazy(() => import('./question-details-toolbar'));
@@ -42,7 +38,7 @@ const StyledLabel = styled('span')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 type Props = {
-  question: IReportQuestions;
+  question: IReportQuestion;
   openDetails: boolean;
   onCloseDetails: VoidFunction;
   actions: IReportQuestionActions;
@@ -50,7 +46,7 @@ type Props = {
   register: UseFormRegister<IReport>;
   index: number;
   //
-  // onUpdateQuestion: (onUpdateQuestion: IReportQuestions) => void;
+  // onUpdateQuestion: (onUpdateQuestion: IReportQuestion) => void;
   onDeleteQuestion: VoidFunction;
 };
 
@@ -323,8 +319,8 @@ export default function QuestionDetails({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        name={`questions.${index}.validation.maxLength`}
-        register={register}
+        // name={`questions.${index}.validation.maxLength`}
+        // register={register}
         onChange={onChangeMaxLength}
         onKeyUp={handleUpdateMaxLength}
         error={!!questionError?.validation?.maxLength?.message}
@@ -343,8 +339,8 @@ export default function QuestionDetails({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        name={`questions.${index}.validation.minLength`}
-        register={register}
+        // name={`questions.${index}.validation.minLength`}
+        // register={register}
         onChange={onChangeMinLength}
         onKeyUp={handleUpdateMinLength}
         error={!!questionError?.validation?.minLength?.message}
@@ -362,8 +358,8 @@ export default function QuestionDetails({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        name={`questions.${index}.validation.maxValue`}
-        register={register}
+        // name={`questions.${index}.validation.maxValue`}
+        // register={register}
         onChange={onChangeMaxValue}
         onKeyUp={handleUpdateMaxValue}
         error={!!questionError?.validation?.maxValue?.message}
@@ -382,8 +378,8 @@ export default function QuestionDetails({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        name={`questions.${index}.validation.minValue`}
-        register={register}
+        // name={`questions.${index}.validation.minValue`}
+        // register={register}
         onChange={onChangeMinValue}
         onKeyUp={handleUpdateMinValue}
         error={!!questionError?.validation?.minValue?.message}
@@ -401,7 +397,8 @@ export default function QuestionDetails({
             placeholder="matches"
             value={regexMatches}
             size="small"
-            name={`questions.${index}.validation.regex.matches`}
+            // name={`questions.${index}.validation.regex.matches`}
+            // register={register}
             onChange={onChangeRegexMatchesVal}
             onKeyUp={handleUpdateRegexMatchesValue}
             error={!!questionError?.validation?.regex?.matches}
@@ -412,8 +409,8 @@ export default function QuestionDetails({
             placeholder="message"
             value={regexMessage}
             size="small"
-            name={`questions.${index}.validation.regex.message`}
-            register={register}
+            // name={`questions.${index}.validation.regex.message`}
+            // register={register}
             onChange={onChangeRegexMessageVal}
             onKeyUp={handleUpdateRegexMessageValue}
             error={!!questionError?.validation?.regex?.matches?.message}

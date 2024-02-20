@@ -12,14 +12,14 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { ActualInputType, IReportQuestionActions } from 'src/types/report';
-import { IReport, ICampaign, IReportQuestions, IQuestionDependency, IReportQuestionsValidation } from 'src/types/realm/realm-types';
+import { IReport, ICampaign, IReportQuestion, IQuestionDependency, IReportQuestionValidation } from 'src/types/realm/realm-types';
 
 import QuestionItem from '../edit/question-item';
 import QuestionAdd from './question-add';
 import QuestionsColumnToolBar from './question-column-tool-bar';
 
 
-const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICampaign[], campaignsLoading?: boolean }) => {
+const QuestionsNewEditList = () => {
 
   const mdUp = useResponsive('up', 'md');
 
@@ -33,7 +33,6 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
   const questionRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   const { control, watch, formState: { errors }, register } = useFormContext<IReport>();
-
 
   const { fields: questions, prepend, remove, move, update } = useFieldArray({
     control,
@@ -60,7 +59,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [move, questions, update]);
 
-  const addQuestion = (newQuestion: IReportQuestions) => {
+  const addQuestion = (newQuestion: IReportQuestion) => {
     if (!isString(newQuestion.text)) return;
     if (!newQuestion.text.trim()) return;
     prepend(newQuestion)
@@ -78,7 +77,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
   }, [dragStarted.value])
 
 
-  const handleAddValidation = useCallback((questionIndex: number, newValidation: Partial<IReportQuestionsValidation>) => {
+  const handleAddValidation = useCallback((questionIndex: number, newValidation: Partial<IReportQuestionValidation>) => {
     const question = questions[questionIndex];
     const updatedValidation = { ...question.validation, ...newValidation };
     update(questionIndex, { ...question, validation: updatedValidation });
@@ -169,7 +168,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     remove(index);
   }, [remove]);
 
-  const handleRemoveValidation = useCallback((questionIndex: number, validationKey: keyof IReportQuestionsValidation) => {
+  const handleRemoveValidation = useCallback((questionIndex: number, validationKey: keyof IReportQuestionValidation) => {
     const question = questions[questionIndex];
     const updatedValidation = { ...question.validation, [validationKey]: undefined };
     update(questionIndex, { ...question, validation: updatedValidation });
@@ -277,7 +276,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
                     question={q}
                     register={register}
                     questionError={errors.questions?.[index]} // Pass the corresponding error
-                    onUpdateQuestion={(qs: IReportQuestions) => console.log(qs)}
+                    onUpdateQuestion={(qs: IReportQuestion) => console.log(qs)}
                     onDeleteQuestion={() => console.log("QUESTION DELETED")}
                   />
                 ))}

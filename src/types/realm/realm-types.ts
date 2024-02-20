@@ -78,13 +78,13 @@ export interface IReport<T = Realm.BSON.ObjectId> {
     campaign_title: string;
     category_id: T;
     product_id?: T;
-    questions: Array<IReportQuestions<T>>;
+    questions: Array<IReportQuestion<T>>;
     createdAt: Date;
     updatedAt: Date;
 }
 
 // Exporting the Main Report Questions Interface with Generics
-export interface IReportQuestions<T = Realm.BSON.ObjectId> {
+export interface IReportQuestion<T = Realm.BSON.ObjectId> {
     _id: T;
     text: string;
     order: number;
@@ -95,7 +95,7 @@ export interface IReportQuestions<T = Realm.BSON.ObjectId> {
     unique: boolean;
     updatedAt: Date;
     dependencies?: Array<IQuestionDependency<T>>;
-    validation?: IReportQuestionsValidation;
+    validation?: IReportQuestionValidation;
 }
 
 // Exporting the Main Dependency Interface with Generics
@@ -106,18 +106,18 @@ export interface IQuestionDependency<T = Realm.BSON.ObjectId> {
 }
 
 // Exporting the Main Validation Interface
-export interface IReportQuestionsValidation {
+export interface IReportQuestionValidation {
     required?: boolean;
     minLength?: number;
     maxLength?: number;
     minValue?: number;
     maxValue?: number;
-    regex?: IReportQuestionsValidationRegex;
+    regex?: IReportQuestionValidationRegex;
     fileTypes?: Array<string>;
 }
 
 // Exporting the Regex Validation Interface
-export interface IReportQuestionsValidationRegex {
+export interface IReportQuestionValidationRegex {
     matches?: string;
     message?: string;
 }
@@ -127,8 +127,8 @@ export interface IDraftReport extends IReport<string> {
     questions: Array<IDraftReportQuestions>;
 }
 
-// Exporting the Draft Report Questions Interface, inheriting from IReportQuestions with string type for IDs
-export interface IDraftReportQuestions extends IReportQuestions<string> {
+// Exporting the Draft Report Questions Interface, inheriting from IReportQuestion with string type for IDs
+export interface IDraftReportQuestions extends IReportQuestion<string> {
     // Additional properties specific to draft questions can be added here
 }
 
@@ -137,13 +137,13 @@ export interface IDraftQuestionDependency extends IQuestionDependency<string> {
     // Additional properties specific to draft dependencies can be added here
 }
 
-// Exporting the Draft Validation Interface, directly inheriting from IReportQuestionsValidation as no ID type change is needed
-export interface IDraftReportQuestionsValidation extends IReportQuestionsValidation {
+// Exporting the Draft Validation Interface, directly inheriting from IReportQuestionValidation as no ID type change is needed
+export interface IDraftReportQuestionsValidation extends IReportQuestionValidation {
     // Additional properties specific to draft validation can be added here
 }
 
-// Exporting the Draft Regex Validation Interface, directly inheriting from IReportQuestionsValidationRegex as no ID type change is needed
-export interface IDraftReportQuestionsValidationRegex extends IReportQuestionsValidationRegex {
+// Exporting the Draft Regex Validation Interface, directly inheriting from IReportQuestionValidationRegex as no ID type change is needed
+export interface IDraftReportQuestionsValidationRegex extends IReportQuestionValidationRegex {
     // Additional properties specific to draft regex validation can be added here
 }
 

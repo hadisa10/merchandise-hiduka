@@ -26,7 +26,7 @@ import CampaignDetailsToolbar from './campaign-details-toolbar';
 import RouteCreateEditForm from './edit/route-create-edit-form';
 import CampaignNewEditRouteForm from './edit/campaign-new-edit-route';
 import CampaignNewEditDetailsForm from './edit/campaign-new-edit-details-form';
-import CampaignReportListDataGrid from '../reports/reports-component/report-list-data-grid-campaign';
+import ReportListDataGrid from '../reports/view/report-list-data-grid';
 
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
 const ROUTES_FIELDS = ['routes']
@@ -298,7 +298,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         />
         {renderTabs}
         {currentTab === 'details' && <CampaignNewEditDetailsForm currentCampaign={currentCampaign} />}
-        {currentTab === 'reports' && <CampaignReportListDataGrid id={currentCampaign?._id.toString() ?? ""} />}
+        {currentTab === 'reports' && <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} />}
         {
           currentTab === 'routes' &&
           <CampaignNewEditRouteForm

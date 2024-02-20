@@ -75,7 +75,22 @@ export default function ReportNewEditForm({ currentReport }: Props) {
   const [currentTab, setCurrentTab] = useState('details');
 
   const regexValidationSchema = Yup.object().shape({
-    matches: Yup.string().nullable(), // Allows null
+    matches: Yup.string().nullable().test(
+      'is-regex',
+      'matches must be a valid regex',
+      value => {
+        try {
+          // Attempt to create a new RegExp object. If `value` is not a valid regex, this will throw an error.
+          // @ts-expect-error expected
+          new RegExp(value);
+          // If no error is thrown, then `value` is a valid regex.
+          return true;
+        } catch (e) {
+          // If an error is thrown, then `value` is not a valid regex.
+          return false;
+        }
+      }
+    ), // Allows null
     message: Yup.string().nullable(), // Allows null
   }).nullable();
 
@@ -173,10 +188,6 @@ export default function ReportNewEditForm({ currentReport }: Props) {
   console.log(values, 'VALUES')
   const onSubmit = handleSubmit(async (formData) => {
     // Remove null fields from the form data
-
-
-
-
     try {
       if (currentReport) {
         const cleanedData = removeAndFormatNullFields({
@@ -282,7 +293,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
         />
         <Suspense fallback={<LoadingScreen />}>
           {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
-          {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}
+          {currentTab === 'questions' && <QuestionsNewEditList />}
 
         </Suspense>
 

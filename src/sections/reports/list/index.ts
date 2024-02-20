@@ -1,1 +1,0 @@
-export { default as ReportDataGrid } from '../view/report-list-data-grid';

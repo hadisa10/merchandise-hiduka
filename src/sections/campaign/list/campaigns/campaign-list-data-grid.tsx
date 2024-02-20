@@ -48,6 +48,7 @@ import {
   RenderCellCampaign,
   RenderCellCreatedAt,
 } from './campaign-table-row';
+import { useDebounce } from 'src/hooks/use-debounce';
 
 // ----------------------------------------------------------------------
 
@@ -82,7 +83,7 @@ export default function CampaignListDataGrid() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  // const debouncedQuery = useDebounce(searchQuery);
+  const debouncedQuery = useDebounce(searchQuery);
 
   const [tableData, setTableData] = useState<ICampaign[]>([]);
 
@@ -93,11 +94,15 @@ export default function CampaignListDataGrid() {
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
-  useEffect(() => {
-    if (campaigns.length) {
-      setTableData(campaigns);
-    }
-  }, [campaigns]);
+    useEffect(() => {
+      if (Array.isArray(campaigns)) {
+        if (debouncedQuery) {
+          setTableData(campaigns.filter(cmpg => cmpg.title.toLowerCase().includes(debouncedQuery)));
+        } else {
+          setTableData(campaigns);
+        }
+      }
+    }, [campaigns, debouncedQuery]);
 
   useEffect(() => {
     if (searchQuery.length < 1) {
@@ -191,30 +196,6 @@ export default function CampaignListDataGrid() {
       hideable: false,
       renderCell: (params) => <RenderCellCheckin params={params} />,
     },
-    // {
-    //   field: 'inventoryType',
-    //   headerName: 'Stock',
-    //   width: 160,
-    //   type: 'singleSelect',
-    //   valueOptions: PRODUCT_STOCK_OPTIONS,
-    //   renderCell: (params) => <RenderCellStock params={params} />,
-    // },
-    // {
-    //   field: 'price',
-    //   headerName: 'Price',
-    //   width: 140,
-    //   editable: true,
-    //   renderCell: (params) => <RenderCellPrice params={params} />,
-    // },
-    // {
-    //   field: 'publish',
-    //   headerName: 'Publish',
-    //   width: 110,
-    //   type: 'singleSelect',
-    //   editable: true,
-    //   valueOptions: PUBLISH_OPTIONS,
-    //   renderCell: (params) => <RenderCellPublish params={params} />,
-    // },
     {
       type: 'actions',
       field: 'actions',
