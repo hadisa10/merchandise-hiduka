@@ -114,7 +114,8 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [questionText, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [questionText, index]
   );
 
   const handleUpdateMaxValue = useCallback(
@@ -130,7 +131,8 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [maxValue, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [maxValue, index]
   );
 
   const handleUpdateMinValue = useCallback(
@@ -146,7 +148,8 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [minValue, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [minValue, index]
   );
 
   const handleUpdateMaxLength = useCallback(
@@ -162,7 +165,8 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [maxValue, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [maxValue, index]
   );
 
   const handleUpdateMinLength = useCallback(
@@ -178,7 +182,8 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [minLength, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [minLength, index]
   );
 
 
