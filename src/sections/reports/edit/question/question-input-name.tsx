@@ -7,9 +7,9 @@ import { IReport } from 'src/types/realm/realm-types';
 
 interface QuestionInputNameProps extends InputBaseProps {
   error?: boolean;
-  name: string
+  name?: string
   helperText?: string;
-  register: UseFormRegister<IReport>;
+  register?: UseFormRegister<IReport>;
 
 }
 
@@ -20,7 +20,7 @@ const ErrorText = styled(Typography)({
 });
 
 export default function QuestionInputName({ name, error, helperText, sx, register, size, ...other }: QuestionInputNameProps) {
-  const registerProps = register(name as keyof IReport);
+  const registerProps = register ? register(name as keyof IReport) : {}
   const small = size === "small"
   return (
     <div>

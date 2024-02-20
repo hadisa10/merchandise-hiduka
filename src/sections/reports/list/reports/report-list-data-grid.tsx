@@ -318,7 +318,7 @@ export default function ReportListDataGrid() {
                       typeOptions={CAMPAIGN_TYPE_OPTIONS}
                     />
                     <Stack direction="row" spacing={3} alignItems="center">
-                      <RHFTextField name='search' placeholder='Search Campaigns' onKeyDown={(e) => {
+                      <RHFTextField name='search' placeholder='Search Reports' onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           onSubmit(); // Trigger the search function
                         }

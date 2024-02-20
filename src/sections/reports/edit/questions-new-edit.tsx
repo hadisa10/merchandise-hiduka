@@ -108,29 +108,42 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
     update(questionIndex, { ...question, text });
   }, [questions, update]);
 
-  const handleChangeQuestionMaxValue = useCallback((questionIndex: number, val: number) => {
-    const question = questions[questionIndex];
-    const valid = question.validation ?? {}
-    update(questionIndex, { ...question, validation: { ...valid, maxValue: val } });
+  const handleChangeQuestionMaxValue = useCallback((questionIndex: number, val: string) => {
+    const numericVal = Number(val); // Convert string to number
+    if (!Number.isNaN(numericVal)) { // Ensure conversion was successful
+      const question = questions[questionIndex];
+      const valid = question.validation ?? {};
+      update(questionIndex, { ...question, validation: { ...valid, maxValue: numericVal } });
+    }
   }, [questions, update]);
 
-  const handleChangeQuestionMinValue = useCallback((questionIndex: number, val: number) => {
-    const question = questions[questionIndex];
-    const valid = question.validation ?? {}
-    update(questionIndex, { ...question, validation: { ...valid, minValue: val } });
+  const handleChangeQuestionMinValue = useCallback((questionIndex: number, val: string) => {
+    const numericVal = Number(val); // Convert string to number
+    if (!Number.isNaN(numericVal)) { // Ensure conversion was successful
+      const question = questions[questionIndex];
+      const valid = question.validation ?? {};
+      update(questionIndex, { ...question, validation: { ...valid, minValue: numericVal } });
+    }
   }, [questions, update]);
 
-  const handleChangeQuestionMaxLength = useCallback((questionIndex: number, val: number) => {
-    const question = questions[questionIndex];
-    const valid = question.validation ?? {}
-    update(questionIndex, { ...question, validation: { ...valid, maxLength: val } });
+  const handleChangeQuestionMaxLength = useCallback((questionIndex: number, val: string) => {
+    const numericVal = parseInt(val, 10); // Convert string to integer
+    if (!Number.isNaN(numericVal)) { // Ensure conversion was successful
+      const question = questions[questionIndex];
+      const valid = question.validation ?? {};
+      update(questionIndex, { ...question, validation: { ...valid, maxLength: numericVal } });
+    }
   }, [questions, update]);
 
-  const handleChangeQuestionMinLength = useCallback((questionIndex: number, val: number) => {
-    const question = questions[questionIndex];
-    const valid = question.validation ?? {}
-    update(questionIndex, { ...question, validation: { ...valid, minValue: val } });
+  const handleChangeQuestionMinLength = useCallback((questionIndex: number, val: string) => {
+    const numericVal = parseInt(val, 10); // Convert string to integer
+    if (!Number.isNaN(numericVal)) { // Ensure conversion was successful
+      const question = questions[questionIndex];
+      const valid = question.validation ?? {};
+      update(questionIndex, { ...question, validation: { ...valid, minLength: numericVal } });
+    }
   }, [questions, update]);
+
 
   const handleAddDependency = useCallback((questionIndex: number, newDependency: IQuestionDependency) => {
     const question = questions[questionIndex];

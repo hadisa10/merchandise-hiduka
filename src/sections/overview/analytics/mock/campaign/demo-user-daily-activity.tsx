@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { first, shuffle } from 'lodash';
 
 import Grid from '@mui/material/Unstable_Grid2';
@@ -22,32 +21,39 @@ import { IReport } from 'src/types/realm/realm-types';
 
 export default function UserDailyActivityView({ reports }: { reports: IReport[] }) {
     const settings = useSettingsContext();
-
+// 
     const { users } = useUsers();
 
     // const reportsColl = useMemo(() => reports.reduce((acc, r) => acc + r.responses, 0), [reports])
 
-    const merchant = Array.isArray(users) ? shuffle(users).map((user, i) => ({
-        id: user._id,
-        flag: user.country as unknown as string ?? "ke",
-        category: `product ${i}`,
-        rank: `Top ${i + 1}`,
-        email: user.email,
-        name: user.displayName,
-        totalAmount: _mock.number.price(i),
-        avatarUrl: first(user.displayName) as unknown as string ?? "",
-    })) : []
+    const merchant = Array.isArray(users) ? shuffle(users).map((user, i) => {
+        const category = ['CAP', 'Branded Shoes', 'Headphone', 'Cell Phone', 'Earings'][i];
 
-    const sales = Array.isArray(users) ? shuffle(users).map((user, i) => ({
-        id: user._id,
-        flag: user.country as unknown as string ?? "ke",
-        category: `product ${i}`,
-        rank: `Top ${i + 1}`,
-        email: user.email,
-        name: user.displayName,
-        totalAmount: _mock.number.price(i),
-        avatarUrl: first(user.displayName) as unknown as string ?? "",
-    })) : []
+        return {
+            id: user._id,
+            flag: "ke",
+            category,
+            rank: `Top ${i + 1}`,
+            email: user.email,
+            name: user.displayName,
+            totalAmount: _mock.number.price(i),
+            avatarUrl: first(user.displayName) as unknown as string ?? "",
+        }
+    }) : []
+    const sales = Array.isArray(users) ? shuffle(users).map((user, i) => {
+        const category = ['CAP', 'Branded Shoes', 'Headphone', 'Cell Phone', 'Earings', 'CAP'][i];
+
+        return {
+            id: user._id,
+            flag: "ke",
+            category,
+            rank: `Top ${i + 1}`,
+            email: user.email,
+            name: user.displayName,
+            totalAmount: _mock.number.price(i),
+            avatarUrl: first(user.displayName) as unknown as string ?? "",
+        }
+    }) : []
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>

@@ -1,6 +1,6 @@
 // 
 
-import { capitalize } from 'lodash';
+import { isNumber, capitalize } from 'lodash';
 import { UseFormRegister } from 'react-hook-form';
 import { useMemo, useState, useEffect, useCallback, ChangeEvent } from 'react';
 
@@ -88,6 +88,10 @@ export default function QuestionDetails({
 
   const [minLength, setMinLength] = useState<number | null>(null);
 
+  useEffect(() => {
+    console.log(maxValue, "MAX VALUES")
+  }, [maxValue])
+
 
   // const [taskDescription, setTaskDescription] = useState(task.description);
 
@@ -118,7 +122,7 @@ export default function QuestionDetails({
       try {
         if (event.key === 'Enter') {
 
-          if (maxValue) {
+          if (maxValue && isNumber(maxValue)) {
             actions.handleChangeQuestionMaxValue(index, maxValue)
           }
         }
@@ -134,7 +138,7 @@ export default function QuestionDetails({
       try {
         if (event.key === 'Enter') {
 
-          if (minValue) {
+          if (minValue && isNumber(minValue)) {
             actions.handleChangeQuestionMinValue(index, minValue)
           }
         }
@@ -150,7 +154,7 @@ export default function QuestionDetails({
       try {
         if (event.key === 'Enter') {
 
-          if (maxValue) {
+          if (maxValue && isNumber(maxValue)) {
             actions.handleChangeQuestionMaxLength(index, maxValue)
           }
         }
@@ -166,15 +170,15 @@ export default function QuestionDetails({
       try {
         if (event.key === 'Enter') {
 
-          if (maxValue) {
-            actions.handleChangeQuestionMinLength(index, maxValue)
+          if (minLength && isNumber(minLength)) {
+            actions.handleChangeQuestionMinLength(index, minLength)
           }
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [maxValue, index, actions]
+    [minLength, index, actions]
   );
 
 
@@ -342,9 +346,9 @@ export default function QuestionDetails({
           value={regexMatches}
           size="small"
           name={`questions.${index}.validation.regex.matches`}
-          register={register}
-          onChange={onChangeMinValue}
-          onKeyUp={handleUpdateMinValue}
+          onChange={() => { }}
+          onKeyUp={() => { }}
+          // onKeyUp={handleUpdateMinValue}
           error={!!questionError?.validation?.minValue?.message}
           helperText={questionError?.validation?.minValue?.message}
         />
@@ -354,8 +358,8 @@ export default function QuestionDetails({
           size="small"
           name={`questions.${index}.validation.regex.message`}
           register={register}
-          onChange={onChangeMinValue}
-          onKeyUp={handleUpdateMinValue}
+          onChange={() => { }}
+          onKeyUp={() => { }}
           error={!!questionError?.validation?.regex?.matches?.message}
           // @ts-expect-error expected
           helperText={questionError?.validation?.regex?.message?.message ?? ""}
@@ -449,10 +453,10 @@ export default function QuestionDetails({
     ))
   )
 
-  const validationOptions = useMemo(() => 
+  const validationOptions = useMemo(() =>
     // @ts-expect-error expected
-     VALIDATION_OPTIONS.map(({ id, label }) => ({ id, label, value: question.validation ? (question.validation[id] ?? null) : null }))
-  , [question.validation])
+    VALIDATION_OPTIONS.map(({ id, label }) => ({ id, label, value: question.validation ? (question.validation[id] ?? null) : null }))
+    , [question.validation])
 
   const renderValidations = (
     validationOptions.map(({ id, label, value }, i) => {

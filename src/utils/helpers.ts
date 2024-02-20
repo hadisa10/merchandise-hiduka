@@ -138,38 +138,78 @@ export async function fileToBase64(file: File): Promise<string> {
         reader.readAsDataURL(file);
     });
 }
+// export const removeAndFormatNullFields = <T>(
+//     data: T,
+//     formatOptionsArray?: { key: keyof T; formatter: (value: any) => any }[],
+//     removeFields?: (keyof T)[]
+// ): T | undefined => {
+//     // Check if the data is an object and not null
+//     if (typeof data === 'object' && data !== null) {
+//         // Use generics to preserve the structure of arrays or objects
+//         return Object.entries(data).reduce((acc: any, [key, value]) => {
+//             // Skip any field that is in the removeFields list or has key __typename
+//             if (key === '__typename' || removeFields?.includes(key as keyof T)) {
+//                 return acc;
+//             }
+//             // Check if the current key has a specified format option
+//             const formatOption = formatOptionsArray?.find(option => option.key === key);
+//             if (formatOption) {
+//                 // Apply the formatter function if found
+//                 value = formatOption.formatter(value);
+//             }
+//             // Recursively clean the value
+//             const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields);
+//             // If the cleaned value is not undefined, add it to the accumulator
+//             if (cleanedValue !== undefined) {
+//                 acc[key] = cleanedValue;
+//             }
+//             return acc;
+//         }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
+//     } 
+//         // Return the value if it's not null, otherwise return undefined
+//         return data !== null ? data : undefined;
+    
+// };
 export const removeAndFormatNullFields = <T>(
     data: T,
     formatOptionsArray?: { key: keyof T; formatter: (value: any) => any }[],
-    removeFields?: (keyof T)[]
+    removeFields?: (keyof T)[],
+    mismatchConditions?: { key: keyof T; predicate: (value: any) => boolean }[]
 ): T | undefined => {
     // Check if the data is an object and not null
     if (typeof data === 'object' && data !== null) {
-        // Use generics to preserve the structure of arrays or objects
         return Object.entries(data).reduce((acc: any, [key, value]) => {
-            // Skip any field that is in the removeFields list or has key __typename
+            // Skip any field that is in the removeFields list, has key __typename, or does not meet the mismatch condition
             if (key === '__typename' || removeFields?.includes(key as keyof T)) {
                 return acc;
             }
+
+            // Check for mismatch conditions and skip if predicate returns false
+            const mismatchCondition = mismatchConditions?.find(condition => condition.key === key);
+            if (mismatchCondition && !mismatchCondition.predicate(value)) {
+                return acc; // Skip adding this key-value pair
+            }
+
             // Check if the current key has a specified format option
             const formatOption = formatOptionsArray?.find(option => option.key === key);
             if (formatOption) {
-                // Apply the formatter function if found
-                value = formatOption.formatter(value);
+                value = formatOption.formatter(value); // Apply the formatter function if found
             }
+
             // Recursively clean the value
-            const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields);
+            const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields, mismatchConditions);
+            
             // If the cleaned value is not undefined, add it to the accumulator
             if (cleanedValue !== undefined) {
                 acc[key] = cleanedValue;
             }
             return acc;
         }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
-    } 
-        // Return the value if it's not null, otherwise return undefined
-        return data !== null ? data : undefined;
-    
+    }
+    // Return the value if it's not null, otherwise return undefined
+    return data !== null ? data : undefined;
 };
+
 export const safeDateFormatter = (value: string): string => {
     // Check if the value is a valid date string
     const timestamp = Date.parse(value);

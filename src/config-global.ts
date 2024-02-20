@@ -37,4 +37,4 @@ export const LOGFLARE_KEY = process.env.NEXT_PUBLIC_LOGFLARE_KEY;
 export const VERSION = process.env.NEXT_VERSION ?? "0.0.1";
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
+export const PATH_AFTER_LOGIN = paths.dashboard.analytics.campaignPerformance; // as '/dashboard'

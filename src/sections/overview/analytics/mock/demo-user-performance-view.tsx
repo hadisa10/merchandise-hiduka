@@ -81,7 +81,6 @@ import { Box, Tab, Tabs, Stack, TextField, IconButton, Autocomplete, InputAdornm
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
-import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
