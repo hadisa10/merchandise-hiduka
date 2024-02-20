@@ -11,8 +11,7 @@ import { RouterLink } from "src/routes/components";
 
 import Iconify from "src/components/iconify";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
-
-import { ReportDataGrid } from "../../list";
+import ReportListDataGrid from "../report-list-data-grid";
 
 
 export default function AdminReportListView() {
@@ -45,7 +44,7 @@ export default function AdminReportListView() {
                     },
                 }}
             />
-            <ReportDataGrid />
+            <ReportListDataGrid />
         </>
     );
 }

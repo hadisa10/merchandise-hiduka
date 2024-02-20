@@ -39,15 +39,15 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import { IReport } from 'src/types/realm/realm-types';
 import { IReportTableFilters, IReportTableFilterValue } from 'src/types/report';
 
-import CampaignTableToolbar from './report-table-toolbar';
-import CampaignReportTableFiltersResult from './report-table-filters-result';
+import CampaignTableToolbar from '../reports-component/report-table-toolbar';
+import CampaignReportTableFiltersResult from '../reports-component/report-table-filters-result';
 import {
   // RenderCellStock,
   RenderCellReport,
   // RenderCellPrice,
   RenderCellResponses,
   RenderCellCreatedAt,
-} from './report-table-row';
+} from '../reports-component/report-table-row';
 
 // ----------------------------------------------------------------------
 

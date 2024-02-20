@@ -14,9 +14,9 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { ActualInputType, IReportQuestionActions } from 'src/types/report';
 import { IReport, ICampaign, IReportQuestions, IQuestionDependency, IReportQuestionsValidation } from 'src/types/realm/realm-types';
 
-import QuestionItem from './question-item';
-import QuestionAdd from './question/question-add';
-import QuestionsColumnToolBar from './question/question-column-tool-bar';
+import QuestionItem from '../edit/question-item';
+import QuestionAdd from './question-add';
+import QuestionsColumnToolBar from './question-column-tool-bar';
 
 
 const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICampaign[], campaignsLoading?: boolean }) => {
@@ -276,6 +276,7 @@ const QuestionsNewEditList = ({ campaigns, campaignsLoading }: { campaigns?: ICa
 
   return (
     <Grid container spacing={3}>
+      
       {renderQuestions}
 
       {renderSummary}

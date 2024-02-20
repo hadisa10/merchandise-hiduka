@@ -26,7 +26,7 @@ import CampaignDetailsToolbar from './campaign-details-toolbar';
 import RouteCreateEditForm from './edit/route-create-edit-form';
 import CampaignNewEditRouteForm from './edit/campaign-new-edit-route';
 import CampaignNewEditDetailsForm from './edit/campaign-new-edit-details-form';
-import CampaignReportListDataGrid from '../reports/list/reports/report-list-data-grid-campaign';
+import CampaignReportListDataGrid from '../reports/reports-component/report-list-data-grid-campaign';
 
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
 const ROUTES_FIELDS = ['routes']

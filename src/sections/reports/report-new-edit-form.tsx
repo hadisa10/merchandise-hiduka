@@ -57,7 +57,7 @@ export const REPORT_DETAILS_TABS = [
 // }
 
 // Lazy load the components
-const QuestionsNewEditList = lazy(() => import('./edit/questions-new-edit'));
+const QuestionsNewEditList = lazy(() => import('./question-component/questions-new-edit'));
 const CampaignDetailsToolbar = lazy(() => import('./report-details-toolbar'));
 const ReportNewEditDetailsForm = lazy(() => import('./edit/report-new-edit-details-form'));
 

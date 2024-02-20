@@ -18,7 +18,7 @@ import Iconify from 'src/components/iconify';
 import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
 import { QuestionError, IReportQuestionActions } from 'src/types/report';
 
-import QuestionDetails from './question/question-item-details';
+import QuestionDetails from '../question-component/question-item-details';
 
 // import KanbanDetails from './kanban-details';
 

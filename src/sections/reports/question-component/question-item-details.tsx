@@ -522,7 +522,7 @@ export default function QuestionDetails({
           },
         }}
       >
-        <Stack
+        {/* <Stack
           spacing={3}
           sx={{
             pt: 3,
@@ -550,7 +550,7 @@ export default function QuestionDetails({
 
           {renderDependencies}
 
-        </Stack>
+        </Stack> */}
 
       </Scrollbar>
 
