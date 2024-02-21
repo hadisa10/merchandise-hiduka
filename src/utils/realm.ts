@@ -33,7 +33,10 @@ export function removeValueAtIndex<T>(arr: T[], idx: number): T[] {
 }
 
 export const createObjectId = (): Realm.BSON.ObjectId => new Realm.BSON.ObjectId();
-export const convertObjectId = (_id: string): Realm.BSON.ObjectId => new Realm.BSON.ObjectId(_id);
+export const convertObjectId = (_id: string): Realm.BSON.ObjectId => {
+    const idStr = _id.toString();
+    return new Realm.BSON.ObjectId(idStr);
+};
 
 export const getTodoId = (todo: { _id: Realm.BSON.ObjectId | string }): string => {
     if (todo._id instanceof Realm.BSON.ObjectId) {

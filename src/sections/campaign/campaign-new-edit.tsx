@@ -5,7 +5,7 @@ import { isNumber } from 'lodash';
 import { useSnackbar } from 'notistack';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { lazy, useMemo, useState, Suspense, useEffect, useCallback } from 'react';
 
 import { Tab, Tabs } from '@mui/material';
 
@@ -15,18 +15,21 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
-import { createObjectId } from 'src/utils/realm';
+import { createObjectId, convertObjectId } from 'src/utils/realm';
+import { safeDateFormatter, removeAndFormatNullFields } from 'src/utils/helpers';
 
 import Label from 'src/components/label';
+import { LoadingScreen } from 'src/components/loading-screen';
 import FormProvider from 'src/components/hook-form/form-provider';
 
 import { IRoute, ICampaign, ICampaign_routes } from 'src/types/realm/realm-types';
 
 import CampaignDetailsToolbar from './campaign-details-toolbar';
 import RouteCreateEditForm from './edit/route-create-edit-form';
-import CampaignNewEditRouteForm from './edit/campaign-new-edit-route';
-import CampaignNewEditDetailsForm from './edit/campaign-new-edit-details-form';
-import ReportListDataGrid from '../reports/view/report-list-data-grid';
+
+const CampaignNewEditRouteForm = lazy(() => import('./edit/campaign-new-edit-route'));
+const CampaignNewEditDetailsForm = lazy(() => import('./edit/campaign-new-edit-details-form'));
+const ReportListDataGrid = lazy(() => import('../reports/view/report-list-data-grid'));
 
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
 const ROUTES_FIELDS = ['routes']
@@ -41,6 +44,8 @@ type Props = {
 export const CAMPAING_DETAILS_TABS = [
   { value: 'details', label: 'Details' },
   { value: 'reports', label: 'Reports' },
+  { value: 'products', label: 'Products' },
+  { value: 'users', label: 'Users' },
   { value: 'routes', label: 'Routes' },
 ];
 
@@ -63,8 +68,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
 
   const handleNewRouteOpen = useCallback(({ lat, lng }: { lat: number, lng: number }) => {
-    console.log(lat, "LATITUDE")
-    console.log(lng, "LONGITUDE")
     setNewGeoLocation({ lat, lng });
     open.onTrue()
   }, [open])
@@ -153,23 +156,28 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const handleAddNewRoute = useCallback((route: IRoute) => {
     // Convert route details to match the form's expected structure
-    const rtAddrs = {
-      _id: route._id,
-      fullAddress: route.fullAddress,
-      location: route.location,
-      phoneNumber: route.phoneNumber ?? '',
-      road: route.road ?? ''
+    if (!(Array.isArray(campaignRoutes) && campaignRoutes.some(cmr => cmr._id.toString() === route._id?.toString()))) {
+      const rtAddrs = {
+        _id: route._id,
+        fullAddress: route.fullAddress,
+        location: route.location,
+        phoneNumber: route.phoneNumber ?? '',
+        road: route.road ?? ''
+      }
+      const dt = new Date();
+      const routeForForm: ICampaign_routes = {
+        _id: createObjectId(), // Ensure _id is a string to match the form's expectation
+        routeAddress: rtAddrs,
+        routeNumber: Array.isArray(campaignRoutes) ? campaignRoutes.length + 1 : 1,
+        totalQuantity: 0,
+        createdAt: dt,
+        updatedAt: dt,
+      };
+      append(routeForForm);
+    } else {
+      enqueueSnackbar("Route already selected", { variant: "error" })
     }
-    const dt = new Date();
-    const routeForForm: ICampaign_routes = {
-      _id: createObjectId(), // Ensure _id is a string to match the form's expectation
-      routeAddress: rtAddrs,
-      routeNumber: Array.isArray(campaignRoutes) ? campaignRoutes.length + 1 : 1,
-      totalQuantity: 0,
-      createdAt: dt,
-      updatedAt: dt,
-    };
-    append(routeForForm);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [append, campaignRoutes]);
 
   const handleRemoveNewRoute = useCallback((routeIndex: number) => {
@@ -232,28 +240,57 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         console.info('DATA', data);
       } else {
         const campaign: ICampaign = {
+          ...currentCampaign,
           description: data.description ?? '',
-          products: [],
-          users: [],
-          updatedAt: new Date(),
-          startDate: new Date(),
-          endDate: new Date(),
+          // @ts-expect-error expected
+          updatedAt: safeDateFormatter(),
           project_id: createObjectId(),
           // @ts-expect-error expected
-          routes: data.routes,
+          routes: data.routes.map(x => {
+            if(!x.createdAt){
+              return {
+                ...x,
+                createdAt: safeDateFormatter,
+                updatedAt : safeDateFormatter,
+                totalQuantity: 0
+              }
+            }
+            return x;
+          }),
           title: data.title,
           today_checkin: 0,
           total_checkin: 0,
           type: "RSM"
         };
-        await updateCampaign(campaign)
+        const cleanData = removeAndFormatNullFields(campaign,
+          [
+            // {
+            //   key: "_id",
+            //   formatter: convertObjectId,
+            // },
+            {
+              key: "createdAt",
+              formatter: safeDateFormatter,
+            },
+            {
+              key: "updatedAt",
+              formatter: safeDateFormatter,
+            }
+          ]
+        );
+        // console.log(currentCampaign._id, 'CAMPAIGN ID')
+        // console.log(JSON.stringify(cleanData))
+        // return;
+        if (cleanData) {
+          await updateCampaign(cleanData)
+        }
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
         router.push(paths.dashboard.campaign.root);
         console.info('DATA', data);
       }
     } catch (error) {
-      enqueueSnackbar(currentCampaign ? 'Update failed!' : 'Failed to create campaign!');
+      enqueueSnackbar(currentCampaign ? 'Update failed!' : 'Failed to create campaign!', { variant: "error" });
       console.error(error);
     }
   });
@@ -297,20 +334,31 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           backLink={paths.dashboard.campaign.root}
         />
         {renderTabs}
-        {currentTab === 'details' && <CampaignNewEditDetailsForm currentCampaign={currentCampaign} />}
-        {currentTab === 'reports' && <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} />}
-        {
-          currentTab === 'routes' &&
-          <CampaignNewEditRouteForm
-            currentCampaign={currentCampaign}
-            handleNewRouteOpen={handleNewRouteOpen}
-            handleRemoveNewRoute={handleRemoveNewRoute}
-            // @ts-expect-error campaign routes typescript error
-            campaignRoutes={campaignRoutes}
-          />
-        }
+
+        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm currentCampaign={currentCampaign} /></Suspense>}
+        {currentTab === 'reports' && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
+        {currentTab === 'products' && <>PRODUCTS</>}
+        {currentTab === 'users' && <>USERS</>}
+        <Suspense fallback={<LoadingScreen />}>
+
+          {
+            currentTab === 'routes' &&
+            <CampaignNewEditRouteForm
+              currentCampaign={currentCampaign}
+              handleNewRouteOpen={handleNewRouteOpen}
+              handleAddNewRoute={handleAddNewRoute}
+              handleRemoveNewRoute={handleRemoveNewRoute}
+              // @ts-expect-error campaign routes typescript error
+              campaignRoutes={campaignRoutes}
+            />
+          }
+        </Suspense>
       </FormProvider>
-      {newGeoLocation && <RouteCreateEditForm newGeoLocation={newGeoLocation} handleAddNewRoute={handleAddNewRoute} open={open.value} onClose={open.onFalse} />}
+      {newGeoLocation &&
+        <Suspense fallback={<LoadingScreen />}>
+          <RouteCreateEditForm newGeoLocation={newGeoLocation} handleAddNewRoute={handleAddNewRoute} open={open.value} onClose={open.onFalse} />
+        </Suspense>
+      }
     </>
   );
 }

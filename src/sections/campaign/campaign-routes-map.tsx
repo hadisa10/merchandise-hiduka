@@ -224,8 +224,6 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
       window.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
-  console.log(initialState, 'INITIAL STATE')
-  console.log(contacts, "CONTACTS")
   return (
     <StyledRoot>
       {

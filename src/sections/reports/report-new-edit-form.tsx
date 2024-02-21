@@ -82,7 +82,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
         try {
           // Attempt to create a new RegExp object. If `value` is not a valid regex, this will throw an error.
           // @ts-expect-error expected
-          new RegExp(value);
+          RegExp(value);
           // If no error is thrown, then `value` is a valid regex.
           return true;
         } catch (e) {

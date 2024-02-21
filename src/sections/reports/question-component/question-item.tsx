@@ -1,6 +1,6 @@
-import { Suspense, forwardRef, lazy } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { UseFormRegister } from 'react-hook-form';
+import { lazy, Suspense, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -14,12 +14,12 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, IReportQuestionActions } from 'src/types/report';
-import { LoadingScreen } from 'src/components/loading-screen';
 
-const QuestionDetails = lazy(() => import('../question-component/question-item-details'));
+const QuestionDetails = lazy(() => import('./question-item-details'));
 
 // ----------------------------------------------------------------------
 

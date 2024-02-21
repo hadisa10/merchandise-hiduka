@@ -1,8 +1,8 @@
 // 
 
-import { isNumber, capitalize, isString } from 'lodash';
 import { UseFormRegister } from 'react-hook-form';
-import { useMemo, useState, useEffect, useCallback, ChangeEvent, lazy, Suspense } from 'react';
+import { isNumber, isString, capitalize } from 'lodash';
+import { lazy, useMemo, useState, Suspense, useEffect, useCallback, ChangeEvent } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
@@ -13,10 +13,10 @@ import { List, Switch, ListItem, Typography } from '@mui/material';
 import { fDateTime } from 'src/utils/format-time';
 
 import Scrollbar from 'src/components/scrollbar';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, ActualInputType, IReportQuestionActions } from 'src/types/report';
-import { LoadingScreen } from 'src/components/loading-screen';
 
 const QuestionInputName = lazy(() => import('./question-input-name'));
 const QuestionDetailsToolbar = lazy(() => import('./question-details-toolbar'));

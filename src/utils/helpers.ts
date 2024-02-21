@@ -210,7 +210,10 @@ export const removeAndFormatNullFields = <T>(
     return data !== null ? data : undefined;
 };
 
-export const safeDateFormatter = (value: string): string => {
+export const safeDateFormatter = (value?: string): string => {
+    if(!value){
+        return new Date().toISOString();
+    }
     // Check if the value is a valid date string
     const timestamp = Date.parse(value);
     if (!Number.isNaN(timestamp)) {

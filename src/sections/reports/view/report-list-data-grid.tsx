@@ -1,8 +1,9 @@
 'use client';
 
+import { isString } from 'lodash';
 import isEqual from 'lodash/isEqual';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -27,6 +28,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
 import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 
 import Iconify from 'src/components/iconify';
@@ -48,8 +50,6 @@ import {
   RenderCellResponses,
   RenderCellCreatedAt,
 } from '../reports-component/report-table-row';
-import { useDebounce } from 'src/hooks/use-debounce';
-import { isString } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -74,6 +74,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 export default function ReportListDataGrid({ id }: { id?: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [callReport, setCallReport] = useState(isString(id))
 
   const { getCampaignReport, loading: mainLoading, reports: mainReports } = useReports(callReport);
@@ -173,8 +174,8 @@ export default function ReportListDataGrid({ id }: { id?: string }) {
   }, []);
 
   const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter((row) => row._id.toString() !== id.toString());
+    (_id: string) => {
+      const deleteRow = tableData.filter((row) => row._id.toString() !== _id.toString());
 
       enqueueSnackbar('Delete success!');
 
@@ -192,15 +193,15 @@ export default function ReportListDataGrid({ id }: { id?: string }) {
   }, [enqueueSnackbar, selectedRowIds, tableData]);
 
   const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.report.edit(id));
+    (_id: string) => {
+      router.push(paths.dashboard.report.edit(_id));
     },
     [router]
   );
 
   const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.report.edit(id));
+    (_id: string) => {
+      router.push(paths.dashboard.report.edit(_id));
     },
     [router]
   );

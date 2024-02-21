@@ -13,10 +13,10 @@ import { View403 } from "src/sections/error";
 
 import { IRole } from "src/types/user_realm";
 
-import CampaignLeadListView from "./lead/lead-campaign-list-view";
-import CampaignAdminListView from "./admin/admin-campaign-list-view";
-import CampaignClientListView from "./client/client-campaign-list-view";
-import CampaignMerchantListView from "./merchant/merchant-campaign-list-view";
+import CampaignLeadListView from "./main/lead-campaign-list-view";
+import CampaignAdminListView from "./main/admin-campaign-list-view";
+import CampaignClientListView from "./main/client-campaign-list-view";
+import CampaignMerchantListView from "./main/merchant-campaign-list-view";
 
 export default function CampaignListView() {
     const settings = useSettingsContext();

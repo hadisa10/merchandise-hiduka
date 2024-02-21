@@ -12,10 +12,10 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { ActualInputType, IReportQuestionActions } from 'src/types/report';
-import { IReport, ICampaign, IReportQuestion, IQuestionDependency, IReportQuestionValidation } from 'src/types/realm/realm-types';
+import { IReport, IReportQuestion, IQuestionDependency, IReportQuestionValidation } from 'src/types/realm/realm-types';
 
-import QuestionItem from '../edit/question-item';
 import QuestionAdd from './question-add';
+import QuestionItem from './question-item';
 import QuestionsColumnToolBar from './question-column-tool-bar';
 
 

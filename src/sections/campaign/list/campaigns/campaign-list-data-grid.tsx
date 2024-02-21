@@ -27,6 +27,8 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
+import { useRealmRoutes } from 'src/hooks/realm/route/use-route-graphql';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import Iconify from 'src/components/iconify';
@@ -48,7 +50,6 @@ import {
   RenderCellCampaign,
   RenderCellCreatedAt,
 } from './campaign-table-row';
-import { useDebounce } from 'src/hooks/use-debounce';
 
 // ----------------------------------------------------------------------
 
@@ -91,18 +92,28 @@ export default function CampaignListDataGrid() {
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
+
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
-    useEffect(() => {
-      if (Array.isArray(campaigns)) {
-        if (debouncedQuery) {
-          setTableData(campaigns.filter(cmpg => cmpg.title.toLowerCase().includes(debouncedQuery)));
-        } else {
-          setTableData(campaigns);
-        }
+  const { searchRoute } = useRealmRoutes();
+
+  useEffect(() => {
+    searchRoute("naiv").
+      then(res => console.log(res, 'SEARCH ROUTE RESULT'))
+      .catch(e => console.error(e, 'SEARCH RESULT ERROR'))
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (Array.isArray(campaigns)) {
+      if (debouncedQuery) {
+        setTableData(campaigns.filter(cmpg => cmpg.title.toLowerCase().includes(debouncedQuery)));
+      } else {
+        setTableData(campaigns);
       }
-    }, [campaigns, debouncedQuery]);
+    }
+  }, [campaigns, debouncedQuery]);
 
   useEffect(() => {
     if (searchQuery.length < 1) {
