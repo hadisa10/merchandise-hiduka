@@ -7,7 +7,8 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
+import { IconButton } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 import {
   DataGrid,
   GridColDef,
@@ -19,12 +20,10 @@ import {
   GridToolbarFilterButton,
   GridToolbarColumnsButton,
   GridColumnVisibilityModel,
-  GridToolbarDensitySelector,
 } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 
 import { useProducts } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -35,20 +34,19 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import EmptyContent from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import { IProductItem, IProductTableFilters, IProductTableFilterValue } from 'src/types/product';
 
-import ProductTableToolbar from '../product-table-toolbar';
-import ProductTableFiltersResult from '../product-table-filters-result';
+import ProductTableToolbar from './product-table-toolbar';
+import ProductTableFiltersResult from './product-table-filters-result';
+import AddCampaignProductDialog from '../campaign/edit/add-campaign-product-dialog';
 import {
   RenderCellStock,
   RenderCellPrice,
   RenderCellPublish,
   RenderCellProduct,
   RenderCellCreatedAt,
-} from '../product-table-row';
+} from './product-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -70,10 +68,12 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export default function ProductListView({ campaignId }: { campaignId?: string }) {
+export default function ProductListDataGrid({ campaignId }: { campaignId?: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const callProduct = useMemo(() => isString(campaignId), [campaignId])
+
+  const openAddCampaignProductDialog = useBoolean();
 
   const { getCampaignProducts, loading: mainLoading, products: mainProducts } = useProducts(callProduct);
 
@@ -122,8 +122,6 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
   const confirmRows = useBoolean();
 
   const router = useRouter();
-
-  const settings = useSettingsContext();
 
   const [tableData, setTableData] = useState<IProductItem[]>([]);
 
@@ -277,131 +275,107 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
       .map((column) => column.field);
 
   return (
-    <>
-      <Container
-        maxWidth={settings.themeStretch ? false : 'lg'}
+    <Grid container spacing={3} height="100%">
+
+      <Card
         sx={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
+          height: { xs: 800, md: 600 },
+          flexGrow: { md: 1 },
+          display: { md: 'flex' },
+          flexDirection: { md: 'column' },
         }}
       >
-        <CustomBreadcrumbs
-          heading="List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            {
-              name: 'Product',
-              href: paths.dashboard.product.root,
+        <DataGrid
+          checkboxSelection
+          disableRowSelectionOnClick
+          rows={dataFiltered}
+          columns={columns}
+          loading={productsLoading}
+          getRowHeight={() => 'auto'}
+          getEstimatedRowHeight={() => 150}
+          pageSizeOptions={[5, 10, 25]}
+          getRowId={(row) => row._id}
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 10 },
             },
-            { name: 'List' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.product.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New Product
-            </Button>
-          }
-          sx={{
-            mb: {
-              xs: 3,
-              md: 5,
+          }}
+          onRowSelectionModelChange={(newSelectionModel) => {
+            setSelectedRowIds(newSelectionModel);
+          }}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+          slots={{
+            toolbar: () => (
+              <>
+                <GridToolbarContainer>
+                  <ProductTableToolbar
+                    filters={filters}
+                    onFilters={handleFilters}
+                    stockOptions={PRODUCT_STOCK_OPTIONS}
+                    publishOptions={PUBLISH_OPTIONS}
+                  />
+
+                  <GridToolbarQuickFilter />
+                  <Stack
+                    spacing={1}
+                    flexGrow={1}
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                  >
+                    {!!selectedRowIds.length && (
+                      <Button
+                        size="small"
+                        color="error"
+                        startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                        onClick={confirmRows.onTrue}
+                      >
+                        Delete ({selectedRowIds.length})
+                      </Button>
+                    )}
+
+                    <GridToolbarColumnsButton />
+                    <GridToolbarFilterButton />
+                    <GridToolbarExport />
+                    {callProduct &&
+                      <IconButton color='success' onClick={openAddCampaignProductDialog.onToggle}>
+                        <Iconify icon="mingcute:add-line" />
+                      </IconButton>
+                    }
+                  </Stack>
+                </GridToolbarContainer>
+
+                {canReset && (
+                  <ProductTableFiltersResult
+                    filters={filters}
+                    onFilters={handleFilters}
+                    onResetFilters={handleResetFilters}
+                    results={dataFiltered.length}
+                    sx={{ p: 2.5, pt: 0 }}
+                  />
+                )}
+              </>
+            ),
+            noRowsOverlay: () => <EmptyContent title="No Data" />,
+            noResultsOverlay: () => <EmptyContent title="No results found" />,
+          }}
+          slotProps={{
+            columnsPanel: {
+              getTogglableColumns,
             },
           }}
         />
-
-        <Card
-          sx={{
-            height: { xs: 800, md: 2 },
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            flexDirection: { md: 'column' },
-          }}
-        >
-          <DataGrid
-            checkboxSelection
-            disableRowSelectionOnClick
-            rows={dataFiltered}
-            columns={columns}
-            loading={productsLoading}
-            getRowHeight={() => 'auto'}
-            getEstimatedRowHeight={() => 150}
-            pageSizeOptions={[5, 10, 25]}
-            getRowId={(row) => row._id}
-            initialState={{
-              pagination: {
-                paginationModel: { pageSize: 10 },
-              },
-            }}
-            onRowSelectionModelChange={(newSelectionModel) => {
-              setSelectedRowIds(newSelectionModel);
-            }}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            slots={{
-              toolbar: () => (
-                <>
-                  <GridToolbarContainer>
-                    <ProductTableToolbar
-                      filters={filters}
-                      onFilters={handleFilters}
-                      stockOptions={PRODUCT_STOCK_OPTIONS}
-                      publishOptions={PUBLISH_OPTIONS}
-                    />
-
-                    <GridToolbarQuickFilter />
-                    <GridToolbarDensitySelector />
-                    <Stack
-                      spacing={1}
-                      flexGrow={1}
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="flex-end"
-                    >
-                      {!!selectedRowIds.length && (
-                        <Button
-                          size="small"
-                          color="error"
-                          startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                          onClick={confirmRows.onTrue}
-                        >
-                          Delete ({selectedRowIds.length})
-                        </Button>
-                      )}
-
-                      <GridToolbarColumnsButton />
-                      <GridToolbarFilterButton />
-                      <GridToolbarExport />
-                    </Stack>
-                  </GridToolbarContainer>
-
-                  {canReset && (
-                    <ProductTableFiltersResult
-                      filters={filters}
-                      onFilters={handleFilters}
-                      onResetFilters={handleResetFilters}
-                      results={dataFiltered.length}
-                      sx={{ p: 2.5, pt: 0 }}
-                    />
-                  )}
-                </>
-              ),
-              noRowsOverlay: () => <EmptyContent title="No Data" />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              columnsPanel: {
-                getTogglableColumns,
-              },
-            }}
-          />
-        </Card>
-      </Container>
-
+      </Card>
+      {
+        products && campaignId &&
+        <AddCampaignProductDialog
+          open={openAddCampaignProductDialog.value}
+          onClose={openAddCampaignProductDialog.onFalse}
+          campaignId={campaignId}
+          handleAddNewProduct={() => console.log("PRODUCT")}
+        />
+      }
       <ConfirmDialog
         open={confirmRows.value}
         onClose={confirmRows.onFalse}
@@ -424,7 +398,7 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
           </Button>
         }
       />
-    </>
+    </Grid>
   );
 }
 
