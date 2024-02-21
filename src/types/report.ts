@@ -58,7 +58,7 @@ export type IReportTableFilters = {
 };
 
 // Extend the union type to include 'range' and 'url'
-export type ActualInputType = 'text' | 'number' | 'select' | 'radio' | 'checkbox' | 'date' | 'email' | 'file' | 'password' | 'range' | 'url';
+export type ActualInputType = 'text' | 'number' | 'select' | 'radio' | 'checkbox' | 'date' | 'email' | 'file' | 'password' | 'range' | 'geopoint' | 'url';
 
 export type QuestionError = FieldErrors<IReportQuestion>;
 
@@ -75,6 +75,7 @@ export interface IReportQuestionActions {
     handleChangeQuestionMaxLength: (questionIndex: number, text: number) => void;
     handleChangeQuestionMinLength: (questionIndex: number, text: number) => void;
     handleChangeQuestionUnique: (questionIndex: number) => void;
+    handleChangeAddQuestionProducts: (questionIndex: number, products: string[]) => void;
     handleRemoveQuestion: (index: number) => void;
     handleRemoveValidation: (questionIndex: number, validationKey: keyof IReportQuestionValidation) => void;
     // You can add more actions here as needed

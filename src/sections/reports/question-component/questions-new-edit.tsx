@@ -41,6 +41,8 @@ const QuestionsNewEditList = () => {
 
   const reportName = watch("title");
 
+  const campaignId = watch("campaign_id");
+
   // const [reports, setReports] = useState<string[]>([]);
   // const [newReport, setNewReport] = useState<string>('');
 
@@ -157,6 +159,17 @@ const QuestionsNewEditList = () => {
     }
   }, [questions, update]);
 
+  const handleChangeAddQuestionProducts = useCallback((questionIndex: number, products: string[]) => {
+    if (Array.isArray(products)) { // Ensure conversion was successful
+      const question = questions[questionIndex];
+
+      const options = Array.isArray(question.options) ? Array.from(new Set([...question.options, ...products])) : [...products]
+
+      update(questionIndex, { ...question, input_type: "select" , options });
+    }
+  }, [questions, update]);
+
+
 
   const handleAddDependency = useCallback((questionIndex: number, newDependency: IQuestionDependency) => {
     const question = questions[questionIndex];
@@ -208,6 +221,7 @@ const QuestionsNewEditList = () => {
     handleChangeQuestionMinLength,
     handleChangeQuestionRequired,
     handleChangeQuestionUnique,
+    handleChangeAddQuestionProducts,
     handleRemoveValidation
   }
   const renderSummary = (
@@ -271,6 +285,7 @@ const QuestionsNewEditList = () => {
                     // eslint-disable-next-line
                     ref={(el: HTMLDivElement | null) => { const t = questionRefs.current[index] = el; return t; }}
                     key={q._id.toString()}
+                    campaignId={campaignId}
                     index={index}
                     actions={actions}
                     question={q}

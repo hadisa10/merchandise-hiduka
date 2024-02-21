@@ -7,7 +7,7 @@ import Iconify from 'src/components/iconify';
 import { ActualInputType } from 'src/types/report';
 
 // Update the constant array to include the new input types
-const INPUT_TYPES: ActualInputType[] = ['text', 'number', 'select', 'radio', 'checkbox', 'date', 'email', 'file', 'password', 'range', 'url'];
+const INPUT_TYPES: ActualInputType[] = ['text', 'number', 'select', 'radio', 'checkbox', 'date', 'email', 'file', 'password', 'range', 'geopoint', 'url'];
 
 // Update the Props type (no changes needed here, just included for context)
 type Props = {
@@ -21,7 +21,7 @@ const getIcon = (option: ActualInputType) => {
     case 'text':
       return 'ic:baseline-text-fields';
     case 'number':
-      return 'ic:baseline-numeric';
+      return 'imdi:numeric';
     case 'select':
       return 'ic:baseline-arrow-drop-down-circle';
     case 'radio':
@@ -38,6 +38,8 @@ const getIcon = (option: ActualInputType) => {
       return 'ic:baseline-password';
     case 'range':
       return 'ic:baseline-tune'; // Placeholder icon, adjust as needed
+    case 'geopoint':
+      return 'mdi:location'; // Placeholder icon, adjust as needed
     case 'url':
       return 'ic:baseline-link'; // Placeholder icon, adjust as needed
     default:
