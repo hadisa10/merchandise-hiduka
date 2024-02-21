@@ -4,11 +4,16 @@ export interface IRouteChange {
     fullDocument: IRoute;
 }
 
-export interface IGraphqlResponse {
+export interface IGraphqlRoutesResponse {
     routes: IRoute[];
 }
+export interface IGraphqlSearchRoutesResponse {
+    SearchRoutes: IRoute[];
+}
+
 export interface IRouteActions {
     saveRoute: (draftRoute: IRoute) => Promise<void>;
+    searchRoute: (searchQuery: string) => Promise<IRoute[]>
 }
 
 export interface IRouteHook extends IRouteActions {

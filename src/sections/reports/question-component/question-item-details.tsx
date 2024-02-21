@@ -1,8 +1,8 @@
 // 
 
-import { capitalize } from 'lodash';
 import { UseFormRegister } from 'react-hook-form';
-import { useMemo, useState, useEffect, useCallback, ChangeEvent } from 'react';
+import { isNumber, isString, capitalize } from 'lodash';
+import { lazy, useMemo, useState, Suspense, useEffect, useCallback, ChangeEvent } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
@@ -13,13 +13,15 @@ import { List, Switch, ListItem, Typography } from '@mui/material';
 import { fDateTime } from 'src/utils/format-time';
 
 import Scrollbar from 'src/components/scrollbar';
+import { LoadingScreen } from 'src/components/loading-screen';
 
-import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
+import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, ActualInputType, IReportQuestionActions } from 'src/types/report';
 
-import QuestionInputName from './question-input-name';
-import QuestionDetailsToolbar from './question-details-toolbar';
-import QuestionDetailsInputType from './question-details-input-type';
+const QuestionInputName = lazy(() => import('./question-input-name'));
+const QuestionDetailsToolbar = lazy(() => import('./question-details-toolbar'));
+const QuestionDetailsInputType = lazy(() => import('./question-details-input-type'));
+
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +38,7 @@ const StyledLabel = styled('span')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 type Props = {
-  question: IReportQuestions;
+  question: IReportQuestion;
   openDetails: boolean;
   onCloseDetails: VoidFunction;
   actions: IReportQuestionActions;
@@ -44,7 +46,7 @@ type Props = {
   register: UseFormRegister<IReport>;
   index: number;
   //
-  // onUpdateQuestion: (onUpdateQuestion: IReportQuestions) => void;
+  // onUpdateQuestion: (onUpdateQuestion: IReportQuestion) => void;
   onDeleteQuestion: VoidFunction;
 };
 
@@ -77,17 +79,13 @@ export default function QuestionDetails({
 
   const [minValue, setMinValue] = useState<number | null>(null);
 
-  // eslint-disable-next-line
-  const [regexMatches, setRegexMatches] = useState<number | null>(null);
+  const [regexMatches, setRegexMatches] = useState<string | null>(null);
 
-  // eslint-disable-next-line
-  const [regexMessage, setRegexMessage] = useState<number | null>(null);
-
+  const [regexMessage, setRegexMessage] = useState<string | null>(null);
 
   const [maxLength, setMaxLength] = useState<number | null>(null);
 
   const [minLength, setMinLength] = useState<number | null>(null);
-
 
   // const [taskDescription, setTaskDescription] = useState(task.description);
 
@@ -110,7 +108,8 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [questionText, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [questionText, index]
   );
 
   const handleUpdateMaxValue = useCallback(
@@ -118,7 +117,7 @@ export default function QuestionDetails({
       try {
         if (event.key === 'Enter') {
 
-          if (maxValue) {
+          if (maxValue && isNumber(maxValue)) {
             actions.handleChangeQuestionMaxValue(index, maxValue)
           }
         }
@@ -126,7 +125,8 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [maxValue, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [maxValue, index]
   );
 
   const handleUpdateMinValue = useCallback(
@@ -134,7 +134,7 @@ export default function QuestionDetails({
       try {
         if (event.key === 'Enter') {
 
-          if (minValue) {
+          if (minValue && isNumber(minValue)) {
             actions.handleChangeQuestionMinValue(index, minValue)
           }
         }
@@ -142,15 +142,51 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [minValue, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [minValue, index]
   );
+
+  const handleUpdateRegexMatchesValue = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      try {
+        if (event.key === 'Enter') {
+          if (regexMatches && isString(regexMatches)) {
+            actions.handleChangeQuestionRegexMatches(index, regexMatches)
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [regexMatches, index]
+  );
+
+
+  const handleUpdateRegexMessageValue = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      try {
+        if (event.key === 'Enter') {
+
+          if (regexMessage && isString(regexMessage)) {
+            actions.handleChangeQuestionRegexMessage(index, regexMessage)
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [regexMessage, index]
+  );
+
 
   const handleUpdateMaxLength = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       try {
         if (event.key === 'Enter') {
 
-          if (maxValue) {
+          if (maxValue && isNumber(maxValue)) {
             actions.handleChangeQuestionMaxLength(index, maxValue)
           }
         }
@@ -158,7 +194,8 @@ export default function QuestionDetails({
         console.error(error);
       }
     },
-    [maxValue, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [maxValue, index]
   );
 
   const handleUpdateMinLength = useCallback(
@@ -166,15 +203,16 @@ export default function QuestionDetails({
       try {
         if (event.key === 'Enter') {
 
-          if (maxValue) {
-            actions.handleChangeQuestionMinLength(index, maxValue)
+          if (minLength && isNumber(minLength)) {
+            actions.handleChangeQuestionMinLength(index, minLength)
           }
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [maxValue, index, actions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [minLength, index]
   );
 
 
@@ -198,6 +236,21 @@ export default function QuestionDetails({
   const onChangeMinValue = ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const v = e.target.value as unknown as number
     if (!Number.isNaN(v)) setMinValue(v);
+  })
+
+  const onChangeRegexMatchesVal = ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const v = e.target.value as unknown as string
+
+    if (isString(v)) {
+      setRegexMatches(v);
+    }
+  })
+
+  const onChangeRegexMessageVal = ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const v = e.target.value as unknown as string
+    if (isString(v)) {
+      setRegexMessage(v);
+    }
   })
 
   const onChangeMaxLength = ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -266,8 +319,8 @@ export default function QuestionDetails({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        name={`questions.${index}.validation.maxLength`}
-        register={register}
+        // name={`questions.${index}.validation.maxLength`}
+        // register={register}
         onChange={onChangeMaxLength}
         onKeyUp={handleUpdateMaxLength}
         error={!!questionError?.validation?.maxLength?.message}
@@ -277,6 +330,7 @@ export default function QuestionDetails({
   );
 
   const renderMinLength = (
+
     <Stack direction="row" alignItems="start">
       <StyledLabel>Min Length</StyledLabel>
       <QuestionInputName
@@ -285,8 +339,8 @@ export default function QuestionDetails({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        name={`questions.${index}.validation.minLength`}
-        register={register}
+        // name={`questions.${index}.validation.minLength`}
+        // register={register}
         onChange={onChangeMinLength}
         onKeyUp={handleUpdateMinLength}
         error={!!questionError?.validation?.minLength?.message}
@@ -304,8 +358,8 @@ export default function QuestionDetails({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        name={`questions.${index}.validation.maxValue`}
-        register={register}
+        // name={`questions.${index}.validation.maxValue`}
+        // register={register}
         onChange={onChangeMaxValue}
         onKeyUp={handleUpdateMaxValue}
         error={!!questionError?.validation?.maxValue?.message}
@@ -324,8 +378,8 @@ export default function QuestionDetails({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        name={`questions.${index}.validation.minValue`}
-        register={register}
+        // name={`questions.${index}.validation.minValue`}
+        // register={register}
         onChange={onChangeMinValue}
         onKeyUp={handleUpdateMinValue}
         error={!!questionError?.validation?.minValue?.message}
@@ -336,30 +390,34 @@ export default function QuestionDetails({
   const renderRegex = (
     <Stack direction="row" alignItems="start">
       <StyledLabel>Regex</StyledLabel>
-      <Stack spacing={1}>
-        <QuestionInputName
-          placeholder=""
-          value={regexMatches}
-          size="small"
-          name={`questions.${index}.validation.regex.matches`}
-          register={register}
-          onChange={onChangeMinValue}
-          onKeyUp={handleUpdateMinValue}
-          error={!!questionError?.validation?.minValue?.message}
-          helperText={questionError?.validation?.minValue?.message}
-        />
-        <QuestionInputName
-          placeholder=""
-          value={regexMessage}
-          size="small"
-          name={`questions.${index}.validation.regex.message`}
-          register={register}
-          onChange={onChangeMinValue}
-          onKeyUp={handleUpdateMinValue}
-          error={!!questionError?.validation?.regex?.matches?.message}
-          // @ts-expect-error expected
-          helperText={questionError?.validation?.regex?.message?.message ?? ""}
-        />
+      <Stack>
+
+        <Stack spacing={1}>
+          <QuestionInputName
+            placeholder="matches"
+            value={regexMatches}
+            size="small"
+            // name={`questions.${index}.validation.regex.matches`}
+            // register={register}
+            onChange={onChangeRegexMatchesVal}
+            onKeyUp={handleUpdateRegexMatchesValue}
+            error={!!questionError?.validation?.regex?.matches}
+            // @ts-expect-error expected
+            helperText={questionError?.validation?.regex?.matches}
+          />
+          <QuestionInputName
+            placeholder="message"
+            value={regexMessage}
+            size="small"
+            // name={`questions.${index}.validation.regex.message`}
+            // register={register}
+            onChange={onChangeRegexMessageVal}
+            onKeyUp={handleUpdateRegexMessageValue}
+            error={!!questionError?.validation?.regex?.matches?.message}
+            // @ts-expect-error expected
+            helperText={questionError?.validation?.regex?.message?.message ?? ""}
+          />
+        </Stack>
       </Stack>
     </Stack>
   );
@@ -449,10 +507,10 @@ export default function QuestionDetails({
     ))
   )
 
-  const validationOptions = useMemo(() => 
+  const validationOptions = useMemo(() =>
     // @ts-expect-error expected
-     VALIDATION_OPTIONS.map(({ id, label }) => ({ id, label, value: question.validation ? (question.validation[id] ?? null) : null }))
-  , [question.validation])
+    VALIDATION_OPTIONS.map(({ id, label }) => ({ id, label, value: question.validation ? (question.validation[id] ?? null) : null }))
+    , [question.validation])
 
   const renderValidations = (
     validationOptions.map(({ id, label, value }, i) => {
@@ -518,36 +576,38 @@ export default function QuestionDetails({
           },
         }}
       >
-        <Stack
-          spacing={3}
-          sx={{
-            pt: 3,
-            pb: 5,
-            px: 2.5,
-          }}
-        >
-          {renderName}
+        <Suspense fallback={<LoadingScreen />}>
 
-          <Divider>
-            <Typography variant='caption' > <StyledLabel>Details</StyledLabel></Typography>
-          </Divider>
+          <Stack
+            spacing={3}
+            sx={{
+              pt: 3,
+              pb: 5,
+              px: 2.5,
+            }}
+          >
+            {renderName}
 
-          {renderDetails}
+            <Divider>
+              <Typography variant='caption' > <StyledLabel>Details</StyledLabel></Typography>
+            </Divider>
 
-          <Divider>
-            <Typography variant='caption' > <StyledLabel>Validations</StyledLabel></Typography>
-          </Divider>
+            {renderDetails}
 
-          {renderValidations}
+            <Divider>
+              <Typography variant='caption' > <StyledLabel>Validations</StyledLabel></Typography>
+            </Divider>
 
-          <Divider>
-            <Typography variant='caption' > <StyledLabel>Dependencies</StyledLabel></Typography>
-          </Divider>
+            {renderValidations}
 
-          {renderDependencies}
+            <Divider>
+              <Typography variant='caption' > <StyledLabel>Dependencies</StyledLabel></Typography>
+            </Divider>
 
-        </Stack>
+            {renderDependencies}
 
+          </Stack>
+        </Suspense>
       </Scrollbar>
 
     </Drawer>

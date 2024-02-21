@@ -157,12 +157,36 @@ export function useCampaigns(lazy = false): ICampaignHook {
     }
   };
   const updateCampaign = async (campaign: ICampaign) => {
+    console.log(campaign, "CAMPAIGN")
     await graphql.mutate({
       mutation: gql`
         mutation UpdateProduct($id: ObjectId!, $campaignUpdateInput: CampaignUpdateInput!) {
           updateOneCampaign(query: { _id: $id }, set: $campaignUpdateInput) {
-            name
-          }
+              _id
+              access_code
+              client_id
+              products
+              project_id
+              routes {
+                _id
+                routeNumber
+                routeAddress {
+                _id
+                fullAddress
+                location {
+                  type
+                  coordinates
+                }
+                phoneNumber
+                road
+                }
+              }
+              title
+              createdAt
+              today_checkin
+              total_checkin
+              type
+            }
         }
       `,
       variables: {

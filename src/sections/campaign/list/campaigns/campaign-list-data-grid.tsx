@@ -27,6 +27,8 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
+import { useRealmRoutes } from 'src/hooks/realm/route/use-route-graphql';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import Iconify from 'src/components/iconify';
@@ -82,7 +84,7 @@ export default function CampaignListDataGrid() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  // const debouncedQuery = useDebounce(searchQuery);
+  const debouncedQuery = useDebounce(searchQuery);
 
   const [tableData, setTableData] = useState<ICampaign[]>([]);
 
@@ -90,14 +92,28 @@ export default function CampaignListDataGrid() {
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
+
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
+  const { searchRoute } = useRealmRoutes();
+
   useEffect(() => {
-    if (campaigns.length) {
-      setTableData(campaigns);
+    searchRoute("naiv").
+      then(res => console.log(res, 'SEARCH ROUTE RESULT'))
+      .catch(e => console.error(e, 'SEARCH RESULT ERROR'))
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (Array.isArray(campaigns)) {
+      if (debouncedQuery) {
+        setTableData(campaigns.filter(cmpg => cmpg.title.toLowerCase().includes(debouncedQuery)));
+      } else {
+        setTableData(campaigns);
+      }
     }
-  }, [campaigns]);
+  }, [campaigns, debouncedQuery]);
 
   useEffect(() => {
     if (searchQuery.length < 1) {
@@ -191,30 +207,6 @@ export default function CampaignListDataGrid() {
       hideable: false,
       renderCell: (params) => <RenderCellCheckin params={params} />,
     },
-    // {
-    //   field: 'inventoryType',
-    //   headerName: 'Stock',
-    //   width: 160,
-    //   type: 'singleSelect',
-    //   valueOptions: PRODUCT_STOCK_OPTIONS,
-    //   renderCell: (params) => <RenderCellStock params={params} />,
-    // },
-    // {
-    //   field: 'price',
-    //   headerName: 'Price',
-    //   width: 140,
-    //   editable: true,
-    //   renderCell: (params) => <RenderCellPrice params={params} />,
-    // },
-    // {
-    //   field: 'publish',
-    //   headerName: 'Publish',
-    //   width: 110,
-    //   type: 'singleSelect',
-    //   editable: true,
-    //   valueOptions: PUBLISH_OPTIONS,
-    //   renderCell: (params) => <RenderCellPublish params={params} />,
-    // },
     {
       type: 'actions',
       field: 'actions',

@@ -1,7 +1,7 @@
 "use client"
 
 import { first } from 'lodash';
-import { useMemo, Fragment } from 'react';
+import { memo, useMemo, Fragment } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -14,21 +14,23 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify';
 
-import { ICampaign_routes } from 'src/types/realm/realm-types';
+import { IRoute, ICampaign_routes } from 'src/types/realm/realm-types';
 
 import CampaignRoutesMap from '../campaign-routes-map';
+import CampaignSearchRoute from '../campaign-search-route';
 
 
 // ----------------------------------------------------------------------
 
-type Props = {
+type CampaignNewEditRouteFormProps = {
   handleNewRouteOpen: ({ lng, lat }: { lng: number, lat: number }) => void
   handleRemoveNewRoute: (route: number) => void;
+  handleAddNewRoute: (route: IRoute) => void;
   campaignRoutes: ICampaign_routes[];
 };
 
 
-export default function CampaignNewEditRouteForm({ handleNewRouteOpen, handleRemoveNewRoute, campaignRoutes }: Props) {
+const CampaignNewEditRouteForm: React.FC<CampaignNewEditRouteFormProps> = memo(({ handleNewRouteOpen, handleRemoveNewRoute, handleAddNewRoute, campaignRoutes }: CampaignNewEditRouteFormProps) => {
   const fetchDirections = useBoolean();
 
   const renderRouteForm = (
@@ -41,9 +43,9 @@ export default function CampaignNewEditRouteForm({ handleNewRouteOpen, handleRem
           sx={{ mb: 1 }} onClick={fetchDirections.onToggle}
           endIcon={
             fetchDirections.value ?
-              <Iconify icon="eva:done-all-fill" width={12}/>
+              <Iconify icon="eva:done-all-fill" width={12} />
               :
-              <Iconify icon="mingcute:close-line" width={12}/>
+              <Iconify icon="mingcute:close-line" width={12} />
           }
         >
           Directions
@@ -60,6 +62,7 @@ export default function CampaignNewEditRouteForm({ handleNewRouteOpen, handleRem
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           List of routes
         </Typography>
+        <CampaignSearchRoute handleClick={handleAddNewRoute} />
         <List dense sx={{ maxHeight: 250, overflowY: 'auto', }}>
           {Array.isArray(campaignRoutes) && campaignRoutes.map((campaignRoute, index) => (
             <Fragment key={typeof campaignRoute._id === "string" ? campaignRoute._id : campaignRoute._id.toString()}>
@@ -121,4 +124,6 @@ export default function CampaignNewEditRouteForm({ handleNewRouteOpen, handleRem
       {renderRouteForm}
     </Grid>
   );
-}
+})
+
+export default CampaignNewEditRouteForm;

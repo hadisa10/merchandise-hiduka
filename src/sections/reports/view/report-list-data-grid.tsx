@@ -1,8 +1,9 @@
 'use client';
 
+import { isString } from 'lodash';
 import isEqual from 'lodash/isEqual';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -27,6 +28,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
 import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 
 import Iconify from 'src/components/iconify';
@@ -39,15 +41,15 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import { IReport } from 'src/types/realm/realm-types';
 import { IReportTableFilters, IReportTableFilterValue } from 'src/types/report';
 
-import CampaignTableToolbar from './report-table-toolbar';
-import CampaignReportTableFiltersResult from './report-table-filters-result';
+import ReportTableToolbar from '../reports-component/report-table-toolbar';
+import ReportTableFiltersResult from '../reports-component/report-table-filters-result';
 import {
   // RenderCellStock,
   RenderCellReport,
   // RenderCellPrice,
   RenderCellResponses,
   RenderCellCreatedAt,
-} from './report-table-row';
+} from '../reports-component/report-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -69,10 +71,55 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export default function ReportListDataGrid() {
+export default function ReportListDataGrid({ id }: { id?: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { loading, reports } = useReports(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [callReport, setCallReport] = useState(isString(id))
+
+  const { getCampaignReport, loading: mainLoading, reports: mainReports } = useReports(callReport);
+
+  const loadingReport = useBoolean()
+
+  const [reports, setReports] = useState<IReport[]>([])
+
+  // eslint-disable-next-line
+  const [reportError, setReportsError] = useState(null)
+
+  const loading = useMemo(() => {
+    if (isString(id)) {
+      return loadingReport.value
+    }
+    return mainLoading
+  }, [mainLoading, loadingReport.value, id])
+
+  useEffect(() => {
+    if (isString(id)) {
+      loadingReport.onTrue()
+      setReportsError(null)
+      getCampaignReport(id.toString())
+        .then(res => {
+          setReportsError(null)
+          setReports(res)
+        }
+        )
+        .catch(e => {
+          enqueueSnackbar("Failed to fetch campaign reports", { variant: "error" })
+          setReportsError(e.message)
+          console.error(e, "REPORT FETCH")
+        })
+        .finally(() => {
+          loadingReport.onFalse()
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
+
+  useEffect(() => {
+    if (!isString(id)) {
+      setReports(mainReports)
+    }
+  }, [id, mainReports])
 
   const showLoader = useShowLoader(loading, 200);
 
@@ -82,7 +129,7 @@ export default function ReportListDataGrid() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  // const debouncedQuery = useDebounce(searchQuery);
+  const debouncedQuery = useDebounce(searchQuery);
 
   const [tableData, setTableData] = useState<IReport[]>([]);
 
@@ -93,20 +140,20 @@ export default function ReportListDataGrid() {
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
-  useEffect(() => {
-    if (Array.isArray(reports)) {
-      console.log(reports, "REPORTS")
-      setTableData(reports);
-    }
-  }, [reports]);
+
 
   useEffect(() => {
-    if (searchQuery.length < 1) {
-      setTableData(reports)
-    } else {
-      setTableData(reports.filter(cmpg => cmpg.title.toLowerCase().includes(searchQuery.toLowerCase())));
+    if (Array.isArray(reports)) {
+      console.log(debouncedQuery, 'DEBOUNCE')
+      if (debouncedQuery) {
+        setTableData(reports.filter(rep => rep.title.toLowerCase().includes(debouncedQuery)));
+      } else {
+        setTableData(reports);
+      }
     }
-  }, [searchQuery, reports])
+  }, [reports, debouncedQuery]);
+
+
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -127,8 +174,8 @@ export default function ReportListDataGrid() {
   }, []);
 
   const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter((row) => row._id.toString() !== id.toString());
+    (_id: string) => {
+      const deleteRow = tableData.filter((row) => row._id.toString() !== _id.toString());
 
       enqueueSnackbar('Delete success!');
 
@@ -146,21 +193,20 @@ export default function ReportListDataGrid() {
   }, [enqueueSnackbar, selectedRowIds, tableData]);
 
   const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.report.edit(id));
+    (_id: string) => {
+      router.push(paths.dashboard.report.edit(_id));
     },
     [router]
   );
 
   const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.report.edit(id));
+    (_id: string) => {
+      router.push(paths.dashboard.report.edit(_id));
     },
     [router]
   );
 
   const handleSearch = (inputValue: string) => {
-    console.log(inputValue, 'INPUT VALUE')
     setSearchQuery(inputValue);
   };
 
@@ -192,30 +238,6 @@ export default function ReportListDataGrid() {
       hideable: false,
       renderCell: (params) => <RenderCellResponses params={params} />,
     },
-    // {
-    //   field: 'inventoryType',
-    //   headerName: 'Stock',
-    //   width: 160,
-    //   type: 'singleSelect',
-    //   valueOptions: PRODUCT_STOCK_OPTIONS,
-    //   renderCell: (params) => <RenderCellStock params={params} />,
-    // },
-    // {
-    //   field: 'price',
-    //   headerName: 'Price',
-    //   width: 140,
-    //   editable: true,
-    //   renderCell: (params) => <RenderCellPrice params={params} />,
-    // },
-    // {
-    //   field: 'publish',
-    //   headerName: 'Publish',
-    //   width: 110,
-    //   type: 'singleSelect',
-    //   editable: true,
-    //   valueOptions: PUBLISH_OPTIONS,
-    //   renderCell: (params) => <RenderCellPublish params={params} />,
-    // },
     {
       type: 'actions',
       field: 'actions',
@@ -268,6 +290,8 @@ export default function ReportListDataGrid() {
     handleSubmit
   } = methods;
 
+
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       handleSearch(data.search)
@@ -312,13 +336,13 @@ export default function ReportListDataGrid() {
               toolbar: () => (
                 <>
                   <GridToolbarContainer>
-                    <CampaignTableToolbar
+                    <ReportTableToolbar
                       filters={filters}
                       onFilters={handleFilters}
                       typeOptions={CAMPAIGN_TYPE_OPTIONS}
                     />
                     <Stack direction="row" spacing={3} alignItems="center">
-                      <RHFTextField name='search' placeholder='Search Campaigns' onKeyDown={(e) => {
+                      <RHFTextField name='search' placeholder='Search Reports' onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           onSubmit(); // Trigger the search function
                         }
@@ -355,7 +379,7 @@ export default function ReportListDataGrid() {
                   </GridToolbarContainer>
 
                   {canReset && (
-                    <CampaignReportTableFiltersResult
+                    <ReportTableFiltersResult
                       filters={filters}
                       onFilters={handleFilters}
                       onResetFilters={handleResetFilters}

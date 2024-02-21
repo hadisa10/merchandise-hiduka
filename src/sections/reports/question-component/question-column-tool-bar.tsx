@@ -16,13 +16,13 @@ import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import SearchNotFound from 'src/components/search-not-found';
 
-import { IReportQuestions } from 'src/types/realm/realm-types';
+import { IReportQuestion } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   openAddQuestion: VoidFunction;
-  questions: IReportQuestions[]
+  questions: IReportQuestion[]
   reportName: string;
   openSearchQuestion: VoidFunction;
   openSearch: boolean;

@@ -13,7 +13,7 @@ import { View403 } from "src/sections/error";
 
 import { IRole } from "src/types/user_realm";
 
-import AdminReportListView from "./admin/admin-report-list-view";
+import AdminReportListView from "./main/admin-report-list-view";
 
 export default function ReportListView() {
     const settings = useSettingsContext();

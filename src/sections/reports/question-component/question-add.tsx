@@ -9,19 +9,19 @@ import { createObjectId } from 'src/utils/realm';
 
 import Iconify from 'src/components/iconify';
 
-import { IReportQuestions } from 'src/types/realm/realm-types';
+import { IReportQuestion } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   onCloseQuestion: VoidFunction;
-  onAddQuestion: (question: IReportQuestions) => void;
+  onAddQuestion: (question: IReportQuestion) => void;
 };
 
 export default function QuestionAdd({ onAddQuestion, onCloseQuestion }: Props) {
   const [text, setText] = useState('');
 
-  const defaultQuestion: IReportQuestions = useMemo(
+  const defaultQuestion: IReportQuestion = useMemo(
     () => ({
       _id: createObjectId(),
       text,

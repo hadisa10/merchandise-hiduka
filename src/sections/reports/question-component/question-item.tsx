@@ -1,6 +1,6 @@
-import { forwardRef } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { UseFormRegister } from 'react-hook-form';
+import { lazy, Suspense, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -14,20 +14,19 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
+import { LoadingScreen } from 'src/components/loading-screen';
 
-import { IReport, IReportQuestions } from 'src/types/realm/realm-types';
+import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, IReportQuestionActions } from 'src/types/report';
 
-import QuestionDetails from './question/question-item-details';
-
-// import KanbanDetails from './kanban-details';
+const QuestionDetails = lazy(() => import('./question-item-details'));
 
 // ----------------------------------------------------------------------
 
 type Props = PaperProps & {
   index: number;
-  question: IReportQuestions;
-  onUpdateQuestion: (question: IReportQuestions) => void;
+  question: IReportQuestion;
+  onUpdateQuestion: (question: IReportQuestion) => void;
   onDeleteQuestion: VoidFunction;
   questionError?: QuestionError;
   register: UseFormRegister<IReport>;
@@ -51,7 +50,6 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
 
   const handleToggleUnique = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation(); // Prevent click event from bubbling up
-    console.log("TOGGLE");
     // Your toggle logic here
   }
   const renderInputType = (
@@ -115,7 +113,8 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
   );
 
   return (
-    <>
+
+    <Suspense key={index} fallback={<LoadingScreen />}>
       <Draggable draggableId={question._id.toString()} index={index}>
         {(provided, snapshot) => (
           <ListItem
@@ -175,7 +174,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
         // onUpdateQuestion={onUpdateQuestion}
         onDeleteQuestion={onDeleteQuestion}
       />
-    </>
+    </Suspense>
   );
 })
 

@@ -1,7 +1,7 @@
 import { BSON } from "realm-web";
 import { FieldErrors } from "react-hook-form";
 
-import { IReport, IReportQuestions, IQuestionDependency, IReportQuestionsValidation } from "./realm/realm-types";
+import { IReport, IReportQuestion, IQuestionDependency, IReportQuestionValidation } from "./realm/realm-types";
 
 export interface IReportChange {
     fullDocument: IReport;
@@ -60,20 +60,22 @@ export type IReportTableFilters = {
 // Extend the union type to include 'range' and 'url'
 export type ActualInputType = 'text' | 'number' | 'select' | 'radio' | 'checkbox' | 'date' | 'email' | 'file' | 'password' | 'range' | 'url';
 
-export type QuestionError = FieldErrors<IReportQuestions>;
+export type QuestionError = FieldErrors<IReportQuestion>;
 
 export interface IReportQuestionActions {
-    handleAddValidation: (questionIndex: number, newValidation: Partial<IReportQuestionsValidation>) => void;
+    handleAddValidation: (questionIndex: number, newValidation: Partial<IReportQuestionValidation>) => void;
     handleChangeInputType: (questionIndex: number, newInputType: ActualInputType) => void;
     handleAddDependency: (questionIndex: number, newDependency: IQuestionDependency) => void;
     handleChangeQuestionText: (questionIndex: number, text: string) => void;
     handleChangeQuestionRequired: (questionIndex: number) => void;
     handleChangeQuestionMaxValue: (questionIndex: number, text: number) => void;
     handleChangeQuestionMinValue: (questionIndex: number, text: number) => void;
+    handleChangeQuestionRegexMatches: (questionIndex: number, text: string) => void;
+    handleChangeQuestionRegexMessage: (questionIndex: number, text: string) => void;
     handleChangeQuestionMaxLength: (questionIndex: number, text: number) => void;
     handleChangeQuestionMinLength: (questionIndex: number, text: number) => void;
     handleChangeQuestionUnique: (questionIndex: number) => void;
     handleRemoveQuestion: (index: number) => void;
-    handleRemoveValidation: (questionIndex: number, validationKey: keyof IReportQuestionsValidation) => void;
+    handleRemoveValidation: (questionIndex: number, validationKey: keyof IReportQuestionValidation) => void;
     // You can add more actions here as needed
 }

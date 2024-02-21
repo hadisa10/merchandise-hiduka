@@ -168,31 +168,12 @@ export default function ReportNewEditDetailsForm({campaigns, campaignsLoading}: 
       </Grid>
     </>
   );
-
-  // const renderActions = (
-  //   <>
-  //     {mdUp && <Grid md={4} />}
-  //     <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: "end", alignItems: 'center' }}>
-  //       <LoadingButton
-  //         type="submit"
-  //         variant="contained"
-  //         size="large"
-  //         loading={isSubmitting}
-  //         sx={{ ml: 2 }}
-  //       >
-  //         {!currentReport ? 'Create Campaign' : 'Save Changes'}
-  //       </LoadingButton>
-  //     </Grid>
-  //   </>
-  // );
-
   return (
     <Grid container spacing={3}>
       {renderDetails}
 
       {renderProperties}
 
-      {/* {renderActions} */}
     </Grid>
   );
 }

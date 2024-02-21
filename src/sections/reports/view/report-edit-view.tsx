@@ -13,7 +13,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { IReport } from 'src/types/realm/realm-types';
 
-import CampaignNewEdit from '../report-new-edit-form';
+import ReportNewEdit from '../report-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ export default function ReportEditView({ id }: { id: string }) {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       {showLoader.value && <LoadingScreen />}
       {!showLoader.value && error && <>Failed to fetch report</>}
-      {report && !showLoader.value && !error && <CampaignNewEdit currentReport={report} />}
+      {report && !showLoader.value && !error && <ReportNewEdit currentReport={report} />}
     </Container>
   );
 }
