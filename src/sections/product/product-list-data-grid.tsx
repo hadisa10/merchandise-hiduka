@@ -1,7 +1,7 @@
 'use client';
 
-import { isString } from 'lodash';
 import isEqual from 'lodash/isEqual';
+import { isEmpty, isString } from 'lodash';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
@@ -92,7 +92,7 @@ export default function ProductListDataGrid({ campaignId }: { campaignId?: strin
   }, [mainLoading, loadingReport.value, campaignId])
 
   useEffect(() => {
-    if (isString(campaignId)) {
+    if (isString(campaignId) && !isEmpty(campaignId)) {
       loadingReport.onTrue()
       setProductsError(null)
       getCampaignProducts(campaignId.toString())
@@ -102,7 +102,7 @@ export default function ProductListDataGrid({ campaignId }: { campaignId?: strin
         }
         )
         .catch(e => {
-          enqueueSnackbar("Failed to fetch campaign reports", { variant: "error" })
+          enqueueSnackbar("Failed to fetch campaign products", { variant: "error" })
           setProductsError(e.message)
           console.error(e, "REPORT FETCH")
         })

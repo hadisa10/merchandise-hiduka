@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
-import { isString } from 'lodash';
 import { useForm } from 'react-hook-form';
+import { isEmpty, isString } from 'lodash';
 import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -58,7 +58,7 @@ export default function AddQuestionProductDialog({ campaignId, questionIndex, ha
   }, [mainLoading, loadingReport.value, campaignId])
 
   useEffect(() => {
-    if (isString(campaignId)) {
+    if (isString(campaignId) && !isEmpty(campaignId)) {
       loadingReport.onTrue()
       setProductsError(null)
       getCampaignProducts(campaignId.toString())
@@ -68,7 +68,7 @@ export default function AddQuestionProductDialog({ campaignId, questionIndex, ha
         }
         )
         .catch(e => {
-          enqueueSnackbar("Failed to fetch campaign reports", { variant: "error" })
+          enqueueSnackbar("Failed to fetch campaign products", { variant: "error" })
           setProductsError(e.message)
           console.error(e, "REPORT FETCH")
         })
