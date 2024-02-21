@@ -74,8 +74,10 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 export default function ReportListDataGrid({ id }: { id?: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [callReport, setCallReport] = useState(isString(id))
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const [callReport, setCallReport] = useState(isString(id))
+
+  const callReport = useMemo(() => isString(id), [id])
 
   const { getCampaignReport, loading: mainLoading, reports: mainReports } = useReports(callReport);
 

@@ -94,6 +94,15 @@ export interface IProductsGraphqlResponse {
   products: IProductItem[];
 }
 
+export interface IGraphqlCampaignProductsResponse {
+  CampaignProducts: IProductItem[];
+}
+
+export interface IGraphqlCampaignAddProductsResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface IProductGraphqlResponse {
   product: IProductItem;
 }
@@ -102,6 +111,8 @@ export interface IProductActions {
   getProduct: (id: string) => Promise<ApolloQueryResult<IProductGraphqlResponse> | undefined>;
   deleteProduct: (product: IProductItem) => Promise<void>;
   updateProduct: (product: IProductItem) => Promise<void>;
+  getCampaignProducts: (id: string) => Promise<IProductItem[]>;
+  addCampaignProducts: (campaign_id: string, products: string[]) => Promise<void>;
 }
 
 export interface IProductHook extends IProductActions {

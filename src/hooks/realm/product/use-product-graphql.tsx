@@ -13,7 +13,7 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
-import { IProductHook, IProductItem, IProductChange, IProductGraphqlResponse, IProductsGraphqlResponse } from "src/types/product";
+import { IProductHook, IProductItem, IProductChange, IProductGraphqlResponse, IProductsGraphqlResponse, IGraphqlCampaignProductsResponse, IGraphqlCampaignAddProductsResponse } from "src/types/product";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
@@ -22,14 +22,15 @@ import { useCustomApolloClient } from "../use-apollo-client";
 const { dataSourceName } = atlasConfig;
 
 
-export function useProducts(): IProductHook {
+export function useProducts(lazy: boolean = true): IProductHook {
 
   const graphql = useCustomApolloClient();
   const [products, setProducts] = useState<IProductItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const query = gql`
+    if (!lazy) {
+      const query = gql`
       query FetchAllProducts {
         products {
           _id
@@ -79,10 +80,13 @@ export function useProducts(): IProductHook {
         }
       }
     `;
-    graphql.query<IProductsGraphqlResponse>({ query }).then(({ data }) => {
-      setProducts(data.products);
-      setLoading(false);
-    });
+      graphql.query<IProductsGraphqlResponse>({ query }).then(({ data }) => {
+        setProducts(data.products);
+        setLoading(false);
+      });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [graphql]);
 
   const clientHidukaCollection = useCollection({
@@ -175,6 +179,37 @@ export function useProducts(): IProductHook {
     }
   }
 
+  const addCampaignProducts = async (campaignId: string, products_add: string[]): Promise<void> => {
+    try {
+      const prds = await graphql.mutate<IGraphqlCampaignAddProductsResponse>({
+        mutation: gql`
+          mutation AddCampaignProducts($input: AddCampaignProductInput!) {
+            AddCampaignProducts(input: $input) {
+              message
+              success
+            }
+          }
+        `,
+        variables: {
+          input: {
+            campaign_id: campaignId,
+            products: products_add
+          }
+        },
+      });
+
+      console.log(prds.data, "DATA")
+
+    } catch (err) {
+      if (err.message.match(/^Duplicate key error/)) {
+        console.warn(
+          `The following error means that this app tried to insert a user multiple times (i.e., an existing client has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
+        );
+      }
+      throw new Error(err.message);
+    }
+  };
+
   const getProduct = async (id: string) => {
     try {
       const query = gql`
@@ -239,6 +274,73 @@ export function useProducts(): IProductHook {
       throw new Error(err.message)
     }
   }
+
+  const getCampaignProducts = async (id: string) => {
+    try {
+      const resp = await graphql.query<IGraphqlCampaignProductsResponse>({
+        query: gql`
+          query FetchCampaignProducts($id: String!) {
+              CampaignProducts(input: $id) {
+                _id
+                name
+                subDescription
+                price
+                coverUrl
+                totalRatings
+                gender
+                publish
+                category
+                available
+                priceSale
+                taxes
+                quantity
+                sizes
+                inventoryType
+                images
+                ratings{
+                    name
+                    starCount
+                    reviewCount
+                }
+                reviews{
+                    name
+                    postedAt
+                    comment
+                    isPurchased
+                    rating
+                    avatarUrl
+                    helpful
+                }
+                tags
+                code
+                colors
+                description
+                newLabel{
+                    enabled
+                    content
+                }
+                sku
+                createdAt
+                updatedAt
+                saleLabel{
+                    enabled
+                    content
+                }
+            }
+          }
+        `,
+        variables: {
+          id
+        },
+      });
+      console.log(resp, 'RESP')
+      return resp.data.CampaignProducts;
+    } catch (error) {
+      console.log(error, "REPORT FETCH ERROR")
+      throw new Error("Failed to get campaign products")
+    }
+  };
+
   const updateProduct = async (product: IProductItem) => {
     await graphql.mutate({
       mutation: gql`
@@ -274,6 +376,8 @@ export function useProducts(): IProductHook {
     saveProduct,
     updateProduct,
     getProduct,
-    deleteProduct
+    deleteProduct,
+    getCampaignProducts,
+    addCampaignProducts
   };
 }

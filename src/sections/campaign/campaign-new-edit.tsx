@@ -27,6 +27,8 @@ import { IRoute, ICampaign, ICampaign_routes } from 'src/types/realm/realm-types
 import CampaignDetailsToolbar from './campaign-details-toolbar';
 import RouteCreateEditForm from './edit/route-create-edit-form';
 
+const ProductListDataGrid = lazy(() => import('../product/product-list-data-grid'));
+
 const CampaignNewEditRouteForm = lazy(() => import('./edit/campaign-new-edit-route'));
 const CampaignNewEditDetailsForm = lazy(() => import('./edit/campaign-new-edit-details-form'));
 const ReportListDataGrid = lazy(() => import('../reports/view/report-list-data-grid'));
@@ -45,7 +47,6 @@ export const CAMPAING_DETAILS_TABS = [
   { value: 'details', label: 'Details' },
   { value: 'reports', label: 'Reports' },
   { value: 'products', label: 'Products' },
-  { value: 'users', label: 'Users' },
   { value: 'routes', label: 'Routes' },
 ];
 
@@ -247,11 +248,11 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           project_id: createObjectId(),
           // @ts-expect-error expected
           routes: data.routes.map(x => {
-            if(!x.createdAt){
+            if (!x.createdAt) {
               return {
                 ...x,
                 createdAt: safeDateFormatter,
-                updatedAt : safeDateFormatter,
+                updatedAt: safeDateFormatter,
                 totalQuantity: 0
               }
             }
@@ -337,10 +338,9 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm currentCampaign={currentCampaign} /></Suspense>}
         {currentTab === 'reports' && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'products' && <>PRODUCTS</>}
+        {currentTab === 'products' && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
         {currentTab === 'users' && <>USERS</>}
         <Suspense fallback={<LoadingScreen />}>
-
           {
             currentTab === 'routes' &&
             <CampaignNewEditRouteForm
