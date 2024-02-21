@@ -1,7 +1,7 @@
 'use client';
 
-import { isString } from 'lodash';
 import isEqual from 'lodash/isEqual';
+import { isEmpty, isString } from 'lodash';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
@@ -92,7 +92,7 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
   }, [mainLoading, loadingReport.value, campaignId])
 
   useEffect(() => {
-    if (isString(campaignId)) {
+    if (isString(campaignId) && !isEmpty(campaignId)) {
       loadingReport.onTrue()
       setProductsError(null)
       getCampaignProducts(campaignId.toString())

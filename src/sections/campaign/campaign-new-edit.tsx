@@ -234,7 +234,32 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           total_checkin: 0,
           type: "RSM"
         };
-        await saveCampaign(campaign)
+        const cleanData = removeAndFormatNullFields({
+          ...campaign
+        }, [
+          {
+            key: "updatedAt",
+            formatter: safeDateFormatter,
+          },
+          {
+            key: "createdAt",
+            formatter: safeDateFormatter,
+          },
+          {
+            key: "endDate",
+            formatter: safeDateFormatter,
+          },
+          {
+            key: "startDate",
+            formatter: safeDateFormatter,
+          }
+          // @ts-expect-error expected
+        ], ["id"]);
+        console.log(cleanData, "DT")
+        if(!cleanData){
+          throw new Error("Error creating campaign")
+        }
+        await saveCampaign(cleanData)
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
         router.push(paths.dashboard.campaign.root);

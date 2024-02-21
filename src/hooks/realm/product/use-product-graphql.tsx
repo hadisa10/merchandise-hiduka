@@ -277,6 +277,9 @@ export function useProducts(lazy: boolean = true): IProductHook {
 
   const getCampaignProducts = async (id: string) => {
     try {
+      if(!id){
+        throw new Error("Campaign errors")
+      }
       const resp = await graphql.query<IGraphqlCampaignProductsResponse>({
         query: gql`
           query FetchCampaignProducts($id: String!) {
@@ -333,7 +336,6 @@ export function useProducts(lazy: boolean = true): IProductHook {
           id
         },
       });
-      console.log(resp, 'RESP')
       return resp.data.CampaignProducts;
     } catch (error) {
       console.log(error, "REPORT FETCH ERROR")

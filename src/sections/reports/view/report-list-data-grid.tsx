@@ -1,8 +1,8 @@
 'use client';
 
-import { isString } from 'lodash';
 import isEqual from 'lodash/isEqual';
 import { useForm } from 'react-hook-form';
+import { isEmpty, isString } from 'lodash';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
@@ -96,7 +96,10 @@ export default function ReportListDataGrid({ id }: { id?: string }) {
   }, [mainLoading, loadingReport.value, id])
 
   useEffect(() => {
-    if (isString(id)) {
+    console.log(id, "ID")
+    console.log("WHAT IS THIS HAPPPENINNG HERE ???")
+
+    if (isString(id) && !isEmpty(id)) {
       loadingReport.onTrue()
       setReportsError(null)
       getCampaignReport(id.toString())

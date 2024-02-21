@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { Draggable } from '@hello-pangea/dnd';
 import { UseFormRegister } from 'react-hook-form';
 import { lazy, Suspense, useEffect, forwardRef } from 'react';
@@ -220,7 +221,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
         // onUpdateQuestion={onUpdateQuestion}
         onDeleteQuestion={onDeleteQuestion}
       />
-      {campaignId && !Number.isNaN(index) &&
+      {campaignId && !isEmpty(campaignId) && !Number.isNaN(index) &&
         <AddReportQuestionDialog
           campaignId={campaignId}
           questionIndex={index}
