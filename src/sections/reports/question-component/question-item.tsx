@@ -1,6 +1,6 @@
 import { Draggable } from '@hello-pangea/dnd';
 import { UseFormRegister } from 'react-hook-form';
-import { lazy, Suspense, forwardRef } from 'react';
+import { lazy, Suspense, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -19,6 +19,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, IReportQuestionActions } from 'src/types/report';
 
+import AddReportQuestionDialog from '../edit/add-question-product-dialog';
+
 const QuestionDetails = lazy(() => import('./question-item-details'));
 
 // ----------------------------------------------------------------------
@@ -31,6 +33,7 @@ type Props = PaperProps & {
   questionError?: QuestionError;
   register: UseFormRegister<IReport>;
   actions: IReportQuestionActions;
+  campaignId?: string;
 };
 
 const QuestionItem = forwardRef<HTMLDivElement, Props>(({
@@ -40,6 +43,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
   onUpdateQuestion,
   questionError,
   register,
+  campaignId,
   actions,
   sx,
   ...other
@@ -48,10 +52,28 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
 
   const openDetails = useBoolean();
 
+  const openProductDialog = useBoolean()
+
   const handleToggleUnique = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation(); // Prevent click event from bubbling up
     // Your toggle logic here
   }
+
+  const handleToggleProduct = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation(); // Prevent click event from bubbling up
+    console.log("EVENT CLICKED")
+    openProductDialog.onToggle()
+    // Your toggle logic here
+  }
+
+  const handleNewAddNewProduct = (prds: string[]) => {
+    actions.handleChangeAddQuestionProducts(index, prds)
+  }
+
+  useEffect(() => {
+    console.log(openProductDialog.value, 'VALUE')
+  }, [openProductDialog.value])
+
   const renderInputType = (
     <Iconify
       icon={
@@ -112,6 +134,24 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
     </Stack>
   );
 
+
+  const renderAddProducts = (
+    <Stack direction="row" alignItems="center" sx={{ typography: 'caption', color: 'text.secondary', ml: -1 }}>
+      <IconButton
+        onClick={handleToggleProduct}
+        sx={{
+          color: 'inherit',
+        }}
+      >
+        <Iconify icon="mingcute:add-line" />
+      </IconButton>
+      <Box component="span">
+        Products
+      </Box>
+    </Stack>
+  );
+
+
   return (
 
     <Suspense key={index} fallback={<LoadingScreen />}>
@@ -122,6 +162,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             onClick={openDetails.onTrue}
+
           >
             <Paper
               ref={ref}
@@ -152,11 +193,16 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
               {/* {!!question..length && renderImg} */}
 
               <Stack spacing={2} sx={{ px: 2, py: 2.5, position: 'relative' }}>
+
                 {renderInputType}
 
                 <Typography variant="subtitle2">{question.text}</Typography>
+                <Stack direction="row" justifyContent="space-between">
+                  {renderInfo}
+                  {renderAddProducts}
+                </Stack>
 
-                {renderInfo}
+
               </Stack>
             </Paper>
           </ListItem>
@@ -174,6 +220,14 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
         // onUpdateQuestion={onUpdateQuestion}
         onDeleteQuestion={onDeleteQuestion}
       />
+      {campaignId && !Number.isNaN(index) &&
+        <AddReportQuestionDialog
+          campaignId={campaignId}
+          questionIndex={index}
+          handleAddNewProduct={handleNewAddNewProduct}
+          open={openProductDialog.value}
+          onClose={openProductDialog.onFalse}
+        />}
     </Suspense>
   );
 })
