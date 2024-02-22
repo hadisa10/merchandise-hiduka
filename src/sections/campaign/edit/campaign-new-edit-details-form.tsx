@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
-import { useClients } from 'src/hooks/realm';
+import { useClients, useShowLoader } from 'src/hooks/realm';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 
@@ -21,20 +21,26 @@ import {
   RHFMultiCheckbox,
 } from 'src/components/hook-form';
 
-import { ICampaign } from 'src/types/realm/realm-types';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentCampaign?: ICampaign;
-};
 
-export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
-  const { users } = useUsers();
+export default function CampaignNewEditDetailsForm() {
+  const { users, loading: loadingUsers } = useUsers();
 
   const mdUp = useResponsive('up', 'md');
 
   const { loading, clients } = useClients(false);
+
+  const showLoader = useShowLoader(loading, 200)
+
+  const showUsersLoader = useShowLoader(loadingUsers, 200)
+
+
+  console.log(showLoader, 'SHOW LOADER');
+
+  console.log(showUsersLoader, 'SHOW USERS LOADER');
 
 
   const renderDetails = (
@@ -66,23 +72,25 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
             </Stack>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Client</Typography>
-              <RHFAutocomplete
+              {showLoader && <LoadingScreen />}
+              {!showLoader && <RHFAutocomplete
                 name="client_id"
                 label="Client"
                 placeholder="Select client"
-                loading={loading}
+                loading={showLoader}
                 freeSolo
                 options={clients?.map(clnt => clnt._id?.toString()) ?? []}
                 getOptionLabel={(option) => {
-                  const client = clients?.find((clnt) => clnt._id?.toString() === option);
+                  const client = clients?.find((clnt) => clnt._id?.toString() === option.toString());
                   if (client) {
+                    console.log(client?.name)
                     return client?.name
                   }
                   return option
                 }}
                 renderOption={(props, option) => {
                   const client = clients?.filter(
-                    (clnt) => clnt._id?.toString() === option
+                    (clnt) => clnt._id?.toString() === option.toString()
                   )[0];
 
                   if (!client?._id) {
@@ -97,12 +105,12 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
                 }}
                 renderTags={(selected, getTagProps) =>
                   selected.map((option, index) => {
-                    const user = clients?.find((clnt) => clnt._id?.toString() === option);
+                    const client = clients?.find((clnt) => clnt._id?.toString() === option);
                     return (
                       <Chip
                         {...getTagProps({ index })}
-                        key={user?._id?.toString() ?? ""}
-                        label={user?.name ?? ""}
+                        key={client?._id?.toString() ?? ""}
+                        label={client?.name ?? ""}
                         size="small"
                         color="info"
                         variant="soft"
@@ -110,7 +118,7 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
                     )
                   })
                 }
-              />
+              />}
             </Stack>
           </Stack>
         </Card>
@@ -138,63 +146,59 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2">Users Details</Typography>
-              <RHFMultiCheckbox
-                row
-                spacing={4}
-                name="employmentTypes"
-                options={[]}
-              />
             </Stack>
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Users</Typography>
-
-              <RHFAutocomplete
-                name="users"
-                label="Users"
-                placeholder="+ users"
-                multiple
-                freeSolo
-                disableCloseOnSelect
-                options={users.map(usr => usr._id)}
-                getOptionLabel={(option) => {
-                  const user = users?.find((usr) => usr._id === option);
-                  if (user) {
-                    return user?.displayName
-                  }
-                  return option
-                }}
-                renderOption={(props, option) => {
-                  const user = users?.filter(
-                    (usr) => usr._id === option
-                  )[0];
-
-                  if (!user?._id) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={user._id}>
-                      {user?.displayName}
-                    </li>
-                  );
-                }}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => {
+              {showUsersLoader && <LoadingScreen />}
+              {!showUsersLoader &&
+                <RHFAutocomplete
+                  name="users"
+                  label="Users"
+                  placeholder="+ users"
+                  multiple
+                  freeSolo
+                  disableCloseOnSelect
+                  options={users.map(usr => usr._id)}
+                  getOptionLabel={(option) => {
                     const user = users?.find((usr) => usr._id === option);
+                    if (user) {
+                      return user?.displayName
+                    }
+                    return option
+                  }}
+                  renderOption={(props, option) => {
+                    const user = users?.filter(
+                      (usr) => usr._id === option
+                    )[0];
+
+                    if (!user?._id) {
+                      return null;
+                    }
+
                     return (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={user?._id ?? ""}
-                        label={user?.displayName ?? ""}
-                        size="small"
-                        color="info"
-                        variant="soft"
-                      />
-                    )
-                  })
-                }
-              />
+                      <li {...props} key={user._id.toString()}>
+                        {user?.displayName}
+                      </li>
+                    );
+                  }}
+                  renderTags={(selected, getTagProps) => (
+                    selected.map((option, index) => {
+                      const user = users?.find((usr) => usr._id === option);
+                      return (
+                        <Chip
+                          {...getTagProps({ index })}
+                          key={user?._id ?? ""}
+                          label={user?.displayName ?? ""}
+                          size="small"
+                          color="info"
+                          variant="soft"
+                        />
+                      )
+                    })
+                  )
+                  }
+                />}
             </Stack>
 
             <Stack spacing={1.5}>

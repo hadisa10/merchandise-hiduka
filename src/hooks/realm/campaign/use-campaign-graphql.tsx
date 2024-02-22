@@ -36,6 +36,7 @@ export function useCampaigns(lazy = false): ICampaignHook {
           access_code
           description
           client_id
+          users
           products
           project_id
           routes {

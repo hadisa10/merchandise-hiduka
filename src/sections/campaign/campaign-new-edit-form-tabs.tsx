@@ -57,6 +57,8 @@ function generateAccessCode() {
 
 export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
+  console.log(currentCampaign, 'CURRENT CAMPAIGN');
+
   const router = useRouter();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -115,7 +117,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     () => ({
       title: currentCampaign?.title || '',
       description: currentCampaign?.description || '',
-      client_id: currentCampaign?.client_id || '',
+      client_id: currentCampaign?.client_id.toString() || '',
       users: currentCampaign?.users?.map(user => user.toString()) || [],
       routes: currentCampaign?.routes?.map(r => {
         const _id = r._id.toString()
@@ -204,10 +206,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     return y;
   }, [errors])
 
-  console.log(errors, 'ERRORS')
-
-
-
 
   useEffect(() => {
     if (currentCampaign) {
@@ -219,7 +217,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     try {
       const _id = createObjectId().toString();
       const prodject_id = createObjectId().toString()
-      // @ts-expect-error expected
       const client_id = convertObjectId(data.client_id).toString();
       if (!currentCampaign) {
         const campaign: ICampaign = {
@@ -370,7 +367,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         />
         {renderTabs}
 
-        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm currentCampaign={currentCampaign} /></Suspense>}
+        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm /></Suspense>}
         {currentTab === 'reports' && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
         {currentTab === 'products' && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
         {currentTab === 'users' && <>USERS</>}

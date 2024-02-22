@@ -36,7 +36,6 @@ export const createObjectId = (): Realm.BSON.ObjectId => new Realm.BSON.ObjectId
 export const convertObjectId = (_id: string): Realm.BSON.ObjectId => {
     const idStr = _id.toString();
     const d = new Realm.BSON.ObjectId(idStr);
-    console.log(d, 'WHY IS OBJ EMPTY')
     return d
 };
 
