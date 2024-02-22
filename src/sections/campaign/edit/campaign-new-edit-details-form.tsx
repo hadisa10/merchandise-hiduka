@@ -6,6 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
+import { useClients } from 'src/hooks/realm';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 
@@ -33,6 +34,9 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
 
   const mdUp = useResponsive('up', 'md');
 
+  const { loading, clients } = useClients(false);
+
+
   const renderDetails = (
     <>
       {mdUp && (
@@ -59,6 +63,54 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Description</Typography>
               <RHFEditor simple name="description" />
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Client</Typography>
+              <RHFAutocomplete
+                name="client_id"
+                label="Client"
+                placeholder="Select client"
+                loading={loading}
+                freeSolo
+                options={clients?.map(clnt => clnt._id?.toString()) ?? []}
+                getOptionLabel={(option) => {
+                  const client = clients?.find((clnt) => clnt._id?.toString() === option);
+                  if (client) {
+                    return client?.name
+                  }
+                  return option
+                }}
+                renderOption={(props, option) => {
+                  const client = clients?.filter(
+                    (clnt) => clnt._id?.toString() === option
+                  )[0];
+
+                  if (!client?._id) {
+                    return null;
+                  }
+
+                  return (
+                    <li {...props} key={client._id?.toString()}>
+                      {client?.name}
+                    </li>
+                  );
+                }}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => {
+                    const user = clients?.find((clnt) => clnt._id?.toString() === option);
+                    return (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={user?._id?.toString() ?? ""}
+                        label={user?.name ?? ""}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    )
+                  })
+                }
+              />
             </Stack>
           </Stack>
         </Card>

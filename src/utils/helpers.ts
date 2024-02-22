@@ -168,7 +168,7 @@ export async function fileToBase64(file: File): Promise<string> {
 //     } 
 //         // Return the value if it's not null, otherwise return undefined
 //         return data !== null ? data : undefined;
-    
+
 // };
 export const removeAndFormatNullFields = <T>(
     data: T,
@@ -184,6 +184,10 @@ export const removeAndFormatNullFields = <T>(
                 return acc;
             }
 
+            if (key === "_id") {
+                console.log(`${key}: ${value}`, "VALUE OF ID")
+            }
+
             // Check for mismatch conditions and skip if predicate returns false
             const mismatchCondition = mismatchConditions?.find(condition => condition.key === key);
             if (mismatchCondition && !mismatchCondition.predicate(value)) {
@@ -193,12 +197,13 @@ export const removeAndFormatNullFields = <T>(
             // Check if the current key has a specified format option
             const formatOption = formatOptionsArray?.find(option => option.key === key);
             if (formatOption) {
+                console.log(`${key}: ${value}`)
                 value = formatOption.formatter(value); // Apply the formatter function if found
             }
 
             // Recursively clean the value
             const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields, mismatchConditions);
-            
+
             // If the cleaned value is not undefined, add it to the accumulator
             if (cleanedValue !== undefined) {
                 acc[key] = cleanedValue;
@@ -211,7 +216,7 @@ export const removeAndFormatNullFields = <T>(
 };
 
 export const safeDateFormatter = (value?: string): string => {
-    if(!value){
+    if (!value) {
         return new Date().toISOString();
     }
     // Check if the value is a valid date string
@@ -219,10 +224,10 @@ export const safeDateFormatter = (value?: string): string => {
     if (!Number.isNaN(timestamp)) {
         // If valid, return a Date object for the value
         return new Date(value).toISOString();
-    } 
-        // If not valid, return a new Date object
-        return new Date().toISOString();
-    
+    }
+    // If not valid, return a new Date object
+    return new Date().toISOString();
+
 };
 
 
@@ -239,8 +244,8 @@ export const removeNullFields = <T>(data: T): T | undefined => {
             }
             return acc;
         }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
-    } 
-        // Return the value if it's not null, otherwise return undefined
-        return data !== null ? data : undefined;
-    
+    }
+    // Return the value if it's not null, otherwise return undefined
+    return data !== null ? data : undefined;
+
 };
