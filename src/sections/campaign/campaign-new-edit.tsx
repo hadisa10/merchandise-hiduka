@@ -230,7 +230,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           client_id,
           description: data.description ?? '',
           products: [],
-          users: [],
+          // @ts-expect-error expected
+          users: data.users.map(x => x.toString()) ?? [],
           createdAt: new Date(),
           updatedAt: new Date(),
           startDate: new Date(),
