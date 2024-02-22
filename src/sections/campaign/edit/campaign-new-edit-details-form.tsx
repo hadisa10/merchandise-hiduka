@@ -6,22 +6,20 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
-import { useClients, useShowLoader } from 'src/hooks/realm';
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useClients, useShowLoader } from 'src/hooks/realm';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 
 import {
   JOB_WORKING_SCHEDULE_OPTIONS,
 } from 'src/_mock';
 
+import { LoadingScreen } from 'src/components/loading-screen';
 import {
   RHFEditor,
   RHFTextField,
   RHFAutocomplete,
-  RHFMultiCheckbox,
 } from 'src/components/hook-form';
-
-import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 

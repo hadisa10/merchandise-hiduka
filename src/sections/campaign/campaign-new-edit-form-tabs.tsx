@@ -1,8 +1,8 @@
 "use client"
 
 import * as Yup from 'yup';
-import { isNumber } from 'lodash';
 import { useSnackbar } from 'notistack';
+import { isEmpty, isNumber } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { lazy, useMemo, useState, Suspense, useEffect, useCallback } from 'react';
@@ -197,7 +197,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         case 'details':
           return DETAILS_FIELDS.includes(key)
         case 'routes':
-          console.log(errors, 'ERRORS')
           return ROUTES_FIELDS.includes(key)
         default:
           return false
@@ -206,6 +205,11 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     return y;
   }, [errors])
 
+  useEffect(() => {
+    if (isEmpty(errors)) {
+      console.log(errors, 'ERRORS')
+    }
+  }, [errors])
 
   useEffect(() => {
     if (currentCampaign) {
@@ -332,6 +336,19 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   }, []);
 
 
+  const tabArray = useMemo(() => CAMPAING_DETAILS_TABS.filter(x => {
+    if (currentCampaign) {
+      return true;
+    }
+    switch (x.value) {
+      case "reports":
+      case "products":
+        return false;
+      default:
+        return true;
+    }
+  }), [currentCampaign])
+
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -340,7 +357,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         mb: { xs: 3, md: 5 },
       }}
     >
-      {CAMPAING_DETAILS_TABS.filter(x => !(x.label === "routes" && !currentCampaign)).map((tab) => (
+      {tabArray.map((tab) => (
         <Tab
           key={tab.value}
           iconPosition="end"
@@ -368,9 +385,9 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         {renderTabs}
 
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm /></Suspense>}
-        {currentTab === 'reports' && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'products' && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'users' && <>USERS</>}
+        {currentTab === 'reports' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
+        {currentTab === 'products' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
+        {currentTab === 'users' && currentCampaign && <>USERS</>}
         <Suspense fallback={<LoadingScreen />}>
           {
             currentTab === 'routes' &&
