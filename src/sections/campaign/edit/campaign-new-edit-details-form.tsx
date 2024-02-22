@@ -1,40 +1,56 @@
 
+import { isObject } from 'lodash';
+import { Controller, useFormContext } from 'react-hook-form';
+
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import { MobileDatePicker, MobileTimePicker, DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
 
-import { useClients } from 'src/hooks/realm';
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useClients, useShowLoader } from 'src/hooks/realm';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
+
+import { fTimestamp } from 'src/utils/format-time';
 
 import {
   JOB_WORKING_SCHEDULE_OPTIONS,
 } from 'src/_mock';
 
+import { LoadingScreen } from 'src/components/loading-screen';
 import {
   RHFEditor,
   RHFTextField,
   RHFAutocomplete,
-  RHFMultiCheckbox,
 } from 'src/components/hook-form';
 
-import { ICampaign } from 'src/types/realm/realm-types';
+import { ICalendarDate } from 'src/types/calendar';
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentCampaign?: ICampaign;
-};
 
-export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
-  const { users } = useUsers();
+export default function CampaignNewEditDetailsForm() {
+  const { users, loading: loadingUsers } = useUsers();
+
+  const { control, getValues, getFieldState } = useFormContext();
 
   const mdUp = useResponsive('up', 'md');
 
   const { loading, clients } = useClients(false);
+
+  const showLoader = useShowLoader(loading, 200)
+
+  const showUsersLoader = useShowLoader(loadingUsers, 200)
+
+  const { error: startDateError } = getFieldState("startDate")
+  const { error: endDateError } = getFieldState("endDate")
+  const { error: checkInTimeError } = getFieldState("checkInTime")
+  const { error: checkOutTimeError } = getFieldState("checkOutTime")
+
+  console.log(getValues(), "VALUES")
 
 
   const renderDetails = (
@@ -66,15 +82,16 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
             </Stack>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Client</Typography>
-              <RHFAutocomplete
+              {showLoader && <LoadingScreen />}
+              {!showLoader && <RHFAutocomplete
                 name="client_id"
                 label="Client"
                 placeholder="Select client"
-                loading={loading}
+                loading={showLoader}
                 freeSolo
                 options={clients?.map(clnt => clnt._id?.toString()) ?? []}
                 getOptionLabel={(option) => {
-                  const client = clients?.find((clnt) => clnt._id?.toString() === option);
+                  const client = clients?.find((clnt) => clnt._id?.toString() === option.toString());
                   if (client) {
                     return client?.name
                   }
@@ -82,7 +99,7 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
                 }}
                 renderOption={(props, option) => {
                   const client = clients?.filter(
-                    (clnt) => clnt._id?.toString() === option
+                    (clnt) => clnt._id?.toString() === option.toString()
                   )[0];
 
                   if (!client?._id) {
@@ -97,12 +114,12 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
                 }}
                 renderTags={(selected, getTagProps) =>
                   selected.map((option, index) => {
-                    const user = clients?.find((clnt) => clnt._id?.toString() === option);
+                    const client = clients?.find((clnt) => clnt._id?.toString() === option);
                     return (
                       <Chip
                         {...getTagProps({ index })}
-                        key={user?._id?.toString() ?? ""}
-                        label={user?.name ?? ""}
+                        key={client?._id?.toString() ?? ""}
+                        label={client?.name ?? ""}
                         size="small"
                         color="info"
                         variant="soft"
@@ -110,7 +127,7 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
                     )
                   })
                 }
-              />
+              />}
             </Stack>
           </Stack>
         </Card>
@@ -118,83 +135,330 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
     </>
   );
 
-  const renderProperties = (
+  const renderTimeDetails = (
+    <>
+      {!mdUp &&
+        <>
+          <Stack spacing={1}>
+            <Typography variant="subtitle2">Timeline</Typography>
+          </Stack>
+          <Controller
+            name="checkInTime"
+            control={control}
+            render={({ field }) => <MobileTimePicker
+                {...field}
+                value={new Date(field.value as ICalendarDate)}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    field.onChange(fTimestamp(newValue));
+                  }
+                }}
+                label="Check in time"
+                format="hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isObject(checkInTimeError),
+                    helperText: isObject(checkInTimeError) && checkInTimeError.message,
+                  },
+                }}
+              />}
+          />
+
+          <Controller
+            name="checkOutTime"
+            control={control}
+            render={({ field }) => (
+              <MobileTimePicker
+                {...field}
+                value={new Date(field.value as ICalendarDate)}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    field.onChange(fTimestamp(newValue));
+                  }
+                }}
+                label="Check out time"
+                format="hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isObject(checkOutTimeError),
+                    helperText: isObject(checkOutTimeError) && checkOutTimeError.message,
+                  },
+                }}
+              />
+            )}
+          />
+        </>
+      }
+      {mdUp &&
+        <>
+          <Controller
+            name="checkInTime"
+            control={control}
+            render={({ field }) => (
+              <DesktopTimePicker
+                {...field}
+                value={new Date(field.value as ICalendarDate)}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    field.onChange(fTimestamp(newValue));
+                  }
+                }}
+                label="Check in time"
+                format="hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isObject(checkInTimeError),
+                    helperText: isObject(checkInTimeError) && checkInTimeError.message,
+                  },
+                }}
+              />
+            )}
+          />
+
+          <Controller
+            name="checkOutTime"
+            control={control}
+            render={({ field }) => (
+              <DesktopTimePicker
+                {...field}
+                value={new Date(field.value as ICalendarDate)}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    field.onChange(fTimestamp(newValue));
+                  }
+                }}
+                label="Check out time"
+                format="hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isObject(checkOutTimeError),
+                    helperText: isObject(checkOutTimeError) && checkOutTimeError.message,
+                  },
+                }}
+              />
+            )}
+          />
+        </>
+      }
+    </>
+  )
+
+  const renderDateDetails = (
+    <>
+      {!mdUp &&
+        <Grid xs={12} md={8}>
+            <Card>
+              <Stack spacing={3} sx={{ p: 3 }}>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2">Timeline</Typography>
+                </Stack>
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ field }) => <MobileDatePicker
+                      {...field}
+                      value={new Date(field.value as ICalendarDate)}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          field.onChange(fTimestamp(newValue));
+                        }
+                      }}
+                      label="Start date"
+                      format="dd/MM/yyyy hh:mm a"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: isObject(startDateError),
+                          helperText: isObject(startDateError) && startDateError.message,
+                        },
+                      }}
+                    />}
+                />
+
+                <Controller
+                  name="endDate"
+                  control={control}
+                  render={({ field }) => (
+                    <MobileDatePicker
+                      {...field}
+                      value={new Date(field.value as ICalendarDate)}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          field.onChange(fTimestamp(newValue));
+                        }
+                      }}
+                      label="End date"
+                      format="dd/MM/yyyy"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: isObject(endDateError),
+                          helperText: isObject(endDateError) && endDateError.message,
+                        },
+                      }}
+                    />
+                  )}
+                />
+                {renderTimeDetails}
+              </Stack>
+            </Card>
+          </Grid>
+      }
+      {mdUp &&
+        <>
+          <Grid md={4}>
+            <Typography variant="h6" sx={{ mb: 0.5 }}>
+              Time
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Start and end dates...
+            </Typography>
+          </Grid>
+
+          <Grid xs={12} md={8}>
+            <Card>
+              <CardHeader title="Users" />
+
+              <Stack spacing={3} sx={{ p: 3 }}>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2">Timelines</Typography>
+                </Stack>
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ field }) => (
+                    <DesktopDatePicker
+                      {...field}
+                      value={new Date(field.value as ICalendarDate)}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          field.onChange(fTimestamp(newValue));
+                        }
+                      }}
+                      label="Start date"
+                      format="dd/MM/yyyy"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: isObject(startDateError),
+                          helperText: isObject(startDateError) && startDateError.message,
+                        },
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="endDate"
+                  control={control}
+                  render={({ field }) => (
+                    <DesktopDatePicker
+                      {...field}
+                      value={new Date(field.value as ICalendarDate)}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          field.onChange(fTimestamp(newValue));
+                        }
+                      }}
+                      label="End date"
+                      format="dd/MM/yyyy"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: isObject(endDateError),
+                          helperText: isObject(endDateError) && endDateError.message,
+                        },
+                      }}
+                    />
+                  )}
+                />
+                {renderTimeDetails}
+              </Stack>
+            </Card>
+          </Grid>
+        </>
+      }
+    </>
+  )
+
+
+  const renderUsers = (
     <>
       {mdUp && (
         <Grid md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Properties
+            Users
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional functions and attributes...
+            Additional details ...
           </Typography>
         </Grid>
       )}
 
       <Grid xs={12} md={8}>
         <Card>
-          {!mdUp && <CardHeader title="Properties" />}
+          {!mdUp && <CardHeader title="Users" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2">Users Details</Typography>
-              <RHFMultiCheckbox
-                row
-                spacing={4}
-                name="employmentTypes"
-                options={[]}
-              />
             </Stack>
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Users</Typography>
-
-              <RHFAutocomplete
-                name="users"
-                label="Users"
-                placeholder="+ users"
-                multiple
-                freeSolo
-                disableCloseOnSelect
-                options={users.map(usr => usr._id)}
-                getOptionLabel={(option) => {
-                  const user = users?.find((usr) => usr._id === option);
-                  if (user) {
-                    return user?.displayName
-                  }
-                  return option
-                }}
-                renderOption={(props, option) => {
-                  const user = users?.filter(
-                    (usr) => usr._id === option
-                  )[0];
-
-                  if (!user?._id) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={user._id}>
-                      {user?.displayName}
-                    </li>
-                  );
-                }}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => {
+              {showUsersLoader && <LoadingScreen />}
+              {!showUsersLoader &&
+                <RHFAutocomplete
+                  name="users"
+                  label="Users"
+                  placeholder="+ users"
+                  multiple
+                  freeSolo
+                  disableCloseOnSelect
+                  options={users.map(usr => usr._id)}
+                  getOptionLabel={(option) => {
                     const user = users?.find((usr) => usr._id === option);
+                    if (user) {
+                      return user?.displayName
+                    }
+                    return option
+                  }}
+                  renderOption={(props, option) => {
+                    const user = users?.filter(
+                      (usr) => usr._id === option
+                    )[0];
+
+                    if (!user?._id) {
+                      return null;
+                    }
+
                     return (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={user?._id ?? ""}
-                        label={user?.displayName ?? ""}
-                        size="small"
-                        color="info"
-                        variant="soft"
-                      />
-                    )
-                  })
-                }
-              />
+                      <li {...props} key={user._id.toString()}>
+                        {user?.displayName}
+                      </li>
+                    );
+                  }}
+                  renderTags={(selected, getTagProps) => (
+                    selected.map((option, index) => {
+                      const user = users?.find((usr) => usr._id === option);
+                      return (
+                        <Chip
+                          {...getTagProps({ index })}
+                          key={user?._id ?? ""}
+                          label={user?.displayName ?? ""}
+                          size="small"
+                          color="info"
+                          variant="soft"
+                        />
+                      )
+                    })
+                  )
+                  }
+                />}
             </Stack>
 
             <Stack spacing={1.5}>
@@ -252,7 +516,9 @@ export default function CampaignNewEditDetailsForm({ currentCampaign }: Props) {
     <Grid container spacing={3}>
       {renderDetails}
 
-      {renderProperties}
+      {renderDateDetails}
+
+      {renderUsers}
 
       {/* {renderActions} */}
     </Grid>

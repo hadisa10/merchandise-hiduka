@@ -227,7 +227,6 @@ export const safeDateFormatter = (value?: string): string => {
     }
     // If not valid, return a new Date object
     return new Date().toISOString();
-
 };
 
 

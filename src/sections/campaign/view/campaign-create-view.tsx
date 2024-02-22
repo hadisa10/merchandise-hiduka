@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import CampaignNewEdit from '../campaign-new-edit';
+import CampaignNewEdit from '../campaign-new-edit-form-tabs';
 
 // ----------------------------------------------------------------------
 

@@ -13,7 +13,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { ICampaign } from 'src/types/realm/realm-types';
 
-import CampaignNewEdit from '../campaign-new-edit';
+import CampaignNewEdit from '../campaign-new-edit-form-tabs';
 
 // ----------------------------------------------------------------------
 

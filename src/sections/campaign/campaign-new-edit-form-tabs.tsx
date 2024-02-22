@@ -1,8 +1,8 @@
 "use client"
 
 import * as Yup from 'yup';
-import { isNumber } from 'lodash';
 import { useSnackbar } from 'notistack';
+import { isEmpty, isNumber } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { lazy, useMemo, useState, Suspense, useEffect, useCallback } from 'react';
@@ -95,7 +95,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     title: Yup.string().required('Title is required'),
     description: Yup.string(),
     client_id: Yup.string().required("Client is required"),
-    // users: Yup.lazy(() => Yup.array().of(Yup.string()).min(1, 'Select atleas one user')).nullable(),
     users: Yup.array(),
     routes: Yup.lazy(() =>
       Yup.array().of(
@@ -109,14 +108,93 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         })
       )
     ),
-  });
+    startDate: Yup.date()
+      .transform((value, originalValue) => {
+        // Check if the originalValue is a number (Unix timestamp in milliseconds)
+        if (typeof originalValue === 'number') {
+          return new Date(originalValue);
+        }
+        // For string input, attempt to parse it as a date
+        if (typeof originalValue === 'string') {
+          return new Date(originalValue);
+        }
+        return value;
+      })
+      .required('Start date is required')
+      .typeError('Start date must be a valid date, date-time string, or Unix timestamp'),
+    endDate: Yup.date()
+      .transform((value, originalValue) => {
+        // Check if the originalValue is a number (Unix timestamp in milliseconds)
+        if (typeof originalValue === 'number') {
+          return new Date(originalValue);
+        }
+        // For string input, attempt to parse it as a date
+        if (typeof originalValue === 'string') {
+          return new Date(originalValue);
+        }
+        return value;
+      })
+      .required('End date is required')
+      .typeError('End date must be a valid date, date-time string, or Unix timestamp')
+      .test(
+        'date-after-start',
+        'End date must be after start date',
+        (value, { parent }) => {
+          const { startDate } = parent;
+          // Ensure both startDate and endDate are valid Date objects before comparing
+          return startDate && value && new Date(startDate) < new Date(value);
+        }
+      ),
+    checkInTime: Yup.date()
+      .transform((value, originalValue) => {
+        // Check if the originalValue is a number (Unix timestamp in milliseconds)
+        if (typeof originalValue === 'number') {
+          return new Date(originalValue);
+        }
+        // For string input, attempt to parse it as a date
+        if (typeof originalValue === 'string') {
+          return new Date(originalValue);
+        }
+        return value;
+      })
+      .required('Check in is required')
+      .typeError('Check in must be a valid date'),
+    checkOutTime: Yup.date()
+      .transform((value, originalValue) => {
+        // Check if the originalValue is a number (Unix timestamp in milliseconds)
+        if (typeof originalValue === 'number') {
+          return new Date(originalValue);
+        }
+        // For string input, attempt to parse it as a date
+        if (typeof originalValue === 'string') {
+          return new Date(originalValue);
+        }
+        return value;
+      })
+      .required('Check out is required')
+      .typeError('Check out  must be a valid date')
+      .test(
+        'time-after-check-in',
+        'Checkin time must be after checkout time',
+        (value, { parent }) => {
+          const { checkInTime } = parent;
+          // Ensure both startDate and endDate are valid Date objects before comparing
+          return checkInTime && value && new Date(checkInTime) < new Date(value);
+        }
+      )
+  })
 
   const defaultValues = useMemo(
     () => ({
       title: currentCampaign?.title || '',
       description: currentCampaign?.description || '',
-      client_id: currentCampaign?.client_id || '',
+      client_id: currentCampaign?.client_id.toString() || '',
       users: currentCampaign?.users?.map(user => user.toString()) || [],
+      startDate: currentCampaign?.startDate || '',
+      endDate: currentCampaign?.endDate || '',
+      checkInTime: currentCampaign?.checkInTime || '',
+      checkOutTime: currentCampaign?.checkOutTime || '',
+      workingSchedule: currentCampaign?.workingSchedule || [],
       routes: currentCampaign?.routes?.map(r => {
         const _id = r._id.toString()
         if (r.routeAddress) {
@@ -143,6 +221,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     // @ts-expect-error expected
     resolver: yupResolver(NewCurrectSchema),
     defaultValues,
+    mode: "all"
   });
 
   const {
@@ -195,7 +274,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         case 'details':
           return DETAILS_FIELDS.includes(key)
         case 'routes':
-          console.log(errors, 'ERRORS')
           return ROUTES_FIELDS.includes(key)
         default:
           return false
@@ -204,10 +282,11 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     return y;
   }, [errors])
 
-  console.log(errors, 'ERRORS')
-
-
-
+  useEffect(() => {
+    if (!isEmpty(errors)) {
+      console.log(errors, 'ERRORS')
+    }
+  }, [errors])
 
   useEffect(() => {
     if (currentCampaign) {
@@ -219,10 +298,10 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     try {
       const _id = createObjectId().toString();
       const prodject_id = createObjectId().toString()
-      // @ts-expect-error expected
       const client_id = convertObjectId(data.client_id).toString();
       if (!currentCampaign) {
         const campaign: ICampaign = {
+          ...data,
           // @ts-expect-error expected
           _id,
           access_code: generateAccessCode(),
@@ -234,8 +313,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           users: data.users.map(x => x.toString()) ?? [],
           createdAt: new Date(),
           updatedAt: new Date(),
-          startDate: new Date(),
-          endDate: new Date(),
           // @ts-expect-error expected
           project_id: prodject_id,
           // @ts-expect-error expected
@@ -263,6 +340,14 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           {
             key: "startDate",
             formatter: safeDateFormatter,
+          },
+          {
+            key: "checkInTime",
+            formatter: safeDateFormatter,
+          },
+          {
+            key: "checkOutTime",
+            formatter: safeDateFormatter,
           }
           // @ts-expect-error expected
         ], ["id"]);
@@ -278,6 +363,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       } else {
         const campaign: ICampaign = {
           ...currentCampaign,
+          ...data,
           description: data.description ?? '',
           // @ts-expect-error expected
           updatedAt: safeDateFormatter(),
@@ -294,17 +380,10 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
             }
             return x;
           }),
-          title: data.title,
-          today_checkin: 0,
-          total_checkin: 0,
-          type: "RSM"
         };
         const cleanData = removeAndFormatNullFields(campaign,
           [
-            {
-              key: "_id",
-              formatter: convertObjectId,
-            },
+
             {
               key: "createdAt",
               formatter: safeDateFormatter,
@@ -312,17 +391,33 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
             {
               key: "updatedAt",
               formatter: safeDateFormatter,
+            },
+            {
+              key: "startDate",
+              formatter: safeDateFormatter,
+            },
+            {
+              key: "endDate",
+              formatter: safeDateFormatter,
+            },
+            {
+              key: "checkInTime",
+              formatter: safeDateFormatter,
+            },
+            {
+              key: "checkOutTime",
+              formatter: safeDateFormatter,
             }
           ]
         );
-
+        console.log(cleanData, 'CLEAN DATA')
         if (cleanData) {
           await updateCampaign(cleanData)
-        }
+        } else throw new Error("Failed to clean data")
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
         router.push(paths.dashboard.campaign.root);
-        console.info('DATA', data);
+        console.info('DATA', cleanData);
       }
     } catch (error) {
       enqueueSnackbar(currentCampaign ? 'Update failed!' : 'Failed to create campaign!', { variant: "error" });
@@ -335,6 +430,19 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   }, []);
 
 
+  const tabArray = useMemo(() => CAMPAING_DETAILS_TABS.filter(x => {
+    if (currentCampaign) {
+      return true;
+    }
+    switch (x.value) {
+      case "reports":
+      case "products":
+        return false;
+      default:
+        return true;
+    }
+  }), [currentCampaign])
+
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -343,7 +451,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         mb: { xs: 3, md: 5 },
       }}
     >
-      {CAMPAING_DETAILS_TABS.filter(x => !(x.label === "routes" && !currentCampaign)).map((tab) => (
+      {tabArray.map((tab) => (
         <Tab
           key={tab.value}
           iconPosition="end"
@@ -370,10 +478,10 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         />
         {renderTabs}
 
-        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm currentCampaign={currentCampaign} /></Suspense>}
-        {currentTab === 'reports' && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'products' && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'users' && <>USERS</>}
+        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm /></Suspense>}
+        {currentTab === 'reports' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
+        {currentTab === 'products' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
+        {currentTab === 'users' && currentCampaign && <>USERS</>}
         <Suspense fallback={<LoadingScreen />}>
           {
             currentTab === 'routes' &&

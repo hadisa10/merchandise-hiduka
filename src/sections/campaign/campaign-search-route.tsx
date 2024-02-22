@@ -50,7 +50,6 @@ export default function CampaignSearchRoute({
             searchRoute(debouncedSearch).
                 then(res => {
                     setResults(res)
-                    console.log(res, 'SEARCH ROUTE RESULT')
                 })
                 .catch(e => console.error(e, 'SEARCH RESULT ERROR'))
                 .finally(() => {

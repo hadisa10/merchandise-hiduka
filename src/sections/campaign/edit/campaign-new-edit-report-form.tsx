@@ -20,15 +20,11 @@ import {
   RHFMultiCheckbox,
 } from 'src/components/hook-form';
 
-import { ICampaign } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentCampaign?: ICampaign;
-};
 
-export default function CampaignNewEditReportForm({ currentCampaign }: Props) {
+export default function CampaignNewEditReportForm() {
   const { users } = useUsers();
 
   const mdUp = useResponsive('up', 'md');
