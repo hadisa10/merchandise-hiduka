@@ -55,6 +55,11 @@ export function useCampaigns(lazy = false): ICampaignHook {
           }
           title
           createdAt
+          startDate
+          endDate
+          workingSchedule
+          checkInTime
+          checkOutTime
           today_checkin
           total_checkin
           type
@@ -162,7 +167,7 @@ export function useCampaigns(lazy = false): ICampaignHook {
     console.log(campaign, "CAMPAIGN")
     await graphql.mutate({
       mutation: gql`
-        mutation UpdateProduct($id: ObjectId!, $campaignUpdateInput: CampaignUpdateInput!) {
+        mutation UpdateCampaign($id: ObjectId!, $campaignUpdateInput: CampaignUpdateInput!) {
           updateOneCampaign(query: { _id: $id }, set: $campaignUpdateInput) {
               _id
               access_code
@@ -183,6 +188,7 @@ export function useCampaigns(lazy = false): ICampaignHook {
                 road
                 }
               }
+              workingSchedule
               title
               createdAt
               today_checkin

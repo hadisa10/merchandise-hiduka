@@ -50,10 +50,13 @@ export type ICampaign = {
     client_id: Realm.BSON.ObjectId;
     createdAt: Date;
     endDate: Date;
+    checkInTime?: Date;
+    checkOutTime?: Date;
     products: Array<Realm.BSON.ObjectId>;
     users: Array<Realm.BSON.ObjectId>;
     project_id: Realm.BSON.ObjectId;
     routes: Array<ICampaign_routes>;
+    workingSchedule: Array<string>,
     startDate: Date;
     title: string;
     description?: string;

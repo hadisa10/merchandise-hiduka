@@ -1,14 +1,20 @@
 
+import { isObject } from 'lodash';
+import { Controller, useFormContext } from 'react-hook-form';
+
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import { MobileDatePicker, MobileTimePicker, DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useClients, useShowLoader } from 'src/hooks/realm';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
+
+import { fTimestamp } from 'src/utils/format-time';
 
 import {
   JOB_WORKING_SCHEDULE_OPTIONS,
@@ -21,11 +27,15 @@ import {
   RHFAutocomplete,
 } from 'src/components/hook-form';
 
+import { ICalendarDate } from 'src/types/calendar';
+
 // ----------------------------------------------------------------------
 
 
 export default function CampaignNewEditDetailsForm() {
   const { users, loading: loadingUsers } = useUsers();
+
+  const { control, getValues, getFieldState } = useFormContext();
 
   const mdUp = useResponsive('up', 'md');
 
@@ -35,10 +45,12 @@ export default function CampaignNewEditDetailsForm() {
 
   const showUsersLoader = useShowLoader(loadingUsers, 200)
 
+  const { error: startDateError } = getFieldState("startDate")
+  const { error: endDateError } = getFieldState("endDate")
+  const { error: checkInTimeError } = getFieldState("checkInTime")
+  const { error: checkOutTimeError } = getFieldState("checkOutTime")
 
-  console.log(showLoader, 'SHOW LOADER');
-
-  console.log(showUsersLoader, 'SHOW USERS LOADER');
+  console.log(getValues(), "VALUES")
 
 
   const renderDetails = (
@@ -81,7 +93,6 @@ export default function CampaignNewEditDetailsForm() {
                 getOptionLabel={(option) => {
                   const client = clients?.find((clnt) => clnt._id?.toString() === option.toString());
                   if (client) {
-                    console.log(client?.name)
                     return client?.name
                   }
                   return option
@@ -124,22 +135,273 @@ export default function CampaignNewEditDetailsForm() {
     </>
   );
 
-  const renderProperties = (
+  const renderTimeDetails = (
+    <>
+      {!mdUp &&
+        <>
+          <Stack spacing={1}>
+            <Typography variant="subtitle2">Timeline</Typography>
+          </Stack>
+          <Controller
+            name="checkInTime"
+            control={control}
+            render={({ field }) => <MobileTimePicker
+                {...field}
+                value={new Date(field.value as ICalendarDate)}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    field.onChange(fTimestamp(newValue));
+                  }
+                }}
+                label="Check in time"
+                format="hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isObject(checkInTimeError),
+                    helperText: isObject(checkInTimeError) && checkInTimeError.message,
+                  },
+                }}
+              />}
+          />
+
+          <Controller
+            name="checkOutTime"
+            control={control}
+            render={({ field }) => (
+              <MobileTimePicker
+                {...field}
+                value={new Date(field.value as ICalendarDate)}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    field.onChange(fTimestamp(newValue));
+                  }
+                }}
+                label="Check out time"
+                format="hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isObject(checkOutTimeError),
+                    helperText: isObject(checkOutTimeError) && checkOutTimeError.message,
+                  },
+                }}
+              />
+            )}
+          />
+        </>
+      }
+      {mdUp &&
+        <>
+          <Controller
+            name="checkInTime"
+            control={control}
+            render={({ field }) => (
+              <DesktopTimePicker
+                {...field}
+                value={new Date(field.value as ICalendarDate)}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    field.onChange(fTimestamp(newValue));
+                  }
+                }}
+                label="Check in time"
+                format="hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isObject(checkInTimeError),
+                    helperText: isObject(checkInTimeError) && checkInTimeError.message,
+                  },
+                }}
+              />
+            )}
+          />
+
+          <Controller
+            name="checkOutTime"
+            control={control}
+            render={({ field }) => (
+              <DesktopTimePicker
+                {...field}
+                value={new Date(field.value as ICalendarDate)}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    field.onChange(fTimestamp(newValue));
+                  }
+                }}
+                label="Check out time"
+                format="hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isObject(checkOutTimeError),
+                    helperText: isObject(checkOutTimeError) && checkOutTimeError.message,
+                  },
+                }}
+              />
+            )}
+          />
+        </>
+      }
+    </>
+  )
+
+  const renderDateDetails = (
+    <>
+      {!mdUp &&
+        <Grid xs={12} md={8}>
+            <Card>
+              <Stack spacing={3} sx={{ p: 3 }}>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2">Timeline</Typography>
+                </Stack>
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ field }) => <MobileDatePicker
+                      {...field}
+                      value={new Date(field.value as ICalendarDate)}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          field.onChange(fTimestamp(newValue));
+                        }
+                      }}
+                      label="Start date"
+                      format="dd/MM/yyyy hh:mm a"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: isObject(startDateError),
+                          helperText: isObject(startDateError) && startDateError.message,
+                        },
+                      }}
+                    />}
+                />
+
+                <Controller
+                  name="endDate"
+                  control={control}
+                  render={({ field }) => (
+                    <MobileDatePicker
+                      {...field}
+                      value={new Date(field.value as ICalendarDate)}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          field.onChange(fTimestamp(newValue));
+                        }
+                      }}
+                      label="End date"
+                      format="dd/MM/yyyy"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: isObject(endDateError),
+                          helperText: isObject(endDateError) && endDateError.message,
+                        },
+                      }}
+                    />
+                  )}
+                />
+                {renderTimeDetails}
+              </Stack>
+            </Card>
+          </Grid>
+      }
+      {mdUp &&
+        <>
+          <Grid md={4}>
+            <Typography variant="h6" sx={{ mb: 0.5 }}>
+              Time
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Start and end dates...
+            </Typography>
+          </Grid>
+
+          <Grid xs={12} md={8}>
+            <Card>
+              <CardHeader title="Users" />
+
+              <Stack spacing={3} sx={{ p: 3 }}>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2">Timelines</Typography>
+                </Stack>
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ field }) => (
+                    <DesktopDatePicker
+                      {...field}
+                      value={new Date(field.value as ICalendarDate)}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          field.onChange(fTimestamp(newValue));
+                        }
+                      }}
+                      label="Start date"
+                      format="dd/MM/yyyy"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: isObject(startDateError),
+                          helperText: isObject(startDateError) && startDateError.message,
+                        },
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="endDate"
+                  control={control}
+                  render={({ field }) => (
+                    <DesktopDatePicker
+                      {...field}
+                      value={new Date(field.value as ICalendarDate)}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          field.onChange(fTimestamp(newValue));
+                        }
+                      }}
+                      label="End date"
+                      format="dd/MM/yyyy"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: isObject(endDateError),
+                          helperText: isObject(endDateError) && endDateError.message,
+                        },
+                      }}
+                    />
+                  )}
+                />
+                {renderTimeDetails}
+              </Stack>
+            </Card>
+          </Grid>
+        </>
+      }
+    </>
+  )
+
+
+  const renderUsers = (
     <>
       {mdUp && (
         <Grid md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Properties
+            Users
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional functions and attributes...
+            Additional details ...
           </Typography>
         </Grid>
       )}
 
       <Grid xs={12} md={8}>
         <Card>
-          {!mdUp && <CardHeader title="Properties" />}
+          {!mdUp && <CardHeader title="Users" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
@@ -254,7 +516,9 @@ export default function CampaignNewEditDetailsForm() {
     <Grid container spacing={3}>
       {renderDetails}
 
-      {renderProperties}
+      {renderDateDetails}
+
+      {renderUsers}
 
       {/* {renderActions} */}
     </Grid>
