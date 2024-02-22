@@ -15,7 +15,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
-import { createObjectId } from 'src/utils/realm';
+import { convertObjectId, createObjectId } from 'src/utils/realm';
 import { safeDateFormatter, removeAndFormatNullFields } from 'src/utils/helpers';
 
 import Label from 'src/components/label';
@@ -94,6 +94,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   const NewCurrectSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     description: Yup.string(),
+    client_id: Yup.string().required("Client is required"),
     // users: Yup.lazy(() => Yup.array().of(Yup.string()).min(1, 'Select atleas one user')).nullable(),
     users: Yup.array(),
     routes: Yup.lazy(() =>
@@ -114,6 +115,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     () => ({
       title: currentCampaign?.title || '',
       description: currentCampaign?.description || '',
+      client_id: currentCampaign?.client_id || '',
       users: currentCampaign?.users?.map(user => user.toString()) || [],
       routes: currentCampaign?.routes?.map(r => {
         const _id = r._id.toString()
@@ -193,6 +195,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         case 'details':
           return DETAILS_FIELDS.includes(key)
         case 'routes':
+          console.log(errors, 'ERRORS')
           return ROUTES_FIELDS.includes(key)
         default:
           return false
@@ -200,6 +203,9 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     })
     return y;
   }, [errors])
+
+  console.log(errors, 'ERRORS')
+
 
 
 
@@ -209,16 +215,19 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     }
   }, [currentCampaign, defaultValues, reset]);
 
-  console.log(errors, 'ERRORS')
-
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log(data, "DATA")
+      const _id = createObjectId().toString();
+      const prodject_id = createObjectId().toString()
+      // @ts-expect-error expected
+      const client_id = convertObjectId(data.client_id).toString();
       if (!currentCampaign) {
         const campaign: ICampaign = {
-          _id: createObjectId(),
+          // @ts-expect-error expected
+          _id,
           access_code: generateAccessCode(),
-          client_id: createObjectId(),
+          // @ts-expect-error expected
+          client_id,
           description: data.description ?? '',
           products: [],
           users: [],
@@ -226,7 +235,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           updatedAt: new Date(),
           startDate: new Date(),
           endDate: new Date(),
-          project_id: createObjectId(),
+          // @ts-expect-error expected
+          project_id: prodject_id,
           // @ts-expect-error expected
           routes: data.routes,
           title: data.title,
@@ -255,8 +265,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           }
           // @ts-expect-error expected
         ], ["id"]);
-        console.log(cleanData, "DT")
-        if(!cleanData){
+
+        if (!cleanData) {
           throw new Error("Error creating campaign")
         }
         await saveCampaign(cleanData)
@@ -290,10 +300,10 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         };
         const cleanData = removeAndFormatNullFields(campaign,
           [
-            // {
-            //   key: "_id",
-            //   formatter: convertObjectId,
-            // },
+            {
+              key: "_id",
+              formatter: convertObjectId,
+            },
             {
               key: "createdAt",
               formatter: safeDateFormatter,
@@ -304,9 +314,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
             }
           ]
         );
-        // console.log(currentCampaign._id, 'CAMPAIGN ID')
-        // console.log(JSON.stringify(cleanData))
-        // return;
+
         if (cleanData) {
           await updateCampaign(cleanData)
         }
