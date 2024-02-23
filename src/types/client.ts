@@ -30,6 +30,7 @@ interface IClientUser {
 }
 
 export interface IClient {
+    // __typename?: string,
     _id: Realm.BSON.ObjectId;
     active: boolean;
     creator: IUser;

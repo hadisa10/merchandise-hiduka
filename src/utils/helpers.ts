@@ -215,6 +215,59 @@ export const removeAndFormatNullFields = <T>(
     return data !== null ? data : undefined;
 };
 
+export const formatFilterAndRemoveFields = <T>(
+    d: T,
+    removeFields?: (keyof T)[],
+    formatOptionsArray?: { key: keyof T; formatter: (value: any) => any }[],
+    mismatchConditions?: { key: keyof T; predicate: (value: any) => boolean }[],
+    orderedKeys?: (keyof T)[] // New parameter for specifying order
+): T | undefined => {
+    const process = <U>(data: U): U | undefined => {
+        if (Array.isArray(data)) {
+            return data.map(item => process(item)) as unknown as U;
+        } if (typeof data === 'object' && data !== null) {
+            // Initialize a new object with the ordered keys positioned first.
+            const orderedData: any = orderedKeys?.reduce((acc: any, key) => {
+                if (key in data && !removeFields?.includes(key)) {
+                    acc[key] = (data as any)[key];
+                }
+                return acc;
+            }, {}) || {};
+
+            // Process remaining keys
+            Object.entries(data).forEach(([key, value]) => {
+                const keyOfT: keyof T = key as keyof T;
+
+                // Skip if key is in orderedKeys or removeFields
+                if (orderedKeys?.includes(keyOfT) || removeFields?.includes(keyOfT)) {
+                    return;
+                }
+
+                const mismatchCondition = mismatchConditions?.find(condition => condition.key === keyOfT);
+                if (mismatchCondition && !mismatchCondition.predicate(value)) {
+                    return; // Skip this key-value pair
+                }
+
+                const formatOption = formatOptionsArray?.find(option => option.key === keyOfT);
+                if (formatOption) {
+                    value = formatOption.formatter(value);
+                }
+
+                // Recursively process the value for nested objects/arrays
+                orderedData[key] = process(value);
+            });
+
+            return orderedData as U;
+        }
+        return data;
+    };
+
+    return process(d);
+};
+
+
+
+
 export const safeDateFormatter = (value?: string): string => {
     if (!value) {
         return new Date().toISOString();
