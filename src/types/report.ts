@@ -1,7 +1,7 @@
 import { BSON } from "realm-web";
 import { FieldErrors } from "react-hook-form";
 
-import { IReport, IReportQuestion, IQuestionDependency, IReportQuestionValidation } from "./realm/realm-types";
+import { IReport, IFilledReport, IReportQuestion, IQuestionDependency, IReportQuestionValidation } from "./realm/realm-types";
 
 export interface IReportChange {
     fullDocument: IReport;
@@ -14,10 +14,15 @@ export interface IGraphqlReportsResponse {
 export interface IGraphqlReportResponse {
     report: IReport;
 }
+
+export interface IGraphqlFilledReportsResponse {
+    filledReports: IFilledReport[];
+}
 export interface IReportActions {
     saveReport: (draftReport: IReport) => Promise<BSON.ObjectId>;
     updateReport: (report: IReport) => Promise<BSON.ObjectId>;
     getReport: (id: string) => Promise<IReport>;
+    getReportAnswers: (id: string) => Promise<IFilledReport[]>;
     getCampaignReport: (id: string) => Promise<IReport[]>;
 
     // toggleReportStatus: (Report: IReport) => Promise<void>;

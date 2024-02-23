@@ -17,11 +17,10 @@ import { fDateTime } from "src/utils/format-time";
 import { formatFilterAndRemoveFields } from "src/utils/helpers";
 
 import Iconify from "src/components/iconify";
+import { DataGridFlexible } from "src/components/data-grid";
 import { useSettingsContext } from "src/components/settings";
 import { LoadingScreen } from "src/components/loading-screen";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
-
-import DataGridFlexible from "src/sections/_examples/mui/data-grid-view/data-grid-flexible";
 
 
 export default function ClientListView() {
@@ -29,6 +28,18 @@ export default function ClientListView() {
 
     const { loading, clients } = useClients(false);
     const showLoader = useShowLoader(loading, 200);
+
+    // const columns = useMemo(() => ({
+    //     _id: "string",
+    //     active: "boolean",
+    //     creator: "string",
+    //     users: "array",
+    //     name: "string",
+    //     createdAt: "date",
+    //     updatedAt: "date",
+    //     client_icon: "string",
+    //     client_plan: "string"
+    // }), [])
 
     const cleanedClients = useMemo(() => {
         if (!Array.isArray(clients)) return []
@@ -52,6 +63,8 @@ export default function ClientListView() {
         const t = filtered.map(f => ({ ...f, creator: f.creator.name }))
         return t
     }, [clients])
+
+    console.log(cleanedClients, 'CLEANED CLIENTS')
 
     return (
         <Container
@@ -101,7 +114,7 @@ export default function ClientListView() {
                 {loading && showLoader ? (
                     <LoadingScreen />
                 ) : (
-                    <DataGridFlexible data={cleanedClients} />
+                    <DataGridFlexible data={cleanedClients} getRowIdFn={(row) => row._id.toString()} />
                     // <List style={{ width: "100%" }}>
                     //     {clients?.map((client) => (
                     //         <ClientTableRow
