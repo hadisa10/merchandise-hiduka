@@ -98,6 +98,10 @@ export interface IGraphqlCampaignProductsResponse {
   CampaignProducts: IProductItem[];
 }
 
+export interface IGraphqlClientProductsResponse {
+  ClientProducts: IProductItem[];
+}
+
 export interface IGraphqlCampaignAddProductsResponse {
   success: boolean;
   message: string;
@@ -112,6 +116,7 @@ export interface IProductActions {
   deleteProduct: (product: IProductItem) => Promise<void>;
   updateProduct: (product: IProductItem) => Promise<void>;
   getCampaignProducts: (id: string) => Promise<IProductItem[]>;
+  getClientProducts: (id: string) => Promise<IProductItem[]>;
   addCampaignProducts: (campaign_id: string, products: string[]) => Promise<void>;
 }
 

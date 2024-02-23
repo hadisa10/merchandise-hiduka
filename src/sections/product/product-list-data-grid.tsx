@@ -68,7 +68,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export default function ProductListDataGrid({ campaignId }: { campaignId?: string }) {
+export default function ProductListDataGrid({ campaignId, clientId }: { campaignId?: string, clientId?: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const callProduct = useMemo(() => isString(campaignId), [campaignId])
@@ -368,8 +368,9 @@ export default function ProductListDataGrid({ campaignId }: { campaignId?: strin
         />
       </Card>
       {
-        products && campaignId &&
+        products && campaignId && clientId &&
         <AddCampaignProductDialog
+          clientId={clientId}
           open={openAddCampaignProductDialog.value}
           onClose={openAddCampaignProductDialog.onFalse}
           campaignId={campaignId}
