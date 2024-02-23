@@ -21,7 +21,7 @@ import { DataGridFlexible } from "src/components/data-grid";
 import { useSettingsContext } from "src/components/settings";
 import { LoadingScreen } from "src/components/loading-screen";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
-
+import { IColumn } from "src/components/data-grid/data-grid-flexible";
 
 export default function ClientListView() {
     const settings = useSettingsContext();
@@ -29,17 +29,74 @@ export default function ClientListView() {
     const { loading, clients } = useClients(false);
     const showLoader = useShowLoader(loading, 200);
 
-    // const columns = useMemo(() => ({
-    //     _id: "string",
-    //     active: "boolean",
-    //     creator: "string",
-    //     users: "array",
-    //     name: "string",
-    //     createdAt: "date",
-    //     updatedAt: "date",
-    //     client_icon: "string",
-    //     client_plan: "string"
-    // }), [])
+    const columns: IColumn[] = useMemo(() => {
+        const cols: Omit<IColumn, "order">[] = [
+            {
+                field: "_id",
+                label: "id",
+                type: "string"
+            },
+            {
+                field: "name",
+                label: "Name",
+                type: "main",
+                minWidth: 250
+
+            },
+            {
+                field: "active",
+                label: "Active",
+                type: "boolean",
+                minWidth: 80
+            },
+            {
+                field: "client_plan",
+                label: "Client plan",
+                type: "select",
+                minWidth: 100,
+                valueOptions: [
+                    {
+                        value: "basic",
+                        label: "Basic",
+                        color: "default"
+                    },
+                    {
+                        value: "starter",
+                        label: "Starter",
+                        color: "info"
+                    },
+                    {
+                        value: "premium",
+                        label: "Premium",
+                        color: "success"
+                    }
+                ]
+            },
+            {
+                field: "client_icon",
+                label: "Client Icon",
+                type: "image"
+            },
+            {
+                field: "creator",
+                label: "Creator",
+                type: "string"
+            },
+
+            {
+                field: "createdAt",
+                label: "Created At",
+                type: "date"
+            },
+            {
+                field: "updatedAt",
+                label: "Updated At",
+                type: "date"
+            }
+
+        ]
+        return cols.map((c, i) => ({ ...c, order: i + 1 }))
+    }, [])
 
     const cleanedClients = useMemo(() => {
         if (!Array.isArray(clients)) return []
@@ -55,7 +112,17 @@ export default function ClientListView() {
                 {
                     key: "createdAt",
                     formatter: fDateTime,
-                }
+                },
+                // {
+                //     key: "active",
+                //     formatter: (v) => {
+                //         if (isString(v)) {
+                //             return v.toLowerCase() === "yes"
+                //         }
+                //         return false
+                //     },
+                // },
+
             ],
             undefined,
             ["name", "creator"]
@@ -64,7 +131,7 @@ export default function ClientListView() {
         return t
     }, [clients])
 
-    console.log(cleanedClients, 'CLEANED CLIENTS')
+    console.log(clients, 'CLIENTS')
 
     return (
         <Container
@@ -114,16 +181,7 @@ export default function ClientListView() {
                 {loading && showLoader ? (
                     <LoadingScreen />
                 ) : (
-                    <DataGridFlexible data={cleanedClients} getRowIdFn={(row) => row._id.toString()} />
-                    // <List style={{ width: "100%" }}>
-                    //     {clients?.map((client) => (
-                    //         <ClientTableRow
-                    //             key={getTodoId(client)}
-                    //             client={client}
-                    //             clientActions={clientActions}
-                    //         />
-                    //     ))}
-                    // </List>
+                    <DataGridFlexible data={cleanedClients} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} />
                 )}
             </Card>
         </Container>
