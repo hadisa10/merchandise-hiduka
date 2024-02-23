@@ -13,7 +13,7 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
-import { IProductHook, IProductItem, IProductChange, IProductGraphqlResponse, IProductsGraphqlResponse, IGraphqlCampaignProductsResponse, IGraphqlCampaignAddProductsResponse, IGraphqlClientProductsResponse } from "src/types/product";
+import { IProductHook, IProductItem, IProductChange, IProductGraphqlResponse, IProductsGraphqlResponse, IGraphqlClientProductsResponse, IGraphqlCampaignProductsResponse, IGraphqlCampaignAddProductsResponse } from "src/types/product";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"

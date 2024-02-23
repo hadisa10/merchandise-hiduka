@@ -1,26 +1,27 @@
 import * as Yup from 'yup';
-import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { isEmpty, isString } from 'lodash';
+import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { Chip, Checkbox, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import { Chip, Checkbox, Typography } from '@mui/material';
 
 import { useProducts } from 'src/hooks/realm';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFAutocomplete } from 'src/components/hook-form';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { IProductItem } from 'src/types/product';
-import { isEmpty, isString } from 'lodash';
 import { LoadingScreen } from 'src/components/loading-screen';
+import FormProvider, { RHFAutocomplete } from 'src/components/hook-form';
+
+import { IProductItem } from 'src/types/product';
 
 
 // ----------------------------------------------------------------------
