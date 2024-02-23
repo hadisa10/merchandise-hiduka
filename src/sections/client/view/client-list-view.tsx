@@ -29,17 +29,17 @@ export default function ClientListView() {
     const { loading, clients } = useClients(false);
     const showLoader = useShowLoader(loading, 200);
 
-    const columns = useMemo(() => ({
-        _id: "string",
-        active: "boolean",
-        creator: "string",
-        users: "array",
-        name: "string",
-        createdAt: "date",
-        updatedAt: "date",
-        client_icon: "string",
-        client_plan: "string"
-    }), [])
+    // const columns = useMemo(() => ({
+    //     _id: "string",
+    //     active: "boolean",
+    //     creator: "string",
+    //     users: "array",
+    //     name: "string",
+    //     createdAt: "date",
+    //     updatedAt: "date",
+    //     client_icon: "string",
+    //     client_plan: "string"
+    // }), [])
 
     const cleanedClients = useMemo(() => {
         if (!Array.isArray(clients)) return []

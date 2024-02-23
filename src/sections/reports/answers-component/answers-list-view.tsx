@@ -11,7 +11,6 @@ import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
 import { useReports } from "src/hooks/realm/report/use-report-graphql";
 
-import uuidv4 from "src/utils/uuidv4";
 import { fDateTime } from "src/utils/format-time";
 import { formatFilterAndRemoveFields } from "src/utils/helpers";
 
@@ -27,7 +26,7 @@ interface AnswerObject {
 }
 
 interface IColumnsObject {
-    [key: string]: { text: string, order: number,value: any | null, type: string } 
+    [key: string]: { text: string, order: number, value: any | null, type: string }
 }
 export default function AnswersGridView({ id, questions }: { id?: string, questions?: IReportQuestion[] }) {
     const settings = useSettingsContext();
@@ -36,7 +35,7 @@ export default function AnswersGridView({ id, questions }: { id?: string, questi
     const { getReportAnswers } = useReports();
 
     const loadingReport = useBoolean()
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [answers, setAnswers] = useState<AnswerObject[] | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [reportAnswersError, setReportAnswerError] = useState(null)
@@ -112,7 +111,7 @@ export default function AnswersGridView({ id, questions }: { id?: string, questi
                 const resAnswers = res.map(x => x.answers);
                 console.log(res, 'RES')
 
-                let qObj: IColumnsObject = {}
+                const qObj: IColumnsObject = {}
 
                 questions.forEach(x => {
                     if (x._id && x.text) {
@@ -126,17 +125,18 @@ export default function AnswersGridView({ id, questions }: { id?: string, questi
 
                 })
 
-                const answs = resAnswers.map((x) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const answs = resAnswers.forEach((x) => {
                     const n: IColumnsObject = Object.assign(qObj);
                     // const t: { _id: string, [key: string]: any } = {
                     //     _id: uuidv4(),
                     // }; // Define `t` to explicitly allow string keys and any value
 
-                    x.map(z => {
+                    x.forEach(z => {
                         const o = n[z.question_id.toString()];
                         o.value = z.answer;
                     })
-                    
+
                     // return t
                 })
                 // setAnswers(answs)

@@ -76,7 +76,7 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
   data: rows,
   getRowIdFn
 }: DataGridFlexibleProps<RowType>) {
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
   const [columnVisibilityModel, setColumnVisibilityModel] =
@@ -89,7 +89,7 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const selected = rows.filter((row) => selectedRows.includes(row.id)).map((_row) => _row.id);
+  // const selected = rows.filter((row) => selectedRows.includes(row.id)).map((_row) => _row.id);
 
   return (
     <DataGrid
