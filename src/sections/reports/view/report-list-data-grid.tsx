@@ -96,9 +96,6 @@ export default function ReportListDataGrid({ id }: { id?: string }) {
   }, [mainLoading, loadingReport.value, id])
 
   useEffect(() => {
-    console.log(id, "ID")
-    console.log("WHAT IS THIS HAPPPENINNG HERE ???")
-
     if (isString(id) && !isEmpty(id)) {
       loadingReport.onTrue()
       setReportsError(null)

@@ -11,6 +11,7 @@ import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
 import { useReports } from "src/hooks/realm/report/use-report-graphql";
 
+import uuidv4 from "src/utils/uuidv4";
 import { fDateTime } from "src/utils/format-time";
 import { formatFilterAndRemoveFields } from "src/utils/helpers";
 
@@ -25,9 +26,6 @@ interface AnswerObject {
     [key: string]: string | unknown; // Dynamic keys for questions with their answers
 }
 
-interface IColumnsObject {
-    [key: string]: { text: string, order: number, value: any | null, type: string }
-}
 export default function AnswersGridView({ id, questions }: { id?: string, questions?: IReportQuestion[] }) {
     const settings = useSettingsContext();
 
@@ -35,7 +33,7 @@ export default function AnswersGridView({ id, questions }: { id?: string, questi
     const { getReportAnswers } = useReports();
 
     const loadingReport = useBoolean()
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const [answers, setAnswers] = useState<AnswerObject[] | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [reportAnswersError, setReportAnswerError] = useState(null)
@@ -111,35 +109,29 @@ export default function AnswersGridView({ id, questions }: { id?: string, questi
                 const resAnswers = res.map(x => x.answers);
                 console.log(res, 'RES')
 
-                const qObj: IColumnsObject = {}
+                const qObj: { [key: string]: { text: string, order: number } } = {}
 
                 questions.forEach(x => {
-                    if (x._id && x.text) {
-                        qObj[x._id.toString()] = {
-                            text: x.text,
-                            order: x.order,
-                            type: x.input_type,
-                            value: null
-                        }
+                    qObj[x._id.toString()] = {
+                        text: x.text,
+                        order: x.order
                     }
-
                 })
 
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const answs = resAnswers.forEach((x) => {
-                    const n: IColumnsObject = Object.assign(qObj);
-                    // const t: { _id: string, [key: string]: any } = {
-                    //     _id: uuidv4(),
-                    // }; // Define `t` to explicitly allow string keys and any value
+                console.log(qObj, 'QS')
 
-                    x.forEach(z => {
-                        const o = n[z.question_id.toString()];
-                        o.value = z.answer;
+                const answs = resAnswers.map((x) => {
+                    const t: { _id: string, [key: string]: any } = {
+                        _id: uuidv4(),
+                    }; // Define `t` to explicitly allow string keys and any value
+
+                    x.map(z => {
+                        t[z.question_text] = JSON.parse(z.answer);
+                        return t;
                     })
-
-                    // return t
+                    return t
                 })
-                // setAnswers(answs)
+                setAnswers(answs)
 
             }).catch(e => {
                 setReportAnswerError(e.message);
