@@ -1,4 +1,3 @@
-import { BSON } from 'realm-web';
 import React, { useMemo, useState } from 'react';
 
 import { Box } from '@mui/system';
@@ -7,6 +6,7 @@ import {
   DataGrid,
   GridColDef,
   GridRowModel,
+  GridRowIdGetter,
   GridToolbarExport,
   GridToolbarContainer,
   GridRowSelectionModel,
@@ -26,6 +26,7 @@ import EmptyContent from 'src/components/empty-content/empty-content';
 // Define generic types for rows and columns
 interface DataGridFlexibleProps<RowType extends GridRowModel> {
   data: RowType[];
+  getRowIdFn: GridRowIdGetter<RowType>
 }
 
 // ----------------------------------------------------------------------
@@ -73,7 +74,8 @@ const HIDE_COLUMNS_TOGGLABLE = ['_id', 'actions'];
 // Use these generic types in your component
 export default function DataGridFlexible<RowType extends GridRowModel>({
   data: rows,
-}: DataGridFlexibleProps<RowType & { _id: BSON.ObjectId }>) {
+  getRowIdFn
+}: DataGridFlexibleProps<RowType>) {
 
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
@@ -89,10 +91,9 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
 
   const selected = rows.filter((row) => selectedRows.includes(row.id)).map((_row) => _row.id);
 
-  console.info('SELECTED ROWS', selected);
   return (
     <DataGrid
-      getRowId={(row) => row._id.toString()}
+      getRowId={getRowIdFn}
       checkboxSelection
       disableRowSelectionOnClick
       rows={rows}

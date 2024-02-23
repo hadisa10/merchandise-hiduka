@@ -86,6 +86,24 @@ export interface IReport<T = Realm.BSON.ObjectId> {
     updatedAt: Date;
 }
 
+export interface IFilledReport<T = Realm.BSON.ObjectId> {
+    _id: T;
+    answers: Array<IFilledReportsAnswer>;
+    campaign_id: T;
+    createdAt: Date;
+    report_id: T;
+    session_id: T;
+    updatedAt?: Date;
+    user_id: T;
+};
+
+export type IFilledReportsAnswer<T = Realm.BSON.ObjectId> = {
+    answer: string;
+    question_id: T;
+    question_text: string;
+    type: string;
+  };
+
 // Exporting the Main Report Questions Interface with Generics
 export interface IReportQuestion<T = Realm.BSON.ObjectId> {
     _id: T;

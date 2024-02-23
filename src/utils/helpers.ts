@@ -184,10 +184,6 @@ export const removeAndFormatNullFields = <T>(
                 return acc;
             }
 
-            if (key === "_id") {
-                console.log(`${key}: ${value}`, "VALUE OF ID")
-            }
-
             // Check for mismatch conditions and skip if predicate returns false
             const mismatchCondition = mismatchConditions?.find(condition => condition.key === key);
             if (mismatchCondition && !mismatchCondition.predicate(value)) {

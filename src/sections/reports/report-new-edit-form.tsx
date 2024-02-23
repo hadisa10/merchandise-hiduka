@@ -35,6 +35,7 @@ import { RHFFormFiller } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
 // import { RHFFormFiller } from 'src/components/hook-form';
 
+
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
 const ROUTES_FIELDS = ['routes']
 
@@ -48,7 +49,8 @@ type Props = {
 export const REPORT_DETAILS_TABS = [
   { value: 'details', label: 'Details' },
   { value: 'questions', label: 'Questions' },
-  { value: 'test', label: 'Fill Report' },
+  { value: 'test', label: 'Test Report' },
+  { value: 'responses', label: 'Responses' },
 ];
 
 
@@ -60,6 +62,7 @@ export const REPORT_DETAILS_TABS = [
 const QuestionsNewEditList = lazy(() => import('./question-component/questions-new-edit'));
 const CampaignDetailsToolbar = lazy(() => import('./report-details-toolbar'));
 const ReportNewEditDetailsForm = lazy(() => import('./edit/report-new-edit-details-form'));
+const AnswersGridView = lazy(() => import('./answers-component/answers-list-view'));
 
 export default function ReportNewEditForm({ currentReport }: Props) {
 
@@ -289,11 +292,10 @@ export default function ReportNewEditForm({ currentReport }: Props) {
           isSubmitting={isSubmitting}
           backLink={paths.dashboard.report.root}
         />
-        <Suspense fallback={<LoadingScreen />}>
-          {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
-          {currentTab === 'questions' && <QuestionsNewEditList />}
 
-        </Suspense>
+        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} /></Suspense>}
+        {currentTab === 'questions' && <Suspense fallback={<LoadingScreen />}><QuestionsNewEditList /></Suspense>}
+        {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><AnswersGridView id={currentReport?._id && currentReport?._id.toString()} questions={currentReport?.questions} /></Suspense>}
 
         {/* {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}
@@ -302,7 +304,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
           // @ts-expect-error expected
           <RHFFormFiller questions={questions} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
         } */}
-      </FormProvider>
+      </FormProvider >
       {currentTab === 'test' &&
         // @ts-expect-error expected
         <RHFFormFiller questions={removeAndFormatNullFields(questions)} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
