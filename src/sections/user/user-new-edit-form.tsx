@@ -156,7 +156,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
     },
     [setValue]
   );
-  console.log(values, "VALUES")
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>

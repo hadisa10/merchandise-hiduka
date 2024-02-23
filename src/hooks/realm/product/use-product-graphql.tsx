@@ -13,7 +13,7 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
-import { IProductHook, IProductItem, IProductChange, IProductGraphqlResponse, IProductsGraphqlResponse, IGraphqlCampaignProductsResponse, IGraphqlCampaignAddProductsResponse } from "src/types/product";
+import { IProductHook, IProductItem, IProductChange, IProductGraphqlResponse, IProductsGraphqlResponse, IGraphqlCampaignProductsResponse, IGraphqlCampaignAddProductsResponse, IGraphqlClientProductsResponse } from "src/types/product";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
@@ -37,6 +37,7 @@ export function useProducts(lazy: boolean = true): IProductHook {
           name
           price
           coverUrl
+          client_id
           totalRatings
           gender
           publish
@@ -220,6 +221,7 @@ export function useProducts(lazy: boolean = true): IProductHook {
           subDescription
           price
           coverUrl
+          client_id
           totalRatings
           gender
           publish
@@ -343,6 +345,75 @@ export function useProducts(lazy: boolean = true): IProductHook {
     }
   };
 
+  
+  const getClientProducts = async (id: string) => {
+    try {
+      if(!id){
+        throw new Error("Client errors")
+      }
+      const resp = await graphql.query<IGraphqlClientProductsResponse>({
+        query: gql`
+          query FetchClientProducts($id: String!) {
+              ClientProducts(input: $id) {
+                _id
+                name
+                subDescription
+                price
+                coverUrl
+                totalRatings
+                gender
+                publish
+                category
+                available
+                priceSale
+                taxes
+                quantity
+                sizes
+                inventoryType
+                images
+                ratings{
+                    name
+                    starCount
+                    reviewCount
+                }
+                reviews{
+                    name
+                    postedAt
+                    comment
+                    isPurchased
+                    rating
+                    avatarUrl
+                    helpful
+                }
+                tags
+                code
+                colors
+                description
+                newLabel{
+                    enabled
+                    content
+                }
+                sku
+                createdAt
+                updatedAt
+                saleLabel{
+                    enabled
+                    content
+                }
+            }
+          }
+        `,
+        variables: {
+          id
+        },
+      });
+      return resp.data.ClientProducts;
+    } catch (error) {
+      console.log(error, "REPORT FETCH ERROR")
+      throw new Error("Failed to get client products")
+    }
+  };
+
   const updateProduct = async (product: IProductItem) => {
     await graphql.mutate({
       mutation: gql`
@@ -380,6 +451,7 @@ export function useProducts(lazy: boolean = true): IProductHook {
     getProduct,
     deleteProduct,
     getCampaignProducts,
+    getClientProducts,
     addCampaignProducts
   };
 }

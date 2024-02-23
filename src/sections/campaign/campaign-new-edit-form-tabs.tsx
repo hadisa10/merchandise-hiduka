@@ -480,7 +480,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm /></Suspense>}
         {currentTab === 'reports' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'products' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
+        {currentTab === 'products' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid clientId={currentCampaign?.client_id.toString() ?? ""} campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
         {currentTab === 'users' && currentCampaign && <>USERS</>}
         <Suspense fallback={<LoadingScreen />}>
           {

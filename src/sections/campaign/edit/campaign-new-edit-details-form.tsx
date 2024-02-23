@@ -50,8 +50,6 @@ export default function CampaignNewEditDetailsForm() {
   const { error: checkInTimeError } = getFieldState("checkInTime")
   const { error: checkOutTimeError } = getFieldState("checkOutTime")
 
-  console.log(getValues(), "VALUES")
-
 
   const renderDetails = (
     <>

@@ -1,12 +1,12 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { Chip, Checkbox } from '@mui/material';
+import { Chip, Checkbox, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -17,6 +17,10 @@ import { useProducts } from 'src/hooks/realm';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFAutocomplete } from 'src/components/hook-form';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { IProductItem } from 'src/types/product';
+import { isEmpty, isString } from 'lodash';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 
 // ----------------------------------------------------------------------
@@ -25,16 +29,49 @@ type Props = {
   open: boolean;
   onClose: VoidFunction;
   campaignId: string;
+  clientId: string;
   handleAddNewProduct: () => void;
 };
 
 const icon = <Iconify icon="fluent:checkbox-checked-16-regular" />;
 const checkedIcon = <Iconify icon="fluent:checkbox-checked-16-filled" />;
 
-export default function AddCampaignProductDialog({ campaignId, handleAddNewProduct, open, onClose }: Props) {
+export default function AddCampaignProductDialog({ campaignId, clientId, open, onClose }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   // const { saveRoute } = useRealmRoutes();
-  const { products, loading, addCampaignProducts } = useProducts(false);
+  const { getClientProducts, addCampaignProducts } = useProducts();
+
+  const loadingReport = useBoolean()
+
+  const [products, setProducts] = useState<IProductItem[]>([])
+
+  // eslint-disable-next-line
+  const [productError, setProductsError] = useState(null)
+
+  const loading = useMemo(() => loadingReport.value, [loadingReport.value, campaignId])
+
+  useEffect(() => {
+    if (isString(clientId) && !isEmpty(clientId)) {
+      loadingReport.onTrue()
+      setProductsError(null)
+      getClientProducts(clientId.toString())
+        .then(res => {
+          setProductsError(null)
+          setProducts(res)
+        }
+        )
+        .catch(e => {
+          enqueueSnackbar("Failed to fetch campaign products", { variant: "error" })
+          setProductsError(e.message)
+          console.error(e, "REPORT FETCH")
+        })
+        .finally(() => {
+          loadingReport.onFalse()
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaignId])
+
 
   // Define the main schema for the routeAddress object
   const RouteAddressSchema = Yup.object().shape({
@@ -107,7 +144,12 @@ export default function AddCampaignProductDialog({ campaignId, handleAddNewProdu
               // sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFAutocomplete
+            {productError && !loading && <Typography variant='caption' color="error.light">Failed to get products for campaign client</Typography>}
+            {Array.isArray(products) && isEmpty(products) && !loading &&
+              <Typography variant='caption' color="error.light">The selected client does not have any products, go the products module and add a product</Typography>
+            }
+            {loading && <LoadingScreen />}
+            {Array.isArray(products) && !isEmpty(products) && !loading && <RHFAutocomplete
               name="products"
               label="Products"
               placeholder="+ products"
@@ -162,6 +204,7 @@ export default function AddCampaignProductDialog({ campaignId, handleAddNewProdu
                 })
               }
             />
+            }
           </Box>
         </DialogContent>
 
