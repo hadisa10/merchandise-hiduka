@@ -49,7 +49,7 @@ export default function AddCampaignProductDialog({ campaignId, clientId, open, o
   // eslint-disable-next-line
   const [productError, setProductsError] = useState(null)
 
-  const loading = useMemo(() => loadingReport.value, [loadingReport.value, campaignId])
+  const loading = useMemo(() => loadingReport.value, [loadingReport.value])
 
   useEffect(() => {
     if (isString(clientId) && !isEmpty(clientId)) {

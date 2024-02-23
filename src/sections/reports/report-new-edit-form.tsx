@@ -184,7 +184,6 @@ export default function ReportNewEditForm({ currentReport }: Props) {
     }
   }, [currentReport, defaultValues, reset]);
 
-  const values = watch()
   const onSubmit = handleSubmit(async (formData) => {
     // Remove null fields from the form data
     try {

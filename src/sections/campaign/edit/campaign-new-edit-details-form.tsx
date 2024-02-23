@@ -35,7 +35,7 @@ import { ICalendarDate } from 'src/types/calendar';
 export default function CampaignNewEditDetailsForm() {
   const { users, loading: loadingUsers } = useUsers();
 
-  const { control, getValues, getFieldState } = useFormContext();
+  const { control, getFieldState } = useFormContext();
 
   const mdUp = useResponsive('up', 'md');
 
