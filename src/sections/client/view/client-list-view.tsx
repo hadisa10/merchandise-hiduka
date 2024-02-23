@@ -1,9 +1,8 @@
 "use client"
 
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
-    List,
     Card,
     Button,
     Container
@@ -14,20 +13,45 @@ import { RouterLink } from "src/routes/components";
 
 import { useClients, useShowLoader } from "src/hooks/realm";
 
-import { getTodoId } from "src/utils/realm";
+import { fDateTime } from "src/utils/format-time";
+import { formatFilterAndRemoveFields } from "src/utils/helpers";
 
 import Iconify from "src/components/iconify";
 import { useSettingsContext } from "src/components/settings";
 import { LoadingScreen } from "src/components/loading-screen";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 
-import { ClientTableRow } from "../client-table-row";
+import DataGridFlexible from "src/sections/_examples/mui/data-grid-view/data-grid-flexible";
+
 
 export default function ClientListView() {
     const settings = useSettingsContext();
 
-    const { loading, clients, ...clientActions } = useClients(false);
+    const { loading, clients } = useClients(false);
     const showLoader = useShowLoader(loading, 200);
+
+    const cleanedClients = useMemo(() => {
+        if (!Array.isArray(clients)) return []
+        const filtered = formatFilterAndRemoveFields(
+            clients,
+            // @ts-expect-error expected
+            ["__typename", "users"],
+            [
+                {
+                    key: "updatedAt",
+                    formatter: fDateTime,
+                },
+                {
+                    key: "createdAt",
+                    formatter: fDateTime,
+                }
+            ],
+            undefined,
+            ["name", "creator"]
+        ) ?? []
+        const t = filtered.map(f => ({ ...f, creator: f.creator.name }))
+        return t
+    }, [clients])
 
     return (
         <Container
@@ -68,7 +92,7 @@ export default function ClientListView() {
 
             <Card
                 sx={{
-                    height: { xs: 800, md: 2 },
+                    height: { xs: 800, md: 600 },
                     flexGrow: { md: 1 },
                     display: { md: 'flex' },
                     flexDirection: { md: 'column' },
@@ -77,15 +101,16 @@ export default function ClientListView() {
                 {loading && showLoader ? (
                     <LoadingScreen />
                 ) : (
-                    <List style={{ width: "100%" }}>
-                        {clients?.map((client) => (
-                            <ClientTableRow
-                                key={getTodoId(client)}
-                                client={client}
-                                clientActions={clientActions}
-                            />
-                        ))}
-                    </List>
+                    <DataGridFlexible data={cleanedClients} />
+                    // <List style={{ width: "100%" }}>
+                    //     {clients?.map((client) => (
+                    //         <ClientTableRow
+                    //             key={getTodoId(client)}
+                    //             client={client}
+                    //             clientActions={clientActions}
+                    //         />
+                    //     ))}
+                    // </List>
                 )}
             </Card>
         </Container>
