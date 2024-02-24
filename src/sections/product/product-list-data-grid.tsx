@@ -2,7 +2,7 @@
 
 import isEqual from 'lodash/isEqual';
 import { isEmpty, isString } from 'lodash';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { FC, memo, useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -68,7 +68,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export default function ProductListDataGrid({ campaignId, clientId }: { campaignId?: string, clientId?: string }) {
+const ProductListDataGrid: FC<{ campaignId?: string, clientId?: string }> = ({ campaignId, clientId }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   const callProduct = useMemo(() => isString(campaignId), [campaignId])
@@ -424,3 +424,6 @@ function applyFilter({
 
   return inputData;
 }
+
+
+export default memo(ProductListDataGrid)
