@@ -1,4 +1,5 @@
 
+import { FC, memo } from 'react';
 import { isObject } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -32,7 +33,7 @@ import { ICalendarDate } from 'src/types/calendar';
 // ----------------------------------------------------------------------
 
 
-export default function CampaignNewEditDetailsForm() {
+const CampaignNewEditDetailsForm: FC = () => {
   const { users, loading: loadingUsers } = useUsers();
 
   const { control, getFieldState } = useFormContext();
@@ -144,23 +145,23 @@ export default function CampaignNewEditDetailsForm() {
             name="checkInTime"
             control={control}
             render={({ field }) => <MobileTimePicker
-                {...field}
-                value={new Date(field.value as ICalendarDate)}
-                onChange={(newValue) => {
-                  if (newValue) {
-                    field.onChange(fTimestamp(newValue));
-                  }
-                }}
-                label="Check in time"
-                format="hh:mm a"
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    error: isObject(checkInTimeError),
-                    helperText: isObject(checkInTimeError) && checkInTimeError.message,
-                  },
-                }}
-              />}
+              {...field}
+              value={new Date(field.value as ICalendarDate)}
+              onChange={(newValue) => {
+                if (newValue) {
+                  field.onChange(fTimestamp(newValue));
+                }
+              }}
+              label="Check in time"
+              format="hh:mm a"
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  error: isObject(checkInTimeError),
+                  helperText: isObject(checkInTimeError) && checkInTimeError.message,
+                },
+              }}
+            />}
           />
 
           <Controller
@@ -249,62 +250,62 @@ export default function CampaignNewEditDetailsForm() {
     <>
       {!mdUp &&
         <Grid xs={12} md={8}>
-            <Card>
-              <Stack spacing={3} sx={{ p: 3 }}>
-                <Stack spacing={1}>
-                  <Typography variant="subtitle2">Timeline</Typography>
-                </Stack>
-                <Controller
-                  name="startDate"
-                  control={control}
-                  render={({ field }) => <MobileDatePicker
-                      {...field}
-                      value={new Date(field.value as ICalendarDate)}
-                      onChange={(newValue) => {
-                        if (newValue) {
-                          field.onChange(fTimestamp(newValue));
-                        }
-                      }}
-                      label="Start date"
-                      format="dd/MM/yyyy hh:mm a"
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: isObject(startDateError),
-                          helperText: isObject(startDateError) && startDateError.message,
-                        },
-                      }}
-                    />}
-                />
-
-                <Controller
-                  name="endDate"
-                  control={control}
-                  render={({ field }) => (
-                    <MobileDatePicker
-                      {...field}
-                      value={new Date(field.value as ICalendarDate)}
-                      onChange={(newValue) => {
-                        if (newValue) {
-                          field.onChange(fTimestamp(newValue));
-                        }
-                      }}
-                      label="End date"
-                      format="dd/MM/yyyy"
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: isObject(endDateError),
-                          helperText: isObject(endDateError) && endDateError.message,
-                        },
-                      }}
-                    />
-                  )}
-                />
-                {renderTimeDetails}
+          <Card>
+            <Stack spacing={3} sx={{ p: 3 }}>
+              <Stack spacing={1}>
+                <Typography variant="subtitle2">Timeline</Typography>
               </Stack>
-            </Card>
-          </Grid>
+              <Controller
+                name="startDate"
+                control={control}
+                render={({ field }) => <MobileDatePicker
+                  {...field}
+                  value={new Date(field.value as ICalendarDate)}
+                  onChange={(newValue) => {
+                    if (newValue) {
+                      field.onChange(fTimestamp(newValue));
+                    }
+                  }}
+                  label="Start date"
+                  format="dd/MM/yyyy hh:mm a"
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: isObject(startDateError),
+                      helperText: isObject(startDateError) && startDateError.message,
+                    },
+                  }}
+                />}
+              />
+
+              <Controller
+                name="endDate"
+                control={control}
+                render={({ field }) => (
+                  <MobileDatePicker
+                    {...field}
+                    value={new Date(field.value as ICalendarDate)}
+                    onChange={(newValue) => {
+                      if (newValue) {
+                        field.onChange(fTimestamp(newValue));
+                      }
+                    }}
+                    label="End date"
+                    format="dd/MM/yyyy"
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: isObject(endDateError),
+                        helperText: isObject(endDateError) && endDateError.message,
+                      },
+                    }}
+                  />
+                )}
+              />
+              {renderTimeDetails}
+            </Stack>
+          </Card>
+        </Grid>
       }
       {mdUp &&
         <>
@@ -493,23 +494,6 @@ export default function CampaignNewEditDetailsForm() {
     </>
   );
 
-  // const renderActions = (
-  //   <>
-  //     {mdUp && <Grid md={4} />}
-  //     <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: "end", alignItems: 'center' }}>
-  //       <LoadingButton
-  //         type="submit"
-  //         variant="contained"
-  //         size="large"
-  //         loading={isSubmitting}
-  //         sx={{ ml: 2 }}
-  //       >
-  //         {!currentCampaign ? 'Create Campaign' : 'Save Changes'}
-  //       </LoadingButton>
-  //     </Grid>
-  //   </>
-  // );
-
   return (
     <Grid container spacing={3}>
       {renderDetails}
@@ -518,7 +502,8 @@ export default function CampaignNewEditDetailsForm() {
 
       {renderUsers}
 
-      {/* {renderActions} */}
     </Grid>
   );
 }
+
+export default memo(CampaignNewEditDetailsForm)

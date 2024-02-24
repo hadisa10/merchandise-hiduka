@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
+import React, { FC, memo, useState, useEffect } from "react";
 
 import {
     Card,
@@ -24,8 +24,7 @@ interface AnswerObject {
     _id: string; // The new 'id' key
     [key: string]: string | unknown; // Dynamic keys for questions with their answers
 }
-
-export default function AnswersGridView({ id, questions }: { id?: string, questions?: IReportQuestion[] }) {
+const ResponsesGridView: FC<{ id?: string, questions?: IReportQuestion[] }> = ({ id, questions }) => {
     const settings = useSettingsContext();
 
 
@@ -51,7 +50,6 @@ export default function AnswersGridView({ id, questions }: { id?: string, questi
             getReportAnswers(id.toString()).then(res => {
 
                 const resAnswers = res.map(x => x.answers);
-                console.log(res, 'RES')
 
                 // const qObj: { [key: string]: { text: string, order: number } } = {}
 
@@ -76,8 +74,6 @@ export default function AnswersGridView({ id, questions }: { id?: string, questi
                 )
 
                 setColumns(d);
-
-                console.log(d, 'COLUMN')
 
                 const answs = resAnswers.map((x) => {
                     const t: { _id: string, [key: string]: any } = {
@@ -128,3 +124,5 @@ export default function AnswersGridView({ id, questions }: { id?: string, questi
         </Container>
     );
 }
+
+export default memo(ResponsesGridView)

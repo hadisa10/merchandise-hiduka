@@ -1,7 +1,7 @@
 import { first } from 'lodash';
 import { FeatureCollection } from 'geojson';
-import { useRef, useMemo, useState, useEffect } from 'react';
 import Map, { Layer, MapRef, Marker, Source } from 'react-map-gl';
+import { FC, memo, useRef, useMemo, useState, useEffect } from 'react';
 
 import Typography from '@mui/material/Typography';
 import { styled, useTheme } from '@mui/material/styles';
@@ -50,7 +50,7 @@ const NairobiCoord: { longitude: number, latitude: number } = {
   longitude: 36.817223
 }
 
-export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchDirections }: Props) {
+const CampaignRoutesMap: FC<Props> = ({ contacts, handleNewRouteOpen, fetchDirections }) => {
   const theme = useTheme();
 
   const mdUp = useResponsive('up', 'md');
@@ -353,3 +353,5 @@ export default function CampaignRoutesMap({ contacts, handleNewRouteOpen, fetchD
     </StyledRoot>
   );
 }
+
+export default memo(CampaignRoutesMap)

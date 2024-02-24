@@ -62,7 +62,7 @@ export const REPORT_DETAILS_TABS = [
 const QuestionsNewEditList = lazy(() => import('./question-component/questions-new-edit'));
 const CampaignDetailsToolbar = lazy(() => import('./report-details-toolbar'));
 const ReportNewEditDetailsForm = lazy(() => import('./edit/report-new-edit-details-form'));
-const AnswersGridView = lazy(() => import('./answers-component/answers-list-view'));
+const ResponsesGridView = lazy(() => import('./responses-component/responses-list-view'));
 
 export default function ReportNewEditForm({ currentReport }: Props) {
 
@@ -295,7 +295,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
 
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} /></Suspense>}
         {currentTab === 'questions' && <Suspense fallback={<LoadingScreen />}><QuestionsNewEditList /></Suspense>}
-        {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><AnswersGridView id={currentReport?._id && currentReport?._id.toString()} questions={currentReport?.questions} /></Suspense>}
+        {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><ResponsesGridView id={currentReport?._id && currentReport?._id.toString()} questions={currentReport?.questions} /></Suspense>}
 
         {/* {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}

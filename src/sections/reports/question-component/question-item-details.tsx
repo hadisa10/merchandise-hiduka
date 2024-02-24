@@ -2,7 +2,7 @@
 
 import { UseFormRegister } from 'react-hook-form';
 import { isNumber, isString, capitalize } from 'lodash';
-import { lazy, useMemo, useState, Suspense, useEffect, useCallback, ChangeEvent } from 'react';
+import React, { lazy, memo, useMemo, useState, Suspense, useEffect, useCallback, ChangeEvent } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
@@ -61,7 +61,7 @@ const VALIDATION_OPTIONS = [
 
   // Add more validation options as needed
 ];
-export default function QuestionDetails({
+const QuestionDetails: React.FC<Props> = ({
   question,
   openDetails,
   onCloseDetails,
@@ -71,7 +71,7 @@ export default function QuestionDetails({
   register,
   //
   onDeleteQuestion,
-}: Props) {
+}) => {
 
   const [questionText, setQuestionText] = useState(question.text);
 
@@ -613,3 +613,5 @@ export default function QuestionDetails({
     </Drawer>
   );
 }
+
+export default memo(QuestionDetails)

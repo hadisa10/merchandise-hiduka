@@ -3,7 +3,7 @@
 import isEqual from 'lodash/isEqual';
 import { useForm } from 'react-hook-form';
 import { isEmpty, isString } from 'lodash';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { FC, memo, useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -71,7 +71,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export default function ReportListDataGrid({ id }: { id?: string }) {
+const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   // // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -445,3 +445,6 @@ function applyFilter({
 
   return inputData;
 }
+
+
+export default memo(ReportListDataGrid)

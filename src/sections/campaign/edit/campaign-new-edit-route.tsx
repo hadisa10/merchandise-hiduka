@@ -30,7 +30,7 @@ type CampaignNewEditRouteFormProps = {
 };
 
 
-const CampaignNewEditRouteForm: React.FC<CampaignNewEditRouteFormProps> = memo(({ handleNewRouteOpen, handleRemoveNewRoute, handleAddNewRoute, campaignRoutes }: CampaignNewEditRouteFormProps) => {
+const CampaignNewEditRouteForm: React.FC<CampaignNewEditRouteFormProps> = ({ handleNewRouteOpen, handleRemoveNewRoute, handleAddNewRoute, campaignRoutes }: CampaignNewEditRouteFormProps) => {
   const fetchDirections = useBoolean();
 
   const renderRouteForm = (
@@ -124,6 +124,6 @@ const CampaignNewEditRouteForm: React.FC<CampaignNewEditRouteFormProps> = memo((
       {renderRouteForm}
     </Grid>
   );
-})
+}
 
-export default CampaignNewEditRouteForm;
+export default memo(CampaignNewEditRouteForm);

@@ -1,7 +1,6 @@
-import { isEmpty } from 'lodash';
+import { Suspense, forwardRef } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { UseFormRegister } from 'react-hook-form';
-import { lazy, Suspense, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -20,9 +19,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, IReportQuestionActions } from 'src/types/report';
 
-import AddReportQuestionDialog from '../edit/add-question-product-dialog';
-
-const QuestionDetails = lazy(() => import('./question-item-details'));
+import QuestionItemDetails from './question-item-details';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +27,7 @@ type Props = PaperProps & {
   index: number;
   question: IReportQuestion;
   onUpdateQuestion: (question: IReportQuestion) => void;
+  handleOpenAddProduct: (index: number) => void;
   onDeleteQuestion: VoidFunction;
   questionError?: QuestionError;
   register: UseFormRegister<IReport>;
@@ -42,6 +40,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
   index,
   onDeleteQuestion,
   onUpdateQuestion,
+  handleOpenAddProduct,
   questionError,
   register,
   campaignId,
@@ -53,27 +52,11 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
 
   const openDetails = useBoolean();
 
-  const openProductDialog = useBoolean()
 
   const handleToggleUnique = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation(); // Prevent click event from bubbling up
     // Your toggle logic here
   }
-
-  const handleToggleProduct = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation(); // Prevent click event from bubbling up
-    console.log("EVENT CLICKED")
-    openProductDialog.onToggle()
-    // Your toggle logic here
-  }
-
-  const handleNewAddNewProduct = (prds: string[]) => {
-    actions.handleChangeAddQuestionProducts(index, prds)
-  }
-
-  useEffect(() => {
-    console.log(openProductDialog.value, 'VALUE')
-  }, [openProductDialog.value])
 
   const renderInputType = (
     <Iconify
@@ -139,7 +122,10 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
   const renderAddProducts = (
     <Stack direction="row" alignItems="center" sx={{ typography: 'caption', color: 'text.secondary', ml: -1 }}>
       <IconButton
-        onClick={handleToggleProduct}
+        onClick={(e) => {
+          e.stopPropagation()
+          handleOpenAddProduct(index)
+        }}
         sx={{
           color: 'inherit',
         }}
@@ -210,7 +196,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
         )}
       </Draggable>
 
-      <QuestionDetails
+      <QuestionItemDetails
         question={question}
         index={index}
         questionError={questionError}
@@ -221,14 +207,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
         // onUpdateQuestion={onUpdateQuestion}
         onDeleteQuestion={onDeleteQuestion}
       />
-      {campaignId && !isEmpty(campaignId) && !Number.isNaN(index) &&
-        <AddReportQuestionDialog
-          campaignId={campaignId}
-          questionIndex={index}
-          handleAddNewProduct={handleNewAddNewProduct}
-          open={openProductDialog.value}
-          onClose={openProductDialog.onFalse}
-        />}
+
     </Suspense>
   );
 })

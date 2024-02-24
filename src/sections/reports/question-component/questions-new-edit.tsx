@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { isString } from 'lodash';
-// import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
-import React, { useRef, useEffect, useCallback } from 'react';
+import { isEmpty, isString } from 'lodash';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Droppable, DropResult, DragDropContext } from '@hello-pangea/dnd';
+// import React, { useState, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
+import React, { memo, useRef, useState, useEffect, useCallback } from 'react';
 
 import Grid from '@mui/material/Unstable_Grid2';
 import { Box, List, Paper, Typography } from '@mui/material';
@@ -17,6 +17,7 @@ import { IReport, IReportQuestion, IQuestionDependency, IReportQuestionValidatio
 import QuestionAdd from './question-add';
 import QuestionItem from './question-item';
 import QuestionsColumnToolBar from './question-column-tool-bar';
+import AddQuestionProductDialog from '../edit/add-question-product-dialog';
 
 
 const QuestionsNewEditList = () => {
@@ -29,8 +30,11 @@ const QuestionsNewEditList = () => {
 
   const dragStarted = useBoolean();
 
+  const openProductDialog = useBoolean()
 
   const questionRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
 
   const { control, watch, formState: { errors }, register } = useFormContext<IReport>();
 
@@ -165,10 +169,9 @@ const QuestionsNewEditList = () => {
 
       const options = Array.isArray(question.options) ? Array.from(new Set([...question.options, ...products])) : [...products]
 
-      update(questionIndex, { ...question, input_type: "select" , options });
+      update(questionIndex, { ...question, input_type: "select", options });
     }
   }, [questions, update]);
-
 
 
   const handleAddDependency = useCallback((questionIndex: number, newDependency: IQuestionDependency) => {
@@ -223,6 +226,19 @@ const QuestionsNewEditList = () => {
     handleChangeQuestionUnique,
     handleChangeAddQuestionProducts,
     handleRemoveValidation
+  }
+
+
+  const handleNewAddNewProduct = (prds: string[]) => {
+    actions.handleChangeAddQuestionProducts(selectedItem, prds)
+  }
+
+  const handleOpenAddProduct = (index) => {
+    const q = questions[index]
+    if (q) {
+      setSelectedItem(index)
+      openProductDialog.onTrue();
+    }
   }
   const renderSummary = (
     <>
@@ -291,6 +307,7 @@ const QuestionsNewEditList = () => {
                     question={q}
                     register={register}
                     questionError={errors.questions?.[index]} // Pass the corresponding error
+                    handleOpenAddProduct={handleOpenAddProduct}
                     onUpdateQuestion={(qs: IReportQuestion) => console.log(qs)}
                     onDeleteQuestion={() => console.log("QUESTION DELETED")}
                   />
@@ -311,9 +328,18 @@ const QuestionsNewEditList = () => {
 
       {renderSummary}
 
+      {campaignId && !isEmpty(campaignId) && !Number.isNaN(selectedItem) &&
+        <AddQuestionProductDialog
+          campaignId={campaignId}
+          questionIndex={selectedItem}
+          handleAddNewProduct={handleNewAddNewProduct}
+          open={openProductDialog.value}
+          onClose={openProductDialog.onFalse}
+        />}
+
     </Grid>
   );
 }
 
-export default QuestionsNewEditList;
+export default  memo(QuestionsNewEditList);
 
