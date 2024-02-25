@@ -45,6 +45,16 @@ export interface IColumn {
   action?: IColumnActions
 }
 
+export interface IGenericColumn<T> {
+  field: keyof T | "actions";
+  label: string;
+  type: string;
+  minWidth?: number;
+  valueOptions?: Array<{ value: string; label: string; color: LabelColor }>;
+  action?: any; // Define this type based on your action handlers. Consider making this generic too if needed.
+  order?: number;
+}
+
 export interface IColumnActions {
   view: (id: string) => void;
   edit: (id: string) => void;
@@ -52,13 +62,13 @@ export interface IColumnActions {
 }
 
 
-type IColumnsArray = IColumn[];
+type IColumnsArray<T> = IGenericColumn<T>[];
 
 // Updated props interface to include the columns array
 interface DataGridFlexibleProps<RowType extends GridRowModel> {
   data: RowType[];
   getRowIdFn: GridRowIdGetter<RowType>;
-  columns: IColumnsArray;
+  columns: IColumnsArray<RowType>;
   hideColumn?: Record<string, boolean>;
 }
 
@@ -89,7 +99,7 @@ const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions)
 };
 
 
-const renderMainCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>, column?: IColumn) => {
+const renderMainCell  = <T, >(params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>, column?: IGenericColumn<T>) => {
   const { value } = params;
   return (
     <Stack spacing={2} direction="row" alignItems="center" sx={{ minWidth: 0 }}>
@@ -171,13 +181,12 @@ const renderDefaultCell = (params: GridRenderCellParams<any, any, any, GridTreeN
   return <Typography variant='body2'>{JSON.stringify(value)}</Typography>;
 }
 // Function to generate dynamic columns based on the columns array
-function generateDynamicColumns(columnsArray: IColumnsArray): GridColDef[] {
+function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): GridColDef[] {
   return columnsArray
-    .sort((a, b) => a.order - b.order)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .map((column) => {
-      // Common column properties
       const baseColDef: GridColDef = {
-        field: column.field,
+        field: String(column.field),
         headerName: column.label,
         flex: 1,
         minWidth: column.minWidth ?? 200,

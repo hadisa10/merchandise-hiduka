@@ -56,7 +56,7 @@ export default function ClientEditTabs({ currentClient }: Props) {
       value={currentTab}
       onChange={handleChangeTab}
       sx={{
-        mb: { xs: 3, md: 5 },
+        mb: { xs: 1, md: 2 },
       }}
     >
       {tabArray.map((tab) => (

@@ -1,3 +1,4 @@
+import { ICampaignUser } from "./user_realm";
 import { ICampaign } from "./realm/realm-types";
 import { IUserRouteProductItem } from "./user-routes";
 
@@ -8,9 +9,15 @@ export interface ICampaignChange {
 export interface IGraphqlResponse {
     UserCampaigns: ICampaign[];
 }
+
+
+export interface IGraphqlCampaignUserResponse {
+    CampaignUsers: ICampaignUser[];
+}
 export interface ICampaignActions {
     saveCampaign: (draftCampaign: ICampaign) => Promise<void>;
     updateCampaign: (campaign: ICampaign) => Promise<void>;
+    getCampaignUsers: (id: string) => Promise<ICampaignUser[]>;
     // toggleCampaignStatus: (campaign: ICampaign) => Promise<void>;
     // deleteCampaign: (campaign: ICampaign) => Promise<void>;
 }

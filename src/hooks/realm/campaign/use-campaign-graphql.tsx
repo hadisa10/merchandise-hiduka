@@ -12,8 +12,9 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
+import { ICampaignUser } from "src/types/user_realm";
 import { ICampaign } from "src/types/realm/realm-types";
-import { ICampaignHook, ICampaignChange, IGraphqlResponse } from "src/types/campaign";
+import { ICampaignHook, ICampaignChange, IGraphqlResponse, IGraphqlCampaignUserResponse } from "src/types/campaign";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
@@ -203,39 +204,60 @@ export function useCampaigns(lazy = false): ICampaignHook {
       },
     });
   };
+  const getCampaignUsers = async (id: string): Promise<ICampaignUser[]> => {
+    try {
+      if (!id) {
+        throw new Error("Client errors");
+      }
+      const resp = await graphql.query<IGraphqlCampaignUserResponse>({
+        query: gql`
+          query FetchCampaignUsers($id: String!) {
+            CampaignUsers(input: $id) {
+              _id
+              email
+              isPublic
+              displayName
+              firstname
+              lastname
+              city
+              state
+              about
+              country
+              address
+              zipCode
+              role
+              phoneNumber
+              photoURL
+              isVerified
+              isRegistered
+              company
+              status
+              createdAt
+              updatedAt
+              isCheckedIn
+              checkInCount
+              totalSessionCount
+            }
+          }
+        `,
+        variables: {
+          id
+        },
+      });
+      return resp.data.CampaignUsers;
+    } catch (error) {
+      console.error(error, "REPORT FETCH ERROR");
+      throw new Error("Failed to get client products");
+    }
+  };
 
-  // const togglecampaignStatus = async (campaign: ICampaign) => {
-  //   await graphql.mutate({
-  //     mutation: gql`
-  //       mutation TogglecampaignStatus($campaignId: ObjectId!) {
-  //         updateManycampaigns(query: { _id: $campaignId }, set: { active: ${!campaign.active}, updatedAt: "${new Date().toISOString()}" }) {
-  //           matchedCount
-  //           modifiedCount
-  //         }
-  //       }
-  //     `,
-  //     variables: { campaignId: campaign._id },
-  //   });
-  // };
-
-  // const deleteCampaign = async (campaign: ICampaign) => {
-  //   await graphql.mutate({
-  //     mutation: gql`
-  //       mutation DeleteCampaign($campaignId: ObjectId!) {
-  //         deleteOneCampaign(query: { _id: $campaignId }) {
-  //           _id
-  //         }
-  //       }
-  //     `,
-  //     variables: { campaignId: campaign._id },
-  //   });
-  // };
 
   return {
     loading,
     campaigns,
     saveCampaign,
-    updateCampaign
+    updateCampaign,
+    getCampaignUsers
     // togglecampaignStatus,
     // deletecampaign,
   };

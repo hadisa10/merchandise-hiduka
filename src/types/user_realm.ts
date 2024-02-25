@@ -33,6 +33,11 @@ export interface IUser {
     createdAt: Date;
     updatedAt: Date;
 }
+export interface ICampaignUser extends IUser {
+    isCheckedIn: boolean;
+    checkInCount: number;
+    totalSessionCount: number;
+}
 
 export interface IDraftUser {
     _id: Realm.BSON.ObjectId;

@@ -55,7 +55,7 @@ export type ICampaign = {
     products: Array<Realm.BSON.ObjectId>;
     users: Array<Realm.BSON.ObjectId>;
     project_id: Realm.BSON.ObjectId;
-    routes: Array<ICampaign_routes>;
+    routes: Array<ICampaignRoutes>;
     workingSchedule: Array<string>,
     startDate: Date;
     title: string;
@@ -177,7 +177,7 @@ export const ICampaignSchema = {
         client_id: 'objectId',
         products: 'objectId[]',
         project_id: 'objectId',
-        routes: 'ICampaign_routes[]',
+        routes: 'ICampaignRoutes[]',
         title: 'string',
         today_checkin: 'int',
         total_checkin: 'int',
@@ -186,7 +186,7 @@ export const ICampaignSchema = {
     primaryKey: '_id',
 };
 
-export type ICampaign_routes = {
+export type ICampaignRoutes = {
     _id: Realm.BSON.ObjectId;
     // checkins: Array<Realm.BSON.ObjectId>;
     createdAt: Date;
@@ -197,7 +197,7 @@ export type ICampaign_routes = {
 };
 
 export const ICampaign_routesSchema = {
-    name: 'ICampaign_routes',
+    name: 'ICampaignRoutes',
     embedded: true,
     properties: {
         _id: 'objectId',

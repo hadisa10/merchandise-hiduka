@@ -85,7 +85,7 @@ export default function CampaignSearchRoute({
 
     const renderSearch = (
         <Autocomplete
-            sx={{ width: { xs: 1, sm: 260 } }}
+            fullWidth
             loading={loading.value}
             autoHighlight
             popupIcon={null}
