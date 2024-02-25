@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 
 import {
     Card,
@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 
 import { paths } from "src/routes/paths";
+import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from "src/routes/components";
 
 import { useClients, useShowLoader } from "src/hooks/realm";
@@ -27,7 +28,36 @@ export default function ClientListView() {
     const settings = useSettingsContext();
 
     const { loading, clients } = useClients(false);
+
     const showLoader = useShowLoader(loading, 200);
+
+    const router = useRouter();
+
+    // const handleDeleteRows = useCallback(() => {
+    // const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row._id.toString()));
+
+    // enqueueSnackbar('Delete success!');
+
+    // setTableData(deleteRows);
+    // }, [enqueueSnackbar, selectedRowIds, tableData]);
+
+    const handleDeleteRows = useCallback((id: string) => {
+        console.log(`${id} DELETED`)
+    }, [])
+
+    const handleEditRow = useCallback(
+        (id: string) => {
+            router.push(paths.dashboard.client.edit(id));
+        },
+        [router]
+    );
+
+    const handleViewRow = useCallback(
+        (id: string) => {
+            router.push(paths.dashboard.client.edit(id));
+        },
+        [router]
+    );
 
     const columns: IColumn[] = useMemo(() => {
         const cols: Omit<IColumn, "order">[] = [
@@ -92,10 +122,22 @@ export default function ClientListView() {
                 field: "updatedAt",
                 label: "Updated At",
                 type: "date"
+            },
+            {
+                field: "actions",
+                label: "Actions",
+                type: "actions",
+                action: {
+                    view: handleEditRow,
+                    edit: handleViewRow,
+                    delete: handleDeleteRows,
+                }
             }
+
 
         ]
         return cols.map((c, i) => ({ ...c, order: i + 1 }))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const cleanedClients = useMemo(() => {

@@ -1,146 +1,3 @@
-// import React, { useMemo, useState } from 'react';
-
-// import { Box } from '@mui/system';
-// import { Typography } from '@mui/material';
-// import {
-//   DataGrid,
-//   GridColDef,
-//   GridRowModel,
-//   GridRowIdGetter,
-//   GridToolbarExport,
-//   GridToolbarContainer,
-//   GridRowSelectionModel,
-//   GridToolbarQuickFilter,
-//   GridToolbarFilterButton,
-//   GridToolbarColumnsButton,
-//   GridColumnVisibilityModel,
-//   GridToolbarDensitySelector,
-// } from '@mui/x-data-grid';
-
-// import { fDate } from 'src/utils/format-time';
-
-// import EmptyContent from 'src/components/empty-content/empty-content';
-
-// // Additional imports remain the same
-
-// // Define generic types for rows and columns
-// interface DataGridFlexibleProps<RowType extends GridRowModel> {
-//   data: RowType[];
-//   getRowIdFn: GridRowIdGetter<RowType>
-// }
-
-// // ----------------------------------------------------------------------
-
-
-// function generateDynamicColumns<RowType extends GridRowModel>(data: RowType[]): GridColDef[] {
-//   if (data.length === 0) {
-//     return [];
-//   }
-
-//   const sampleRow = data[0];
-//   return Object.keys(sampleRow).map((key) => ({
-//     field: key,
-//     headerName: key.charAt(0).toUpperCase() + key.slice(1),
-//     flex: 1,
-//     minWidth: 200,
-//     renderCell: (params) => {
-//       const { value } = params;
-//       switch (typeof value) {
-//         case 'boolean':
-//           return <Typography variant='body2'>{value ? 'Yes' : 'No'}</Typography>;
-//         case 'number':
-//           return <Typography variant='body2'>{value}</Typography>;
-//         case 'object':
-//           if (value instanceof Date) {
-//             return <Typography variant='body2'>{fDate(value)}</Typography>;
-//           }
-//           return <Typography variant='body2'>{JSON.stringify(value)}</Typography>;
-//         default:
-//           return <Typography variant='body2'>{value}</Typography>;
-//       }
-//     }
-//   }));
-// }
-
-// const HIDE_COLUMNS = {
-//   _id: false,
-// };
-
-// const HIDE_COLUMNS_TOGGLABLE = ['_id', 'actions'];
-
-// // ----------------------------------------------------------------------
-
-
-// // Use these generic types in your component
-// export default function DataGridFlexible<RowType extends GridRowModel>({
-//   data: rows,
-//   getRowIdFn
-// }: DataGridFlexibleProps<RowType>) {
-//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-//   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
-
-//   const [columnVisibilityModel, setColumnVisibilityModel] =
-//     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
-
-//   const columns = useMemo(() => generateDynamicColumns(rows), [rows]);
-
-//   const getTogglableColumns = () =>
-//     columns
-//       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
-//       .map((column) => column.field);
-
-//   // const selected = rows.filter((row) => selectedRows.includes(row.id)).map((_row) => _row.id);
-
-//   return (
-//     <DataGrid
-//       getRowId={getRowIdFn}
-//       checkboxSelection
-//       disableRowSelectionOnClick
-//       rows={rows}
-//       columns={columns}
-//       onRowSelectionModelChange={(newSelectionModel) => {
-//         setSelectedRows(newSelectionModel);
-//       }}
-//       columnVisibilityModel={columnVisibilityModel}
-//       onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-//       slots={{
-//         toolbar: CustomToolbar,
-//         noRowsOverlay: () => <EmptyContent title="No Data" />,
-//         noResultsOverlay: () => <EmptyContent title="No results found" />,
-//       }}
-//       slotProps={{
-//         toolbar: {
-//           showQuickFilter: true,
-//         },
-//         columnsPanel: {
-//           getTogglableColumns,
-//         },
-//       }}
-//     />
-
-//   )
-
-//   // Component implementation remains largely the same
-// }
-
-// // ----------------------------------------------------------------------
-
-
-// function CustomToolbar() {
-//   return (
-//     <GridToolbarContainer>
-//       <GridToolbarQuickFilter />
-//       <Box sx={{ flexGrow: 1 }} />
-//       <GridToolbarColumnsButton />
-//       <GridToolbarFilterButton />
-//       <GridToolbarDensitySelector />
-//       <GridToolbarExport />
-//     </GridToolbarContainer>
-//   );
-// }
-
-
-
 import { isObject, isString } from 'lodash';
 import React, { useMemo, useState } from 'react';
 
@@ -149,11 +6,15 @@ import {
   DataGrid,
   GridColDef,
   GridRowModel,
+  GridRowParams,
   GridRowIdGetter,
   GridToolbarExport,
+  GridActionsCellItem,
   GridToolbarContainer,
+  GridRenderCellParams,
   GridRowSelectionModel,
   GridToolbarQuickFilter,
+  GridTreeNodeWithRender,
   GridToolbarFilterButton,
   GridToolbarColumnsButton,
   GridColumnVisibilityModel,
@@ -181,7 +42,15 @@ export interface IColumn {
   type: string;
   minWidth?: number;
   valueOptions?: IColumnValueOption[]
+  action?: IColumnActions
 }
+
+export interface IColumnActions {
+  view: (id: string) => void;
+  edit: (id: string) => void;
+  delete: (id: string) => void;
+}
+
 
 type IColumnsArray = IColumn[];
 
@@ -193,77 +62,166 @@ interface DataGridFlexibleProps<RowType extends GridRowModel> {
   hideColumn?: Record<string, boolean>;
 }
 
+const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions) => {
+  const { id } = params
+  return [
+
+    <GridActionsCellItem
+      icon={<Iconify icon="solar:eye-bold" />}
+      label="View"
+      onClick={() => actions?.view(id.toString())}
+      showInMenu
+    />,
+    <GridActionsCellItem
+      icon={<Iconify icon="solar:pen-bold" />}
+      label="Edit"
+      onClick={() => actions?.edit(id.toString())}
+      showInMenu
+    />,
+    <GridActionsCellItem
+      icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+      label="Delete"
+      onClick={() => actions?.delete(id.toString())}
+      showInMenu
+      sx={{ color: 'error.main' }}
+    />
+  ]
+};
+
+
+const renderMainCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>, column?: IColumn) => {
+  const { value } = params;
+  return (
+    <Stack spacing={2} direction="row" alignItems="center" sx={{ minWidth: 0 }}>
+      <Avatar alt={value} sx={{ width: 36, height: 36 }} variant='rounded'>
+        {isString(value) && value.charAt(0).toUpperCase()}
+      </Avatar>
+      <Typography component="span" variant="body2" noWrap>
+        {value}
+      </Typography>
+    </Stack>
+  )
+};
+
+const renderSelectCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>, valueOptions: IColumnValueOption[] | undefined) => {
+  const { value } = params;
+  if (Array.isArray(valueOptions)) {
+    const matchedOption = valueOptions.find(option => option.value === value);
+    if (matchedOption) {
+      // If there's a matched option, you can use its label and color for rendering
+      return (
+        <Label
+          variant="soft"
+          color={matchedOption.color ?? "info"}
+          sx={{ mx: 'auto' }}
+        >
+          {value}
+        </Label>
+      );
+    }
+  }
+  return (
+    <Label
+      variant="soft"
+      color="default"
+      sx={{ mx: 'auto' }}
+    >
+      {value}
+    </Label>
+  )
+};
+
+const renderBooleanCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
+  const { value } = params;
+  return (
+    value ? (
+      <Iconify icon="eva:checkmark-circle-2-fill" sx={{ color: 'primary.main' }} />
+    ) : (
+      '-'
+    )
+  )
+}
+
+const renderNumberCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
+  const { value } = params;
+  return <Typography variant='body2'>{value}</Typography>;
+}
+
+const renderStringCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
+  const { value } = params;
+  return <Typography variant='body2'>{value}</Typography>;
+}
+
+const renderArrayCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
+  const { value } = params;
+  return <Typography variant='body2'>{Array.isArray(value) && value.join(",")}</Typography>;
+}
+
+const renderDateCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
+  const { value } = params;
+  return <Typography variant='body2'>{fDate(value)}</Typography>;
+}
+const renderObjectCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
+  const { value } = params;
+  return <Typography variant='body2'>{JSON.stringify(value)}</Typography>;
+}
+
+const renderDefaultCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
+  const { value } = params;
+  return <Typography variant='body2'>{JSON.stringify(value)}</Typography>;
+}
 // Function to generate dynamic columns based on the columns array
 function generateDynamicColumns(columnsArray: IColumnsArray): GridColDef[] {
   return columnsArray
     .sort((a, b) => a.order - b.order)
-    .map((column) => ({
-      field: column.field,
-      headerName: column.label,
-      valueOptions: Array.isArray(column.valueOptions) ? column.valueOptions.map(c => c.value) : [],
-      flex: 1,
-      minWidth: column.minWidth ?? 200,
-      renderCell: (params) => {
-        const { value } = params;
-        switch (column.type) {
-          case 'main':
-            return (
-              <Stack spacing={2} direction="row" alignItems="center" sx={{ minWidth: 0 }}>
-                <Avatar alt={value} sx={{ width: 36, height: 36 }} variant='rounded'>
-                  {isString(value) && value.charAt(0).toUpperCase()}
-                </Avatar>
-                <Typography component="span" variant="body2" noWrap>
-                  {value}
-                </Typography>
-              </Stack>
-            )
-          case 'select':
-            if (Array.isArray(column.valueOptions)) {
-              const matchedOption = column.valueOptions.find(option => option.value === value);
-              if (matchedOption) {
-                // If there's a matched option, you can use its label and color for rendering
-                return (
-                  <Label
-                    variant="soft"
-                    color={matchedOption.color}
-                    sx={{ mx: 'auto' }}
-                  >
-                    {value}
-                  </Label>
-                );
-              }
-            }
-            return (
-              <Label
-                variant="soft"
-                color="default"
-                sx={{ mx: 'auto' }}
-              >
-                {value}
-              </Label>
-            )
-          case 'boolean':
-            return (
-              value ? (
-                <Iconify icon="eva:checkmark-circle-2-fill" sx={{ color: 'primary.main' }} />
-              ) : (
-                '-'
-              )
-            )
-          case 'number':
-            return <Typography variant='body2'>{value}</Typography>;
-          case 'array':
-            return <Typography variant='body2'>{Array.isArray(value) && value.join(",")}</Typography>;
-          case 'date':
-            return <Typography variant='body2'>{fDate(new Date(value))}</Typography>;
-          case 'object':
-            return <Typography variant='body2'>{JSON.stringify(value)}</Typography>;
-          default:
-            return <Typography variant='body2'>{value}</Typography>;
-        }
-      },
-    }));
+    .map((column) => {
+      // Common column properties
+      const baseColDef: GridColDef = {
+        field: column.field,
+        headerName: column.label,
+        flex: 1,
+        minWidth: column.minWidth ?? 200,
+      };
+
+      // Conditional rendering logic based on column.type
+      switch (column.type) {
+
+        case 'main':
+          return { ...baseColDef, renderCell: (params) => renderMainCell(params, column) };
+        case 'select':
+          return { ...baseColDef, renderCell: (params) => renderSelectCell(params, column.valueOptions) };
+        case 'boolean':
+          return { ...baseColDef, renderCell: renderBooleanCell };
+        case 'number':
+          return { ...baseColDef, renderCell: renderNumberCell };
+        case 'string':
+          return { ...baseColDef, renderCell: renderStringCell };
+        case 'array':
+          return { ...baseColDef, renderCell: renderArrayCell };
+        case 'date':
+          return { ...baseColDef, renderCell: renderDateCell };
+        case 'object':
+          return { ...baseColDef, renderCell: renderObjectCell };
+        case 'actions': // Add this case for actions
+          return {
+            ...baseColDef,
+            type: 'actions',
+            field: 'actions',
+            headerName: 'Actions',
+            align: 'right',
+            headerAlign: 'right',
+            minWidth: 80,
+            sortable: false,
+            filterable: false,
+            disableColumnMenu: true,
+            getActions: (params) => renderActionsCell(params, column?.action),
+          };
+        default:
+          return { ...baseColDef, renderCell: renderDefaultCell };
+      }
+    });
 }
+
 
 // The DataGridFlexible component
 export default function DataGridFlexible<RowType extends GridRowModel>({
