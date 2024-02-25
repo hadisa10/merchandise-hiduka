@@ -8,9 +8,6 @@ import {
     Card
 } from "@mui/material";
 
-import { paths } from "src/routes/paths";
-import { useRouter } from 'src/routes/hooks';
-
 import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
 import { useCampaigns } from "src/hooks/realm/campaign/use-campaign-graphql";
@@ -22,12 +19,15 @@ import { DataGridFlexible } from "src/components/data-grid";
 import { LoadingScreen } from "src/components/loading-screen";
 import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
 
-import { ICampaignUser } from "src/types/user_realm";
+import { IUser, ICampaignUser } from "src/types/user_realm";
 
-export default function UserActivityDataGrid({ campaignId }: { campaignId: string }) {
+interface IUserActivityDataGridProps {
+    campaignId: string;
+    handleOpenCheckInRouteView?: (user: IUser) => void;
+}
+
+export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRouteView }: IUserActivityDataGridProps) {
     // const { loading, clients } = useClients(false);
-
-    const router = useRouter();
 
     const { getCampaignUsers } = useCampaigns(true);
 
@@ -63,21 +63,34 @@ export default function UserActivityDataGrid({ campaignId }: { campaignId: strin
     }, [campaignId])
 
     const handleDeleteRows = useCallback((id: string) => {
-        console.log(`${id} DELETED`)
-    }, [])
+        const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
+        if (user && handleOpenCheckInRouteView ) {
+             handleOpenCheckInRouteView(user);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [campaignUsers])
 
     const handleEditRow = useCallback(
         (id: string) => {
-            router.push(paths.dashboard.client.edit(id));
+            const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
+            if (user && handleOpenCheckInRouteView) {
+                 handleOpenCheckInRouteView(user);
+            }
+
         },
-        [router]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [campaignUsers]
     );
 
     const handleViewRow = useCallback(
         (id: string) => {
-            router.push(paths.dashboard.client.edit(id));
+            const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
+            if (user && handleOpenCheckInRouteView) {
+                 handleOpenCheckInRouteView(user);
+            }
         },
-        [router]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [campaignUsers]
     );
 
     const columns: IGenericColumn<ICampaignUser>[] = useMemo(() => {
@@ -129,8 +142,8 @@ export default function UserActivityDataGrid({ campaignId }: { campaignId: strin
                 label: "Actions",
                 type: "actions",
                 action: {
-                    view: handleEditRow,
-                    edit: handleViewRow,
+                    view: handleViewRow,
+                    edit: handleEditRow,
                     delete: handleDeleteRows,
                 }
             }
@@ -139,7 +152,7 @@ export default function UserActivityDataGrid({ campaignId }: { campaignId: strin
         ]
         return cols.map((c, i) => ({ ...c, order: i + 1 }))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [campaignUsers])
 
     const cleanedUsers = useMemo(() => {
         if (!Array.isArray(campaignUsers)) return []
@@ -173,8 +186,6 @@ export default function UserActivityDataGrid({ campaignId }: { campaignId: strin
         return filtered
     }, [campaignUsers])
 
-    console.log(campaignUsers, 'CLIENTS')
-
     return (
 
 
@@ -188,7 +199,7 @@ export default function UserActivityDataGrid({ campaignId }: { campaignId: strin
         >
             {showLoader ? (
                 <LoadingScreen />
-            ) : (
+            ) : cleanedUsers && (
                 <DataGridFlexible data={cleanedUsers} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} />
             )}
         </Card>

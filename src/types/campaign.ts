@@ -1,6 +1,6 @@
 import { ICampaignUser } from "./user_realm";
-import { ICampaign } from "./realm/realm-types";
 import { IUserRouteProductItem } from "./user-routes";
+import { ICheckin, ICampaign } from "./realm/realm-types";
 
 export interface ICampaignChange {
     fullDocument: ICampaign;
@@ -10,14 +10,20 @@ export interface IGraphqlResponse {
     UserCampaigns: ICampaign[];
 }
 
-
 export interface IGraphqlCampaignUserResponse {
     CampaignUsers: ICampaignUser[];
 }
+
+export interface IGraphqlCheckinResponse {
+    UserCampaignCheckins: ICheckin[];
+}
+
+
 export interface ICampaignActions {
     saveCampaign: (draftCampaign: ICampaign) => Promise<void>;
     updateCampaign: (campaign: ICampaign) => Promise<void>;
     getCampaignUsers: (id: string) => Promise<ICampaignUser[]>;
+    getCampaignUserCheckins: (campaignId: string, startDate: string, endDate: string, userId?: string) => Promise<ICheckin[]>
     // toggleCampaignStatus: (campaign: ICampaign) => Promise<void>;
     // deleteCampaign: (campaign: ICampaign) => Promise<void>;
 }

@@ -13,8 +13,8 @@ import {
 import atlasConfig from "src/atlasConfig.json";
 
 import { ICampaignUser } from "src/types/user_realm";
-import { ICampaign } from "src/types/realm/realm-types";
-import { ICampaignHook, ICampaignChange, IGraphqlResponse, IGraphqlCampaignUserResponse } from "src/types/campaign";
+import { ICheckin, ICampaign } from "src/types/realm/realm-types";
+import { ICampaignHook, ICampaignChange, IGraphqlResponse, IGraphqlCheckinResponse, IGraphqlCampaignUserResponse } from "src/types/campaign";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
@@ -251,13 +251,95 @@ export function useCampaigns(lazy = false): ICampaignHook {
     }
   };
 
+  const getCampaignUserCheckins = async (campaignId: string, startDate: string, endDate: string, userId?: string): Promise<ICheckin[]> => {
+    try {
+      let query;
+      if (userId) {
+        query = gql`
+        query FetchUserCampaigndCheckins($campaignId: String!, $startDate: String!, $endDate: String!, $userId: String) {
+          UserCampaignCheckins(input: {campaign_id: $campaignId, startDate: $startDate, endDate: $endDate, user_id: $userId }) {
+            _id
+            user_id
+            campaign_id
+            checkin
+            sessions {
+              _id
+              start_time
+              end_time
+              location {
+                coordinates
+              }
+            }
+            checkout
+          }
+        }
+      `;
 
+        const response = await graphql.query<IGraphqlCheckinResponse>({
+          query,
+          variables: {
+            campaignId,
+            startDate,
+            endDate,
+            userId,
+          },
+        });
+
+        if (response && response.data && response.data.UserCampaignCheckins) {
+          return response.data.UserCampaignCheckins;
+        } 
+          throw new Error("Failed to fetch campaign user checkins");
+        
+      } else {
+        query = gql`
+        query FetchUserCampaigndCheckins($campaignId: String!, $startDate: String!, $endDate: String!) {
+          UserCampaignCheckins(input: {campaign_id: $campaignId, startDate: $startDate, endDate: $endDate }) {
+            _id
+            user_id
+            campaign_id
+            checkin
+            sessions {
+              _id
+              start_time
+              end_time
+              location {
+                coordinates
+              }
+            }
+            checkout
+          }
+        }
+      `;
+
+        const response = await graphql.query<IGraphqlCheckinResponse>({
+          query,
+          variables: {
+            campaignId,
+            startDate,
+            endDate,
+          },
+        });
+
+        if (response && response.data && response.data.UserCampaignCheckins) {
+          return response.data.UserCampaignCheckins;
+        } 
+          throw new Error("Failed to fetch campaign user checkins");
+        
+
+      }
+
+    } catch (error) {
+      console.error(error, "CHECKIN FETCH ERROR");
+      throw new Error("Failed to get campaign user checkins");
+    }
+  };
   return {
     loading,
     campaigns,
     saveCampaign,
     updateCampaign,
-    getCampaignUsers
+    getCampaignUsers,
+    getCampaignUserCheckins
     // togglecampaignStatus,
     // deletecampaign,
   };

@@ -29,7 +29,7 @@ import RouteCreateEditForm from './edit/route-create-edit-form';
 
 const ProductListDataGrid = lazy(() => import('../product/product-list-data-grid'));
 
-const UserActivityDataGrid = lazy(() => import('./list/user-activity/user-activity-data-grid'));
+const UserActivityView = lazy(() => import('./list/user-activity'));
 
 
 const CampaignNewEditRouteForm = lazy(() => import('./edit/campaign-new-edit-route'));
@@ -485,7 +485,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm /></Suspense>}
         {currentTab === 'reports' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
         {currentTab === 'products' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid clientId={currentCampaign?.client_id.toString() ?? ""} campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'users' && currentCampaign && <Suspense fallback={<LoadingScreen />}><UserActivityDataGrid campaignId={currentCampaign._id.toString()} /></Suspense>}
+        {currentTab === 'users' && currentCampaign && <Suspense fallback={<LoadingScreen />}><UserActivityView campaignId={currentCampaign._id.toString()} /></Suspense>}
         <Suspense fallback={<LoadingScreen />}>
           {
             currentTab === 'routes' &&
