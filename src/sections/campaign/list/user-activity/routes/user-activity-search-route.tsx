@@ -25,7 +25,7 @@ type Props = {
     handleClick: (route: IRoute) => void;
 };
 
-export default function CampaignSearchRoute({
+export default function UserActivitySearchRoute({
     handleClick
 }: Props) {
 

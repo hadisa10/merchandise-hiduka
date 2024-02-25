@@ -20,9 +20,10 @@ import { MapPopup, MapControl } from 'src/components/map';
 import { LoadingScreen } from 'src/components/loading-screen';
 import GeocoderControl from 'src/components/map/geocoder-controller';
 
+import RouteMapControlPanel from 'src/sections/campaign/map/campaign-route-map-control-panel';
+
 import { CountryData } from 'src/types/campaign';
 
-import CampaignRouteMapControlPanel from "./map/campaign-route-map-control-panel"
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -56,7 +57,7 @@ const NairobiCoord: { longitude: number, latitude: number } = {
   longitude: 36.817223
 }
 
-const CampaignRoutesMap = forwardRef<MapRef, Props>(({
+const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
   contacts,
   popupInfo,
   handleSetPopupInfo,
@@ -370,7 +371,7 @@ const CampaignRoutesMap = forwardRef<MapRef, Props>(({
               )}
               {
                 mdUp &&
-                <CampaignRouteMapControlPanel >
+                <RouteMapControlPanel >
                   <IconButton
                     onClick={isLocked.onToggle}
                     sx={{
@@ -395,7 +396,7 @@ const CampaignRoutesMap = forwardRef<MapRef, Props>(({
                     }
                   </IconButton>
                   {childrenControlPanel}
-                </CampaignRouteMapControlPanel>
+                </RouteMapControlPanel>
               }
 
             </Map>
@@ -405,13 +406,13 @@ const CampaignRoutesMap = forwardRef<MapRef, Props>(({
       {
         !mdUp &&
         <Grid xs={12} >
-          <CampaignRouteMapControlPanel >
+          <RouteMapControlPanel >
             {childrenControlPanel}
-          </CampaignRouteMapControlPanel>
+          </RouteMapControlPanel>
         </Grid>
       }
     </Grid>
   );
 })
 
-export default memo(CampaignRoutesMap)
+export default memo(UserActivityRoutesMap)

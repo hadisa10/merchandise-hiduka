@@ -61,10 +61,14 @@ export interface IClientChange {
 export interface IGraphqlResponse {
     clients: IClient[];
 }
+export interface IGraphqlClientResponse {
+    client: IClient;
+}
 export interface IClientActions {
     saveClient: (draftClient: IDraftClient) => Promise<void>;
     toggleClientStatus: (client: IClient) => Promise<void>;
     deleteClient: (client: IClient) => Promise<void>;
+    getClient: (id: string) => Promise<IClient>;
 }
 
 export interface IClientHook extends IClientActions {

@@ -14,7 +14,7 @@ import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 
 import CampaignListDataGrid from "../../list/campaigns/campaign-list-data-grid";
 
-export default function CampaignAdminListView() {
+export default function CampaignList() {
     return (
         <>
             <CustomBreadcrumbs

@@ -22,12 +22,15 @@ import Label from 'src/components/label';
 import { LoadingScreen } from 'src/components/loading-screen';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import { IRoute, ICampaign, ICampaign_routes } from 'src/types/realm/realm-types';
+import { IRoute, ICampaign, ICampaignRoutes } from 'src/types/realm/realm-types';
 
 import CampaignDetailsToolbar from './campaign-details-toolbar';
 import RouteCreateEditForm from './edit/route-create-edit-form';
 
 const ProductListDataGrid = lazy(() => import('../product/product-list-data-grid'));
+
+const UserActivityView = lazy(() => import('./list/user-activity'));
+
 
 const CampaignNewEditRouteForm = lazy(() => import('./edit/campaign-new-edit-route'));
 const CampaignNewEditDetailsForm = lazy(() => import('./edit/campaign-new-edit-details-form'));
@@ -48,6 +51,7 @@ export const CAMPAING_DETAILS_TABS = [
   { value: 'reports', label: 'Reports' },
   { value: 'products', label: 'Products' },
   { value: 'routes', label: 'Routes' },
+  { value: 'users', label: 'User Activity' }
 ];
 
 
@@ -247,7 +251,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         road: route.road ?? ''
       }
       const dt = new Date();
-      const routeForForm: ICampaign_routes = {
+      const routeForForm: ICampaignRoutes = {
         _id: createObjectId(), // Ensure _id is a string to match the form's expectation
         routeAddress: rtAddrs,
         routeNumber: Array.isArray(campaignRoutes) ? campaignRoutes.length + 1 : 1,
@@ -448,7 +452,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       value={currentTab}
       onChange={handleChangeTab}
       sx={{
-        mb: { xs: 3, md: 5 },
+        mb: { xs: 1, md: 2 },
       }}
     >
       {tabArray.map((tab) => (
@@ -481,7 +485,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm /></Suspense>}
         {currentTab === 'reports' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
         {currentTab === 'products' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid clientId={currentCampaign?.client_id.toString() ?? ""} campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'users' && currentCampaign && <>USERS</>}
+        {currentTab === 'users' && currentCampaign && <Suspense fallback={<LoadingScreen />}><UserActivityView campaignId={currentCampaign._id.toString()} /></Suspense>}
         <Suspense fallback={<LoadingScreen />}>
           {
             currentTab === 'routes' &&

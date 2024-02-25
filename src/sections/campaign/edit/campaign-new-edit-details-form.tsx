@@ -320,8 +320,6 @@ const CampaignNewEditDetailsForm: FC = () => {
 
           <Grid xs={12} md={8}>
             <Card>
-              <CardHeader title="Users" />
-
               <Stack spacing={3} sx={{ p: 3 }}>
                 <Stack spacing={1}>
                   <Typography variant="subtitle2">Timelines</Typography>

@@ -55,7 +55,7 @@ export type ICampaign = {
     products: Array<Realm.BSON.ObjectId>;
     users: Array<Realm.BSON.ObjectId>;
     project_id: Realm.BSON.ObjectId;
-    routes: Array<ICampaign_routes>;
+    routes: Array<ICampaignRoutes>;
     workingSchedule: Array<string>,
     startDate: Date;
     title: string;
@@ -102,7 +102,7 @@ export type IFilledReportsAnswer<T = Realm.BSON.ObjectId> = {
     question_id: T;
     question_text: string;
     type: string;
-  };
+};
 
 // Exporting the Main Report Questions Interface with Generics
 export interface IReportQuestion<T = Realm.BSON.ObjectId> {
@@ -177,7 +177,7 @@ export const ICampaignSchema = {
         client_id: 'objectId',
         products: 'objectId[]',
         project_id: 'objectId',
-        routes: 'ICampaign_routes[]',
+        routes: 'ICampaignRoutes[]',
         title: 'string',
         today_checkin: 'int',
         total_checkin: 'int',
@@ -186,7 +186,7 @@ export const ICampaignSchema = {
     primaryKey: '_id',
 };
 
-export type ICampaign_routes = {
+export type ICampaignRoutes = {
     _id: Realm.BSON.ObjectId;
     // checkins: Array<Realm.BSON.ObjectId>;
     createdAt: Date;
@@ -197,7 +197,7 @@ export type ICampaign_routes = {
 };
 
 export const ICampaign_routesSchema = {
-    name: 'ICampaign_routes',
+    name: 'ICampaignRoutes',
     embedded: true,
     properties: {
         _id: 'objectId',
@@ -234,12 +234,20 @@ export const ICampaign_routes_routeAddressSchema = {
     },
 };
 
-export type checkins = {
+export type ICheckin = {
     _id: Realm.BSON.ObjectId;
-    ICampaign_id: Realm.BSON.ObjectId;
+    activeCheckins: Array<ICheckinsActiveCheckins>;
+    campaign_id: Realm.BSON.ObjectId;
     checkin: Date;
-    checkout: Date;
-    sessions: Array<checkins_sessions>;
+    checkout?: Date;
+    createdAt: Date;
+    sessions: Array<ICheckinsSessions>;
+    updatedAt?: Date;
+    user_id: Realm.BSON.ObjectId;
+};
+
+export type ICheckinsActiveCheckins = {
+    checkin_id: Realm.BSON.ObjectId;
     user_id: Realm.BSON.ObjectId;
 };
 
@@ -250,22 +258,26 @@ export const checkinsSchema = {
         ICampaign_id: 'objectId',
         checkin: 'date',
         checkout: 'date',
-        sessions: 'checkins_sessions[]',
+        sessions: 'ICheckinsSessions[]',
         user_id: 'objectId',
     },
     primaryKey: '_id',
 };
 
-export type checkins_sessions = {
+export type ICheckinsSessions = {
     end_time?: Date;
-    id: Realm.BSON.ObjectId;
+    _id: Realm.BSON.ObjectId;
     reports: Array<Realm.BSON.ObjectId>;
+    location: {
+        type: string,
+        coordinates: number[]
+    };
     start_time: Date;
     stock: Array<Realm.BSON.ObjectId>;
 };
 
-export const checkins_sessionsSchema = {
-    name: 'checkins_sessions',
+export const ICheckinsSessionsSchema = {
+    name: 'ICheckinsSessions',
     embedded: true,
     properties: {
         end_time: 'date?',

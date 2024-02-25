@@ -1,6 +1,4 @@
-import { _userList } from 'src/_mock/_user';
-
-import { UserEditView } from 'src/sections/user/view';
+import { ClientEditView } from 'src/sections/client/view';
 
 // ----------------------------------------------------------------------
 
@@ -17,11 +15,5 @@ type Props = {
 export default function ClientEditPage({ params }: Props) {
   const { id } = params;
 
-  return <UserEditView id={id} />;
-}
-
-export async function generateStaticParams() {
-  return _userList.map((user) => ({
-    id: user.id,
-  }));
+  return <ClientEditView id={id} />;
 }
