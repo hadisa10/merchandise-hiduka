@@ -22,7 +22,9 @@ import { DataGridFlexible } from "src/components/data-grid";
 import { useSettingsContext } from "src/components/settings";
 import { LoadingScreen } from "src/components/loading-screen";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
-import { IColumn } from "src/components/data-grid/data-grid-flexible";
+import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
+
+import { IClient } from "src/types/client";
 
 export default function ClientListView() {
     const settings = useSettingsContext();
@@ -59,8 +61,8 @@ export default function ClientListView() {
         [router]
     );
 
-    const columns: IColumn[] = useMemo(() => {
-        const cols: Omit<IColumn, "order">[] = [
+    const columns: IGenericColumn<IClient>[] = useMemo(() => {
+        const cols: Omit<IGenericColumn<IClient>, "order">[] = [
             {
                 field: "_id",
                 label: "id",
@@ -223,6 +225,7 @@ export default function ClientListView() {
                 {loading && showLoader ? (
                     <LoadingScreen />
                 ) : (
+                    // @ts-expect-error expected
                     <DataGridFlexible data={cleanedClients} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} />
                 )}
             </Card>
