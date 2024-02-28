@@ -37,6 +37,8 @@ export interface ICampaignUser extends IUser {
     isCheckedIn: boolean;
     checkInCount: number;
     totalSessionCount: number;
+    totalEarnings: number;
+    totalHoursWorked: number;
 }
 
 export interface IDraftUser {

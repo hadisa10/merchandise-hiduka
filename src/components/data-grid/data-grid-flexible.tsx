@@ -1,14 +1,16 @@
+import { saveAs } from 'file-saver';
 import { isObject, isString } from 'lodash';
 import React, { useMemo, useState } from 'react';
 
-import { Box, Stack, Avatar, Typography } from '@mui/material';
+import { Box, Stack, Avatar, Button, Typography } from '@mui/material';
 import {
+  GridApi,
   DataGrid,
   GridColDef,
   GridRowModel,
   GridRowParams,
   GridRowIdGetter,
-  GridToolbarExport,
+  useGridApiContext,
   GridActionsCellItem,
   GridToolbarContainer,
   GridRenderCellParams,
@@ -69,6 +71,7 @@ interface DataGridFlexibleProps<RowType extends GridRowModel> {
   data: RowType[];
   getRowIdFn: GridRowIdGetter<RowType>;
   columns: IColumnsArray<RowType>;
+  title: string;
   hideColumn?: Record<string, boolean>;
 }
 
@@ -99,7 +102,7 @@ const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions)
 };
 
 
-const renderMainCell  = <T, >(params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>, column?: IGenericColumn<T>) => {
+const renderMainCell = <T,>(params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>, column?: IGenericColumn<T>) => {
   const { value } = params;
   return (
     <Stack spacing={2} direction="row" alignItems="center" sx={{ minWidth: 0 }}>
@@ -232,12 +235,44 @@ function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): 
 }
 
 
+// This function handles the CSV content creation and triggers the download
+const customExportCsv = (apiRef: React.MutableRefObject<GridApi>, columns: GridColDef[], title: string) => {
+  const columnHeaders = apiRef.current.getAllColumns().map((col: GridColDef) => col.field);
+  const csvRows = [columnHeaders.join(',')]; // First row for column headers
+  console.log(columnHeaders, 'HEADERS');
+
+  apiRef.current.getAllRowIds().forEach((id) => {
+    const row = apiRef.current.getRow(id) as any;
+    const csvRow = columnHeaders.filter(x => x !== "_check__").map(field => {
+      console.log(field, "FIELD");
+      const cellValue = row[field];
+      if (cellValue === undefined) {
+        return '""'; // Represent undefined values as empty strings in the CSV
+      } if (Array.isArray(cellValue)) {
+        // Convert array to a string representation, joined by a character like "; "
+        return `"${cellValue.join('; ')}"`; // Enclose in quotes to ensure commas in values don't break CSV format
+      } 
+        // Handle internal quotes and enclose values in quotes, convert null or other types to string
+        return `"${(cellValue ?? '').toString().replace(/"/g, '""')}"`;
+      
+    }).join(',');
+    csvRows.push(csvRow);
+  });
+
+  const csvContent = csvRows.join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  saveAs(blob, 'data-grid-export.csv');
+};
+
+
+
 // The DataGridFlexible component
 export default function DataGridFlexible<RowType extends GridRowModel>({
   data: rows,
   getRowIdFn,
   columns: columnsArray,
-  hideColumn
+  hideColumn,
+  title
 }: DataGridFlexibleProps<RowType>) {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -258,7 +293,7 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
       columnVisibilityModel={columnVisibilityModel}
       onColumnVisibilityModelChange={setColumnVisibilityModel}
       slots={{
-        toolbar: CustomToolbar,
+        toolbar: () => <CustomToolbar columns={columns} title={title}/>,
         noRowsOverlay: () => <EmptyContent title="No Data" />,
         noResultsOverlay: () => <EmptyContent title="No results found" />,
       }}
@@ -272,7 +307,8 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
 }
 
 // CustomToolbar component
-function CustomToolbar() {
+function CustomToolbar({columns, title}:{columns: GridColDef[], title: string}) {
+  const gridT = useGridApiContext();
   return (
     <GridToolbarContainer>
       <GridToolbarQuickFilter />
@@ -280,7 +316,14 @@ function CustomToolbar() {
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarDensitySelector />
-      <GridToolbarExport />
+      <Button
+        startIcon={
+          <Iconify icon="solar:export-broken" />}
+        onClick={() => customExportCsv(gridT, columns, title)}
+      >
+        Export
+      </Button>
+      {/* <GridToolbarExport /> */}
     </GridToolbarContainer>
   );
 }

@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import { Divider, MenuItem } from '@mui/material';
 import { MobileDatePicker, MobileTimePicker, DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
 
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -24,6 +25,7 @@ import {
 import { LoadingScreen } from 'src/components/loading-screen';
 import {
   RHFEditor,
+  RHFSelect,
   RHFTextField,
   RHFAutocomplete,
 } from 'src/components/hook-form';
@@ -31,9 +33,14 @@ import {
 import { ICalendarDate } from 'src/types/calendar';
 
 // ----------------------------------------------------------------------
+const INACTIVITY_LIMIT = [
+  {"label": "30 min", "value": 1800000},
+  {"label": "1 hour", "value": 3600000},
+  {"label": "3 hours", "value": 10800000}
+]
 
 
-const CampaignNewEditDetailsForm: FC = () => {
+const CampaignNewEditDetailsTab: FC = () => {
   const { users, loading: loadingUsers } = useUsers();
 
   const { control, getFieldState } = useFormContext();
@@ -377,6 +384,7 @@ const CampaignNewEditDetailsForm: FC = () => {
               </Stack>
             </Card>
           </Grid>
+
         </>
       }
     </>
@@ -492,16 +500,65 @@ const CampaignNewEditDetailsForm: FC = () => {
     </>
   );
 
+  const renderUserManagement = (
+    <>
+      {mdUp && (
+        <Grid md={4}>
+          <Typography variant="h6" sx={{ mb: 0.5 }}>
+            Constraints
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Constraints details ...
+          </Typography>
+        </Grid>
+      )}
+
+      <Grid xs={12} md={8}>
+        <Card>
+          {!mdUp && <CardHeader title="Constraints" />}
+
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">Constraints</Typography>
+            </Stack>
+
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">In Activity Limit</Typography>
+              <RHFSelect name="inactivityTimeout" label="In Activity Limit">
+                <MenuItem value="">None</MenuItem>
+                <Divider sx={{ borderStyle: 'dashed' }} />
+                {INACTIVITY_LIMIT.map((limit) => (
+                  <MenuItem key={limit.value} value={limit.value}>
+                    {limit.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            </Stack>
+
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Hourly rate</Typography>
+              <RHFTextField name="hourlyRate" placeholder="Ex: 200..." />
+            </Stack>
+          </Stack>
+        </Card>
+      </Grid>
+    </>
+  );
+
+
   return (
     <Grid container spacing={3}>
+
       {renderDetails}
 
       {renderDateDetails}
 
       {renderUsers}
 
+      {renderUserManagement}
+
     </Grid>
   );
 }
 
-export default memo(CampaignNewEditDetailsForm)
+export default memo(CampaignNewEditDetailsTab)

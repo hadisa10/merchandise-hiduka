@@ -60,7 +60,7 @@ export const REPORT_DETAILS_TABS = [
 
 // Lazy load the components
 const QuestionsNewEditList = lazy(() => import('./question-component/questions-new-edit'));
-const CampaignDetailsToolbar = lazy(() => import('./report-details-toolbar'));
+const ReportsDetailsToolbar = lazy(() => import('./report-details-toolbar'));
 const ReportNewEditDetailsForm = lazy(() => import('./edit/report-new-edit-details-form'));
 const ResponsesGridView = lazy(() => import('./responses-component/responses-list-view'));
 
@@ -99,10 +99,10 @@ export default function ReportNewEditForm({ currentReport }: Props) {
 
   const questionValidationSchema = Yup.object().shape({
     required: Yup.boolean().nullable(),
-    minLength: Yup.number().nullable(),
-    maxLength: Yup.number().nullable(),
-    minValue: Yup.number().nullable(),
-    maxValue: Yup.number().nullable(),
+    minLength: Yup.number().nullable().typeError("Min Length must be a number"),
+    maxLength: Yup.number().nullable().typeError("Max Length must be a number"),
+    minValue: Yup.number().nullable().typeError("Min Value must be a number"),
+    maxValue: Yup.number().nullable().typeError("Min Value must be a number"),
     regex: regexValidationSchema,
     fileTypes: Yup.array().of(Yup.string()).nullable(), // Allows null and an array of strings
   }).nullable();
@@ -263,7 +263,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
       value={currentTab}
       onChange={handleChangeTab}
       sx={{
-        mb: { xs: 3, md: 5 },
+        mb: { xs: 1, md: 2 },
       }}
     >
       {REPORT_DETAILS_TABS.map((tab) => (
@@ -284,19 +284,21 @@ export default function ReportNewEditForm({ currentReport }: Props) {
   );
 
   return (
-    <>
-      {renderTabs}
-      <FormProvider methods={methods} onSubmit={onSubmit}>
-        <CampaignDetailsToolbar
+    <FormProvider methods={methods} onSubmit={onSubmit}>
+        <ReportsDetailsToolbar
           currentReport={currentReport}
           isSubmitting={isSubmitting}
           backLink={paths.dashboard.report.root}
         />
+        {renderTabs}
 
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} /></Suspense>}
         {currentTab === 'questions' && <Suspense fallback={<LoadingScreen />}><QuestionsNewEditList /></Suspense>}
         {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><ResponsesGridView id={currentReport?._id && currentReport?._id.toString()} questions={currentReport?.questions} /></Suspense>}
-
+        {currentTab === 'test' &&
+          // @ts-expect-error expected
+          <RHFFormFiller questions={removeAndFormatNullFields(questions)} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
+        }
         {/* {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {
@@ -305,11 +307,5 @@ export default function ReportNewEditForm({ currentReport }: Props) {
           <RHFFormFiller questions={questions} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
         } */}
       </FormProvider >
-      {currentTab === 'test' &&
-        // @ts-expect-error expected
-        <RHFFormFiller questions={removeAndFormatNullFields(questions)} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
-      }
-
-    </>
   );
 }

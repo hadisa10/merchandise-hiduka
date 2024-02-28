@@ -61,6 +61,8 @@ export function useCampaigns(lazy = false): ICampaignHook {
           workingSchedule
           checkInTime
           checkOutTime
+          hourlyRate
+          inactivityTimeout
           today_checkin
           total_checkin
           type
@@ -237,6 +239,8 @@ export function useCampaigns(lazy = false): ICampaignHook {
               isCheckedIn
               checkInCount
               totalSessionCount
+              totalEarnings
+              totalHoursWorked
             }
           }
         `,
@@ -262,6 +266,7 @@ export function useCampaigns(lazy = false): ICampaignHook {
             user_id
             campaign_id
             checkin
+            lastActivity
             sessions {
               _id
               start_time

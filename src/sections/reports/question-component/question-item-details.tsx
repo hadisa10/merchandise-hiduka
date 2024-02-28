@@ -1,6 +1,5 @@
 // 
 
-import { UseFormRegister } from 'react-hook-form';
 import { isNumber, isString, capitalize } from 'lodash';
 import React, { lazy, memo, useMemo, useState, Suspense, useEffect, useCallback, ChangeEvent } from 'react';
 
@@ -15,7 +14,7 @@ import { fDateTime } from 'src/utils/format-time';
 import Scrollbar from 'src/components/scrollbar';
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
+import { IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, ActualInputType, IReportQuestionActions } from 'src/types/report';
 
 const QuestionInputName = lazy(() => import('./question-input-name'));
@@ -43,7 +42,6 @@ type Props = {
   onCloseDetails: VoidFunction;
   actions: IReportQuestionActions;
   questionError?: QuestionError;
-  register: UseFormRegister<IReport>;
   index: number;
   //
   // onUpdateQuestion: (onUpdateQuestion: IReportQuestion) => void;
@@ -68,7 +66,6 @@ const QuestionDetails: React.FC<Props> = ({
   questionError,
   actions,
   index,
-  register,
   //
   onDeleteQuestion,
 }) => {
@@ -283,7 +280,6 @@ const QuestionDetails: React.FC<Props> = ({
       placeholder="Question"
       value={questionText}
       name={`questions.${index}.text`}
-      register={register}
       onChange={handleChangeQuestionName}
       onKeyUp={handleUpdateTask}
       error={!!textErrorMessage}
@@ -319,8 +315,7 @@ const QuestionDetails: React.FC<Props> = ({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        // name={`questions.${index}.validation.maxLength`}
-        // register={register}
+        name={`questions.${index}.validation.maxLength`}
         onChange={onChangeMaxLength}
         onKeyUp={handleUpdateMaxLength}
         error={!!questionError?.validation?.maxLength?.message}
@@ -339,8 +334,7 @@ const QuestionDetails: React.FC<Props> = ({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        // name={`questions.${index}.validation.minLength`}
-        // register={register}
+        name={`questions.${index}.validation.minLength`}
         onChange={onChangeMinLength}
         onKeyUp={handleUpdateMinLength}
         error={!!questionError?.validation?.minLength?.message}
@@ -358,8 +352,7 @@ const QuestionDetails: React.FC<Props> = ({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        // name={`questions.${index}.validation.maxValue`}
-        // register={register}
+        name={`questions.${index}.validation.maxValue`}
         onChange={onChangeMaxValue}
         onKeyUp={handleUpdateMaxValue}
         error={!!questionError?.validation?.maxValue?.message}
@@ -378,8 +371,7 @@ const QuestionDetails: React.FC<Props> = ({
         size="small"
         type='number'
         inputProps={{ min: 1, step: 1 }}
-        // name={`questions.${index}.validation.minValue`}
-        // register={register}
+        name={`questions.${index}.validation.minValue`}
         onChange={onChangeMinValue}
         onKeyUp={handleUpdateMinValue}
         error={!!questionError?.validation?.minValue?.message}
@@ -397,8 +389,7 @@ const QuestionDetails: React.FC<Props> = ({
             placeholder="matches"
             value={regexMatches}
             size="small"
-            // name={`questions.${index}.validation.regex.matches`}
-            // register={register}
+            name={`questions.${index}.validation.regex.matches`}
             onChange={onChangeRegexMatchesVal}
             onKeyUp={handleUpdateRegexMatchesValue}
             error={!!questionError?.validation?.regex?.matches}
@@ -409,8 +400,7 @@ const QuestionDetails: React.FC<Props> = ({
             placeholder="message"
             value={regexMessage}
             size="small"
-            // name={`questions.${index}.validation.regex.message`}
-            // register={register}
+            name={`questions.${index}.validation.regex.message`}
             onChange={onChangeRegexMessageVal}
             onKeyUp={handleUpdateRegexMessageValue}
             error={!!questionError?.validation?.regex?.matches?.message}
@@ -421,9 +411,6 @@ const QuestionDetails: React.FC<Props> = ({
       </Stack>
     </Stack>
   );
-
-
-
 
   const renderUnique = (
     <Stack direction="row" alignItems="start">
@@ -464,7 +451,6 @@ const QuestionDetails: React.FC<Props> = ({
                   }
                 </List>
               </Stack>;
-
             break;
           case "input_type":
             val = renderInputType;

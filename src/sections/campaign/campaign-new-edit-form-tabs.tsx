@@ -31,9 +31,8 @@ const ProductListDataGrid = lazy(() => import('../product/product-list-data-grid
 
 const UserActivityView = lazy(() => import('./list/user-activity'));
 
-
 const CampaignNewEditRouteForm = lazy(() => import('./edit/campaign-new-edit-route'));
-const CampaignNewEditDetailsForm = lazy(() => import('./edit/campaign-new-edit-details-form'));
+const CampaignNewEditDetailsTab = lazy(() => import('./edit/campaign-new-edit-details-tab'));
 const ReportListDataGrid = lazy(() => import('../reports/view/report-list-data-grid'));
 
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
@@ -112,6 +111,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         })
       )
     ),
+    hourlyRate: Yup.number().min(0).required("Hourly rate is required").typeError("Hourly rate must be a number"),
+    inactivityTimeout: Yup.number().required("Inactivity limit required"),
     startDate: Yup.date()
       .transform((value, originalValue) => {
         // Check if the originalValue is a number (Unix timestamp in milliseconds)
@@ -199,6 +200,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       checkInTime: currentCampaign?.checkInTime || '',
       checkOutTime: currentCampaign?.checkOutTime || '',
       workingSchedule: currentCampaign?.workingSchedule || [],
+      hourlyRate: currentCampaign?.hourlyRate || 0,
+      inactivityTimeout: currentCampaign?.inactivityTimeout || 0,
       routes: currentCampaign?.routes?.map(r => {
         const _id = r._id.toString()
         if (r.routeAddress) {
@@ -303,6 +306,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       const _id = createObjectId().toString();
       const prodject_id = createObjectId().toString()
       const client_id = convertObjectId(data.client_id).toString();
+      
       if (!currentCampaign) {
         const campaign: ICampaign = {
           ...data,
@@ -411,7 +415,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
             {
               key: "checkOutTime",
               formatter: safeDateFormatter,
-            }
+            },
           ]
         );
         console.log(cleanData, 'CLEAN DATA')
@@ -482,7 +486,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         />
         {renderTabs}
 
-        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsForm /></Suspense>}
+        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsTab /></Suspense>}
         {currentTab === 'reports' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
         {currentTab === 'products' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid clientId={currentCampaign?.client_id.toString() ?? ""} campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
         {currentTab === 'users' && currentCampaign && <Suspense fallback={<LoadingScreen />}><UserActivityView campaignId={currentCampaign._id.toString()} /></Suspense>}

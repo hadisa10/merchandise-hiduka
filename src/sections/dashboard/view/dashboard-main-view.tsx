@@ -24,6 +24,8 @@ export default function DashboardView() {
     const settings = useSettingsContext();
 
     const realmApp = useRealmApp();
+
+    
     const role = useMemo(() => realmApp.currentUser?.customData.role as unknown as IRole, [realmApp.currentUser?.customData.role])
     const renderDashboard = useCallback(() => {
         switch (role) {

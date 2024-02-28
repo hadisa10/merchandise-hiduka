@@ -5,7 +5,7 @@ import { CampaignEditView } from 'src/sections/campaign/view';
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Client Edit',
+  title: 'Dashboard: Campaign Edit',
 };
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
   };
 };
 
-export default function ClientEditPage({ params }: Props) {
+export default function CampaignEditPage({ params }: Props) {
   const { id } = params;
 
   return <CampaignEditView id={id} />;

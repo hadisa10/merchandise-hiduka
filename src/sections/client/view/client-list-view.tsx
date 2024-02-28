@@ -226,7 +226,7 @@ export default function ClientListView() {
                     <LoadingScreen />
                 ) : (
                     // @ts-expect-error expected
-                    <DataGridFlexible data={cleanedClients} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} />
+                    <DataGridFlexible data={cleanedClients} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} title="Clients table title"/>
                 )}
             </Card>
         </Container>

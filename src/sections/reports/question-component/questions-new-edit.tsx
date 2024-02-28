@@ -36,7 +36,7 @@ const QuestionsNewEditList = () => {
 
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
 
-  const { control, watch, formState: { errors }, register } = useFormContext<IReport>();
+  const { control, watch, formState: { errors } } = useFormContext<IReport>();
 
   const { fields: questions, prepend, remove, move, update } = useFieldArray({
     control,
@@ -305,7 +305,6 @@ const QuestionsNewEditList = () => {
                     index={index}
                     actions={actions}
                     question={q}
-                    register={register}
                     questionError={errors.questions?.[index]} // Pass the corresponding error
                     handleOpenAddProduct={handleOpenAddProduct}
                     onUpdateQuestion={(qs: IReportQuestion) => console.log(qs)}
