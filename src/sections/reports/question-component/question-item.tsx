@@ -1,6 +1,5 @@
 import { Suspense, forwardRef } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
-import { UseFormRegister } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -16,10 +15,10 @@ import { bgBlur } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { IReport, IReportQuestion } from 'src/types/realm/realm-types';
+import { IReportQuestion } from 'src/types/realm/realm-types';
 import { QuestionError, IReportQuestionActions } from 'src/types/report';
 
-import QuestionItemDetails from './question-item-details';
+import QuestionDetails from './question-item-details';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +29,6 @@ type Props = PaperProps & {
   handleOpenAddProduct: (index: number) => void;
   onDeleteQuestion: VoidFunction;
   questionError?: QuestionError;
-  register: UseFormRegister<IReport>;
   actions: IReportQuestionActions;
   campaignId?: string;
 };
@@ -42,7 +40,6 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
   onUpdateQuestion,
   handleOpenAddProduct,
   questionError,
-  register,
   campaignId,
   actions,
   sx,
@@ -62,18 +59,20 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
     <Iconify
       icon={
         (question.input_type === 'text' && 'ic:baseline-text-fields') ||
-        (question.input_type === 'number' && 'ic:baseline-numeric') ||
+        (question.input_type === 'number' && 'mdi:numeric') ||
         (question.input_type === 'select' && 'ic:baseline-arrow-drop-down-circle') ||
         (question.input_type === 'radio' && 'ic:baseline-radio-button-checked') ||
         (question.input_type === 'checkbox' && 'ic:baseline-check-box') ||
         (question.input_type === 'date' && 'ic:baseline-event') ||
         (question.input_type === 'email' && 'ic:baseline-email') ||
         (question.input_type === 'file' && 'ic:baseline-attach-file') ||
-        (question.input_type === 'password' && 'ic:baseline-password') ||
         (question.input_type === 'range' && 'ic:baseline-tune') ||
         (question.input_type === 'url' && 'ic:baseline-link') ||
+        (question.input_type === 'image' && 'uim:image-v') ||
+        (question.input_type === 'geopoint' && 'mdi:location') ||
         'ic:baseline-help-outline' // Default icon if no match
       }
+
       sx={{
         position: 'absolute',
         top: 4,
@@ -88,7 +87,7 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
             case 'date':
             case 'email':
             case 'file':
-            case 'password':
+            case 'image':
             case 'range':
             case 'url':
               return 'primary.main'; // Change color based on input type if needed
@@ -196,11 +195,10 @@ const QuestionItem = forwardRef<HTMLDivElement, Props>(({
         )}
       </Draggable>
 
-      <QuestionItemDetails
+      <QuestionDetails
         question={question}
         index={index}
         questionError={questionError}
-        register={register}
         actions={actions}
         openDetails={openDetails.value}
         onCloseDetails={openDetails.onFalse}

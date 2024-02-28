@@ -96,11 +96,6 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
 
     useEffect(() => {
         if (startDate && endDate && user._id) {
-            console.log(campaignId, "CAMPAIGN ID")
-
-            console.log(startDate, "START DATE")
-
-            console.log(endDate, "END DATE")
             getCampaignUserCheckins(campaignId, startDate.toISOString(), endDate.toISOString(), user._id.toString())
                 .then(res => {
                     console.log(res, 'RESPONSE')

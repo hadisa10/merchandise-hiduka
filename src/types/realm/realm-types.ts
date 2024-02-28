@@ -44,6 +44,33 @@ export type IRouteProducts = {
     quantity: number;
 };
 
+export interface IDashboardMetricType {
+    type: string;
+    count: number;
+  }
+  
+  export interface ICampaignCheckIn {
+    campaignId: string; // Adjust if using ObjectId type
+    campaignTitle: string;
+    totalCheckIns: number;
+  }
+  
+  export interface ICampaignsPerClient {
+    clientId: string; // Adjust if using ObjectId type
+    clientName: string;
+    numberOfCampaigns: number;
+  }
+  
+  export interface IDashboardMetrics {
+    totalCampaigns: number;
+    campaignsByType: IDashboardMetricType[];
+    totalCheckInsToday: number;
+    averageCheckInDuration: number;
+    totalCheckInsPerCampaign: ICampaignCheckIn[];
+    campaignsPerClient: ICampaignsPerClient[];
+  }
+
+
 export type ICampaign = {
     _id: Realm.BSON.ObjectId;
     access_code: string;
@@ -52,6 +79,8 @@ export type ICampaign = {
     endDate: Date;
     checkInTime?: Date;
     checkOutTime?: Date;
+    hourlyRate: number;
+    inactivityTimeout: number;
     products: Array<Realm.BSON.ObjectId>;
     users: Array<Realm.BSON.ObjectId>;
     project_id: Realm.BSON.ObjectId;
@@ -243,6 +272,7 @@ export type ICheckin = {
     createdAt: Date;
     sessions: Array<ICheckinsSessions>;
     updatedAt?: Date;
+    lastActivity: Date;
     user_id: Realm.BSON.ObjectId;
 };
 

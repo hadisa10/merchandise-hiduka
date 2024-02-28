@@ -63,7 +63,7 @@ export type IReportTableFilters = {
 };
 
 // Extend the union type to include 'range' and 'url'
-export type ActualInputType = 'text' | 'number' | 'select' | 'radio' | 'checkbox' | 'date' | 'email' | 'file' | 'password' | 'range' | 'geopoint' | 'url';
+export type ActualInputType = 'text' | 'number' | 'select' | 'radio' | 'checkbox' | 'date' | 'email' | 'file' | 'range' | 'geopoint' | 'image' | 'url';
 
 export type QuestionError = FieldErrors<IReportQuestion>;
 

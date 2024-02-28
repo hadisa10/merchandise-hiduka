@@ -68,18 +68,7 @@ const ICONS = {
   projectSmall: <Iconify icon="material-symbols:construction-rounded" sx={styleSmall} />
 };
 const renderAdmin = (t: TFunction<"translation", undefined>) => ([
-  // OVERVIEW
-  // ----------------------------------------------------------------------
-  {
-    subheader: t('Analysis'),
-    items: [
-      { title: t('Campaign Performance'), path: paths.dashboard.analytics.campaignPerformance, icon: ICONS.campaign },
-      { title: t('Activity Tracker'), path: paths.dashboard.analytics.userPerformance, icon: ICONS.userPerformace },
-      { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
-      { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
-      { title: t('Market and Competitive'), path: paths.dashboard.analytics.marketingCompetitive, icon: ICONS.marketAnalysis }
-    ],
-  },
+
 
   // MANAGEMENT
   // ----------------------------------------------------------------------
@@ -94,14 +83,6 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
           { title: t('create'), path: paths.dashboard.client.new },
         ]
       },
-      // // PROJECTS
-      // {
-      //   title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.project,
-      //   children: [
-      //     { title: t('list'), path: paths.dashboard.project.root },
-      //     { title: t('create'), path: paths.dashboard.project.new }
-      //   ]
-      // },
       {
         title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
       },
@@ -130,6 +111,18 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
         ]
       },
       // { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
+    ],
+  },
+  // ANALYSIS
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('Analysis'),
+    items: [
+      { title: t('Campaign Performance'), path: paths.dashboard.analytics.campaignPerformance, icon: ICONS.campaign },
+      { title: t('Activity Tracker'), path: paths.dashboard.analytics.userPerformance, icon: ICONS.userPerformace },
+      { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
+      { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
+      { title: t('Market and Competitive'), path: paths.dashboard.analytics.marketingCompetitive, icon: ICONS.marketAnalysis }
     ],
   },
 

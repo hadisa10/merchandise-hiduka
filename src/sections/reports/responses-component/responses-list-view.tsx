@@ -120,7 +120,7 @@ const ResponsesGridView: FC<{ id?: string, questions?: IReportQuestion[] }> = ({
             >
                 {showLoader && <LoadingScreen />}
                 {/* @ts-expect-error expected */}
-                {!showLoader && columns && answers && <DataGridFlexible data={answers} getRowIdFn={(row) => row._id.toString()} columns={columns} />}
+                {!showLoader && columns && answers && <DataGridFlexible data={answers} getRowIdFn={(row) => row._id.toString()} columns={columns} title="Responses table title"/>}
             </Card>
         </Container>
     );

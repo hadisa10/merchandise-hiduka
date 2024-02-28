@@ -64,8 +64,8 @@ export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRout
 
     const handleDeleteRows = useCallback((id: string) => {
         const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
-        if (user && handleOpenCheckInRouteView ) {
-             handleOpenCheckInRouteView(user);
+        if (user && handleOpenCheckInRouteView) {
+            handleOpenCheckInRouteView(user);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignUsers])
@@ -74,7 +74,7 @@ export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRout
         (id: string) => {
             const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
             if (user && handleOpenCheckInRouteView) {
-                 handleOpenCheckInRouteView(user);
+                handleOpenCheckInRouteView(user);
             }
 
         },
@@ -86,7 +86,7 @@ export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRout
         (id: string) => {
             const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
             if (user && handleOpenCheckInRouteView) {
-                 handleOpenCheckInRouteView(user);
+                handleOpenCheckInRouteView(user);
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,14 +113,24 @@ export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRout
                 type: "boolean",
                 minWidth: 120
             },
-
+            {
+                field: "totalHoursWorked",
+                label: "Total Hours Worked",
+                type: "number",
+                minWidth: 120
+            },
+            {
+                field: "totalEarnings",
+                label: "Total Earnings",
+                type: "number",
+                minWidth: 120
+            },
             {
                 field: "checkInCount",
                 label: "No. of Checkins",
                 type: "number",
                 minWidth: 120
             },
-
             {
                 field: "totalSessionCount",
                 label: "No. of Sessions",
@@ -200,7 +210,7 @@ export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRout
             {showLoader ? (
                 <LoadingScreen />
             ) : cleanedUsers && (
-                <DataGridFlexible data={cleanedUsers} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} />
+                <DataGridFlexible data={cleanedUsers} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} title="User activity table title" />
             )}
         </Card>
     );
