@@ -19,14 +19,15 @@ import { DataGridFlexible } from "src/components/data-grid";
 import { LoadingScreen } from "src/components/loading-screen";
 import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
 
+import { ICampaign } from "src/types/realm/realm-types";
 import { IUser, ICampaignUser } from "src/types/user_realm";
 
 interface IUserActivityDataGridProps {
-    campaignId: string;
+    campaign: ICampaign;
     handleOpenCheckInRouteView?: (user: IUser) => void;
 }
 
-export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRouteView }: IUserActivityDataGridProps) {
+export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteView }: IUserActivityDataGridProps) {
     // const { loading, clients } = useClients(false);
 
     const { getCampaignUsers } = useCampaigns(true);
@@ -39,6 +40,8 @@ export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRout
     const [campaignUsersError, setCampaignUsersError] = useState(null)
 
     const showLoader = useShowLoader(loadingCampaignUsers.value, 500);
+
+    const campaignId = useMemo(() => campaign._id.toString(), [campaign._id])
 
     useEffect(() => {
         if (isString(campaignId) && !isEmpty(campaignId)) {
@@ -210,7 +213,7 @@ export default function UserActivityDataGrid({ campaignId, handleOpenCheckInRout
             {showLoader ? (
                 <LoadingScreen />
             ) : cleanedUsers && (
-                <DataGridFlexible data={cleanedUsers} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} title="User activity table title" />
+                <DataGridFlexible data={cleanedUsers} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} title={`${campaign.title.split(" ").join("-")}-user-activity`} />
             )}
         </Card>
     );

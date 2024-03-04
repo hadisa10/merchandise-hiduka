@@ -102,14 +102,14 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
           { title: t('create'), path: paths.dashboard.report.new },
         ]
       },
-      // ROUTES
-      {
-        title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
-        children: [
-          { title: t('list'), path: paths.dashboard.routes.root },
-          { title: t('create'), path: paths.dashboard.routes.new },
-        ]
-      },
+      // // ROUTES
+      // {
+      //   title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
+      //   children: [
+      //     { title: t('list'), path: paths.dashboard.routes.root },
+      //     { title: t('create'), path: paths.dashboard.routes.new },
+      //   ]
+      // },
       // { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
     ],
   },

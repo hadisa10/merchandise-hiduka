@@ -1,6 +1,6 @@
 "use client"
 
-import React, { FC, memo, useState, useEffect } from "react";
+import React, { FC, memo, useMemo, useState, useEffect } from "react";
 
 import {
     Card,
@@ -18,15 +18,14 @@ import { useSettingsContext } from "src/components/settings";
 import { LoadingScreen } from "src/components/loading-screen";
 import { IColumn } from "src/components/data-grid/data-grid-flexible";
 
-import { IReportQuestion } from "src/types/realm/realm-types";
+import { IReport, IReportQuestion } from "src/types/realm/realm-types";
 
 interface AnswerObject {
     _id: string; // The new 'id' key
     [key: string]: string | unknown; // Dynamic keys for questions with their answers
 }
-const ResponsesGridView: FC<{ id?: string, questions?: IReportQuestion[] }> = ({ id, questions }) => {
+const ResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestion[] }> = ({ report, questions }) => {
     const settings = useSettingsContext();
-
 
     const { getReportAnswers } = useReports();
 
@@ -41,15 +40,17 @@ const ResponsesGridView: FC<{ id?: string, questions?: IReportQuestion[] }> = ({
 
     const showLoader = useShowLoader(loadingReport.value, 500)
 
+    const id = useMemo(() => report?._id.toString(), [report])
+
 
 
     useEffect(() => {
         if (id && questions) {
             loadingReport.onTrue();
             setReportAnswerError(null);
-            getReportAnswers(id.toString()).then(res => {
+            getReportAnswers(id).then(res => {
 
-                const resAnswers = res.map(x => x.answers);
+                const resAnswers = res.map(x => [...x.answers.map(y => ({ userName: x.userName, ...y }))]);
 
                 // const qObj: { [key: string]: { text: string, order: number } } = {}
 
@@ -62,7 +63,12 @@ const ResponsesGridView: FC<{ id?: string, questions?: IReportQuestion[] }> = ({
                 //         type: x.input_type
                 //     }
                 // })
-                const d: IColumn[] = questions.map(z => {
+                const d: IColumn[] = [{
+                    field: "userName",
+                    label: "User",
+                    order: -1,
+                    type: "string"
+                }, ...questions.map(z => {
                     const r = {
                         field: z._id.toString(),
                         label: z.text,
@@ -71,19 +77,34 @@ const ResponsesGridView: FC<{ id?: string, questions?: IReportQuestion[] }> = ({
                     }
                     return r;
                 }
-                )
+                )]
 
                 setColumns(d);
-
+                console.log(res, "REPONSE")
+                console.log(resAnswers, "ANSWERS")
                 const answs = resAnswers.map((x) => {
+                    const j = Array.isArray(x) ? x[0]?.userName : "NA"
                     const t: { _id: string, [key: string]: any } = {
                         _id: uuidv4(),
+                        userName: j
                     }; // Define `t` to explicitly allow string keys and any value
 
                     d.forEach(z => {
                         const val = x.find(y => y.question_id.toString() === z.field.toString())
+
                         if (val) {
-                            t[z.field] = JSON.parse(val.answer);
+                            let answr: unknown = val.answer
+                            switch (val.type) {
+                                case "number":
+                                    answr = Number(answr);
+                                    break;
+                                case "string":
+                                    answr = String(answr);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            t[z.field] = answr;
                         }
                     })
                     return t
@@ -120,7 +141,7 @@ const ResponsesGridView: FC<{ id?: string, questions?: IReportQuestion[] }> = ({
             >
                 {showLoader && <LoadingScreen />}
                 {/* @ts-expect-error expected */}
-                {!showLoader && columns && answers && <DataGridFlexible data={answers} getRowIdFn={(row) => row._id.toString()} columns={columns} title="Responses table title"/>}
+                {!showLoader && columns && answers && <DataGridFlexible data={answers} getRowIdFn={(row) => row._id.toString()} columns={columns} title={report?.title?.split(" ").join("-")} />}
             </Card>
         </Container>
     );

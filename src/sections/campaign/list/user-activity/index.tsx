@@ -12,6 +12,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Iconify from 'src/components/iconify';
 
 import { IUser } from 'src/types/user_realm';
+import { ICampaign } from 'src/types/realm/realm-types';
 
 import UserActivityMapView from './user-activity-map-view';
 import UserActivityDataGrid from './user-activity-data-grid';
@@ -21,7 +22,7 @@ export const USER_DETAILS_TAB = [
     { value: 'sales', label: 'Sales' },
 ];
 
-const UserActivityView = ({ campaignId }: { campaignId: string }) => {
+const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
     const checkInRouteView = useBoolean();
 
     const mdUp = useResponsive('up', 'md');
@@ -52,7 +53,7 @@ const UserActivityView = ({ campaignId }: { campaignId: string }) => {
             setSelectedUser(user);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [campaignId])
+    }, [campaign._id])
 
     const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
         setCurrentTab(newValue);
@@ -190,7 +191,7 @@ const UserActivityView = ({ campaignId }: { campaignId: string }) => {
             <AnimatePresence mode='wait'>
                 {!checkInRouteView.value && (
                     <m.div {...fadeInOut} key="userActivityDataGrid">
-                        <UserActivityDataGrid campaignId={campaignId} handleOpenCheckInRouteView={handleOpenCheckInRouteView} />
+                        <UserActivityDataGrid campaign={campaign} handleOpenCheckInRouteView={handleOpenCheckInRouteView} />
                     </m.div>
                 )}
                 {checkInRouteView.value && selectedUser && (
@@ -218,12 +219,12 @@ const UserActivityView = ({ campaignId }: { campaignId: string }) => {
 
                             <Grid xs={12} md={10.5} px={2}>
                                 {
-                                    currentTab === "checkins" && campaignId &&
+                                    currentTab === "checkins" && campaign._id &&
                                     <UserActivityMapView
                                         user={selectedUser}
                                         startDate={startDate}
                                         endDate={endDate}
-                                        campaignId={campaignId}
+                                        campaignId={campaign._id.toString()}
                                         handleNewRouteOpen={() => console.log("OPEN")}
                                         handleAddNewRoute={() => console.log("NEW ROUTE")}
                                         handleRemoveNewRoute={() => console.log("REMOVE")}
