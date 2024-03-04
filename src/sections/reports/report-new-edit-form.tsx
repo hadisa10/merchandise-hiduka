@@ -284,7 +284,8 @@ export default function ReportNewEditForm({ currentReport }: Props) {
   );
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
+    <>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
         <ReportsDetailsToolbar
           currentReport={currentReport}
           isSubmitting={isSubmitting}
@@ -294,11 +295,8 @@ export default function ReportNewEditForm({ currentReport }: Props) {
 
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} /></Suspense>}
         {currentTab === 'questions' && <Suspense fallback={<LoadingScreen />}><QuestionsNewEditList /></Suspense>}
-        {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><ResponsesGridView id={currentReport?._id && currentReport?._id.toString()} questions={currentReport?.questions} /></Suspense>}
-        {currentTab === 'test' &&
-          // @ts-expect-error expected
-          <RHFFormFiller questions={removeAndFormatNullFields(questions)} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
-        }
+        {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><ResponsesGridView report={currentReport} questions={currentReport?.questions} /></Suspense>}
+
         {/* {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {
@@ -307,5 +305,10 @@ export default function ReportNewEditForm({ currentReport }: Props) {
           <RHFFormFiller questions={questions} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
         } */}
       </FormProvider >
+      {currentTab === 'test' &&
+        // @ts-expect-error expected
+        <RHFFormFiller questions={removeAndFormatNullFields(questions)} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
+      }
+    </>
   );
 }

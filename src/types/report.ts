@@ -16,7 +16,7 @@ export interface IGraphqlReportResponse {
 }
 
 export interface IGraphqlFilledReportsResponse {
-    filledReports: IFilledReport[];
+    GetFilledReports: IFilledReport[];
 }
 export interface IReportActions {
     saveReport: (draftReport: IReport) => Promise<BSON.ObjectId>;

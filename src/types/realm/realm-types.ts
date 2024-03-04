@@ -124,6 +124,7 @@ export interface IFilledReport<T = Realm.BSON.ObjectId> {
     session_id: T;
     updatedAt?: Date;
     user_id: T;
+    userName: string;
 };
 
 export type IFilledReportsAnswer<T = Realm.BSON.ObjectId> = {

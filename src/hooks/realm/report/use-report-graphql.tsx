@@ -299,9 +299,10 @@ export function useReports(lazy: boolean = true): IReportHook {
     try {
       const resp = await graphql.query<IGraphqlFilledReportsResponse>({
         query: gql`
-          query FetchAnswersReport($id: ObjectId!) {
-            filledReports(query: { report_id: $id }) {
+          query FetchAnswersReport($id: String!) {
+            GetFilledReports(input: $id) {
                 _id
+                userName,
                 answers {
                   question_text
                   answer
@@ -321,7 +322,8 @@ export function useReports(lazy: boolean = true): IReportHook {
           id
         },
       });
-      return resp.data.filledReports;
+      console.log(resp.data.GetFilledReports, 'FILLED REPORT')
+      return resp.data.GetFilledReports;
     } catch (error) {
       console.log(error, "REPORT FETCH ERROR")
       throw new Error("Failed to get report")
