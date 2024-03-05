@@ -77,11 +77,32 @@ const ResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestion[] }>
                     }
                     return r;
                 }
-                )]
+                ), {
+                    field: "actions",
+                    label: "Actions",
+                    order: Number.MAX_SAFE_INTEGER,
+                    type: "actions",
+                    action: {
+                        view: {
+                            label: 'View',
+                            icon: 'solar:eye-bold',
+                            action: (_id) => console.log(_id),
+                        },
+                        edit: {
+                            label: 'Edit',
+                            icon: 'solar:pen-bold',
+                            action: (_id) => console.log(_id),
+                        },
+                        delete: {
+                            label: 'Delete',
+                            icon: 'solar:trash-bin-trash-bold',
+                            action: (_id) => console.log(_id),
+                        },
+                    }
+                }]
 
                 setColumns(d);
-                console.log(res, "REPONSE")
-                console.log(resAnswers, "ANSWERS")
+
                 const answs = resAnswers.map((x) => {
                     const j = Array.isArray(x) ? x[0]?.userName : "NA"
                     const t: { _id: string, [key: string]: any } = {

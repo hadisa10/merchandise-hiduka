@@ -171,6 +171,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
       let product: IProductItem = {
         _id: currentProduct?._id || "",
         ...data,
+        stockAssigned: 0,
         inventoryType,
         publish: data?.publish ? "published" : "draft",
         saleLabel: {

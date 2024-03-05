@@ -2,7 +2,7 @@ import { saveAs } from 'file-saver';
 import React, { useMemo, useState } from 'react';
 import { isEmpty, isObject, isString } from 'lodash';
 
-import { Box, Stack, Avatar, Button, Typography } from '@mui/material';
+import { Box, Stack, Avatar, Button, Divider, Typography, ButtonOwnProps } from '@mui/material';
 import {
   GridApi,
   DataGrid,
@@ -53,15 +53,34 @@ export interface IGenericColumn<T> {
   type: string;
   minWidth?: number;
   valueOptions?: Array<{ value: string; label: string; color: LabelColor }>;
-  action?: any; // Define this type based on your action handlers. Consider making this generic too if needed.
+  action?: IColumnActions; // Define this type based on your action handlers. Consider making this generic too if needed.
   order?: number;
 }
 
-export interface IColumnActions {
-  view: (id: string) => void;
-  edit: (id: string) => void;
-  delete: (id: string) => void;
+interface IColumnAction {
+  label: string;
+  icon: string; // Assuming the icon is specified as a string identifier for Iconify
+  color?: string;
+  variant?: ButtonOwnProps["variant"];
+  action: (id: string) => void;
 }
+
+interface IColumnActions {
+  [actionName: string]: IColumnAction;
+}
+
+interface ISelectedColumnAction<RowType> {
+  label: string;
+  icon: string; // Assuming the icon is specified as a string identifier for Iconify
+  color?: ButtonOwnProps["color"];
+  variant?: ButtonOwnProps["variant"];
+  action: (rows: RowType[]) => void;
+}
+
+interface ISelectedColumnActions<RowType> {
+  [actionName: string]: ISelectedColumnAction<RowType>;
+}
+
 
 
 type IColumnsArray<T> = IGenericColumn<T>[];
@@ -73,32 +92,52 @@ interface DataGridFlexibleProps<RowType extends GridRowModel> {
   columns: IColumnsArray<RowType>;
   title: string;
   hideColumn?: Record<string, boolean>;
+  customActions?: ISelectedColumnActions<RowType>
 }
 
-const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions) => {
-  const { id } = params
-  return [
+// const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions) => {
+//   const { id } = params
+//   return [
 
+//     <GridActionsCellItem
+//       icon={<Iconify icon="solar:eye-bold" />}
+//       label="View"
+//       onClick={() => actions?.view(id.toString())}
+//       showInMenu
+//     />,
+//     <GridActionsCellItem
+//       icon={<Iconify icon="solar:pen-bold" />}
+//       label="Edit"
+//       onClick={() => actions?.edit(id.toString())}
+//       showInMenu
+//     />,
+//     <GridActionsCellItem
+//       icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+//       label="Delete"
+//       onClick={() => actions?.delete(id.toString())}
+//       showInMenu
+//       sx={{ color: 'error.main' }}
+//     />
+//   ]
+// };
+
+
+const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions) => {
+  const { id } = params;
+
+  // Convert the actions object to an array of its values
+  const actionItems = actions ? Object.values(actions).map((action) => (
     <GridActionsCellItem
-      icon={<Iconify icon="solar:eye-bold" />}
-      label="View"
-      onClick={() => actions?.view(id.toString())}
+      component={Button}
+      icon={<Iconify icon={action.icon} />}
+      label={action.label}
+      color="error"
+      onClick={() => action.action(id.toString())}
       showInMenu
-    />,
-    <GridActionsCellItem
-      icon={<Iconify icon="solar:pen-bold" />}
-      label="Edit"
-      onClick={() => actions?.edit(id.toString())}
-      showInMenu
-    />,
-    <GridActionsCellItem
-      icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-      label="Delete"
-      onClick={() => actions?.delete(id.toString())}
-      showInMenu
-      sx={{ color: 'error.main' }}
     />
-  ]
+  )) : [];
+
+  return actionItems;
 };
 
 
@@ -167,6 +206,7 @@ const renderStringCell = (params: GridRenderCellParams<any, any, any, GridTreeNo
 
 const renderArrayCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
+  console.log(value, 'VALUE ARRAY')
   return <Typography variant='body2'>{Array.isArray(value) && value.join(",")}</Typography>;
 }
 
@@ -271,15 +311,22 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
   getRowIdFn,
   columns: columnsArray,
   hideColumn,
-  title
+  title,
+  customActions
 }: DataGridFlexibleProps<RowType>) {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+  const [selectedRows, setSelectedRows] = useState<RowType[]>([]);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(isObject(hideColumn) ? hideColumn : {});
 
   const columns = useMemo(() => generateDynamicColumns(columnsArray), [columnsArray]);
+
+  const handleSelectionModelChange = (selectionModel: GridRowSelectionModel) => {
+    // Map selected IDs to full row data
+    const selectedData = selectionModel.map(id => rows.find(row => getRowIdFn(row) === id)).filter(Boolean) as RowType[];
+    setSelectedRows(selectedData);
+  };
 
   return (
     <DataGrid
@@ -288,11 +335,11 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
       disableRowSelectionOnClick
       rows={rows}
       columns={columns}
-      onRowSelectionModelChange={setSelectedRows}
+      onRowSelectionModelChange={handleSelectionModelChange}
       columnVisibilityModel={columnVisibilityModel}
       onColumnVisibilityModelChange={setColumnVisibilityModel}
       slots={{
-        toolbar: () => <CustomToolbar title={title} />,
+        toolbar: () => <CustomToolbar title={title} selectedRows={selectedRows} customActions={customActions} />,
         noRowsOverlay: () => <EmptyContent title="No Data" />,
         noResultsOverlay: () => <EmptyContent title="No results found" />,
       }}
@@ -305,25 +352,47 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
   );
 }
 
-// CustomToolbar component
-function CustomToolbar({ title }: { title: string }) {
-  const gridT = useGridApiContext();
+function CustomToolbar<RowType>({ title, selectedRows, customActions }: { title: string, selectedRows: RowType[], customActions?: ISelectedColumnActions<RowType> }) {
+  const gridApiRef = useGridApiContext();
   return (
-    <GridToolbarContainer>
-      <GridToolbarQuickFilter />
-      <Box sx={{ flexGrow: 1 }} />
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarDensitySelector />
-      <Button
-        startIcon={
-          <Iconify icon="solar:export-broken" />}
-        onClick={() => customExportCsv(gridT, title)}
-      >
-        Export
-      </Button>
-      {/* <GridToolbarExport /> */}
-    </GridToolbarContainer>
+    <>
+      {/* Main Toolbar Container */}
+      <GridToolbarContainer>
+        <GridToolbarQuickFilter />
+        <Box sx={{ flexGrow: 1 }} />
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarDensitySelector />
+        <Button
+          startIcon={<Iconify icon="solar:export-broken" />}
+          onClick={() => customExportCsv(gridApiRef, title)}
+        >
+          Export
+        </Button>
+      </GridToolbarContainer>
+
+      {/* Custom Actions Container */}
+      {customActions && selectedRows.length > 0 && (
+        <Stack sx={{ px: 2, pt: 0, pb: 1 }} spacing={1}> {/* Adjust the margins/padding as needed */}
+          <Divider><Typography variant='caption' color="text.secondary">bulk actions</Typography></Divider>
+          <Stack direction="row" spacing={1}> {/* Ensure there's some spacing between each button */}
+            {Object.values(customActions).map((customAction) => (
+              <Button
+                key={customAction.label}
+                size='small'
+                variant={customAction.variant ?? "soft"}
+                color={customAction.color ?? "info"}
+                startIcon={<Iconify icon={customAction.icon} />} // Ensure you have a mapping for these icons
+                onClick={() => customAction.action(selectedRows)}
+              >
+                {customAction.label.charAt(0).toUpperCase() + customAction.label.slice(1)}
+              </Button>
+            ))}
+          </Stack>
+          <Divider />
+        </Stack>
+      )}
+    </>
   );
 }
 

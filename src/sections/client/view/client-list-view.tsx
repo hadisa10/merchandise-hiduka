@@ -130,9 +130,24 @@ export default function ClientListView() {
                 label: "Actions",
                 type: "actions",
                 action: {
-                    view: handleEditRow,
-                    edit: handleViewRow,
-                    delete: handleDeleteRows,
+                    // view: handleViewRow,
+                    // edit: handleEditRow,
+                    // delete: handleDeleteRows,
+                    view: {
+                        label: 'View',
+                        icon: 'solar:eye-bold',
+                        action: handleViewRow,
+                    },
+                    edit: {
+                        label: 'Edit',
+                        icon: 'solar:pen-bold',
+                        action: handleEditRow,
+                    },
+                    delete: {
+                        label: 'Delete',
+                        icon: 'solar:trash-bin-trash-bold',
+                        action: handleDeleteRows,
+                    },
                 }
             }
 
@@ -226,7 +241,7 @@ export default function ClientListView() {
                     <LoadingScreen />
                 ) : (
                     // @ts-expect-error expected
-                    <DataGridFlexible data={cleanedClients} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} title="Clients-Table"/>
+                    <DataGridFlexible data={cleanedClients} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} title="Clients-Table" />
                 )}
             </Card>
         </Container>
