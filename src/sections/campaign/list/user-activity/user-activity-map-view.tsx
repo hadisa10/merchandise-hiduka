@@ -171,6 +171,7 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
                                             onChange={(e) => {
                                                 const longitude = r.location.coordinates[1];
                                                 const latitude = r.location.coordinates[0];
+                                                console.log(r.location, 'LOCATION')
                                                 if (longitude && latitude) {
                                                     // onSelectRoute logic here
                                                     onSelectRoute({ _id: r._id.toString(), longitude, latitude, addr: "Address", phoneNumber: user.displayName })

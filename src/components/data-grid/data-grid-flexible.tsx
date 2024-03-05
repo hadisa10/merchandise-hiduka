@@ -204,6 +204,11 @@ const renderStringCell = (params: GridRenderCellParams<any, any, any, GridTreeNo
   return <Typography variant='body2'>{value}</Typography>;
 }
 
+const renderImageCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
+  const { value } = params;
+  return <Avatar alt={value} src={value} sx={{ width: 36, height: 36 }} variant='rounded' />
+}
+
 const renderArrayCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
   console.log(value, 'VALUE ARRAY')
@@ -248,6 +253,8 @@ function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): 
           return { ...baseColDef, renderCell: renderNumberCell };
         case 'string':
           return { ...baseColDef, renderCell: renderStringCell };
+        case 'image':
+          return { ...baseColDef, renderCell: renderImageCell };
         case 'array':
           return { ...baseColDef, renderCell: renderArrayCell };
         case 'date':
