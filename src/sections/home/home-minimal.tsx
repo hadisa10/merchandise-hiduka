@@ -25,7 +25,7 @@ const CARDS = [
   },
   {
     icon: ' /assets/icons/home/ic_development.svg',
-    title: 'Inventoty Management',
+    title: 'Inventory Management',
     description: 'Track your inventory, with real time data.',
   },
 ];

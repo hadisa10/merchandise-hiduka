@@ -3,6 +3,8 @@ import * as Realm from 'realm-web';
 import _, { isNumber } from 'lodash';
 import { cloneElement } from "react";
 
+import { ERole } from "src/config-global";
+
 export async function convertBlobToFile(blob: string, fileName: string): Promise<File | null> {
     try {
         const response = await fetch(blob);
@@ -296,4 +298,23 @@ export const removeNullFields = <T>(data: T): T | undefined => {
     // Return the value if it's not null, otherwise return undefined
     return data !== null ? data : undefined;
 
+};
+
+
+export const getRolePath = (rle: string) => {
+    switch (rle) {
+        case ERole.SUPERADMIN:
+            return '/v2/superadmin/';
+        case ERole.ADMIN:
+            return '/v2/admin/';
+        case ERole.CLIENT:
+            return '/v2/client/';
+        case ERole.PROJECT_MANAGER:
+            return '/v2/project-manager/';
+        case ERole.TEAM_LEAD:
+            return '/v2/team-lead/';
+        case ERole.AGENT:
+        default:
+            return '/v2/agent/';
+    }
 };

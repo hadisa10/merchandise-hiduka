@@ -9,7 +9,6 @@ export interface IUserResponse {
 export type IStatus = "pending" | "active" | "rejected" | "banned"
 export type IRole = "lead" | "client" | "admin" | "user" | "brand_ambassador" | "merchant"
 
-
 export interface IUser {
     _id: string;
     email: string;

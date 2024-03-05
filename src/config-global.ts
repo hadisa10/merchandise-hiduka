@@ -38,3 +38,13 @@ export const VERSION = process.env.NEXT_VERSION ?? "3.0.0";
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.analytics.campaignPerformance; // as '/dashboard'
+
+
+export enum ERole {
+  SUPERADMIN = 'superadmin',
+  ADMIN = 'admin',
+  CLIENT = 'client',
+  PROJECT_MANAGER = 'project-manager',
+  TEAM_LEAD = 'team-lead',
+  AGENT = 'agent'
+}
