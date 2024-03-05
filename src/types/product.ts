@@ -49,6 +49,7 @@ export type IProductItem = {
   images: string[];
   colors: string[];
   quantity: number;
+  stockAssigned: number;
   category: string;
   available: number;
   totalSold: number;

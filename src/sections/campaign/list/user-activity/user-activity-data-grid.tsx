@@ -5,7 +5,7 @@ import { enqueueSnackbar } from "notistack";
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 
 import {
-    Card
+    Card, useTheme
 } from "@mui/material";
 
 import { useShowLoader } from "src/hooks/realm";
@@ -22,6 +22,8 @@ import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
 import { ICampaign } from "src/types/realm/realm-types";
 import { IUser, ICampaignUser } from "src/types/user_realm";
 
+import AssignProductDialog from "./assign-product-dialog";
+
 interface IUserActivityDataGridProps {
     campaign: ICampaign;
     handleOpenCheckInRouteView?: (user: IUser) => void;
@@ -30,11 +32,17 @@ interface IUserActivityDataGridProps {
 export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteView }: IUserActivityDataGridProps) {
     // const { loading, clients } = useClients(false);
 
+    const theme = useTheme();
+
     const { getCampaignUsers } = useCampaigns(true);
 
     const loadingCampaignUsers = useBoolean()
 
+    const openAssign = useBoolean();
+
     const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([])
+
+    const [selectedCampaignUsers, setSelectedCampaignUsers] = useState<ICampaignUser[] | null>(null)
 
     // eslint-disable-next-line
     const [campaignUsersError, setCampaignUsersError] = useState(null)
@@ -65,10 +73,21 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignId])
 
-    const handleDeleteRows = useCallback((id: string) => {
-        const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
-        if (user && handleOpenCheckInRouteView) {
-            handleOpenCheckInRouteView(user);
+    // const handleDeleteRows = useCallback((id: string) => {
+    //     const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
+    //     if (user && handleOpenCheckInRouteView) {
+    //         handleOpenCheckInRouteView(user);
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [campaignUsers])
+
+
+    const handleAssignProductsToUser = useCallback((ids: string[]) => {
+        const sUsers = campaignUsers.filter(campaignUser => ids.some(x => x.toString() === campaignUser._id.toString()));
+        if (sUsers) {
+            console.log(sUsers, 'S USERS')
+            setSelectedCampaignUsers(sUsers);
+            openAssign.onTrue()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignUsers])
@@ -85,16 +104,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         [campaignUsers]
     );
 
-    const handleViewRow = useCallback(
-        (id: string) => {
-            const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
-            if (user && handleOpenCheckInRouteView) {
-                handleOpenCheckInRouteView(user);
-            }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [campaignUsers]
-    );
+
 
     const columns: IGenericColumn<ICampaignUser>[] = useMemo(() => {
         const cols: Omit<IGenericColumn<ICampaignUser>, "order">[] = [
@@ -155,9 +165,18 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 label: "Actions",
                 type: "actions",
                 action: {
-                    view: handleViewRow,
-                    edit: handleEditRow,
-                    delete: handleDeleteRows,
+                    edit: {
+                        label: 'Check Activity',
+                        icon: 'material-symbols:eye-tracking-outline-rounded',
+                        color: theme.palette.primary.main,
+                        action: handleEditRow,
+                    },
+                    assignProduct: {
+                        label: 'Assign Product',
+                        color: theme.palette.info.main,
+                        icon: 'fluent-mdl2:product-variant',
+                        action: (id: string) => handleAssignProductsToUser([id]),
+                    },
                 }
             }
 
@@ -200,21 +219,55 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
     }, [campaignUsers])
 
     return (
-
-
-        <Card
-            sx={{
-                height: { xs: 800, md: 600 },
-                flexGrow: { md: 1 },
-                display: { md: 'flex' },
-                flexDirection: { md: 'column' },
-            }}
-        >
-            {showLoader ? (
-                <LoadingScreen />
-            ) : cleanedUsers && (
-                <DataGridFlexible data={cleanedUsers} getRowIdFn={(row) => row._id.toString()} columns={columns} hideColumn={{ _id: false }} title={`${campaign.title.split(" ").join("-")}-user-activity`} />
-            )}
-        </Card>
+        <>
+            <Card
+                sx={{
+                    height: { xs: 800, md: 600 },
+                    flexGrow: { md: 1 },
+                    display: { md: 'flex' },
+                    flexDirection: { md: 'column' },
+                }}
+            >
+                {showLoader ? (
+                    <LoadingScreen />
+                ) : cleanedUsers && (
+                    <DataGridFlexible
+                        data={cleanedUsers}
+                        getRowIdFn={(row) => row._id.toString()} columns={columns}
+                        hideColumn={{ _id: false }}
+                        title={`${campaign.title.split(" ").join("-")}-user-activity`}
+                        customActions={{
+                            routes: {
+                                label: "Assign Routes",
+                                color: "info",
+                                icon: "eos-icons:route", // Assuming the icon is specified as a string identifier for Iconify
+                                action: (selectedData: ICampaignUser[]) => console.log(selectedData, "USERS TO ASSIGN ROUTES")
+                            },
+                            products: {
+                                label: "Assign Product",
+                                color: "info",
+                                icon: "fluent-mdl2:product-variant", // Assuming the icon is specified as a string identifier for Iconify
+                                action: (selectedData: ICampaignUser[]) => console.log(selectedData, "USERS TO ASSIGN PRODUCTS")
+                            },
+                            delete: {
+                                label: "Delete",
+                                color: "error",
+                                icon: "solar:trash-bin-trash-bold", // Assuming the icon is specified as a string identifier for Iconify
+                                action: (selectedData: ICampaignUser[]) => console.log(selectedData, "IDS FOR DELETION")
+                            }
+                        }}
+                    />
+                )}
+            </Card>
+            {
+                selectedCampaignUsers && <AssignProductDialog
+                    open={openAssign.value}
+                    onClose={openAssign.onFalse}
+                    campaignId={campaignId}
+                    users={selectedCampaignUsers}
+                    handleAssignNewProduct={() => console.log("ASSIGN")}
+                />
+            }
+        </>
     );
 }
