@@ -2,6 +2,9 @@ import Decimal from "decimal.js";
 import * as Realm from 'realm-web';
 import _, { isNumber } from 'lodash';
 import { cloneElement } from "react";
+import { intervalToDuration } from 'date-fns';
+
+import { paths } from "src/routes/paths";
 
 import { ERole } from "src/config-global";
 
@@ -304,17 +307,42 @@ export const removeNullFields = <T>(data: T): T | undefined => {
 export const getRolePath = (rle: string) => {
     switch (rle) {
         case ERole.SUPERADMIN:
-            return '/v2/superadmin/';
+            return paths.v2.superadmin.root;
         case ERole.ADMIN:
-            return '/v2/admin/';
+            return paths.v2.admin.root;
         case ERole.CLIENT:
-            return '/v2/client/';
+            return paths.v2.client.root;
         case ERole.PROJECT_MANAGER:
-            return '/v2/project-manager/';
+            return paths.v2.projectMng.root;
         case ERole.TEAM_LEAD:
-            return '/v2/team-lead/';
+            return paths.v2.teamLead.root;
         case ERole.AGENT:
         default:
-            return '/v2/agent/';
+            return paths.v2.agent.root;
     }
 };
+
+export function getRelevantTimeInfo(milliseconds: number): string {
+    // Create a duration object from milliseconds
+    const duration = intervalToDuration({ start: 0, end: milliseconds });
+
+    // Determine the most relevant unit of time based on the duration
+    if (duration.months && duration.months > 0) {
+        return `${duration.months} month(s)`;
+    } if (duration.days && duration.days > 0) {
+        // Convert days to weeks and days for more precise output
+        const weeks = Math.floor(duration.days / 7);
+        const days = duration.days % 7;
+        return `${weeks} week(s) ${days > 0 ? `and ${days} day(s)` : ''}`;
+    } if (duration.days && duration.days > 0) {
+        return `${duration.days} day(s)`;
+    } if (duration.hours && duration.hours > 0) {
+        return `${duration.hours} hour(s)`;
+    } if (duration.minutes && duration.minutes > 0) {
+        return `${duration.minutes} minute(s)`;
+    } if (duration.seconds && duration.seconds > 0) {
+        return `${duration.seconds} second(s)`;
+    } 
+        return 'Less than a second';
+    
+}

@@ -13,7 +13,6 @@ export function useDashboard(lazy: boolean = true): IDashboardMetricHook {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(lazy, 'LAZY')
     if (!lazy) {
       const query = gql`
       query FetchDashboardMetrics {
@@ -25,16 +24,8 @@ export function useDashboard(lazy: boolean = true): IDashboardMetricHook {
           }
           totalCheckInsToday
           averageCheckInDuration
-          totalCheckInsPerCampaign{
-            campaignId
-            campaignTitle
-            totalCheckIns
-          }
-          campaignsPerClient{
-            clientId
-            clientName
-            numberOfCampaigns
-          }
+          
+          
         }
       }
     `;

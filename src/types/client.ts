@@ -12,6 +12,7 @@ import * as Realm from "realm-web";
 //     updatedAt: Date;
 // }
 
+
 interface IUser {
     _id: Realm.BSON.ObjectId;
     name: string;

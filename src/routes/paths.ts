@@ -12,6 +12,7 @@ const ROOTS = {
   AUTH: '/auth',
   AUTH_DEMO: '/auth-demo',
   DASHBOARD: '/dashboard',
+  V2: '/v2'
 };
 
 // ----------------------------------------------------------------------
@@ -242,4 +243,32 @@ export const paths = {
       },
     },
   },
+  v2: {
+    root: `${ROOTS.V2}`,
+    superadmin: {
+      root: `${ROOTS.V2}/superadmin/dashboard`,
+      dashboard: `${ROOTS.V2}/superadmin/dashboard`,
+    },
+    admin: {
+      root: `${ROOTS.V2}/admin/dashboard`,
+      dashboard: `${ROOTS.V2}/admin/dashboard`,
+    },
+    client: {
+      root: `${ROOTS.V2}/client/dashboard`,
+      dashboard: `${ROOTS.V2}/client/dashboard`,
+    },
+    projectMng: {
+      root: `${ROOTS.V2}/project-manager/dashboard`,
+      dashboard: `${ROOTS.V2}/project-manager/dashboard`,
+    },
+    teamLead: {
+      root: `${ROOTS.V2}/team-lead/dashboard`,
+      dashboard: `${ROOTS.V2}/team-lead/dashboard`,
+    },
+    agent: {
+      root: `${ROOTS.V2}/agent/dashboard`,
+      dashboard: `${ROOTS.V2}/agent/dashboard`,
+    }
+
+  }
 };

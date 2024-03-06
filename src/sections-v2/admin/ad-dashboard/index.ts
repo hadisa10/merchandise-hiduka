@@ -1,1 +1,1 @@
-export {default as AdminDashboardView } from './admin-dashboard';
+export {default as AdminDashboardView } from './ad-dashboard';

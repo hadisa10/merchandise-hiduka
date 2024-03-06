@@ -26,7 +26,7 @@ const styleSmall: SxProps = { width: 0.7, height: 0.7 }
 const style: SxProps = { width: 1, height: 1 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ICONS = {
+export const ICONS = {
   job: icon('ic_job'),
   blog: icon('ic_blog'),
   chat: icon('ic_chat'),

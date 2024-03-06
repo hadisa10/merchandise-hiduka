@@ -1,5 +1,67 @@
 import * as Realm from "realm-web";
 
+
+export interface ICampaignByType {
+    _id: string;
+    count: number;
+}
+
+export interface ITotalCheckInsPerCampaign {
+    campaignTitle: string;
+    totalCheckIns: number;
+    campaignId: string;
+}
+
+export interface ICampaignsPerClient {
+    numberOfCampaigns: number;
+    clientId: string;
+    clientName: string;
+}
+
+export interface ITopUserByCheckins {
+    userId: string;
+    userName: string;
+    userURL: string;
+    totalCheckIns: number;
+}
+
+export interface IAdminDashboardData {
+    totalClients: number,
+    totalCampaigns: number;
+    campaignsByType: ICampaignByType[];
+    totalCheckInsToday: number;
+    averageCheckInDuration: number;
+    totalCheckInsPerCampaign: ITotalCheckInsPerCampaign[];
+    campaignsPerClient: ICampaignsPerClient[];
+    topUsersByCheckIns: ITopUserByCheckins[]
+}
+
+export interface IAdminDashboardAvgAnswersPerDay{
+    avgAnswersPerDay: number;
+    reportId: number;
+    reportName: number;
+}
+
+export interface IAdminDashboardReportSummary {
+    totalReports: number;
+    avgResponses: number;
+    reportsByCampaign: IAdminDashboardCampaignSummary[];
+    totalFilledReports: number;
+    filledReportsByUser: IAdminDashboardUserReportSummary[];
+    avgAnswersPerDayPerReport: IAdminDashboardAvgAnswersPerDay[];
+}
+
+interface IAdminDashboardCampaignSummary {
+    campaignId: string;
+    campaignName: string;
+    totalReports: number;
+}
+
+interface IAdminDashboardUserReportSummary {
+    _id: string; // Assuming _id is the user_id
+    count: number;
+}
+
 export type Item = {
     _id: Realm.BSON.ObjectId;
     isComplete: boolean;
@@ -47,28 +109,22 @@ export type IRouteProducts = {
 export interface IDashboardMetricType {
     type: string;
     count: number;
-  }
-  
-  export interface ICampaignCheckIn {
+}
+
+export interface ICampaignCheckIn {
     campaignId: string; // Adjust if using ObjectId type
     campaignTitle: string;
     totalCheckIns: number;
-  }
-  
-  export interface ICampaignsPerClient {
-    clientId: string; // Adjust if using ObjectId type
-    clientName: string;
-    numberOfCampaigns: number;
-  }
-  
-  export interface IDashboardMetrics {
+}
+
+export interface IDashboardMetrics {
     totalCampaigns: number;
     campaignsByType: IDashboardMetricType[];
     totalCheckInsToday: number;
     averageCheckInDuration: number;
     totalCheckInsPerCampaign: ICampaignCheckIn[];
     campaignsPerClient: ICampaignsPerClient[];
-  }
+}
 
 
 export type ICampaign = {
