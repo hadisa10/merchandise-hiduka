@@ -1,89 +1,51 @@
 'use client';
 
-import { enqueueSnackbar } from 'notistack';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation'
 
 import { Tab, Tabs } from '@mui/material';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { useShowLoader } from 'src/hooks/realm';
-import { useBoolean } from 'src/hooks/use-boolean';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
-import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
-import { LoadingScreen } from 'src/components/loading-screen';
 
-import { IAdminDashboardData, IAdminDashboardReportSummary } from 'src/types/realm/realm-types';
-
-import { AdminDashboardCampaignMetrics } from './ad-dash-components/ad-campaigns-metrics';
-
-
+import AdminDashboardCampaignMetrics from './ad-dash-components/ad-campaigns-metrics';
+import AdminDashboardInventoryMetrics from './ad-dash-components/ad-inventory-metrics';
 
 // ----------------------------------------------------------------------
 
 export const DASHBOARD_OVERVIEW_DETAILS_TABS = [
   { value: 'campaigns', label: 'Campaigns' },
-  { value: 'sale', label: 'Sales' },
-  { value: 'inventory', label: 'Inventory' }
+  { value: 'products', label: 'Products' },
 ];
 
 // ----------------------------------------------------------------------
 
 
 export default function AdminDashboardView() {
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+
   const settings = useSettingsContext();
 
-  const realmApp = useRealmApp()
+  const searchTabValue = searchParams.get('tab')
 
-  const campaignloading = useBoolean()
-
-  const reportsloading = useBoolean()
-
-  const showCampaignLoader = useShowLoader((campaignloading.value || reportsloading.value), 300);
-
-  const [currentTab, setCurrentTab] = useState('campaigns');
-
-  const [dashboarCampaignMetrics, setDashboarCampaigndMetrics] = useState<IAdminDashboardData | null>(null);
-
-  const [dashboarReportsMetrics, setDashboarReportsdMetrics] = useState<IAdminDashboardReportSummary | null>(null);
-
-
-  const [error, setError] = useState<unknown>(null);
-
-  useEffect(() => {
-    campaignloading.onTrue()
-    setError(null);
-    realmApp.currentUser?.functions.getDashboardMetrics().then((data: IAdminDashboardData) => setDashboarCampaigndMetrics(data))
-      .catch(e => {
-        console.error(e)
-        setError(e);
-        enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
-      }
-      )
-      .finally(() => campaignloading.onFalse())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    campaignloading.onTrue()
-    setError(null);
-    realmApp.currentUser?.functions.getReportDashboardMetrics().then((data: IAdminDashboardReportSummary) => setDashboarReportsdMetrics(data))
-      .catch(e => {
-        console.error(e)
-        setError(e);
-        enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
-      }
-      )
-      .finally(() => campaignloading.onFalse())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
+  const [currentTab, setCurrentTab] = useState(searchTabValue ?? 'campaigns');
 
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
-  }, []);
+    const tabParams = new URLSearchParams({
+      tab: newValue,
+    }).toString();
+
+    const href = `${paths.v2.admin.root}?${tabParams}`;
+    router.push(href);
+  }, [router]);
 
 
   const renderTabs = (
@@ -105,8 +67,6 @@ export default function AdminDashboardView() {
     </Tabs>
   );
 
-  console.log(dashboarReportsMetrics, "dashboar Reports Metrics")
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Typography
@@ -121,22 +81,11 @@ export default function AdminDashboardView() {
       {renderTabs}
 
       {
-        showCampaignLoader && !error && <LoadingScreen />
-      }
-
-      {
         currentTab === "campaigns" &&
-        !showCampaignLoader && !error && dashboarCampaignMetrics && dashboarReportsMetrics &&
-        <AdminDashboardCampaignMetrics dashboardMetrics={dashboarCampaignMetrics} dashboarReportsMetrics={dashboarReportsMetrics} />
+        <AdminDashboardCampaignMetrics />
       }
       {
-        currentTab === "sale" &&
-        <>SALE DASHBOARD</>
-      }
-
-{
-        currentTab === "inventory" &&
-        <>SALE DASHBOARD</>
+        currentTab === "products" && <AdminDashboardInventoryMetrics />
       }
     </Container>
   );

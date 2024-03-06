@@ -1,6 +1,17 @@
 import * as Realm from "realm-web";
 
 
+
+export interface IAdminDashboardInventoryMetrics {
+    totalProducts: number;
+    totalStock: number;
+    averagePrice: number;
+    totalSold: number;
+    totalRatings: number;
+    totalReviews: number;
+  }
+  
+
 export interface ICampaignByType {
     _id: string;
     count: number;
