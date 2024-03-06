@@ -1,5 +1,78 @@
 import * as Realm from "realm-web";
 
+
+
+export interface IAdminDashboardInventoryMetrics {
+    totalProducts: number;
+    totalStock: number;
+    averagePrice: number;
+    totalSold: number;
+    totalRatings: number;
+    totalReviews: number;
+  }
+  
+
+export interface ICampaignByType {
+    _id: string;
+    count: number;
+}
+
+export interface ITotalCheckInsPerCampaign {
+    campaignTitle: string;
+    totalCheckIns: number;
+    campaignId: string;
+}
+
+export interface ICampaignsPerClient {
+    numberOfCampaigns: number;
+    clientId: string;
+    clientName: string;
+}
+
+export interface ITopUserByCheckins {
+    userId: string;
+    userName: string;
+    userURL: string;
+    totalCheckIns: number;
+}
+
+export interface IAdminDashboardData {
+    totalClients: number,
+    totalCampaigns: number;
+    campaignsByType: ICampaignByType[];
+    totalCheckInsToday: number;
+    averageCheckInDuration: number;
+    totalCheckInsPerCampaign: ITotalCheckInsPerCampaign[];
+    campaignsPerClient: ICampaignsPerClient[];
+    topUsersByCheckIns: ITopUserByCheckins[]
+}
+
+export interface IAdminDashboardAvgAnswersPerDay{
+    avgAnswersPerDay: number;
+    reportId: number;
+    reportName: number;
+}
+
+export interface IAdminDashboardReportSummary {
+    totalReports: number;
+    avgResponses: number;
+    reportsByCampaign: IAdminDashboardCampaignSummary[];
+    totalFilledReports: number;
+    filledReportsByUser: IAdminDashboardUserReportSummary[];
+    avgAnswersPerDayPerReport: IAdminDashboardAvgAnswersPerDay[];
+}
+
+interface IAdminDashboardCampaignSummary {
+    campaignId: string;
+    campaignName: string;
+    totalReports: number;
+}
+
+interface IAdminDashboardUserReportSummary {
+    _id: string; // Assuming _id is the user_id
+    count: number;
+}
+
 export type Item = {
     _id: Realm.BSON.ObjectId;
     isComplete: boolean;
@@ -44,16 +117,42 @@ export type IRouteProducts = {
     quantity: number;
 };
 
+export interface IDashboardMetricType {
+    type: string;
+    count: number;
+}
+
+export interface ICampaignCheckIn {
+    campaignId: string; // Adjust if using ObjectId type
+    campaignTitle: string;
+    totalCheckIns: number;
+}
+
+export interface IDashboardMetrics {
+    totalCampaigns: number;
+    campaignsByType: IDashboardMetricType[];
+    totalCheckInsToday: number;
+    averageCheckInDuration: number;
+    totalCheckInsPerCampaign: ICampaignCheckIn[];
+    campaignsPerClient: ICampaignsPerClient[];
+}
+
+
 export type ICampaign = {
     _id: Realm.BSON.ObjectId;
     access_code: string;
     client_id: Realm.BSON.ObjectId;
     createdAt: Date;
     endDate: Date;
+    checkInTime?: Date;
+    checkOutTime?: Date;
+    hourlyRate: number;
+    inactivityTimeout: number;
     products: Array<Realm.BSON.ObjectId>;
     users: Array<Realm.BSON.ObjectId>;
     project_id: Realm.BSON.ObjectId;
-    routes: Array<ICampaign_routes>;
+    routes: Array<ICampaignRoutes>;
+    workingSchedule: Array<string>,
     startDate: Date;
     title: string;
     description?: string;
@@ -78,13 +177,32 @@ export interface IReport<T = Realm.BSON.ObjectId> {
     campaign_title: string;
     category_id: T;
     product_id?: T;
-    questions: Array<IReportQuestions<T>>;
+    questions: Array<IReportQuestion<T>>;
     createdAt: Date;
     updatedAt: Date;
 }
 
+export interface IFilledReport<T = Realm.BSON.ObjectId> {
+    _id: T;
+    answers: Array<IFilledReportsAnswer>;
+    campaign_id: T;
+    createdAt: Date;
+    report_id: T;
+    session_id: T;
+    updatedAt?: Date;
+    user_id: T;
+    userName: string;
+};
+
+export type IFilledReportsAnswer<T = Realm.BSON.ObjectId> = {
+    answer: string;
+    question_id: T;
+    question_text: string;
+    type: string;
+};
+
 // Exporting the Main Report Questions Interface with Generics
-export interface IReportQuestions<T = Realm.BSON.ObjectId> {
+export interface IReportQuestion<T = Realm.BSON.ObjectId> {
     _id: T;
     text: string;
     order: number;
@@ -95,7 +213,7 @@ export interface IReportQuestions<T = Realm.BSON.ObjectId> {
     unique: boolean;
     updatedAt: Date;
     dependencies?: Array<IQuestionDependency<T>>;
-    validation?: IReportQuestionsValidation;
+    validation?: IReportQuestionValidation;
 }
 
 // Exporting the Main Dependency Interface with Generics
@@ -106,18 +224,18 @@ export interface IQuestionDependency<T = Realm.BSON.ObjectId> {
 }
 
 // Exporting the Main Validation Interface
-export interface IReportQuestionsValidation {
+export interface IReportQuestionValidation {
     required?: boolean;
     minLength?: number;
     maxLength?: number;
     minValue?: number;
     maxValue?: number;
-    regex?: IReportQuestionsValidationRegex;
+    regex?: IReportQuestionValidationRegex;
     fileTypes?: Array<string>;
 }
 
 // Exporting the Regex Validation Interface
-export interface IReportQuestionsValidationRegex {
+export interface IReportQuestionValidationRegex {
     matches?: string;
     message?: string;
 }
@@ -127,8 +245,8 @@ export interface IDraftReport extends IReport<string> {
     questions: Array<IDraftReportQuestions>;
 }
 
-// Exporting the Draft Report Questions Interface, inheriting from IReportQuestions with string type for IDs
-export interface IDraftReportQuestions extends IReportQuestions<string> {
+// Exporting the Draft Report Questions Interface, inheriting from IReportQuestion with string type for IDs
+export interface IDraftReportQuestions extends IReportQuestion<string> {
     // Additional properties specific to draft questions can be added here
 }
 
@@ -137,13 +255,13 @@ export interface IDraftQuestionDependency extends IQuestionDependency<string> {
     // Additional properties specific to draft dependencies can be added here
 }
 
-// Exporting the Draft Validation Interface, directly inheriting from IReportQuestionsValidation as no ID type change is needed
-export interface IDraftReportQuestionsValidation extends IReportQuestionsValidation {
+// Exporting the Draft Validation Interface, directly inheriting from IReportQuestionValidation as no ID type change is needed
+export interface IDraftReportQuestionsValidation extends IReportQuestionValidation {
     // Additional properties specific to draft validation can be added here
 }
 
-// Exporting the Draft Regex Validation Interface, directly inheriting from IReportQuestionsValidationRegex as no ID type change is needed
-export interface IDraftReportQuestionsValidationRegex extends IReportQuestionsValidationRegex {
+// Exporting the Draft Regex Validation Interface, directly inheriting from IReportQuestionValidationRegex as no ID type change is needed
+export interface IDraftReportQuestionsValidationRegex extends IReportQuestionValidationRegex {
     // Additional properties specific to draft regex validation can be added here
 }
 
@@ -156,7 +274,7 @@ export const ICampaignSchema = {
         client_id: 'objectId',
         products: 'objectId[]',
         project_id: 'objectId',
-        routes: 'ICampaign_routes[]',
+        routes: 'ICampaignRoutes[]',
         title: 'string',
         today_checkin: 'int',
         total_checkin: 'int',
@@ -165,7 +283,7 @@ export const ICampaignSchema = {
     primaryKey: '_id',
 };
 
-export type ICampaign_routes = {
+export type ICampaignRoutes = {
     _id: Realm.BSON.ObjectId;
     // checkins: Array<Realm.BSON.ObjectId>;
     createdAt: Date;
@@ -176,7 +294,7 @@ export type ICampaign_routes = {
 };
 
 export const ICampaign_routesSchema = {
-    name: 'ICampaign_routes',
+    name: 'ICampaignRoutes',
     embedded: true,
     properties: {
         _id: 'objectId',
@@ -213,12 +331,21 @@ export const ICampaign_routes_routeAddressSchema = {
     },
 };
 
-export type checkins = {
+export type ICheckin = {
     _id: Realm.BSON.ObjectId;
-    ICampaign_id: Realm.BSON.ObjectId;
+    activeCheckins: Array<ICheckinsActiveCheckins>;
+    campaign_id: Realm.BSON.ObjectId;
     checkin: Date;
-    checkout: Date;
-    sessions: Array<checkins_sessions>;
+    checkout?: Date;
+    createdAt: Date;
+    sessions: Array<ICheckinsSessions>;
+    updatedAt?: Date;
+    lastActivity: Date;
+    user_id: Realm.BSON.ObjectId;
+};
+
+export type ICheckinsActiveCheckins = {
+    checkin_id: Realm.BSON.ObjectId;
     user_id: Realm.BSON.ObjectId;
 };
 
@@ -229,22 +356,26 @@ export const checkinsSchema = {
         ICampaign_id: 'objectId',
         checkin: 'date',
         checkout: 'date',
-        sessions: 'checkins_sessions[]',
+        sessions: 'ICheckinsSessions[]',
         user_id: 'objectId',
     },
     primaryKey: '_id',
 };
 
-export type checkins_sessions = {
+export type ICheckinsSessions = {
     end_time?: Date;
-    id: Realm.BSON.ObjectId;
+    _id: Realm.BSON.ObjectId;
     reports: Array<Realm.BSON.ObjectId>;
+    location: {
+        type: string,
+        coordinates: number[]
+    };
     start_time: Date;
     stock: Array<Realm.BSON.ObjectId>;
 };
 
-export const checkins_sessionsSchema = {
-    name: 'checkins_sessions',
+export const ICheckinsSessionsSchema = {
+    name: 'ICheckinsSessions',
     embedded: true,
     properties: {
         end_time: 'date?',

@@ -8,7 +8,7 @@ import { Grid, Stack, MenuItem, Typography } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { IReportQuestions } from 'src/types/realm/realm-types';
+import { IReportQuestion } from 'src/types/realm/realm-types';
 
 import FormProvider from './form-provider'; // Adjust the import path as needed
 
@@ -27,14 +27,14 @@ import RHFAutocomplete from './rhf-autocomplete';
 
 
 type DynamicFormProps = {
-    questions: IReportQuestions[];
+    questions: IReportQuestion[];
     onSubmit: (data: any) => Promise<void>;
 };
 
 const RHFFormFiller: React.FC<DynamicFormProps> = ({ questions, onSubmit }) => {
     const mdUp = useResponsive('up', 'md');
 
-    const generateSchema = (q: IReportQuestions[]) => Yup.object().shape(
+    const generateSchema = (q: IReportQuestion[]) => Yup.object().shape(
         q.reduce((acc, question) => {
             let validator: Yup.StringSchema | Yup.NumberSchema = Yup.string(); // Default to string validator
 

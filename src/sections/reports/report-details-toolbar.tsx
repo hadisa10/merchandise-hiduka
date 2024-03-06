@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Stack, { StackProps } from '@mui/material/Stack';
 
@@ -32,12 +33,16 @@ export default function ReportDetailsToolbar({
   ...other
 }: Props) {
   return (
-    <>
+    <Stack>
+      <Typography variant="body2" color="text.secondary">
+        {currentReport?.title?.toUpperCase() ?? ""}
+      </Typography>
       <Stack
         spacing={1.5}
         direction="row"
         sx={{
-          mb: { xs: 3, md: 5 },
+          mt: { xs: 0, md: 1 },
+          mb: { xs: 1, md: 2 },
           ...sx,
         }}
         {...other}
@@ -49,20 +54,7 @@ export default function ReportDetailsToolbar({
         >
           Back
         </Button>
-
         <Box sx={{ flexGrow: 1 }} />
-
-        {/* <LoadingButton
-          color="inherit"
-          variant="contained"
-          loading={!publish}
-          loadingIndicator="Loading…"
-          // endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
-          onClick={popover.onOpen}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          Save Campaign
-        </LoadingButton> */}
         <LoadingButton
           type="submit"
           variant="contained"
@@ -71,28 +63,6 @@ export default function ReportDetailsToolbar({
           {!currentReport ? 'Create Report' : 'Save Changes'}
         </LoadingButton>
       </Stack>
-
-      {/* <CustomPopover
-        open={popover.open}
-        onClose={popover.onClose}
-        arrow="top-right"
-        sx={{ width: 140 }}
-      >
-        {publishOptions.map((option) => (
-          <MenuItem
-            key={option.value}
-            selected={option.value === publish}
-            onClick={() => {
-              popover.onClose();
-              onChangePublish(option.value);
-            }}
-          >
-            {option.value === 'published' && <Iconify icon="eva:cloud-upload-fill" />}
-            {option.value === 'draft' && <Iconify icon="solar:file-text-bold" />}
-            {option.label}
-          </MenuItem>
-        ))}
-      </CustomPopover> */}
-    </>
+    </Stack>
   );
 }

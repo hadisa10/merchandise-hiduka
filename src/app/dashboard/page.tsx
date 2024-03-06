@@ -1,4 +1,5 @@
-import OverviewDashboardView from './main/page';
+import { CampaignPerformanceAnalyticView } from 'src/sections/overview/analytics/mock';
+
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +8,6 @@ export const metadata = {
 };
 
 export default function OverviewAppPage() {
-  return <OverviewDashboardView />;
+  // return <OverviewDashboardView />;
+  return <CampaignPerformanceAnalyticView />
 }

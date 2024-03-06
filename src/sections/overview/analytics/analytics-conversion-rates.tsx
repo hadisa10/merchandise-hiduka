@@ -10,20 +10,24 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
+export interface IChartSeries {
+  _id?: string;
+  label: string;
+  value: number;
+}
+
 interface Props extends CardProps {
   title?: string;
   subheader?: string;
   chart: {
     colors?: string[];
-    series: {
-      label: string;
-      value: number;
-    }[];
+    series: IChartSeries[];
     options?: ApexOptions;
   };
+  onClickHandler?: (val: IChartSeries) => void;
 }
 
-export default function AnalyticsConversionRates({ title, subheader, chart, ...other }: Props) {
+export default function AnalyticsConversionRates({ title, subheader, chart, onClickHandler, ...other }: Props) {
   const { colors, series, options } = chart;
 
   const chartSeries = series.map((i) => i.value);
@@ -48,6 +52,17 @@ export default function AnalyticsConversionRates({ title, subheader, chart, ...o
     },
     xaxis: {
       categories: series.map((i) => i.label),
+    },
+    chart: {
+      events: {
+        click: (event, chartContext, config) => {
+          const index = config.dataPointIndex;
+          const val = series[index];
+          if (typeof onClickHandler === "function") {
+            onClickHandler(val);
+          }
+        }
+      }
     },
     ...options,
   });

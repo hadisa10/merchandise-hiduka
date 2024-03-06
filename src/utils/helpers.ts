@@ -2,6 +2,11 @@ import Decimal from "decimal.js";
 import * as Realm from 'realm-web';
 import _, { isNumber } from 'lodash';
 import { cloneElement } from "react";
+import { intervalToDuration } from 'date-fns';
+
+import { paths } from "src/routes/paths";
+
+import { ERole } from "src/config-global";
 
 export async function convertBlobToFile(blob: string, fileName: string): Promise<File | null> {
     try {
@@ -138,48 +143,144 @@ export async function fileToBase64(file: File): Promise<string> {
         reader.readAsDataURL(file);
     });
 }
+// export const removeAndFormatNullFields = <T>(
+//     data: T,
+//     formatOptionsArray?: { key: keyof T; formatter: (value: any) => any }[],
+//     removeFields?: (keyof T)[]
+// ): T | undefined => {
+//     // Check if the data is an object and not null
+//     if (typeof data === 'object' && data !== null) {
+//         // Use generics to preserve the structure of arrays or objects
+//         return Object.entries(data).reduce((acc: any, [key, value]) => {
+//             // Skip any field that is in the removeFields list or has key __typename
+//             if (key === '__typename' || removeFields?.includes(key as keyof T)) {
+//                 return acc;
+//             }
+//             // Check if the current key has a specified format option
+//             const formatOption = formatOptionsArray?.find(option => option.key === key);
+//             if (formatOption) {
+//                 // Apply the formatter function if found
+//                 value = formatOption.formatter(value);
+//             }
+//             // Recursively clean the value
+//             const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields);
+//             // If the cleaned value is not undefined, add it to the accumulator
+//             if (cleanedValue !== undefined) {
+//                 acc[key] = cleanedValue;
+//             }
+//             return acc;
+//         }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
+//     } 
+//         // Return the value if it's not null, otherwise return undefined
+//         return data !== null ? data : undefined;
+
+// };
 export const removeAndFormatNullFields = <T>(
     data: T,
     formatOptionsArray?: { key: keyof T; formatter: (value: any) => any }[],
-    removeFields?: (keyof T)[]
+    removeFields?: (keyof T)[],
+    mismatchConditions?: { key: keyof T; predicate: (value: any) => boolean }[]
 ): T | undefined => {
     // Check if the data is an object and not null
     if (typeof data === 'object' && data !== null) {
-        // Use generics to preserve the structure of arrays or objects
         return Object.entries(data).reduce((acc: any, [key, value]) => {
-            // Skip any field that is in the removeFields list or has key __typename
+            // Skip any field that is in the removeFields list, has key __typename, or does not meet the mismatch condition
             if (key === '__typename' || removeFields?.includes(key as keyof T)) {
                 return acc;
             }
+
+            // Check for mismatch conditions and skip if predicate returns false
+            const mismatchCondition = mismatchConditions?.find(condition => condition.key === key);
+            if (mismatchCondition && !mismatchCondition.predicate(value)) {
+                return acc; // Skip adding this key-value pair
+            }
+
             // Check if the current key has a specified format option
             const formatOption = formatOptionsArray?.find(option => option.key === key);
             if (formatOption) {
-                // Apply the formatter function if found
-                value = formatOption.formatter(value);
+                console.log(`${key}: ${value}`)
+                value = formatOption.formatter(value); // Apply the formatter function if found
             }
+
             // Recursively clean the value
-            const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields);
+            const cleanedValue = removeAndFormatNullFields(value, formatOptionsArray, removeFields, mismatchConditions);
+
             // If the cleaned value is not undefined, add it to the accumulator
             if (cleanedValue !== undefined) {
                 acc[key] = cleanedValue;
             }
             return acc;
         }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
-    } 
-        // Return the value if it's not null, otherwise return undefined
-        return data !== null ? data : undefined;
-    
+    }
+    // Return the value if it's not null, otherwise return undefined
+    return data !== null ? data : undefined;
 };
-export const safeDateFormatter = (value: string): string => {
+
+export const formatFilterAndRemoveFields = <T>(
+    d: T,
+    removeFields?: (keyof T)[],
+    formatOptionsArray?: { key: keyof T; formatter: (value: any) => any }[],
+    mismatchConditions?: { key: keyof T; predicate: (value: any) => boolean }[],
+    orderedKeys?: (keyof T)[] // New parameter for specifying order
+): T | undefined => {
+    const process = <U>(data: U): U | undefined => {
+        if (Array.isArray(data)) {
+            return data.map(item => process(item)) as unknown as U;
+        } if (typeof data === 'object' && data !== null) {
+            // Initialize a new object with the ordered keys positioned first.
+            const orderedData: any = orderedKeys?.reduce((acc: any, key) => {
+                if (key in data && !removeFields?.includes(key)) {
+                    acc[key] = (data as any)[key];
+                }
+                return acc;
+            }, {}) || {};
+
+            // Process remaining keys
+            Object.entries(data).forEach(([key, value]) => {
+                const keyOfT: keyof T = key as keyof T;
+
+                // Skip if key is in orderedKeys or removeFields
+                if (orderedKeys?.includes(keyOfT) || removeFields?.includes(keyOfT)) {
+                    return;
+                }
+
+                const mismatchCondition = mismatchConditions?.find(condition => condition.key === keyOfT);
+                if (mismatchCondition && !mismatchCondition.predicate(value)) {
+                    return; // Skip this key-value pair
+                }
+
+                const formatOption = formatOptionsArray?.find(option => option.key === keyOfT);
+                if (formatOption) {
+                    value = formatOption.formatter(value);
+                }
+
+                // Recursively process the value for nested objects/arrays
+                orderedData[key] = process(value);
+            });
+
+            return orderedData as U;
+        }
+        return data;
+    };
+
+    return process(d);
+};
+
+
+
+
+export const safeDateFormatter = (value?: string): string => {
+    if (!value) {
+        return new Date().toISOString();
+    }
     // Check if the value is a valid date string
     const timestamp = Date.parse(value);
     if (!Number.isNaN(timestamp)) {
         // If valid, return a Date object for the value
         return new Date(value).toISOString();
-    } 
-        // If not valid, return a new Date object
-        return new Date().toISOString();
-    
+    }
+    // If not valid, return a new Date object
+    return new Date().toISOString();
 };
 
 
@@ -196,8 +297,52 @@ export const removeNullFields = <T>(data: T): T | undefined => {
             }
             return acc;
         }, Array.isArray(data) ? [] : {}) as T; // Cast the result to the same type as input
-    } 
-        // Return the value if it's not null, otherwise return undefined
-        return data !== null ? data : undefined;
-    
+    }
+    // Return the value if it's not null, otherwise return undefined
+    return data !== null ? data : undefined;
+
 };
+
+
+export const getRolePath = (rle: string) => {
+    switch (rle) {
+        case ERole.SUPERADMIN:
+            return paths.v2.superadmin.root;
+        case ERole.ADMIN:
+            return paths.v2.admin.root;
+        case ERole.CLIENT:
+            return paths.v2.client.root;
+        case ERole.PROJECT_MANAGER:
+            return paths.v2.projectMng.root;
+        case ERole.TEAM_LEAD:
+            return paths.v2.teamLead.root;
+        case ERole.AGENT:
+        default:
+            return paths.v2.agent.root;
+    }
+};
+
+export function getRelevantTimeInfo(milliseconds: number): string {
+    // Create a duration object from milliseconds
+    const duration = intervalToDuration({ start: 0, end: milliseconds });
+
+    // Determine the most relevant unit of time based on the duration
+    if (duration.months && duration.months > 0) {
+        return `${duration.months} month(s)`;
+    } if (duration.days && duration.days > 0) {
+        // Convert days to weeks and days for more precise output
+        const weeks = Math.floor(duration.days / 7);
+        const days = duration.days % 7;
+        return `${weeks} week(s) ${days > 0 ? `and ${days} day(s)` : ''}`;
+    } if (duration.days && duration.days > 0) {
+        return `${duration.days} day(s)`;
+    } if (duration.hours && duration.hours > 0) {
+        return `${duration.hours} hour(s)`;
+    } if (duration.minutes && duration.minutes > 0) {
+        return `${duration.minutes} minute(s)`;
+    } if (duration.seconds && duration.seconds > 0) {
+        return `${duration.seconds} second(s)`;
+    } 
+        return 'Less than a second';
+    
+}

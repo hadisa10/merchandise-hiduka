@@ -9,7 +9,6 @@ export interface IUserResponse {
 export type IStatus = "pending" | "active" | "rejected" | "banned"
 export type IRole = "lead" | "client" | "admin" | "user" | "brand_ambassador" | "merchant"
 
-
 export interface IUser {
     _id: string;
     email: string;
@@ -32,6 +31,13 @@ export interface IUser {
     status: IStatus;
     createdAt: Date;
     updatedAt: Date;
+}
+export interface ICampaignUser extends IUser {
+    isCheckedIn: boolean;
+    checkInCount: number;
+    totalSessionCount: number;
+    totalEarnings: number;
+    totalHoursWorked: number;
 }
 
 export interface IDraftUser {

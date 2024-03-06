@@ -1,0 +1,1 @@
+export { default as ProjectManagerDashboardView } from './project-mng-dashboard'

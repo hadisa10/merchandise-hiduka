@@ -20,7 +20,7 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function ComingSoonView() {
-  const { days, hours, minutes, seconds } = useCountdownDate(new Date('07/07/2024 21:30'));
+  const { days, hours, minutes, seconds } = useCountdownDate(new Date('03/03/2024 21:30'));
 
   return (
     <>

@@ -13,7 +13,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { ICampaign } from 'src/types/realm/realm-types';
 
-import CampaignNewEdit from '../campaign-new-edit';
+import CampaignNewEdit from '../campaign-new-edit-form-tabs';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +35,9 @@ export default function CampaignEditView({ id }: { id: string }) {
   const settings = useSettingsContext();
 
   const { loading, campaigns } = useCampaigns();
+
   const showLoader = useShowLoader(loading, 500);
+
   const campaign = useMemo<ICampaign | null>(() => {
     if (!loading && Array.isArray(campaigns)) {
       const cmpg = campaigns.find(c => c._id.toString() === id);
@@ -43,6 +45,7 @@ export default function CampaignEditView({ id }: { id: string }) {
     }
     return null;
   }, [id, loading, campaigns])
+  
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       {showLoader && <LoadingScreen />}

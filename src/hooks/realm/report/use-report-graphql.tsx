@@ -15,7 +15,7 @@ import {
 import atlasConfig from "src/atlasConfig.json";
 
 import { IReport } from "src/types/realm/realm-types";
-import { IReportHook, IReportChange, IGraphqlReportResponse, IGraphqlReportsResponse } from "src/types/report";
+import { IReportHook, IReportChange, IGraphqlReportResponse, IGraphqlReportsResponse, IGraphqlFilledReportsResponse } from "src/types/report";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
@@ -295,6 +295,41 @@ export function useReports(lazy: boolean = true): IReportHook {
     }
   };
 
+  const getReportAnswers = async (id: string) => {
+    try {
+      const resp = await graphql.query<IGraphqlFilledReportsResponse>({
+        query: gql`
+          query FetchAnswersReport($id: String!) {
+            GetFilledReports(input: $id) {
+                _id
+                userName,
+                answers {
+                  question_text
+                  answer
+                  question_id
+                  type
+                }
+                campaign_id
+                createdAt
+                report_id
+                session_id
+                updatedAt
+                user_id
+              }
+          }
+        `,
+        variables: {
+          id
+        },
+      });
+      console.log(resp.data.GetFilledReports, 'FILLED REPORT')
+      return resp.data.GetFilledReports;
+    } catch (error) {
+      console.log(error, "REPORT FETCH ERROR")
+      throw new Error("Failed to get report")
+    }
+  };
+
   const getCampaignReport = async (id: string) => {
     try {
       const resp = await graphql.query<IGraphqlReportsResponse>({
@@ -391,7 +426,8 @@ export function useReports(lazy: boolean = true): IReportHook {
     saveReport,
     updateReport,
     getReport,
-    getCampaignReport
+    getCampaignReport,
+    getReportAnswers
     // toggleReportstatus,
     // deleteReport,
   };

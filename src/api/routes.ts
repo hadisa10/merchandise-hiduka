@@ -28,7 +28,7 @@ export function useGetDirections(directions: number[][], automaticFetch: boolean
       ? [`${endpoints.driving}/${points}`, { params: { steps: true, geometries: 'geojson', access_token: MAPBOX_API } }]
       : '';
   }
-
+  
   const { data, isLoading, error, isValidating } = useSWR(allowFetch ? URL : null, fetcher, options);
 
   const memoizedValue = useMemo(

@@ -12,10 +12,6 @@ import { View403 } from 'src/sections/error';
 
 import { IRole } from 'src/types/user_realm';
 
-import DashboardLeadView from '../dashboard-lead-view';
-import DashboardAdminView from '../dashboard-admin-view';
-import DashboardClientView from '../dashboard-client-view';
-import DashboardMerchantView from '../dashboard-merchant-view';
 
 
 // ----------------------------------------------------------------------
@@ -24,19 +20,26 @@ export default function DashboardView() {
     const settings = useSettingsContext();
 
     const realmApp = useRealmApp();
+
+    
     const role = useMemo(() => realmApp.currentUser?.customData.role as unknown as IRole, [realmApp.currentUser?.customData.role])
     const renderDashboard = useCallback(() => {
         switch (role) {
             case 'admin':
-                return <DashboardAdminView />;
+                // return <DashboardAdminView />;
+                return <>ADMINISTRATIVE VIEW</>;
             case 'client':
-                return <DashboardClientView />;
+                // return <DashboardClientView />;
+                return <>CLIENT VIEW</>;
             case 'lead':
-                return <DashboardLeadView />;
+                // return <DashboardLeadView />;
+                return <>LEAD VIEW</>;
             case 'merchant':
-                return <DashboardMerchantView />;
+                return <>MERCHANT VIEW</>;
+                // return <DashboardMerchantView />;
             case 'brand_ambassador':
-                return <DashboardMerchantView />;
+                return <>BRAND AMBASSADOR VIEW</>;
+                // return <DashboardMerchantView />;
             default:
                 return <View403 />
         }

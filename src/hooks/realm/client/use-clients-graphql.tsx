@@ -12,7 +12,7 @@ import {
 
 import atlasConfig from "src/atlasConfig.json";
 
-import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse } from "src/types/client";
+import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse, IGraphqlClientResponse } from "src/types/client";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
@@ -153,6 +153,37 @@ export function useClients(lazy: boolean = true): IClientHook {
     }
   };
 
+  const getClient = async (id: string) => {
+    const resp = await graphql.query<IGraphqlClientResponse>({
+      query: gql`
+        query FetchClient($id: ObjectId!) {
+          client(query: { _id: $id }) {
+              _id
+              creator{
+                name
+                email
+              }
+              users{
+                name
+                email
+              }
+              name
+              active
+              client_plan
+              client_icon
+              createdAt
+              updatedAt
+            }
+        }
+      `,
+      variables: {
+        id
+      },
+    });
+    console.log(resp, 'CLIENT')
+    return resp.data.client;
+  }
+
   const toggleClientStatus = async (client: IClient) => {
     await graphql.mutate({
       mutation: gql`
@@ -184,6 +215,7 @@ export function useClients(lazy: boolean = true): IClientHook {
     loading,
     clients,
     saveClient,
+    getClient,
     toggleClientStatus,
     deleteClient,
   };

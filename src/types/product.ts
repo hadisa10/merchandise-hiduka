@@ -49,6 +49,7 @@ export type IProductItem = {
   images: string[];
   colors: string[];
   quantity: number;
+  stockAssigned: number;
   category: string;
   available: number;
   totalSold: number;
@@ -94,6 +95,19 @@ export interface IProductsGraphqlResponse {
   products: IProductItem[];
 }
 
+export interface IGraphqlCampaignProductsResponse {
+  CampaignProducts: IProductItem[];
+}
+
+export interface IGraphqlClientProductsResponse {
+  ClientProducts: IProductItem[];
+}
+
+export interface IGraphqlCampaignAddProductsResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface IProductGraphqlResponse {
   product: IProductItem;
 }
@@ -102,6 +116,9 @@ export interface IProductActions {
   getProduct: (id: string) => Promise<ApolloQueryResult<IProductGraphqlResponse> | undefined>;
   deleteProduct: (product: IProductItem) => Promise<void>;
   updateProduct: (product: IProductItem) => Promise<void>;
+  getCampaignProducts: (id: string) => Promise<IProductItem[]>;
+  getClientProducts: (id: string) => Promise<IProductItem[]>;
+  addCampaignProducts: (campaign_id: string, products: string[]) => Promise<void>;
 }
 
 export interface IProductHook extends IProductActions {

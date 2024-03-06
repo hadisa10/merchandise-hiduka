@@ -1,7 +1,8 @@
 'use client';
 
 import isEqual from 'lodash/isEqual';
-import { useState, useEffect, useCallback } from 'react';
+import { isEmpty, isString } from 'lodash';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -69,17 +70,60 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export default function ProductListView() {
+export default function ProductListView({ campaignId }: { campaignId?: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { loading: productsLoading, products } = useProducts();
+  const callProduct = useMemo(() => isString(campaignId), [campaignId])
+
+  const { getCampaignProducts, loading: mainLoading, products: mainProducts } = useProducts(callProduct);
+
+  const loadingReport = useBoolean()
+
+  const [products, setProducts] = useState<IProductItem[]>([])
+
+  // eslint-disable-next-line
+  const [productError, setProductsError] = useState(null)
+
+  const productsLoading = useMemo(() => {
+    if (isString(campaignId)) {
+      return loadingReport.value
+    }
+    return mainLoading
+  }, [mainLoading, loadingReport.value, campaignId])
+
+  useEffect(() => {
+    if (isString(campaignId) && !isEmpty(campaignId)) {
+      loadingReport.onTrue()
+      setProductsError(null)
+      getCampaignProducts(campaignId.toString())
+        .then(res => {
+          setProductsError(null)
+          setProducts(res)
+        }
+        )
+        .catch(e => {
+          enqueueSnackbar("Failed to fetch campaign reports", { variant: "error" })
+          setProductsError(e.message)
+          console.error(e, "REPORT FETCH")
+        })
+        .finally(() => {
+          loadingReport.onFalse()
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaignId])
+
+  useEffect(() => {
+    if (!isString(campaignId)) {
+      setProducts(mainProducts)
+    }
+  }, [campaignId, mainProducts])
 
   const confirmRows = useBoolean();
 
   const router = useRouter();
 
   const settings = useSettingsContext();
-
 
   const [tableData, setTableData] = useState<IProductItem[]>([]);
 
@@ -284,7 +328,7 @@ export default function ProductListView() {
             rows={dataFiltered}
             columns={columns}
             loading={productsLoading}
-            getRowHeight={() => 'auto'} 
+            getRowHeight={() => 'auto'}
             getEstimatedRowHeight={() => 150}
             pageSizeOptions={[5, 10, 25]}
             getRowId={(row) => row._id}

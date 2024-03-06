@@ -13,7 +13,7 @@ import {
 import atlasConfig from "src/atlasConfig.json";
 
 import { IRoute } from "src/types/realm/realm-types";
-import { IRouteHook, IRouteChange, IGraphqlResponse } from "src/types/routes";
+import { IRouteHook, IRouteChange, IGraphqlRoutesResponse, IGraphqlSearchRoutesResponse } from "src/types/routes";
 
 import { useWatch } from "../use-watch";
 import { useCollection } from "../use-collection"
@@ -22,26 +22,45 @@ import { useCustomApolloClient } from "../use-apollo-client";
 const { dataSourceName } = atlasConfig;
 
 
-export function useRealmRoutes(): IRouteHook {
+export function useRealmRoutes(lazy: boolean = true): IRouteHook {
   const graphql = useCustomApolloClient();
   const [routes, setRoutes] = useState<IRoute[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const query = gql`
-      query FetchRoutes {
-        routes {
-          _id
-          fullAddress
+    if (!lazy) {
+      const query = gql`
+        query FetchRoutes {
+          routes {
+            _id
+            businessSector
+            campaigns
+            createdAt
+            fullAddress
+            location {
+              coordinates
+              type
+            }
+            phoneNumber
+            products {
+              name
+              product_id
+              quantity
+            }
+            road
+            updatedAt
+            users
+          }
         }
-      }
     `;
-    graphql.query<IGraphqlResponse>({ query }).then(({ data }) => {
-      console.log(data, 'DATA')
-      setRoutes(data.routes);
-      setLoading(false);
-    });
-  }, [graphql]);
+      graphql.query<IGraphqlRoutesResponse>({ query }).then(({ data }) => {
+        console.log(data, 'DATA')
+        setRoutes(data.routes);
+        setLoading(false);
+      });
+    }
+
+  }, [graphql, lazy]);
 
   const routesHidukaCollection = useCollection({
     cluster: dataSourceName,
@@ -103,12 +122,12 @@ export function useRealmRoutes(): IRouteHook {
   });
 
   const saveRoute = async (draftRoute: IRoute) => {
-      const cpRoute: Omit<IRoute, "_id">= {
-        ...draftRoute
-      }
-      try {
-        await graphql.mutate({
-          mutation: gql`
+    const cpRoute: Omit<IRoute, "_id"> = {
+      ...draftRoute
+    }
+    try {
+      await graphql.mutate({
+        mutation: gql`
             mutation SaveRoute($route: RouteInsertInput!) {
               insertOneRoute(data: $route) {
                 _id
@@ -116,22 +135,61 @@ export function useRealmRoutes(): IRouteHook {
               }
             }
           `,
-          variables: { route: cpRoute },
-        });
-      } catch (err) {
-        if (err.message.match(/^Duplicate key error/)) {
-          console.warn(
-            `The following error means that this app tried to insert a route multiple times (i.e. an existing route has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
-          );
-        }
-        console.error(err);
-        throw err;
+        variables: { route: cpRoute },
+      });
+    } catch (err) {
+      if (err.message.match(/^Duplicate key error/)) {
+        console.warn(
+          `The following error means that this app tried to insert a route multiple times (i.e. an existing route has the same _id). In this app, we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
+        );
       }
+      console.error(err);
+      throw err;
+    }
+  };
+
+  const searchRoute = async (searchQuery: string): Promise<IRoute[]> => {
+    try {
+      const resp = await graphql.query<IGraphqlSearchRoutesResponse>({
+        query: gql`
+          query SearchRoute($searchQuery: String!) {
+            SearchRoutes(input: $searchQuery) {
+                _id
+                businessSector
+                campaigns
+                createdAt
+                fullAddress
+                location {
+                  coordinates
+                  type
+                }
+                phoneNumber
+                products {
+                  name
+                  product_id
+                  quantity
+                }
+                road
+                updatedAt
+                users
+              }
+          }
+        `,
+        variables: {
+          searchQuery: `.*${searchQuery}.*`
+        },
+      });
+      return resp.data.SearchRoutes;
+    } catch (error) {
+      console.log(error, "REPORT FETCH ERROR")
+      throw new Error("Failed to get report")
+    }
   };
 
   return {
     loading,
     routes,
-    saveRoute
+    saveRoute,
+    searchRoute
   };
 }

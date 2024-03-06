@@ -12,6 +12,7 @@ import * as Realm from "realm-web";
 //     updatedAt: Date;
 // }
 
+
 interface IUser {
     _id: Realm.BSON.ObjectId;
     name: string;
@@ -30,6 +31,7 @@ interface IClientUser {
 }
 
 export interface IClient {
+    // __typename?: string,
     _id: Realm.BSON.ObjectId;
     active: boolean;
     creator: IUser;
@@ -60,10 +62,14 @@ export interface IClientChange {
 export interface IGraphqlResponse {
     clients: IClient[];
 }
+export interface IGraphqlClientResponse {
+    client: IClient;
+}
 export interface IClientActions {
     saveClient: (draftClient: IDraftClient) => Promise<void>;
     toggleClientStatus: (client: IClient) => Promise<void>;
     deleteClient: (client: IClient) => Promise<void>;
+    getClient: (id: string) => Promise<IClient>;
 }
 
 export interface IClientHook extends IClientActions {

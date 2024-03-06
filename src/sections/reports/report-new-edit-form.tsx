@@ -35,6 +35,7 @@ import { RHFFormFiller } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
 // import { RHFFormFiller } from 'src/components/hook-form';
 
+
 const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
 const ROUTES_FIELDS = ['routes']
 
@@ -48,7 +49,8 @@ type Props = {
 export const REPORT_DETAILS_TABS = [
   { value: 'details', label: 'Details' },
   { value: 'questions', label: 'Questions' },
-  { value: 'test', label: 'Fill Report' },
+  { value: 'test', label: 'Test Report' },
+  { value: 'responses', label: 'Responses' },
 ];
 
 
@@ -57,9 +59,10 @@ export const REPORT_DETAILS_TABS = [
 // }
 
 // Lazy load the components
-const QuestionsNewEditList = lazy(() => import('./edit/questions-new-edit'));
-const CampaignDetailsToolbar = lazy(() => import('./report-details-toolbar'));
+const QuestionsNewEditList = lazy(() => import('./question-component/questions-new-edit'));
+const ReportsDetailsToolbar = lazy(() => import('./report-details-toolbar'));
 const ReportNewEditDetailsForm = lazy(() => import('./edit/report-new-edit-details-form'));
+const ResponsesGridView = lazy(() => import('./responses-component/responses-list-view'));
 
 export default function ReportNewEditForm({ currentReport }: Props) {
 
@@ -75,16 +78,31 @@ export default function ReportNewEditForm({ currentReport }: Props) {
   const [currentTab, setCurrentTab] = useState('details');
 
   const regexValidationSchema = Yup.object().shape({
-    matches: Yup.string().nullable(), // Allows null
+    matches: Yup.string().nullable().test(
+      'is-regex',
+      'matches must be a valid regex',
+      value => {
+        try {
+          // Attempt to create a new RegExp object. If `value` is not a valid regex, this will throw an error.
+          // @ts-expect-error expected
+          RegExp(value);
+          // If no error is thrown, then `value` is a valid regex.
+          return true;
+        } catch (e) {
+          // If an error is thrown, then `value` is not a valid regex.
+          return false;
+        }
+      }
+    ), // Allows null
     message: Yup.string().nullable(), // Allows null
   }).nullable();
 
   const questionValidationSchema = Yup.object().shape({
     required: Yup.boolean().nullable(),
-    minLength: Yup.number().nullable(),
-    maxLength: Yup.number().nullable(),
-    minValue: Yup.number().nullable(),
-    maxValue: Yup.number().nullable(),
+    minLength: Yup.number().nullable().typeError("Min Length must be a number"),
+    maxLength: Yup.number().nullable().typeError("Max Length must be a number"),
+    minValue: Yup.number().nullable().typeError("Min Value must be a number"),
+    maxValue: Yup.number().nullable().typeError("Min Value must be a number"),
     regex: regexValidationSchema,
     fileTypes: Yup.array().of(Yup.string()).nullable(), // Allows null and an array of strings
   }).nullable();
@@ -171,10 +189,6 @@ export default function ReportNewEditForm({ currentReport }: Props) {
 
   const onSubmit = handleSubmit(async (formData) => {
     // Remove null fields from the form data
-
-
-
-
     try {
       if (currentReport) {
         const cleanedData = removeAndFormatNullFields({
@@ -249,7 +263,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
       value={currentTab}
       onChange={handleChangeTab}
       sx={{
-        mb: { xs: 3, md: 5 },
+        mb: { xs: 1, md: 2 },
       }}
     >
       {REPORT_DETAILS_TABS.map((tab) => (
@@ -271,18 +285,17 @@ export default function ReportNewEditForm({ currentReport }: Props) {
 
   return (
     <>
-      {renderTabs}
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <CampaignDetailsToolbar
+        <ReportsDetailsToolbar
           currentReport={currentReport}
           isSubmitting={isSubmitting}
           backLink={paths.dashboard.report.root}
         />
-        <Suspense fallback={<LoadingScreen />}>
-          {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
-          {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}
+        {renderTabs}
 
-        </Suspense>
+        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} /></Suspense>}
+        {currentTab === 'questions' && <Suspense fallback={<LoadingScreen />}><QuestionsNewEditList /></Suspense>}
+        {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><ResponsesGridView report={currentReport} questions={currentReport?.questions} /></Suspense>}
 
         {/* {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}
@@ -291,12 +304,11 @@ export default function ReportNewEditForm({ currentReport }: Props) {
           // @ts-expect-error expected
           <RHFFormFiller questions={questions} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
         } */}
-      </FormProvider>
+      </FormProvider >
       {currentTab === 'test' &&
         // @ts-expect-error expected
         <RHFFormFiller questions={removeAndFormatNullFields(questions)} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
       }
-
     </>
   );
 }
