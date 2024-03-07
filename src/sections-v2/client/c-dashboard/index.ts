@@ -1,1 +1,1 @@
-export { default as ClientDashboard } from './client-dashboard';
+export { default as ClientDashboard } from './c-dashboard';

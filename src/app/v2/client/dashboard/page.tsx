@@ -6,10 +6,10 @@ export const metadata = {
   title: 'Dashboard',
 };
 
-function AdminDashboardView() {
+function ClientDashboardView() {
   return (
-    <div>Admin Dashboard View</div>
+    <div>Client Dashboard View</div>
   )
 }
 
-export default AdminDashboardView
+export default ClientDashboardView

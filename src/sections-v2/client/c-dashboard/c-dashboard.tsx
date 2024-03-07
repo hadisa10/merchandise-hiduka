@@ -12,8 +12,8 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import AdminDashboardCampaignMetrics from './ad-dash-components/ad-campaigns-metrics';
-import AdminDashboardInventoryMetrics from './ad-dash-components/ad-inventory-metrics';
+import ClientDashboardCampaignMetrics from './c-dash-components/c-campaigns-metrics';
+import ClientDashboardInventoryMetrics from './c-dash-components/c-inventory-metrics';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ export const DASHBOARD_OVERVIEW_DETAILS_TABS = [
 // ----------------------------------------------------------------------
 
 
-export default function AdminDashboardView() {
+export default function ClientDashboardView() {
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -82,10 +82,10 @@ export default function AdminDashboardView() {
 
       {
         currentTab === "campaigns" &&
-        <AdminDashboardCampaignMetrics />
+        <ClientDashboardCampaignMetrics />
       }
       {
-        currentTab === "sales_inventory" && <AdminDashboardInventoryMetrics />
+        currentTab === "sales_inventory" && <ClientDashboardInventoryMetrics />
       }
     </Container>
   );

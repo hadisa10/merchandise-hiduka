@@ -6,10 +6,10 @@ export const metadata = {
   title: 'Dashboard',
 };
 
-function AdminDashboardView() {
+function ProjectDashboardView() {
   return (
-    <div>Admin Dashboard View</div>
+    <div>Project Manager Dashboard View</div>
   )
 }
 
-export default AdminDashboardView
+export default ProjectDashboardView
