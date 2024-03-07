@@ -8,7 +8,7 @@ export const metadata = {
 
 function AdminDashboardView() {
   return (
-    <div>Admin Dashboard View</div>
+    <div>Team Lead Dashboard View</div>
   )
 }
 

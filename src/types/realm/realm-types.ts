@@ -9,8 +9,13 @@ export interface IAdminDashboardInventoryMetrics {
     totalSold: number;
     totalRatings: number;
     totalReviews: number;
-  }
-  
+    topProductsDetails: {
+        _id: string;
+        name: string;
+        totalAmount: number;
+    }[]
+}
+
 
 export interface ICampaignByType {
     _id: string;
@@ -47,7 +52,7 @@ export interface IAdminDashboardData {
     topUsersByCheckIns: ITopUserByCheckins[]
 }
 
-export interface IAdminDashboardAvgAnswersPerDay{
+export interface IAdminDashboardAvgAnswersPerDay {
     avgAnswersPerDay: number;
     reportId: number;
     reportName: number;
