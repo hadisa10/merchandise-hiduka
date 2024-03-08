@@ -118,7 +118,6 @@ export function useClients(lazy: boolean = true): IClientHook {
 
   const saveClient = async (draftClient: IDraftClient) => {
     if (draftClient.name) {
-      console.log(draftClient, 'DRAFT CLIENT')
       const dt = new Date();
       const cpClient: IDraftClient & { createdAt: Date, updatedAt: Date } = {
         ...draftClient,
@@ -180,7 +179,6 @@ export function useClients(lazy: boolean = true): IClientHook {
         id
       },
     });
-    console.log(resp, 'CLIENT')
     return resp.data.client;
   }
 

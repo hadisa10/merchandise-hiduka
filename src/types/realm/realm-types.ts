@@ -2,6 +2,25 @@ import * as Realm from "realm-web";
 
 
 
+export type ICampaignTeam<T> = {
+    _id: T;
+    campaign_id: T;
+    createdAt: Date;
+    name: string;
+    regions: Array<T>;
+    teamLeads: Array<T>;
+    updatedAt: Date;
+    users: Array<T>;
+};
+
+export type IDraftCampaignTeam = {
+    createdAt: Date;
+    name: string;
+    regions: Array<string>;
+    teamLeads: Array<string>;
+    users: Array<string>;
+};
+
 export interface IAdminDashboardInventoryMetrics {
     totalProducts: number;
     totalStock: number;

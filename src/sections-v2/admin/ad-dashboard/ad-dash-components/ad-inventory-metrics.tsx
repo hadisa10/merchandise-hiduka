@@ -24,7 +24,7 @@ function AdminDashboardInventoryMetrics() {
 
 
 
-  const inventoryloading = useBoolean()
+  const inventoryloading = useBoolean(true)
 
   const showInventoryLoader = useShowLoader((inventoryloading.value), 300);
 

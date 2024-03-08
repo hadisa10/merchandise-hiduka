@@ -98,14 +98,14 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
       // {
       //   title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
       // },
-      // // CAMPAIGNS
-      // {
-      //   title: t('campaign'), path: paths.dashboard.campaign.root, icon: ICONS.campaign,
-      //   children: [
-      //     { title: t('list'), path: paths.dashboard.campaign.root },
-      //     { title: t('create'), path: paths.dashboard.campaign.new }
-      //   ]
-      // },
+      // CAMPAIGNS
+      {
+        title: t('campaign'), path: paths.v2.admin.campaign.root, icon: ICONS.campaign,
+        children: [
+          { title: t('list'), path: paths.v2.admin.campaign.root },
+          { title: t('create'), path: paths.v2.admin.campaign.root }
+        ]
+      },
       // // REPORTS
       // {
       //   title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
@@ -146,6 +146,7 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('overview'),
     items: [
+      { title: t('Dashboard'), path: paths.v2.client.root, icon: ICONS.dashboard },
     ],
   },
 
@@ -154,6 +155,14 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('management'),
     items: [
+      // CAMPAIGNS
+      {
+        title: t('campaign'), path: paths.v2.client.campaign.root, icon: ICONS.campaign,
+        children: [
+          { title: t('list'), path: paths.v2.client.campaign.root },
+          { title: t('create'), path: paths.v2.client.campaign.new }
+        ]
+      },
     ],
   },
 ])
@@ -228,19 +237,19 @@ export function useNavData() {
     () => {
       switch (rle) {
         case ERole.SUPERADMIN:
-            return renderAdmin(t);
+          return renderAdmin(t);
         case ERole.ADMIN:
-            return renderAdmin(t);
+          return renderAdmin(t);
         case ERole.CLIENT:
-            return renderClient(t);
+          return renderClient(t);
         case ERole.PROJECT_MANAGER:
-            return renderProjectManager(t);
+          return renderProjectManager(t);
         case ERole.TEAM_LEAD:
-            return renderTeamLead(t);
+          return renderTeamLead(t);
         case ERole.AGENT:
         default:
-            return renderAgent(t);
-    }
+          return renderAgent(t);
+      }
     }, [t, rle]);
 
   return data;

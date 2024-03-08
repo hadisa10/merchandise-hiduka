@@ -20,6 +20,7 @@ import { RealmProvider } from "src/components/realm";
 
 
 import { AuthProvider } from 'src/auth/context/jwt';
+import { ClientProvider } from 'src/components/clients/context/client-provider';
 import atlasConfig from "../atlasConfig.json";
 // import { AuthProvider } from 'src/auth/context/auth0';
 // import { AuthProvider } from 'src/auth/context/amplify';
@@ -58,32 +59,36 @@ export default function RootLayout({ children }: Props) {
     <html lang="en" className={primaryFont.className}>
       <body>
         <AuthProvider>
-          <LocalizationProvider>
-            <SettingsProvider
-              defaultSettings={{
-                themeMode: 'light', // 'light' | 'dark'
-                themeDirection: 'ltr', //  'rtl' | 'ltr'
-                themeContrast: 'default', // 'default' | 'bold'
-                themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-                themeColorPresets: 'blue', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
-                themeStretch: false,
-              }}
-            >
-              <ThemeProvider>
-                <MotionLazy>
-                  <RealmProvider appId={appId}>
-                    <SnackbarProvider>
-                      <CheckoutProvider>
-                        <SettingsDrawer />
-                        <ProgressBar />
-                        {children}
-                      </CheckoutProvider>
-                    </SnackbarProvider>
-                  </RealmProvider>
-                </MotionLazy>
-              </ThemeProvider>
-            </SettingsProvider>
-          </LocalizationProvider>
+          <ClientProvider>
+
+            <LocalizationProvider>
+              <SettingsProvider
+                defaultSettings={{
+                  themeMode: 'light', // 'light' | 'dark'
+                  themeDirection: 'ltr', //  'rtl' | 'ltr'
+                  themeContrast: 'default', // 'default' | 'bold'
+                  themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
+                  themeColorPresets: 'blue', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+                  themeStretch: false,
+                }}
+              >
+                <ThemeProvider>
+                  <MotionLazy>
+
+                    <RealmProvider appId={appId}>
+                      <SnackbarProvider>
+                        <CheckoutProvider>
+                          <SettingsDrawer />
+                          <ProgressBar />
+                          {children}
+                        </CheckoutProvider>
+                      </SnackbarProvider>
+                    </RealmProvider>
+                  </MotionLazy>
+                </ThemeProvider>
+              </SettingsProvider>
+            </LocalizationProvider>
+          </ClientProvider>
         </AuthProvider>
       </body>
     </html>

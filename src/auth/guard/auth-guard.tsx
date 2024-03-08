@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'src/routes/hooks';
 import { getRolePath } from 'src/utils/helpers';
 
 import { useRealmApp } from 'src/components/realm';
+import { useClientContext } from 'src/components/clients';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
@@ -46,6 +47,7 @@ function Container({ children }: Props) {
 
   const role = useMemo(() => currentUser?.customData?.role as unknown as string, [currentUser?.customData?.role])
 
+  const { reset } = useClientContext()
 
 
   const redirectTo = () => {
@@ -74,6 +76,7 @@ function Container({ children }: Props) {
 
       // return;
       if (!currentUser?.isLoggedIn) {
+        reset();
         redirectTo();
       }
       else if (!(currentUser?.customData?.isRegistered)) {
@@ -86,6 +89,7 @@ function Container({ children }: Props) {
         setChecked(true);
       }
     } catch (error) {
+      reset();
       console.log(error, "ERROR")
       redirectTo();
     }

@@ -24,7 +24,6 @@ import { IAdminDashboardData, IAdminDashboardReportSummary } from 'src/types/rea
 
 function AdminDashboardCampaignMetrics() {
 
-
   const realmApp = useRealmApp()
 
   const campaignloading = useBoolean()

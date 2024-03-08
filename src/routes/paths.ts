@@ -252,16 +252,27 @@ export const paths = {
     admin: {
       root: `${ROOTS.V2}/admin/dashboard`,
       dashboard: `${ROOTS.V2}/admin/dashboard`,
+      campaign: {
+        root: `${ROOTS.V2}/admin/dashboard/campaign`,
+        list: `${ROOTS.V2}/admin/dashboard/campaign`,
+        edit: (id: string) => `${ROOTS.V2}/admin/dashboard/campaign/${id}/edit`,
+      }
     },
     client: {
       root: `${ROOTS.V2}/client/dashboard`,
       dashboard: `${ROOTS.V2}/client/dashboard`,
+      campaign: {
+        root: `${ROOTS.V2}/client/dashboard/campaign`,
+        list: `${ROOTS.V2}/client/dashboard/campaign`,
+        new: `${ROOTS.V2}/client/dashboard/campaign/new`,
+        edit: (id: string) => `${ROOTS.V2}/client/dashboard/campaign/${id}/edit`,
+      }
     },
-    projectMng: {
+    "project-manager": {
       root: `${ROOTS.V2}/project-manager/dashboard`,
       dashboard: `${ROOTS.V2}/project-manager/dashboard`,
     },
-    teamLead: {
+    "team-lead": {
       root: `${ROOTS.V2}/team-lead/dashboard`,
       dashboard: `${ROOTS.V2}/team-lead/dashboard`,
     },

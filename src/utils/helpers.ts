@@ -283,6 +283,10 @@ export const safeDateFormatter = (value?: string): string => {
     return new Date().toISOString();
 };
 
+export function generateAccessCode() {
+    return Math.floor(10000 + Math.random() * 90000).toString();
+}
+
 
 export const removeNullFields = <T>(data: T): T | undefined => {
     // Check if the data is an object and not null
@@ -342,7 +346,7 @@ export function getRelevantTimeInfo(milliseconds: number): string {
         return `${duration.minutes} minute(s)`;
     } if (duration.seconds && duration.seconds > 0) {
         return `${duration.seconds} second(s)`;
-    } 
-        return 'Less than a second';
-    
+    }
+    return 'Less than a second';
+
 }
