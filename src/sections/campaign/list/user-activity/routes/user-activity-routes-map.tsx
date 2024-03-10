@@ -87,7 +87,7 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
 
   const [userLocation, setUserLocation] = useState<CountryData>({
-    lnglat: [NairobiCoord.longitude, NairobiCoord.latitude],
+    lnglat: [NairobiCoord.latitude, NairobiCoord.longitude],
     address: currentUser?.customData?.displayName as string ?? 'ME',
     phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
     products: [],
@@ -100,7 +100,7 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
           const { longitude, latitude } = position.coords;
           console.log(longitude, 'LONGITUDE')
           setUserLocation({
-            lnglat: [longitude, latitude],
+            lnglat: [latitude, longitude],
             address: currentUser?.customData?.displayName as string ?? 'ME',
             phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
             products: [],
@@ -109,7 +109,7 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
         (error) => {
           console.error('Error getting location:', error);
           setUserLocation({
-            lnglat: [NairobiCoord.longitude, NairobiCoord.latitude],
+            lnglat: [NairobiCoord.latitude, NairobiCoord.longitude],
             address: currentUser?.customData?.displayName as string ?? 'ME',
             phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
             products: [],
@@ -118,7 +118,7 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
       );
     } else {
       setUserLocation({
-        lnglat: [37.805, -1.447],
+        lnglat: [-1.447, 37.805],
         address: currentUser?.customData?.displayName as string ?? 'ME',
         phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
         products: [],
@@ -156,7 +156,7 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
     const startPoint = first(contacts);
 
     if (startPoint) {
-      const [longitude, latitude] = startPoint.lnglat;
+      const [latitude, longitude] = startPoint.lnglat;
       return {
         latitude,
         longitude,
@@ -297,8 +297,8 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
               {Array.isArray(contacts) && [userLocation, ...contacts].map((country, index) => (
                 <Marker
                   key={`marker-${index}`}
-                  latitude={country.lnglat[1]}
-                  longitude={country.lnglat[0]}
+                  latitude={country.lnglat[0]}
+                  longitude={country.lnglat[1]}
                   onClick={(event) => {
                     event.originalEvent.stopPropagation();
                     handleSetPopupInfo(country);
@@ -309,8 +309,8 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
 
               {popupInfo && (
                 <MapPopup
-                  longitude={popupInfo.lnglat[0]}
-                  latitude={popupInfo.lnglat[1]}
+                  longitude={popupInfo.lnglat[1]}
+                  latitude={popupInfo.lnglat[0]}
                   onClose={() => handleSetPopupInfo(null)}
                   sx={{
                     '& .mapboxgl-popup-content': { bgcolor: 'common.white', color: 'common.black' },
