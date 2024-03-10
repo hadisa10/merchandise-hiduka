@@ -245,7 +245,7 @@ function CFormCampaignTeams({ campaign, loading, users }: { campaign?: ICampaign
               {campaignloading.value && <LoadingScreen />}
               {!campaignloading.value &&
                 campaignsTeams?.map(campaignsTeam => (
-                  <ListItemButton>
+                  <ListItemButton key={campaignsTeam._id.toString()}>
                     <ListItemAvatar>
                       <Avatar src={campaignsTeam.name} />
                     </ListItemAvatar>
