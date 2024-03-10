@@ -58,7 +58,6 @@ export default function Layout({ children }: Props) {
 
   useEffect(() => {
     if (!loader) {
-      console.log("OPEN DIALOG")
       clientloading.onTrue()
       setError(null);
       realmApp.currentUser?.functions.getUserClients().then((data: IClient[]) => setClients(data))
@@ -107,7 +106,7 @@ export default function Layout({ children }: Props) {
       <Dialog
         fullWidth
         maxWidth="sm"
-        open={hasClient.value}
+        open={loader}
         onClose={() => { }}
       >
         <DialogTitle>Select Client</DialogTitle>
