@@ -1,3 +1,8 @@
+// @ts-nocheck
+/* tslint:disable */ 
+
+
+import { isNumber } from 'lodash';
 import { useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -47,7 +52,7 @@ export default function ProductDetailsSummary({
   const router = useRouter();
 
   const {
-    id,
+    _id,
     name,
     sizes,
     price,
@@ -63,14 +68,14 @@ export default function ProductDetailsSummary({
     subDescription,
   } = product;
 
-  const existProduct = !!items?.length && items.map((item) => item.id).includes(id);
+  const existProduct = !!items?.length && items.map((item) => item.id).includes(_id);
 
   const isMaxQuantity =
     !!items?.length &&
-    items.filter((item) => item.id === id).map((item) => item.quantity)[0] >= available;
+    items.filter((item) => item.id === _id).map((item) => item.quantity)[0] >= available;
 
   const defaultValues = {
-    id,
+    id: _id,
     name,
     coverUrl,
     available,
@@ -100,7 +105,7 @@ export default function ProductDetailsSummary({
       if (!existProduct) {
         onAddCart?.({
           ...data,
-          colors: [values.colors],
+          colors: [values.colors ?? ""],
           subTotal: data.price * data.quantity,
         });
       }
@@ -115,7 +120,7 @@ export default function ProductDetailsSummary({
     try {
       onAddCart?.({
         ...values,
-        colors: [values.colors],
+        colors: [values.colors ?? ""],
         subTotal: values.price * values.quantity,
       });
     } catch (error) {
@@ -125,20 +130,26 @@ export default function ProductDetailsSummary({
 
   const renderPrice = (
     <Box sx={{ typography: 'h5' }}>
-      {priceSale && (
-        <Box
-          component="span"
-          sx={{
-            color: 'text.disabled',
-            textDecoration: 'line-through',
-            mr: 0.5,
-          }}
-        >
-          {fCurrency(priceSale)}
-        </Box>
-      )}
+      {
+        isNumber(priceSale) && (
+          <>
+            <Box
+              component="span"
+              sx={{
+                color: 'text.disabled',
+                textDecoration: 'line-through',
+                mr: 0.5,
+              }}
+            >
+              {fCurrency(price)}
+            </Box>
+            {fCurrency(priceSale)}
+          </>
+        )
 
-      {fCurrency(price)}
+      }
+
+      {!isNumber(priceSale) && fCurrency(price)}
     </Box>
   );
 
@@ -247,7 +258,7 @@ export default function ProductDetailsSummary({
           quantity={values.quantity}
           disabledDecrease={values.quantity <= 1}
           disabledIncrease={values.quantity >= available}
-          onIncrease={() => setValue('quantity', values.quantity + 1)}
+          onIncrease={() => values.quantity && setValue('quantity', values.quantity + 1)}
           onDecrease={() => setValue('quantity', values.quantity - 1)}
         />
 

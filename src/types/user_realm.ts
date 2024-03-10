@@ -6,23 +6,39 @@ export interface IUserResponse {
     users: IUser[];
 }
 
+export type IStatus = "pending" | "active" | "rejected" | "banned"
+export type IRole = "lead" | "client" | "admin" | "user" | "brand_ambassador" | "merchant"
+
+
 export interface IUser {
     _id: string;
     email: string;
     isPublic: boolean;
     displayName: string;
+    firstname: string;
+    lastname: string;
     city: string | null;
     state: string | null;
     about: string | null;
     country: string | null;
     address: string | null;
     zipCode: string | null;
-    role?: string;
+    role: IRole;
     phoneNumber: string | null;
     photoURL: CustomFile | string | null;
-    active: boolean;
+    isVerified: boolean;
+    isRegistered: boolean;
+    company: string;
+    status: IStatus;
     createdAt: Date;
     updatedAt: Date;
+}
+export interface ICampaignUser extends IUser {
+    isCheckedIn: boolean;
+    checkInCount: number;
+    totalSessionCount: number;
+    totalEarnings: number;
+    totalHoursWorked: number;
 }
 
 export interface IDraftUser {
@@ -39,6 +55,9 @@ export interface IDraftUser {
     role?: string;
     phoneNumber: string | null;
     photoURL: CustomFile | string | null;
+    isVerified: boolean;
+    company: string;
+    status: IStatus;
     active: boolean;
 }
 
@@ -52,8 +71,9 @@ export interface IGraphqlResponse {
 }
 export interface IUserActions {
     saveUser: (draftUser: IDraftUser) => Promise<void>;
-    toggleUserStatus: (user: IUser) => Promise<void>;
     deleteUser: (user: IUser) => Promise<void>;
+    registerUser: (user: Omit<IUser, "_id" | "createdAt" | "active" | "updatedAt">) => Promise<void>;
+
 }
 
 export interface IUserHook extends IUserActions {

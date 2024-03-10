@@ -108,6 +108,8 @@ export default function KanbanView() {
     </Stack>
   );
 
+  console.log(board, 'BOARD')
+
   return (
     <Container
       maxWidth={false}

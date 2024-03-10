@@ -1,7 +1,8 @@
 'use client';
 
 import isEqual from 'lodash/isEqual';
-import { useState, useEffect, useCallback } from 'react';
+import { isEmpty, isString } from 'lodash';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -18,15 +19,16 @@ import {
   GridToolbarFilterButton,
   GridToolbarColumnsButton,
   GridColumnVisibilityModel,
+  GridToolbarDensitySelector,
 } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
+import { useProducts } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { useGetProducts } from 'src/api/product';
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
@@ -68,16 +70,60 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export default function ProductListView() {
+export default function ProductListView({ campaignId }: { campaignId?: string }) {
   const { enqueueSnackbar } = useSnackbar();
+
+  const callProduct = useMemo(() => isString(campaignId), [campaignId])
+
+  const { getCampaignProducts, loading: mainLoading, products: mainProducts } = useProducts(callProduct);
+
+  const loadingReport = useBoolean()
+
+  const [products, setProducts] = useState<IProductItem[]>([])
+
+  // eslint-disable-next-line
+  const [productError, setProductsError] = useState(null)
+
+  const productsLoading = useMemo(() => {
+    if (isString(campaignId)) {
+      return loadingReport.value
+    }
+    return mainLoading
+  }, [mainLoading, loadingReport.value, campaignId])
+
+  useEffect(() => {
+    if (isString(campaignId) && !isEmpty(campaignId)) {
+      loadingReport.onTrue()
+      setProductsError(null)
+      getCampaignProducts(campaignId.toString())
+        .then(res => {
+          setProductsError(null)
+          setProducts(res)
+        }
+        )
+        .catch(e => {
+          enqueueSnackbar("Failed to fetch campaign reports", { variant: "error" })
+          setProductsError(e.message)
+          console.error(e, "REPORT FETCH")
+        })
+        .finally(() => {
+          loadingReport.onFalse()
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaignId])
+
+  useEffect(() => {
+    if (!isString(campaignId)) {
+      setProducts(mainProducts)
+    }
+  }, [campaignId, mainProducts])
 
   const confirmRows = useBoolean();
 
   const router = useRouter();
 
   const settings = useSettingsContext();
-
-  const { products, productsLoading } = useGetProducts();
 
   const [tableData, setTableData] = useState<IProductItem[]>([]);
 
@@ -114,7 +160,7 @@ export default function ProductListView() {
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      const deleteRow = tableData.filter((row) => row._id !== id);
 
       enqueueSnackbar('Delete success!');
 
@@ -124,7 +170,7 @@ export default function ProductListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
+    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row._id));
 
     enqueueSnackbar('Delete success!');
 
@@ -204,20 +250,20 @@ export default function ProductListView() {
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
           label="View"
-          onClick={() => handleViewRow(params.row.id)}
+          onClick={() => handleViewRow(params.row._id)}
         />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
-          onClick={() => handleEditRow(params.row.id)}
+          onClick={() => handleEditRow(params.row._id)}
         />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:trash-bin-trash-bold" />}
           label="Delete"
           onClick={() => {
-            handleDeleteRow(params.row.id);
+            handleDeleteRow(params.row._id);
           }}
           sx={{ color: 'error.main' }}
         />,
@@ -283,7 +329,9 @@ export default function ProductListView() {
             columns={columns}
             loading={productsLoading}
             getRowHeight={() => 'auto'}
+            getEstimatedRowHeight={() => 150}
             pageSizeOptions={[5, 10, 25]}
+            getRowId={(row) => row._id}
             initialState={{
               pagination: {
                 paginationModel: { pageSize: 10 },
@@ -306,7 +354,7 @@ export default function ProductListView() {
                     />
 
                     <GridToolbarQuickFilter />
-
+                    <GridToolbarDensitySelector />
                     <Stack
                       spacing={1}
                       flexGrow={1}

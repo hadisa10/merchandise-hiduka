@@ -4,6 +4,8 @@ import { paths } from 'src/routes/paths';
 // ----------------------------------------------------------------------
 
 export const HOST_API = process.env.NEXT_PUBLIC_HOST_API;
+export const MAPBOX_HOST_API = process.env.NEXT_PUBLIC_MAPBOX_DIRECTIONS_API;
+
 export const ASSETS_API = process.env.NEXT_PUBLIC_ASSETS_API;
 
 export const FIREBASE_API = {
@@ -32,7 +34,7 @@ export const MAPBOX_API = process.env.NEXT_PUBLIC_MAPBOX_API;
 export const LOG_LEVEL = process.env.NEXT_PUBLIC_LOG_LEVEL ?? "error";
 export const LOGFLARE_TOKEN = process.env.NEXT_PUBLIC_LOGFLARE_TOKEN;
 export const LOGFLARE_KEY = process.env.NEXT_PUBLIC_LOGFLARE_KEY;
-export const VERSION = process.env.NEXT_VERSION ?? "0.0.1";
+export const VERSION = process.env.NEXT_VERSION ?? "3.0.0";
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
+export const PATH_AFTER_LOGIN = paths.dashboard.analytics.campaignPerformance; // as '/dashboard'

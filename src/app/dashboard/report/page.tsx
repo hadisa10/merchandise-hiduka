@@ -1,11 +1,11 @@
-import { ClientListView } from 'src/sections/client/view';
+import { ReportListView } from "src/sections/reports/view";
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Clients',
+  title: 'Dashboard: Project Reports',
 };
 
-export default function OverviewClientView() {
-  return <ClientListView />;
+export default function ProjectReportPage() {
+  return <ReportListView />;
 }

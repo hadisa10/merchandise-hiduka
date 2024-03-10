@@ -9,7 +9,7 @@ import { _userList } from 'src/_mock';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import UserNewEditForm from '../user-new-edit-form';
+// import UserNewEditForm from '../user-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +20,6 @@ type Props = {
 export default function UserEditView({ id }: Props) {
   const settings = useSettingsContext();
 
-  console.log("TESTING")
   const currentUser = _userList.find((user) => user.id === id);
 
   return (
@@ -43,7 +42,7 @@ export default function UserEditView({ id }: Props) {
         }}
       />
 
-      <UserNewEditForm currentUser={currentUser} />
+      {/* <UserNewEditForm currentUser={currentUser} /> */}
     </Container>
   );
 }

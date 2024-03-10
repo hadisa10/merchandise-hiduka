@@ -12,13 +12,16 @@ type InputValue = string | number | null;
 function getLocaleCode() {
   const {
     currentLang: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       numberFormat: { code, currency },
     },
   } = getLocales();
 
   return {
-    code: code ?? 'ke',
-    currency: currency ?? 'KES',
+    // code: code ?? 'ke',
+    // currency: currency ?? 'KES',
+    code: 'ke',
+    currency: 'Ksh',
   };
 }
 
@@ -43,7 +46,6 @@ export function fNumber(inputValue: InputValue) {
 
 export function fCurrency(inputValue: InputValue) {
   const { code, currency } = getLocaleCode();
-  console.log(code, 'CODE')
   if (!inputValue) return '';
 
   const number = Number(inputValue);

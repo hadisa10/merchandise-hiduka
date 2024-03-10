@@ -1,0 +1,1 @@
+export { default as CampaignReportList } from './report/campaign-report-list';

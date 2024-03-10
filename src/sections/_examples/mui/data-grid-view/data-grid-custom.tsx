@@ -46,15 +46,15 @@ const baseColumns: GridColDef[] = [
     minWidth: 160,
     hideable: false,
     renderCell: (params) => (
-      <Stack spacing={2} direction="row" alignItems="center" sx={{ minWidth: 0 }}>
-        <Avatar alt={params.row.name} sx={{ width: 36, height: 36 }}>
-          {params.row.name.charAt(0).toUpperCase()}
-        </Avatar>
-        <Typography component="span" variant="body2" noWrap>
-          {params.row.name}
-        </Typography>
-      </Stack>
-    ),
+        <Stack spacing={2} direction="row" alignItems="center" sx={{ minWidth: 0 }}>
+          <Avatar alt={params.row.name} sx={{ width: 36, height: 36 }}>
+            {params.row.name.charAt(0).toUpperCase()}
+          </Avatar>
+          <Typography component="span" variant="body2" noWrap>
+            {params.row.name}
+          </Typography>
+        </Stack>
+      ),
   },
   {
     field: 'email',
@@ -223,9 +223,9 @@ export default function DataGridCustom({ data: rows }: Props) {
       baseColumns.map((col) =>
         col.field === 'rating'
           ? {
-              ...col,
-              filterOperators: ratingOnlyOperators,
-            }
+            ...col,
+            filterOperators: ratingOnlyOperators,
+          }
           : col
       ),
     []

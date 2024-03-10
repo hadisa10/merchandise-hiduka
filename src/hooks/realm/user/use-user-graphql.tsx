@@ -35,7 +35,8 @@ export function useUsers(): IUserHook {
       query FetchAllUsers {
         users {
           _id
-          name
+          displayName
+          email
           createdAt
           updatedAt
         }
@@ -109,10 +110,10 @@ export function useUsers(): IUserHook {
 
   const saveUser = async (draftUser: IDraftUser) => {
     if (draftUser.displayName) {
-      console.log(draftUser, 'DRAFT CLIENT')
       // draftUser.creator_id = realmApp.currentUser?.id as string;
       const dt = new Date();
-      const cpUser: Omit<IUser, "_id">= {
+      // @ts-expect-error expectd
+      const cpUser: IUser = {
         ...draftUser,
         createdAt: dt,
         updatedAt: dt
@@ -140,17 +141,73 @@ export function useUsers(): IUserHook {
     }
   };
 
-  const toggleUserStatus = async (user: IUser) => {
+  const registerUser = async (user: Omit<IUser, "_id" | "createdAt" | "updatedAt">) => {
     await graphql.mutate({
       mutation: gql`
-        mutation ToggleUserStatus($userId: ObjectId!) {
-          updateManyUsers(query: { _id: $userId }, set: { active: ${!user.active}, updatedAt: "${new Date().toISOString()}" }) {
+        mutation RegisterUser(
+         $email: String!,
+         $displayName: String!,
+         $isPublic: Boolean!,
+         $city: String!,
+         $state: String!,
+         $about: String!,
+         $firstname: String!,
+         $lastname: String!,
+         $country: String!,
+         $address: String!,
+         $zipCode: String!,
+         $role: String!,
+         $phoneNumber: String!,
+         $photoURL: String!,
+         $isVerified: Boolean!,
+         $company: String!,
+         $status: String!,
+         ) {
+          updateManyUsers(query: { email: $email }, set: { 
+            displayName: $displayName,
+            isPublic:$isPublic,
+            city: $city,
+            state: $state,
+            about: $about,
+            firstname: $firstname,
+            lastname: $lastname,
+            country: $country,
+            address: $address,
+            zipCode: $zipCode,
+            role: $role,
+            phoneNumber: $phoneNumber,
+            photoURL: $photoURL,
+            isVerified: $isVerified,
+            isRegistered: true,
+            company: $company,
+            status: $status,
+            updatedAt: "${new Date().toISOString()}",
+             }) {
             matchedCount
             modifiedCount
           }
         }
       `,
-      variables: { userId: user._id },
+      variables: {
+        displayName: user.displayName,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        isPublic: user.isPublic,
+        city: user.city,
+        state: user.state,
+        about: user.about,
+        country: user.country,
+        address: user.address,
+        zipCode: user.zipCode,
+        role: user.role,
+        phoneNumber: user.phoneNumber,
+        photoURL: user.photoURL,
+        active: true,
+        isVerified: user.isVerified,
+        company: user.company,
+        status: "active",
+      },
     });
   };
 
@@ -171,7 +228,7 @@ export function useUsers(): IUserHook {
     loading,
     users,
     saveUser,
-    toggleUserStatus,
     deleteUser,
+    registerUser,
   };
 }

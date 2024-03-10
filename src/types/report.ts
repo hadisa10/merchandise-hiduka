@@ -1,63 +1,87 @@
-import * as Realm from "realm-web";
+import { BSON } from "realm-web";
+import { FieldErrors } from "react-hook-form";
 
+import { IReport, IFilledReport, IReportQuestion, IQuestionDependency, IReportQuestionValidation } from "./realm/realm-types";
 
-export interface IClient {
-    _id: string;
-    creator_id: string;
-    name: string;
-    active: boolean;
-    client_icon: string;
-    client_plan: number;
-    createdAt: Date;
-    updatedAt: Date;
-
+export interface IReportChange {
+    fullDocument: IReport;
 }
 
-export interface IDraftClient {
-    _id: Realm.BSON.ObjectId;
-    name: string;
-    creator_id: string;
-    active: boolean;
-    client_icon: string;
-    client_plan: number;
+export interface IGraphqlReportsResponse {
+    reports: IReport[];
 }
 
-
-export interface IClientChange {
-    fullDocument: IClient;
+export interface IGraphqlReportResponse {
+    report: IReport;
 }
 
-export interface IGraphqlResponse {
-    clients: IClient[];
+export interface IGraphqlFilledReportsResponse {
+    GetFilledReports: IFilledReport[];
 }
-export interface IClientActions {
-    saveClient: (draftClient: IDraftClient) => Promise<void>;
-    toggleClientStatus: (client: IClient) => Promise<void>;
-    deleteClient: (client: IClient) => Promise<void>;
+export interface IReportActions {
+    saveReport: (draftReport: IReport) => Promise<BSON.ObjectId>;
+    updateReport: (report: IReport) => Promise<BSON.ObjectId>;
+    getReport: (id: string) => Promise<IReport>;
+    getReportAnswers: (id: string) => Promise<IFilledReport[]>;
+    getCampaignReport: (id: string) => Promise<IReport[]>;
+
+    // toggleReportStatus: (Report: IReport) => Promise<void>;
+    // deleteReport: (Report: IReport) => Promise<void>;
 }
 
-export interface IClientHook extends IClientActions {
+export interface IReportHook extends IReportActions {
     loading: boolean;
-    clients: IClient[];
+    reports: IReport[];
 }
 
-export interface IDraftClientsHook extends IDraftClientActions {
-    draftClients: IDraftClient[];
+export interface IDraftReportHook extends IDraftReportActions {
+    draftReports: IReport[];
 
 }
-export interface IDraftClientActions {
-    createDraftClient: () => void;
-    setDraftClientName: (draft: IDraftClient, summary: string) => void;
-    deleteDraftClient: (draft: IDraftClient) => void;
+export interface IDraftReportActions {
+    createDraftReport: () => void;
+    setDraftReportName: (draft: IReport, summary: string) => void;
 }
 
-export interface IClientItem {
-    client: IClient;
-    clientActions: IClientActions;
+export interface IReportItem {
+    report: IReport;
+    reportActions: IReportActions;
 }
 
-export interface IDraftClientItem {
-    draftClient: IDraftClient;
-    clientActions: IClientActions;
-    draftClientActions: IDraftClientActions;
+export interface IDraftReportItem {
+    draftReport: IReport;
+    reportActions: IReportActions;
+    draftReportActions: IDraftReportActions;
+}
+
+
+// ====================================
+export type IReportTableFilterValue = string | string[];
+
+export type IReportTableFilters = {
+    type: string[];
+};
+
+// Extend the union type to include 'range' and 'url'
+export type ActualInputType = 'text' | 'number' | 'select' | 'radio' | 'checkbox' | 'date' | 'email' | 'file' | 'range' | 'geopoint' | 'image' | 'url';
+
+export type QuestionError = FieldErrors<IReportQuestion>;
+
+export interface IReportQuestionActions {
+    handleAddValidation: (questionIndex: number, newValidation: Partial<IReportQuestionValidation>) => void;
+    handleChangeInputType: (questionIndex: number, newInputType: ActualInputType) => void;
+    handleAddDependency: (questionIndex: number, newDependency: IQuestionDependency) => void;
+    handleChangeQuestionText: (questionIndex: number, text: string) => void;
+    handleChangeQuestionRequired: (questionIndex: number) => void;
+    handleChangeQuestionMaxValue: (questionIndex: number, text: number) => void;
+    handleChangeQuestionMinValue: (questionIndex: number, text: number) => void;
+    handleChangeQuestionRegexMatches: (questionIndex: number, text: string) => void;
+    handleChangeQuestionRegexMessage: (questionIndex: number, text: string) => void;
+    handleChangeQuestionMaxLength: (questionIndex: number, text: number) => void;
+    handleChangeQuestionMinLength: (questionIndex: number, text: number) => void;
+    handleChangeQuestionUnique: (questionIndex: number) => void;
+    handleChangeAddQuestionProducts: (questionIndex: number, products: string[]) => void;
+    handleRemoveQuestion: (index: number) => void;
+    handleRemoveValidation: (questionIndex: number, validationKey: keyof IReportQuestionValidation) => void;
+    // You can add more actions here as needed
 }

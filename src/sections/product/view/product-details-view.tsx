@@ -1,5 +1,6 @@
 'use client';
 
+import { enqueueSnackbar } from 'notistack';
 import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
@@ -15,12 +16,16 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProduct } from 'src/api/product';
+import { useProducts } from 'src/hooks/realm';
+import { useBoolean } from 'src/hooks/use-boolean';
+
 import { PRODUCT_PUBLISH_OPTIONS } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
+
+import { IProductItem } from 'src/types/product';
 
 import { ProductDetailsSkeleton } from '../product-skeleton';
 import ProductDetailsReview from '../product-details-review';
@@ -56,7 +61,30 @@ type Props = {
 };
 
 export default function ProductDetailsView({ id }: Props) {
-  const { product, productLoading, productError } = useGetProduct(id);
+  // const { product, productLoading, productError } = useGetProduct(id);
+
+  const { getProduct } = useProducts()
+
+  const [product, setProduct] = useState<IProductItem | undefined>(undefined)
+  const [productError, setProductError] = useState<String | undefined>(undefined)
+  const productLoading = useBoolean();
+
+  useEffect(() => {
+    productLoading.onTrue()
+    getProduct(id).then(res => {
+      if (res?.data?.product) {
+        setProduct(res?.data?.product)
+      }
+      productLoading.onFalse()
+    }).catch(e => {
+      setProductError(JSON.stringify(e))
+      enqueueSnackbar("Product Not found", { variant: "error" })
+      productLoading.onFalse()
+    }
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getProduct, id])
+
 
   const settings = useSettingsContext();
 
@@ -83,7 +111,7 @@ export default function ProductDetailsView({ id }: Props) {
   const renderError = (
     <EmptyContent
       filled
-      title={`${productError?.message}`}
+      title={`${productError}`}
       action={
         <Button
           component={RouterLink}
@@ -102,8 +130,8 @@ export default function ProductDetailsView({ id }: Props) {
     <>
       <ProductDetailsToolbar
         backLink={paths.dashboard.product.root}
-        editLink={paths.dashboard.product.edit(`${product?.id}`)}
-        liveLink={paths.product.details(`${product?.id}`)}
+        editLink={paths.dashboard.product.edit(`${product?._id}`)}
+        liveLink={paths.product.details(`${product?._id}`)}
         publish={publish || ''}
         onChangePublish={handleChangePublish}
         publishOptions={PRODUCT_PUBLISH_OPTIONS}
@@ -184,7 +212,7 @@ export default function ProductDetailsView({ id }: Props) {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {productLoading && renderSkeleton}
+      {productLoading.value && renderSkeleton}
 
       {productError && renderError}
 

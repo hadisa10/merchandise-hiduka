@@ -1,24 +1,56 @@
 import * as Realm from "realm-web";
 
 
-export interface IClient {
-    _id: string;
-    creator_id: string;
+// export interface IClient {
+//     _id: string;
+//     creator_id: string;
+//     name: string;
+//     active: boolean;
+//     client_icon: string;
+//     client_plan: number;
+//     createdAt: Date;
+//     updatedAt: Date;
+// }
+
+interface IUser {
+    _id: Realm.BSON.ObjectId;
     name: string;
+    email: string;
+    avatarUrl?: string; // Optional because it's not listed in the "required" array
+}
+
+
+interface IClientUser {
+    _id?: Realm.BSON.ObjectId;
+    name?: string;
+    email: string;
+    verified: boolean;
+    dateAdded: Date;
+    avatarUrl?: string; // Optional because it's not listed in the "required" array
+}
+
+export interface IClient {
+    // __typename?: string,
+    _id: Realm.BSON.ObjectId;
     active: boolean;
-    client_icon: string;
-    client_plan: number;
+    creator: IUser;
+    users: string[];
+    name: string;
     createdAt: Date;
     updatedAt: Date;
+    client_icon: string;
+    client_plan: string;
 }
+
 
 export interface IDraftClient {
     _id: Realm.BSON.ObjectId;
     name: string;
-    creator_id: string;
+    users: IClientUser[];
+    creator: IUser;
     active: boolean;
     client_icon: string;
-    client_plan: number;
+    client_plan: string;
 }
 
 
@@ -29,10 +61,14 @@ export interface IClientChange {
 export interface IGraphqlResponse {
     clients: IClient[];
 }
+export interface IGraphqlClientResponse {
+    client: IClient;
+}
 export interface IClientActions {
     saveClient: (draftClient: IDraftClient) => Promise<void>;
     toggleClientStatus: (client: IClient) => Promise<void>;
     deleteClient: (client: IClient) => Promise<void>;
+    getClient: (id: string) => Promise<IClient>;
 }
 
 export interface IClientHook extends IClientActions {

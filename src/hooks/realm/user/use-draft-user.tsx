@@ -22,6 +22,9 @@ export function useDraftUsers(): IDraftUsersHook {
       role: "",
       phoneNumber: "",
       photoURL: "",
+      isVerified: false,
+      company: "",
+      status: "pending",
       active: false
     };
     setDrafts((d) => [...d, draftTodo]);

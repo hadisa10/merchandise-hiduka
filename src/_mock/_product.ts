@@ -11,25 +11,25 @@ export const PRODUCT_CATEGORY_OPTIONS = ['Shose', 'Apparel', 'Accessories'];
 export const PRODUCT_RATING_OPTIONS = ['up4Star', 'up3Star', 'up2Star', 'up1Star'];
 
 export const PRODUCT_COLOR_OPTIONS = [
-  '#00AB55',
+  '#FF0000',
   '#000000',
   '#FFFFFF',
-  '#FFC0CB',
-  '#FF4842',
-  '#1890FF',
-  '#94D82D',
-  '#FFC107',
+  '#0000FF',
+  '#00FFFF',
+  '#00FF00',
+  '#FFFF00',
+  '#7F00FF',
 ];
 
 export const PRODUCT_COLOR_NAME_OPTIONS = [
-  { value: 'red', label: 'Red' },
-  { value: 'blue', label: 'Blue' },
-  { value: 'cyan', label: 'Cyan' },
-  { value: 'green', label: 'Green' },
-  { value: 'yellow', label: 'Yellow' },
-  { value: 'violet', label: 'Violet' },
-  { value: 'black', label: 'Black' },
-  { value: 'white', label: 'White' },
+  { value: '#FF0000', label: 'Red' },
+  { value: '#0000FF', label: 'Blue' },
+  { value: '#00FFFF', label: 'Cyan' },
+  { value: '#00FF00', label: 'Green' },
+  { value: '#FFFF00', label: 'Yellow' },
+  { value: '#7F00FF', label: 'Violet' },
+  { value: '#000000', label: 'Black' },
+  { value: '#FFFFFF', label: 'White' },
 ];
 
 export const PRODUCT_SIZE_OPTIONS = [

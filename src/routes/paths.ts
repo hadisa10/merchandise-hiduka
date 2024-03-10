@@ -34,6 +34,7 @@ export const paths = {
   minimalUI: ROOTS.DASHBOARD,
   freeUI: ROOTS.DASHBOARD,
   figma: ROOTS.DASHBOARD,
+  register: `/complete-registration`,
   product: {
     root: `/product`,
     checkout: `/product/checkout`,
@@ -100,6 +101,17 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     root: `${ROOTS.DASHBOARD}`,
+    ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
+    analytics: {
+      root: `${ROOTS.DASHBOARD}/analytics`,
+      userPerformance: `${ROOTS.DASHBOARD}/analytics/user-performance`,
+      userEngagment: `${ROOTS.DASHBOARD}/analytics/user-engagement`,
+      campaignPerformance: `${ROOTS.DASHBOARD}/analytics/campaign-performance`,
+      marketingCompetitive: `${ROOTS.DASHBOARD}/analytics/marketing-competitive`,
+      merchandiseAnalysis: `${ROOTS.DASHBOARD}/analytics/merchandise`,
+      customerSegmentation: `${ROOTS.DASHBOARD}/analytics/customer-segmentation`,
+    },
+
     mail: `${ROOTS.DASHBOARD}/mail`,
     chat: `${ROOTS.DASHBOARD}/chat`,
     blank: `${ROOTS.DASHBOARD}/blank`,
@@ -107,6 +119,12 @@ export const paths = {
     calendar: `${ROOTS.DASHBOARD}/calendar`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
+    userRoutes: {
+      root: `${ROOTS.DASHBOARD}/user-routes`,
+      new: `${ROOTS.DASHBOARD}/user-routes/new`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}/edit`
+    },
     general: {
       main: `${ROOTS.DASHBOARD}/main`,
       app: `${ROOTS.DASHBOARD}/app`,
@@ -140,10 +158,16 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/project`,
       new: `${ROOTS.DASHBOARD}/project/new`,
       list: `${ROOTS.DASHBOARD}/project/list`,
-      cards: `${ROOTS.DASHBOARD}/project/cards`,
-      account: `${ROOTS.DASHBOARD}/project/account`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/project/${id}/edit`
+      product: `${ROOTS.DASHBOARD}/project/product`,
+      report: `${ROOTS.DASHBOARD}/project/report`,
+      analysis: `${ROOTS.DASHBOARD}/project/analysis`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/client/project/${id}/edit`
     },
+    routes: {
+      root: `${ROOTS.DASHBOARD}/routes`,
+      new: `${ROOTS.DASHBOARD}/routes/new`,
+    },
+
     campaign: {
       root: `${ROOTS.DASHBOARD}/campaign`,
       new: `${ROOTS.DASHBOARD}/campaign/new`,

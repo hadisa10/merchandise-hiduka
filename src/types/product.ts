@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { ApolloQueryResult } from "@apollo/client";
+
 export type IProductFilterValue = string | string[] | number | number[];
 
 export type IProductFilters = {
@@ -32,8 +34,9 @@ export type IProductReview = {
 };
 
 export type IProductItem = {
-  id: string;
+  _id: string;
   sku: string;
+  client_id: string;
   name: string;
   code: string;
   price: number;
@@ -46,6 +49,7 @@ export type IProductItem = {
   images: string[];
   colors: string[];
   quantity: number;
+  stockAssigned: number;
   category: string;
   available: number;
   totalSold: number;
@@ -78,3 +82,46 @@ export type IProductTableFilters = {
   stock: string[];
   publish: string[];
 };
+
+
+
+// API TYPES
+
+export interface IProductChange {
+  fullDocument: IProductItem;
+}
+
+export interface IProductsGraphqlResponse {
+  products: IProductItem[];
+}
+
+export interface IGraphqlCampaignProductsResponse {
+  CampaignProducts: IProductItem[];
+}
+
+export interface IGraphqlClientProductsResponse {
+  ClientProducts: IProductItem[];
+}
+
+export interface IGraphqlCampaignAddProductsResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface IProductGraphqlResponse {
+  product: IProductItem;
+}
+export interface IProductActions {
+  saveProduct: (draftUser: IProductItem) => Promise<void>;
+  getProduct: (id: string) => Promise<ApolloQueryResult<IProductGraphqlResponse> | undefined>;
+  deleteProduct: (product: IProductItem) => Promise<void>;
+  updateProduct: (product: IProductItem) => Promise<void>;
+  getCampaignProducts: (id: string) => Promise<IProductItem[]>;
+  getClientProducts: (id: string) => Promise<IProductItem[]>;
+  addCampaignProducts: (campaign_id: string, products: string[]) => Promise<void>;
+}
+
+export interface IProductHook extends IProductActions {
+  loading: boolean;
+  products: IProductItem[];
+}
