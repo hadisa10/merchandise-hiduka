@@ -85,7 +85,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
     const handleAssignProductsToUser = useCallback((ids: string[]) => {
         const sUsers = campaignUsers.filter(campaignUser => ids.some(x => x.toString() === campaignUser._id.toString()));
         if (sUsers) {
-            console.log(sUsers, 'S USERS')
             setSelectedCampaignUsers(sUsers);
             openAssign.onTrue()
         }

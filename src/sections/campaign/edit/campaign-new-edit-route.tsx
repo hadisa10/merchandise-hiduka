@@ -30,7 +30,6 @@ type CampaignNewEditRouteFormProps = {
   campaignRoutes: ICampaignRoutes[];
 };
 
-
 const CampaignNewEditRouteForm: React.FC<CampaignNewEditRouteFormProps> = ({ handleNewRouteOpen, handleRemoveNewRoute, handleAddNewRoute, campaignRoutes }: CampaignNewEditRouteFormProps) => {
   const fetchDirections = useBoolean();
 

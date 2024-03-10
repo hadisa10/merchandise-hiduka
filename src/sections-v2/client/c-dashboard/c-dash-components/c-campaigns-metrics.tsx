@@ -26,9 +26,9 @@ function AdminDashboardCampaignMetrics() {
 
   const realmApp = useRealmApp()
 
-  const campaignloading = useBoolean()
+  const campaignloading = useBoolean(true)
 
-  const reportsloading = useBoolean()
+  const reportsloading = useBoolean(true)
 
   const showCampaignLoader = useShowLoader((campaignloading.value || reportsloading.value), 300);
 
