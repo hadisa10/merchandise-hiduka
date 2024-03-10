@@ -23,6 +23,7 @@ function ClientProductDataGrid({ products, loading }: { products?: IProductItem[
   const handleViewDetails = useCallback((_id: string) => {
     // Assuming there's a path for viewing product details
     router.push(`/path/to/product/details/${_id}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const columns: IGenericColumn<IProductItem>[] = useMemo(() => [

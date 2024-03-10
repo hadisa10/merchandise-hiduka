@@ -1,26 +1,26 @@
 "use client"
 
 import * as Yup from 'yup';
-
-import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form';
-import FormProvider from 'src/components/hook-form/form-provider';
+import { BSON } from 'realm-web';
+import { useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
-import { Avatar, Button, Card, Chip, List, ListItemAvatar, ListItemButton, ListItemText, ListSubheader, Stack, Typography } from '@mui/material';
-import { RHFAutocomplete, RHFTextField } from 'src/components/hook-form';
-import Iconify from 'src/components/iconify';
-import { ICampaign, ICampaignTeam } from 'src/types/realm/realm-types';
-import { createObjectId } from 'src/utils/realm';
-import { useRealmApp } from 'src/components/realm';
+import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useMemo, useState, useEffect } from 'react'
+
 import { LoadingButton } from '@mui/lab';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { useResponsive } from 'src/hooks/use-responsive';
-import { LoadingScreen } from 'src/components/loading-screen';
-import { IUser } from 'src/types/user_realm';
+import { Card, Chip, List, Stack, Avatar, Typography, ListItemText, ListSubheader, ListItemAvatar, ListItemButton } from '@mui/material';
+
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useClientContext } from 'src/components/clients';
-import { BSON } from 'realm-web';
+import { useResponsive } from 'src/hooks/use-responsive';
+
+import { useRealmApp } from 'src/components/realm';
+import { LoadingScreen } from 'src/components/loading-screen';
+import FormProvider from 'src/components/hook-form/form-provider';
+import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+
+import { IUser } from 'src/types/user_realm';
+import { ICampaign, ICampaignTeam } from 'src/types/realm/realm-types';
 
 function CFormCampaignTeams({ campaign, loading, users }: { campaign?: ICampaign, loading?: boolean, users?: IUser[] }) {
 
@@ -78,9 +78,8 @@ function CFormCampaignTeams({ campaign, loading, users }: { campaign?: ICampaign
 
   const {
     reset,
-    control,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
 
 
@@ -112,8 +111,8 @@ function CFormCampaignTeams({ campaign, loading, users }: { campaign?: ICampaign
         throw new Error("Invalid campaign")
       }
 
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       enqueueSnackbar('Failed to update campaign team', { variant: "error" });
     }
   });

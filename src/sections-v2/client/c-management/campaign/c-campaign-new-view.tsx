@@ -2,19 +2,21 @@
 
 
 
+import { useState, useEffect } from 'react';
+import { enqueueSnackbar } from 'notistack';
+
 import Container from '@mui/material/Container';
 
+import { useShowLoader } from 'src/hooks/realm';
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import { useRealmApp } from 'src/components/realm';
+import { useClientContext } from 'src/components/clients';
 import { useSettingsContext } from 'src/components/settings';
 
-import CampaignTabsView from './c-campaign-tabs-view';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useRealmApp } from 'src/components/realm';
-import { useEffect, useState } from 'react';
-import { useShowLoader } from 'src/hooks/realm';
-import { IProductItem } from 'src/types/product';
 import { IUser } from 'src/types/user_realm';
-import { enqueueSnackbar } from 'notistack';
-import { useClientContext } from 'src/components/clients';
+
+import CampaignTabsView from './c-campaign-tabs-view';
 
 // ----------------------------------------------------------------------
 
@@ -32,7 +34,7 @@ export default function CampaignNewView() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [error, setError] = useState<unknown>();
 
-    const [products, setProducts] = useState<IProductItem[] | undefined>(undefined);
+    // const [products, setProducts] = useState<IProductItem[] | undefined>(undefined);
 
     const [users, setUsers] = useState<IUser[] | undefined>(undefined);
 

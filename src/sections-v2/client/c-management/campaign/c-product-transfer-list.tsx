@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import _ from 'lodash'; // Import lodash
+import _ from 'lodash';
+import React, { useState } from 'react'; // Import lodash
 
 import List from '@mui/material/List';
 import Card from '@mui/material/Card';
@@ -13,6 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 
 import Iconify from 'src/components/iconify';
+
 import { IProductItem } from 'src/types/product';
 
 // ----------------------------------------------------------------------

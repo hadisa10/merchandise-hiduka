@@ -11,6 +11,8 @@ import Drawer, { drawerClasses } from '@mui/material/Drawer';
 
 import { paper } from 'src/theme/css';
 
+import { useSettingsContext } from 'src/components/settings';
+
 import Iconify from '../../iconify';
 import Scrollbar from '../../scrollbar';
 import BaseOptions from './base-option';
@@ -18,7 +20,6 @@ import LayoutOptions from './layout-options';
 import PresetsOptions from './presets-options';
 import StretchOptions from './stretch-options';
 import FullScreenOption from './fullscreen-option';
-import { useSettingsContext } from 'src/components/settings';
 
 // ----------------------------------------------------------------------
 

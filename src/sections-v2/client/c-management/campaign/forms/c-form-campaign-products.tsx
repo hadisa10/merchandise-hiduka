@@ -1,22 +1,24 @@
 "use client"
 
-import React, { memo, useEffect, useState } from 'react'
+import { enqueueSnackbar } from 'notistack'
+import React, { memo, useState, useEffect } from 'react'
+
+import { Box } from '@mui/system'
+import { Stack, Button, Dialog, DialogTitle, DialogActions, DialogContent } from '@mui/material'
+
+import { useShowLoader } from 'src/hooks/realm'
+import { useBoolean } from 'src/hooks/use-boolean'
+
+import Scrollbar from 'src/components/scrollbar'
+import { useRealmApp } from 'src/components/realm'
+import { useClientContext } from 'src/components/clients'
+import Iconify, { SystemIcon } from 'src/components/iconify'
+import { LoadingScreen } from 'src/components/loading-screen'
 
 import { IProductItem } from 'src/types/product'
 
-import ClientProductDataGrid from '../table/c-table-products-campaign'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material'
-import Scrollbar from 'src/components/scrollbar'
-import { Box } from '@mui/system'
-import { useBoolean } from 'src/hooks/use-boolean'
-import { useShowLoader } from 'src/hooks/realm'
-import EnhancedTransferList from 'src/sections/_examples/mui/transfer-list-view/enhanced-transfer-list'
-import { LoadingScreen } from 'src/components/loading-screen'
-import Iconify, { SystemIcon } from 'src/components/iconify'
-import { useClientContext } from 'src/components/clients'
-import { useRealmApp } from 'src/components/realm'
-import { enqueueSnackbar } from 'notistack'
 import CProductTransferList from '../c-product-transfer-list'
+import ClientProductDataGrid from '../table/c-table-products-campaign'
 
 function CFormCampaignProducts({ products, loading }: { products?: IProductItem[], loading?: boolean }) {
 
@@ -30,6 +32,7 @@ function CFormCampaignProducts({ products, loading }: { products?: IProductItem[
 
   const [clientProducts, setClientProducts] = useState<IProductItem[] | null>(null);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ error, setError ] = useState<unknown>(null)
 
   const showLoader = useShowLoader(false, 200)
