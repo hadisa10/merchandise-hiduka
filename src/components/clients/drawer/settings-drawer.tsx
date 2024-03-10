@@ -17,8 +17,8 @@ import BaseOptions from './base-option';
 import LayoutOptions from './layout-options';
 import PresetsOptions from './presets-options';
 import StretchOptions from './stretch-options';
-import { useSettingsContext } from '../context';
 import FullScreenOption from './fullscreen-option';
+import { useSettingsContext } from 'src/components/settings';
 
 // ----------------------------------------------------------------------
 
