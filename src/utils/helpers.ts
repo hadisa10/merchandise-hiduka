@@ -317,9 +317,9 @@ export const getRolePath = (rle: string) => {
         case ERole.CLIENT:
             return paths.v2.client.root;
         case ERole.PROJECT_MANAGER:
-            return paths.v2.projectMng.root;
+            return paths.v2["project-manager"].root;
         case ERole.TEAM_LEAD:
-            return paths.v2.teamLead.root;
+            return paths.v2["team-lead"].root;
         case ERole.AGENT:
         default:
             return paths.v2.agent.root;
