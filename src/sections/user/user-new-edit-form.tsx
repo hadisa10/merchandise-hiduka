@@ -43,11 +43,11 @@ type Props = {
 };
 
 const ROLES: {role: IRole, label: string}[] = [
-  { role: "client", label: "Client" },
-  { role: "lead", label: "Lead" },
-  { role: "admin", label: "Admin" },
-  { role: "user", label: "User"},
-  { role: "brand_ambassador", label: "Brand Ambassador" },
+  // { role: "client", label: "Client" },
+  // { role: "lead", label: "Lead" },
+  // { role: "admin", label: "Admin" },
+  // { role: "user", label: "User"},
+  // { role: "brand_ambassador", label: "Brand Ambassador" },
   { role: "merchant", label: "Merchant" }
 ];
 
