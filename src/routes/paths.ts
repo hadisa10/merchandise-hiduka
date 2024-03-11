@@ -256,7 +256,8 @@ export const paths = {
         root: `${ROOTS.V2}/admin/dashboard/campaign`,
         list: `${ROOTS.V2}/admin/dashboard/campaign`,
         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/campaign/${id}/edit`,
-      }
+      },
+      "campaign-performance": `${ROOTS.V2}/client/dashboard/campaign-performance`
     },
     client: {
       root: `${ROOTS.V2}/client/dashboard`,
@@ -266,7 +267,8 @@ export const paths = {
         list: `${ROOTS.V2}/client/dashboard/campaign`,
         new: `${ROOTS.V2}/client/dashboard/campaign/new`,
         edit: (id: string) => `${ROOTS.V2}/client/dashboard/campaign/${id}/edit`,
-      }
+      },
+      "campaign-performance": `${ROOTS.V2}/client/dashboard/campaign-performance`
     },
     "project-manager": {
       root: `${ROOTS.V2}/project-manager/dashboard`,

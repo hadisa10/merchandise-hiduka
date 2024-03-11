@@ -11,6 +11,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useRealmApp } from 'src/components/realm';
 import { SystemIcon } from 'src/components/iconify';
+import { useClientContext } from 'src/components/clients';
 import { LoadingScreen } from 'src/components/loading-screen';
 
 import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
@@ -26,6 +27,7 @@ function AdminDashboardInventoryMetrics() {
 
   const showInventoryLoader = useShowLoader((inventoryloading.value), 300);
 
+  const { client } = useClientContext();
 
   const [dashboardInventoryMetrics, setDashboarInventoryMetrics] = useState<IAdminDashboardInventoryMetrics | null>(null);
 
@@ -34,18 +36,20 @@ function AdminDashboardInventoryMetrics() {
   const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
-    inventoryloading.onTrue()
-    setError(null);
-    realmApp.currentUser?.functions.getInventoryDashboardMetrics().then((data: IAdminDashboardInventoryMetrics) => setDashboarInventoryMetrics(data))
-      .catch(e => {
-        console.error(e)
-        setError(e);
-        enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
-      }
-      )
-      .finally(() => inventoryloading.onFalse())
+    if (client._id) {
+      inventoryloading.onTrue()
+      setError(null);
+      realmApp.currentUser?.functions.getClientsInventoryDashboardMetrics(client._id.toString()).then((data: IAdminDashboardInventoryMetrics) => setDashboarInventoryMetrics(data))
+        .catch(e => {
+          console.error(e)
+          setError(e);
+          enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
+        }
+        )
+        .finally(() => inventoryloading.onFalse())
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [client])
 
   const onCampaignActiveCampaignRankHandler = useCallback((value: IChartSeries) => {
     console.log(value, "ACTIVE CAMPAIGN CLICKED")

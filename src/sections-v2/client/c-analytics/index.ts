@@ -1,0 +1,1 @@
+export { default as ClientCampaignPerformaceView } from './c-campaign-perfomance-view';

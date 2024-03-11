@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation'
+import { useMemo, useState, useCallback } from 'react';
 
 import { Tab, Tabs } from '@mui/material';
 import Container from '@mui/material/Container';
@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
 
 import ClientDashboardCampaignMetrics from './c-dash-components/c-campaigns-metrics';
@@ -32,9 +33,14 @@ export default function ClientDashboardView() {
 
   const settings = useSettingsContext();
 
+  const realmApp = useRealmApp();
+
   const searchTabValue = searchParams.get('tab')
 
   const [currentTab, setCurrentTab] = useState(searchTabValue ?? 'campaigns');
+
+  // @ts-expect-error expected
+  const role: ERole = useMemo(() => realmApp.currentUser?.customData.role as unknown, [realmApp.currentUser?.customData.role])
 
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
@@ -43,9 +49,10 @@ export default function ClientDashboardView() {
       tab: newValue,
     }).toString();
 
-    const href = `${paths.v2.admin.root}?${tabParams}`;
+    // @ts-expect-error expected
+    const href = `${paths.v2[role].root}?${tabParams}`;
     router.push(href);
-  }, [router]);
+  }, [router, role]);
 
 
   const renderTabs = (

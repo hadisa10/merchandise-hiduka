@@ -130,7 +130,7 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('Analysis'),
     items: [
-      // { title: t('Campaign Performance'), path: paths.dashboard.analytics.campaignPerformance, icon: ICONS.campaign },
+      { title: t('Campaign Performance'), path: paths.v2.admin["campaign-performance"], icon: ICONS.campaign },
       // { title: t('Activity Tracker'), path: paths.dashboard.analytics.userPerformance, icon: ICONS.userPerformace },
       // { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
       // { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
@@ -163,6 +163,14 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
           { title: t('create'), path: paths.v2.client.campaign.new }
         ]
       },
+    ],
+  },
+  // ANALYSIS
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('Analysis'),
+    items: [
+      { title: t('Campaign Performance'), path: paths.v2.client["campaign-performance"], icon: ICONS.campaign },
     ],
   },
 ])
