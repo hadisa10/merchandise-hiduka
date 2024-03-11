@@ -58,7 +58,7 @@ function ClientDashboardCampaignMetrics() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client._id])
+  }, [client?._id])
 
   useEffect(() => {
     if (client?._id) {
@@ -74,7 +74,7 @@ function ClientDashboardCampaignMetrics() {
         .finally(() => campaignloading.onFalse())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [client?._id])
 
   const onCampaignReportRankHandler = useCallback((value: IChartSeries) => {
     console.log(value, "ACTIVE CAMPAIGN BY RANK CLICKED")
