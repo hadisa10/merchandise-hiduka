@@ -1,6 +1,22 @@
 import * as Realm from "realm-web";
 
 
+export type ISalesAnalyticsResponse = {
+    productName: string;
+    totalQuantity: number;
+    totalAmount: number;
+    salesByTeam: Array<{
+        team: string; // "Default Team" if no match found
+        quantity: number;
+        amount: number;
+    }>;
+    salesByRegion: Array<{
+        region: string; // "Default Region" if no match found
+        quantity: number;
+        amount: number;
+    }>;
+};
+
 
 export type ICampaignTeam<T> = {
     _id: T;
