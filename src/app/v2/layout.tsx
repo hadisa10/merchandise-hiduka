@@ -8,6 +8,7 @@ import { Avatar, Button, Dialog, ButtonBase, Typography, DialogTitle, DialogActi
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useRouter } from 'src/routes/hooks';
 
 import { AuthGuard } from 'src/auth/guard';
 import { bgGradient } from 'src/theme/css';
@@ -20,6 +21,7 @@ import { useClientContext } from 'src/components/clients';
 import { LoadingScreen } from 'src/components/loading-screen';
 
 import { IClient } from 'src/types/client';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +35,11 @@ export default function Layout({ children }: Props) {
 
   const { client, onChangeClient } = useClientContext()
 
+  const router = useRouter()
+
   const hasClient = useBoolean(true)
+
+  const loading = useBoolean(true);
 
   const loader = useShowLoader(hasClient.value, 500)
 
@@ -100,6 +106,19 @@ export default function Layout({ children }: Props) {
 
   const color: ColorSchema = "primary"
 
+  const handleLogout = async () => {
+    try {
+      loading.onTrue()
+      await realmApp.logOut();
+      loading.onFalse()
+      router.replace(paths.auth.main.login);
+    } catch (error) {
+      loading.onFalse()
+      console.error(error);
+      enqueueSnackbar('Unable to logout!', { variant: 'error' });
+    }
+  };
+
   return (
     <AuthGuard>
       <DashboardLayout>{children}</DashboardLayout>
@@ -109,7 +128,12 @@ export default function Layout({ children }: Props) {
         open={loader}
         onClose={() => { }}
       >
-        <DialogTitle>Select Client</DialogTitle>
+        <DialogTitle>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography>Select Client</Typography>
+            <Button onClick={handleLogout} variant='contained' color='error'>Log Out</Button>
+          </Stack>
+        </DialogTitle>
 
         <DialogContent dividers>
           <Scrollbar>
