@@ -1,7 +1,7 @@
 'use client';
 
 import { enqueueSnackbar } from 'notistack';
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useMemo } from 'react';
 
 import { useTheme } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -18,6 +18,7 @@ import AnalyticsCurrentVisits from 'src/sections/overview/analytics/analytics-cu
 import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
 
 import { ICampaign, ISalesByRegion, ISalesAnalyticsResponse, ITimeFrameSalesDataResponse } from 'src/types/realm/realm-types';
+import ClientCampaignTimeSales from './c-campaign-time-sales-activity';
 
 // import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
 // import AnalyticsWebsiteVisits from 'src/sections/overview/analytics/analytics-website-visits';
@@ -120,10 +121,14 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaign._id])
 
+    const timeseries = useMemo(() => {
+        const t = Array.from(new Set(dashboardTimeSalesMetrics?.map(x => x.date )))
+        return {
+            week: t
+        }
+    }, [dashboardTimeSalesMetrics])
 
-    // const salePerRegion = useMemo(() => dashboarCampaignSalesMetrics && transformData(dashboarCampaignSalesMetrics), [dashboarCampaignSalesMetrics])
-
-    console.log(dashboarCampaignSalesMetrics, 'CAMPAIGN SALES METRICS')
+    console.log(dashboardTimeSalesMetrics, 'DASHBOARD TIME SALES METRICS REGION METRICS')
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -192,7 +197,7 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
                         </Grid>
 
 
-                        {/* <Grid xs={12} md={6} lg={8}>
+                        <Grid xs={12} md={6} lg={8}>
                             {
                                 dashboardTimeSalesMetrics &&
                                 // <ChartColumnStacked
@@ -208,9 +213,9 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
                                 //     }))}
                                 // />
                                 <ClientCampaignTimeSales
-                                    title="Data Activity"
+                                    title="Unit Sold Time Series"
                                     chart={{
-                                        labels: TIME_LABELS,
+                                        labels: timeseries,
                                         colors: [
                                             theme.palette.primary.main,
                                             theme.palette.error.main,
@@ -220,49 +225,44 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
                                         series: [
                                             {
                                                 type: 'Week',
-                                                data: [
-                                                    { name: 'Images', data: [20, 34, 48, 65, 37, 48, 9] },
-                                                    { name: 'Media', data: [10, 34, 13, 26, 27, 28, 18] },
-                                                    { name: 'Documents', data: [10, 14, 13, 16, 17, 18, 28] },
-                                                    { name: 'Other', data: [5, 12, 6, 7, 8, 9, 48] },
-                                                ],
+                                                data: dashboardTimeSalesMetrics.map(x => ({name: x.productName, data: [x.totalUnitsSold]})),
                                             },
-                                            {
-                                                type: 'Month',
-                                                data: [
-                                                    {
-                                                        name: 'Images',
-                                                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
-                                                    },
-                                                    {
-                                                        name: 'Media',
-                                                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
-                                                    },
-                                                    {
-                                                        name: 'Documents',
-                                                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
-                                                    },
-                                                    {
-                                                        name: 'Other',
-                                                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
-                                                    },
-                                                ],
-                                            },
-                                            {
-                                                type: 'Year',
-                                                data: [
-                                                    { name: 'Images', data: [10, 34, 13, 56, 77] },
-                                                    { name: 'Media', data: [10, 34, 13, 56, 77] },
-                                                    { name: 'Documents', data: [10, 34, 13, 56, 77] },
-                                                    { name: 'Other', data: [10, 34, 13, 56, 77] },
-                                                ],
-                                            },
+                                            // {
+                                            //     type: 'Month',
+                                            //     data: [
+                                            //         {
+                                            //             name: 'Images',
+                                            //             data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
+                                            //         },
+                                            //         {
+                                            //             name: 'Media',
+                                            //             data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
+                                            //         },
+                                            //         {
+                                            //             name: 'Documents',
+                                            //             data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
+                                            //         },
+                                            //         {
+                                            //             name: 'Other',
+                                            //             data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
+                                            //         },
+                                            //     ],
+                                            // },
+                                            // {
+                                            //     type: 'Year',
+                                            //     data: [
+                                            //         { name: 'Images', data: [10, 34, 13, 56, 77] },
+                                            //         { name: 'Media', data: [10, 34, 13, 56, 77] },
+                                            //         { name: 'Documents', data: [10, 34, 13, 56, 77] },
+                                            //         { name: 'Other', data: [10, 34, 13, 56, 77] },
+                                            //     ],
+                                            // },
                                         ],
                                     }}
                                 />
                             }
 
-                        </Grid> */}
+                        </Grid>
 
                     </>
                 }
