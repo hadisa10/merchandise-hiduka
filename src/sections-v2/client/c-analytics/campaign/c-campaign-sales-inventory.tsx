@@ -1,8 +1,9 @@
 'use client';
 
 import { enqueueSnackbar } from 'notistack';
-import { useMemo, useState, useEffect } from 'react';
+import { memo, useState, useEffect } from 'react';
 
+import { useTheme } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 
@@ -14,9 +15,10 @@ import { useSettingsContext } from 'src/components/settings';
 import { LoadingScreen } from 'src/components/loading-screen';
 
 import AnalyticsCurrentVisits from 'src/sections/overview/analytics/analytics-current-visits';
-import AnalyticsCurrentSubject from 'src/sections/overview/analytics/analytics-current-subject';
+import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
 
-import { ICampaign, ISalesAnalyticsResponse } from 'src/types/realm/realm-types';
+import { ICampaign, ISalesByRegion, ISalesAnalyticsResponse, ITimeFrameSalesDataResponse } from 'src/types/realm/realm-types';
+
 // import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
 // import AnalyticsWebsiteVisits from 'src/sections/overview/analytics/analytics-website-visits';
 // import AnalyticsCurrentVisits from 'src/sections/overview/analytics/analytics-current-visits';
@@ -33,40 +35,36 @@ interface ChartData {
     }[];
 }
 
-const transformData = (salesData: ISalesAnalyticsResponse[]): ChartData => {
-    const categories = salesData.map(item => item.productName);
-    const regions = new Set<string>(); // To collect all unique regions
-
-    salesData.forEach(product => {
-        Object.keys(product.salesByRegion).forEach(region => regions.add(region));
-    });
-
-    console.log(regions, 'REGIONS')
-
-    const series = Array.from(regions).map(region => ({
-        name: region,
-        data: salesData.map(product => {
-            // @ts-expect-error expected
-            console.log(product.salesByRegion[region], 'REGION')
-            // @ts-expect-error expected
-            return product.salesByRegion[region] || 0
-        }),
-    }));
-
-    return { categories, series };
+const TIME_LABELS = {
+    week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+    month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    year: ['2018', '2019', '2020', '2021', '2022'],
 };
-export default function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign }) {
+
+function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign }) {
     const settings = useSettingsContext();
 
-    console.log(campaign, 'CAMPAIGN')
+    const theme = useTheme();
 
     const realmApp = useRealmApp()
 
     const campaignloading = useBoolean()
 
+    const regionalSalesloading = useBoolean()
+
+    const timeSalesloading = useBoolean()
+
     const showCampaignLoader = useShowLoader((campaignloading.value), 300);
 
+    const showTimeSalesLoader = useShowLoader((timeSalesloading.value), 300);
+
+    const showRegionalSalesLoader = useShowLoader((regionalSalesloading.value), 300);
+
     const [dashboarCampaignSalesMetrics, setDashboarCampaignSalesMetrics] = useState<ISalesAnalyticsResponse[] | null>(null);
+
+    const [dashboardTimeSalesMetrics, setDashboardTimeSalesMetrics] = useState<ITimeFrameSalesDataResponse[] | null>(null);
+
+    const [dashboardSalesByRegionMetrics, setDashboardSalesByRegionMetrics] = useState<ISalesByRegion[] | null>(null);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [error, setError] = useState<unknown>(null);
@@ -88,9 +86,44 @@ export default function ClientCampaignSalesInventoryView({ campaign }: { campaig
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaign._id])
 
+    useEffect(() => {
+        if (campaign._id) {
+            campaignloading.onTrue()
+            setError(null);
+            realmApp.currentUser?.functions.getSalesOfProductOverTime({ campaign_id: campaign._id.toString(), timeFrame: "week" }).then((data: ITimeFrameSalesDataResponse[]) => setDashboardTimeSalesMetrics(data))
+                .catch(e => {
+                    console.error(e)
+                    setError(e);
+                    enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
+                }
+                )
+                .finally(() => campaignloading.onFalse())
+        }
 
-    const salePerRegion = useMemo(() => dashboarCampaignSalesMetrics && transformData(dashboarCampaignSalesMetrics), [dashboarCampaignSalesMetrics])
-    console.log(dashboarCampaignSalesMetrics, "DASHBOARD METRICS AA")
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [campaign._id])
+
+    useEffect(() => {
+        if (campaign._id) {
+            regionalSalesloading.onTrue()
+            setError(null);
+            realmApp.currentUser?.functions.getCampaignSalesByRegion(campaign._id.toString()).then((data: ISalesByRegion[]) => setDashboardSalesByRegionMetrics(data))
+                .catch(e => {
+                    console.error(e)
+                    setError(e);
+                    enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
+                }
+                )
+                .finally(() => regionalSalesloading.onFalse())
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [campaign._id])
+
+
+    // const salePerRegion = useMemo(() => dashboarCampaignSalesMetrics && transformData(dashboarCampaignSalesMetrics), [dashboarCampaignSalesMetrics])
+
+    console.log(dashboarCampaignSalesMetrics, 'CAMPAIGN SALES METRICS')
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -99,6 +132,48 @@ export default function ClientCampaignSalesInventoryView({ campaign }: { campaig
                 {
                     !showCampaignLoader && dashboarCampaignSalesMetrics &&
                     <>
+                        <Grid xs={12} md={6} lg={8}>
+                            <AnalyticsConversionRates
+                                title="Product Sales summary"
+                                subheader="by quantity"
+                                chart={{
+                                    series: dashboarCampaignSalesMetrics.map(x => ({ label: x.productName, value: x.totalQuantity })).sort((a, b) => a.value - b.value)
+                                }}
+                            />
+                        </Grid>
+                        <Grid xs={12} md={6} lg={4}>
+                            {showRegionalSalesLoader && <LoadingScreen />}
+                            {
+                                !showRegionalSalesLoader && dashboardSalesByRegionMetrics &&
+                                <AnalyticsCurrentVisits
+                                    title="Sales by Region"
+                                    chart={{
+                                        series: dashboardSalesByRegionMetrics.map(x => ({ label: x.regionName ?? "Default Region", value: x.totalSales })),
+                                    }}
+                                />
+                            }
+                        </Grid>
+                        <Grid xs={12} md={6} lg={8}>
+                            <AnalyticsConversionRates
+                                title="Product Sales Revenue"
+                                subheader="by revenue"
+                                chart={{
+                                    series: dashboarCampaignSalesMetrics.map(x => ({ label: x.productName, value: x.totalAmount })).sort((a, b) => a.value - b.value)
+                                }}
+                            />
+                        </Grid>
+                        <Grid xs={12} md={6} lg={4}>
+                            {showRegionalSalesLoader && <LoadingScreen />}
+                            {
+                                !showRegionalSalesLoader && dashboardSalesByRegionMetrics &&
+                                <AnalyticsCurrentVisits
+                                    title="Revenue by Region"
+                                    chart={{
+                                        series: dashboardSalesByRegionMetrics.map(x => ({ label: x.regionName ?? "Default Region", value: x.totalRevenue })),
+                                    }}
+                                />
+                            }
+                        </Grid>
                         <Grid xs={12} md={6} lg={4}>
                             <AnalyticsCurrentVisits
                                 title="Products Revenue per product"
@@ -115,16 +190,80 @@ export default function ClientCampaignSalesInventoryView({ campaign }: { campaig
                                 }}
                             />
                         </Grid>
-                        <Grid xs={12} md={6} lg={4}>
+
+
+                        {/* <Grid xs={12} md={6} lg={8}>
                             {
-                                salePerRegion &&
-                                <AnalyticsCurrentSubject
-                                    title="Product Sale by Region"
-                                    chart={salePerRegion}
+                                dashboardTimeSalesMetrics &&
+                                // <ChartColumnStacked
+                                //     // series={[
+                                //     //     { name: 'Product A', data: [44, 55, 41, 67, 22, 43] },
+                                //     //     { name: 'Product B', data: [13, 23, 20, 8, 13, 27] },
+                                //     //     { name: 'Product C', data: [11, 17, 15, 15, 21, 14] },
+                                //     //     { name: 'Product D', data: [21, 7, 25, 13, 22, 8] },
+                                //     // ]}
+                                //     series={dashboardTimeSalesMetrics?.map(x => ({
+                                //         name: x.productName,
+                                //         data: [x.totalUnitsSold]
+                                //     }))}
+                                // />
+                                <ClientCampaignTimeSales
+                                    title="Data Activity"
+                                    chart={{
+                                        labels: TIME_LABELS,
+                                        colors: [
+                                            theme.palette.primary.main,
+                                            theme.palette.error.main,
+                                            theme.palette.warning.main,
+                                            theme.palette.text.disabled,
+                                        ],
+                                        series: [
+                                            {
+                                                type: 'Week',
+                                                data: [
+                                                    { name: 'Images', data: [20, 34, 48, 65, 37, 48, 9] },
+                                                    { name: 'Media', data: [10, 34, 13, 26, 27, 28, 18] },
+                                                    { name: 'Documents', data: [10, 14, 13, 16, 17, 18, 28] },
+                                                    { name: 'Other', data: [5, 12, 6, 7, 8, 9, 48] },
+                                                ],
+                                            },
+                                            {
+                                                type: 'Month',
+                                                data: [
+                                                    {
+                                                        name: 'Images',
+                                                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
+                                                    },
+                                                    {
+                                                        name: 'Media',
+                                                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
+                                                    },
+                                                    {
+                                                        name: 'Documents',
+                                                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
+                                                    },
+                                                    {
+                                                        name: 'Other',
+                                                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34],
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                type: 'Year',
+                                                data: [
+                                                    { name: 'Images', data: [10, 34, 13, 56, 77] },
+                                                    { name: 'Media', data: [10, 34, 13, 56, 77] },
+                                                    { name: 'Documents', data: [10, 34, 13, 56, 77] },
+                                                    { name: 'Other', data: [10, 34, 13, 56, 77] },
+                                                ],
+                                            },
+                                        ],
+                                    }}
                                 />
                             }
 
-                        </Grid>
+                        </Grid> */}
+
                     </>
                 }
                 {/* <Grid xs={12} sm={6} md={3}>
@@ -260,3 +399,6 @@ export default function ClientCampaignSalesInventoryView({ campaign }: { campaig
         </Container >
     );
 }
+
+
+export default memo(ClientCampaignSalesInventoryView)

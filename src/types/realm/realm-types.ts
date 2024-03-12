@@ -1,21 +1,36 @@
 import * as Realm from "realm-web";
 
 
+
+export interface ISalesByRegion {
+    totalRevenue: number;
+    totalSales: number;
+    regionName: string | null;
+}
+
+
 export type ISalesAnalyticsResponse = {
     productName: string;
     totalQuantity: number;
     totalAmount: number;
-    salesByTeam: Array<{
+    salesDetails: Array<{
         team: string; // "Default Team" if no match found
         quantity: number;
         amount: number;
-    }>;
-    salesByRegion: Array<{
-        region: string; // "Default Region" if no match found
-        quantity: number;
-        amount: number;
+        regionName: string;
+        region_id: string;
+        teamName: string;
+        team_id: string;
     }>;
 };
+
+export interface ITimeFrameSalesDataResponse {
+    date: string; // Assuming date is returned as a string from the aggregation
+    productId: string; // MongoDB ObjectId represented as a string
+    productName: string;
+    totalSales: number;
+    totalUnitsSold: number;
+}
 
 
 export type ICampaignTeam<T> = {
