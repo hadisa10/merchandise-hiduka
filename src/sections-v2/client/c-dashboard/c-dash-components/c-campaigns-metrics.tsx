@@ -46,7 +46,7 @@ function ClientDashboardCampaignMetrics() {
     if (client?._id) {
       campaignloading.onTrue()
       setError(null);
-      realmApp.currentUser?.functions.getClientDashboardMetrics(client._id.toString())
+      realmApp.currentUser?.functions.getClientDashboardMetrics(client?._id.toString())
         .then((data: IAdminDashboardData) => setDashboarCampaignMetrics(data))
         .catch(e => {
           console.error(e)
@@ -64,7 +64,7 @@ function ClientDashboardCampaignMetrics() {
     if (client?._id) {
       campaignloading.onTrue();
       setError(null);
-      realmApp.currentUser?.functions.getClientReportDashboardMetrics(client._id.toString()).then((data: IAdminDashboardReportSummary) => setDashboardReportsMetrics(data))
+      realmApp.currentUser?.functions.getClientReportDashboardMetrics(client?._id.toString()).then((data: IAdminDashboardReportSummary) => setDashboardReportsMetrics(data))
         .catch(e => {
           console.error(e)
           setError(e);

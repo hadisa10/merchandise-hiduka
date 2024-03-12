@@ -362,7 +362,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
                   }
 
                   return (
-                    <li {...props} key={client._id?.toString()}>
+                    <li {...props} key={client?._id?.toString()}>
                       {client?.name}
                     </li>
                   );

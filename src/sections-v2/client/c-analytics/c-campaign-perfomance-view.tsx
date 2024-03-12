@@ -62,10 +62,10 @@ export default function ClientCampaignPerformaceView() {
   const [searchedCampaigns, setSearchedCampaigns] = useState<ICampaign[]>([]);
 
   useEffect(() => {
-    if (client._id) {
+    if (client?._id) {
       campaignLoading.onTrue()
       setError(null);
-      realmApp.currentUser?.functions.searchClientCampaigns({ client_id: client._id.toString(), searchString: debouncedSearch }).then((data: ICampaign[]) => setSearchedCampaigns(data))
+      realmApp.currentUser?.functions.searchClientCampaigns({ client_id: client?._id.toString(), searchString: debouncedSearch }).then((data: ICampaign[]) => setSearchedCampaigns(data))
         .catch(e => {
           console.error(e)
           setError(e);
@@ -76,7 +76,7 @@ export default function ClientCampaignPerformaceView() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, client._id])
+  }, [debouncedSearch, client?._id])
 
 
   const handleChangeSearchValue = useCallback((value: string) => {

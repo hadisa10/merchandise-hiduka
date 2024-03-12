@@ -192,7 +192,7 @@ export function useClients(lazy: boolean = true): IClientHook {
           }
         }
       `,
-      variables: { clientId: client._id },
+      variables: { clientId: client?._id },
     });
   };
 
@@ -205,7 +205,7 @@ export function useClients(lazy: boolean = true): IClientHook {
           }
         }
       `,
-      variables: { clientId: client._id },
+      variables: { clientId: client?._id },
     });
   };
 

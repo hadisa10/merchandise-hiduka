@@ -64,7 +64,7 @@ export default function ClientPopover() {
 
   useEffect(() => {
     if (Array.isArray(clients) && client) {
-      const c = clients.find(x => x._id.toString() === client._id.toString())
+      const c = clients.find(x => x._id.toString() === client?._id.toString())
       if (c) {
         setClientObj(c)
       }

@@ -39,10 +39,10 @@ export default function CampaignListView() {
 
 
     useEffect(() => {
-        if (client && client._id) {
+        if (client && client?._id) {
             campaignloading.onTrue()
             setError(null);
-            realmApp.currentUser?.functions.getClientCampaigns({ client_id: client._id.toString() }).then((data: ICampaign[]) => setCampaigns(data))
+            realmApp.currentUser?.functions.getClientCampaigns({ client_id: client?._id.toString() }).then((data: ICampaign[]) => setCampaigns(data))
                 .catch(e => {
                     console.error(e)
                     setError(e);
