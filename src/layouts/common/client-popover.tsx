@@ -3,25 +3,25 @@ import { enqueueSnackbar } from 'notistack';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import MenuItem from '@mui/material/MenuItem';
-import { Avatar, Button, IconButton, Stack, Typography, alpha } from '@mui/material';
+import { alpha, Avatar, Button, IconButton, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import { ERole } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
+import { varHover } from 'src/components/animate';
 import { useRealmApp } from 'src/components/realm';
 import { LoadingScreen } from 'src/components/loading-screen';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useClientContext } from 'src/components/clients/context/client-context';
 
 import { IClient } from 'src/types/client';
-import { useResponsive } from 'src/hooks/use-responsive';
-import { varHover } from 'src/components/animate';
 
 
 // ----------------------------------------------------------------------
@@ -105,9 +105,9 @@ export default function ClientPopover() {
           md: { maxWidth: 200 }, xs: { maxWidth: 50 }
         }}
         startIcon={
-          client?.type === "agency" ?
+          client?.type === "agency" &&
             <Iconify icon="solar:star-bold" width={15} />
-            : <></>
+            
         }
         endIcon={
           <Iconify icon={popover.open ? "ph:caret-up-bold" : "ph:caret-down-bold"} width={15} />

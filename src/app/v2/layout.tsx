@@ -6,9 +6,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { Stack, alpha, useTheme } from '@mui/system';
 import { Avatar, Button, Dialog, ButtonBase, Typography, DialogTitle, DialogActions, DialogContent } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useRouter } from 'src/routes/hooks';
 
 import { AuthGuard } from 'src/auth/guard';
 import { bgGradient } from 'src/theme/css';
@@ -21,7 +23,6 @@ import { useClientContext } from 'src/components/clients';
 import { LoadingScreen } from 'src/components/loading-screen';
 
 import { IClient } from 'src/types/client';
-import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -112,9 +113,9 @@ export default function Layout({ children }: Props) {
       await realmApp.logOut();
       loading.onFalse()
       router.replace(paths.auth.main.login);
-    } catch (error) {
+    } catch (e) {
       loading.onFalse()
-      console.error(error);
+      console.error(e);
       enqueueSnackbar('Unable to logout!', { variant: 'error' });
     }
   };

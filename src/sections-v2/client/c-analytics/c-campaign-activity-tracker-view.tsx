@@ -73,28 +73,23 @@
 import { enqueueSnackbar } from 'notistack';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { Box, Tab, Tabs, Stack, TextField, IconButton, Autocomplete, InputAdornment, autocompleteClasses } from '@mui/material';
 
+import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
-import { useReports } from 'src/hooks/realm/report/use-report-graphql';
-import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import Iconify from 'src/components/iconify';
-import { useSettingsContext } from 'src/components/settings';
-import SearchNotFound from 'src/components/search-not-found';
-import { LoadingScreen } from 'src/components/loading-screen';
-
-import { IReport, ICampaign } from 'src/types/realm/realm-types';
-
-import AnalyticsComingSoon from './campaign/coming-soon';
 import { useRealmApp } from 'src/components/realm';
 import { useClientContext } from 'src/components/clients';
-import { useShowLoader } from 'src/hooks/realm';
+import { useSettingsContext } from 'src/components/settings';
+import SearchNotFound from 'src/components/search-not-found';
+
+import { ICampaign } from 'src/types/realm/realm-types';
 
 import ClientCampaignActivityTracker from './campaign/c-campaign-activity-tracker';
 

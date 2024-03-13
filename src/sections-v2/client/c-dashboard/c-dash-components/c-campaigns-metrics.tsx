@@ -4,6 +4,7 @@ import { isNumber } from 'lodash';
 import { enqueueSnackbar } from 'notistack';
 import { memo, useState, useEffect, useCallback } from 'react';
 
+import { ButtonBase } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { useShowLoader } from 'src/hooks/realm';
@@ -16,13 +17,10 @@ import { SystemIcon } from 'src/components/iconify';
 import { useClientContext } from 'src/components/clients';
 import { LoadingScreen } from 'src/components/loading-screen';
 
+import { IChartSeries } from 'src/sections/overview/analytics/analytics-conversion-rates';
 import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
-import AnalyticsTopUserCheckins from 'src/sections/overview/analytics/analytics-top-user-checkins';
-import AnalyticsAvarageFilledReport from 'src/sections/overview/analytics/analytics-avg-filled-report';
-import AnalyticsConversionRates, { IChartSeries } from 'src/sections/overview/analytics/analytics-conversion-rates';
 
 import { IAdminDashboardData, IAdminDashboardReportSummary, IClientDashboardSummaryUpdated } from 'src/types/realm/realm-types';
-import { ButtonBase } from '@mui/material';
 
 function ClientDashboardCampaignMetrics() {
 
@@ -39,7 +37,7 @@ function ClientDashboardCampaignMetrics() {
   const showCampaignLoader = useShowLoader((campaignloading.value || reportsloading.value || campaignUpdatedloading.value), 300);
 
   const [dashboardCampaignMetrics, setDashboarCampaignMetrics] = useState<IAdminDashboardData | null>(null);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [dashboardReportsMetrics, setDashboardReportsMetrics] = useState<IAdminDashboardReportSummary | null>(null);
   const [dashboardMetricsUpdated, setDashboardMetricsUpdated] = useState<IClientDashboardSummaryUpdated | null>(null);
 

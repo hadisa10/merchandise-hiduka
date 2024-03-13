@@ -76,7 +76,7 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
         // const prds = []
         zoomToRoute(longitude, latitude);
         setPopupInfo({
-            lnglat: [latitude, longitude],
+            lnglat: [longitude, latitude],
             address: addr,
             phoneNumber: phoneNumber ?? "",
             products: [],
@@ -87,7 +87,7 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
         const mapInstance = mapRef.current?.getMap();
         if (mapInstance) {
             mapInstance.flyTo({
-                center: [lat, lng],
+                center: [lng, lat],
                 zoom: 15,
                 essential: true,
             });

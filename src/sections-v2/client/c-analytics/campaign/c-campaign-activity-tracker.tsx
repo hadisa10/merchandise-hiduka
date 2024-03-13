@@ -1,24 +1,15 @@
 'use client';
 
 import { enqueueSnackbar } from 'notistack';
-import { memo, useState, useEffect, useMemo, Suspense, lazy } from 'react';
+import { memo, lazy, useState, Suspense, useEffect } from 'react';
 
-import { useTheme } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
-import Container from '@mui/material/Container';
-
-import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useRealmApp } from 'src/components/realm';
-import { useSettingsContext } from 'src/components/settings';
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import AnalyticsCurrentVisits from 'src/sections/overview/analytics/analytics-current-visits';
-import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
-
 import { ICampaign, ISalesByRegion, ISalesAnalyticsResponse, ITimeFrameSalesDataResponse } from 'src/types/realm/realm-types';
-import ClientCampaignTimeSales from './c-campaign-time-sales-activity';
+
 
 const UserActivityView = lazy(() => import('src/sections/campaign/list/user-activity'));
 
@@ -31,24 +22,24 @@ const UserActivityView = lazy(() => import('src/sections/campaign/list/user-acti
 
 // ----------------------------------------------------------------------
 
-interface ChartData {
-    categories: string[];
-    series: {
-        name: string;
-        data: number[];
-    }[];
-}
+// interface ChartData {
+//     categories: string[];
+//     series: {
+//         name: string;
+//         data: number[];
+//     }[];
+// }
 
-const TIME_LABELS = {
-    week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-    month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    year: ['2018', '2019', '2020', '2021', '2022'],
-};
+// const TIME_LABELS = {
+//     week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+//     month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+//     year: ['2018', '2019', '2020', '2021', '2022'],
+// };
 
 function ClientCampaignActivityTracker({ campaign }: { campaign: ICampaign }) {
-    const settings = useSettingsContext();
+    // const settings = useSettingsContext();
 
-    const theme = useTheme();
+    // const theme = useTheme();
 
     const realmApp = useRealmApp()
 
@@ -56,18 +47,17 @@ function ClientCampaignActivityTracker({ campaign }: { campaign: ICampaign }) {
 
     const regionalSalesloading = useBoolean()
 
-    const timeSalesloading = useBoolean()
+    // const showCampaignLoader = useShowLoader((campaignloading.value), 300);
 
-    const showCampaignLoader = useShowLoader((campaignloading.value), 300);
+    // const showTimeSalesLoader = useShowLoader((timeSalesloading.value), 300);
 
-    const showTimeSalesLoader = useShowLoader((timeSalesloading.value), 300);
+    // const showRegionalSalesLoader = useShowLoader((regionalSalesloading.value), 300);
 
-    const showRegionalSalesLoader = useShowLoader((regionalSalesloading.value), 300);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [dashboarCampaignSalesMetrics, setDashboarCampaignSalesMetrics] = useState<ISalesAnalyticsResponse[] | null>(null);
 
     const [dashboardTimeSalesMetrics, setDashboardTimeSalesMetrics] = useState<ITimeFrameSalesDataResponse[] | null>(null);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [dashboardSalesByRegionMetrics, setDashboardSalesByRegionMetrics] = useState<ISalesByRegion[] | null>(null);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -124,19 +114,10 @@ function ClientCampaignActivityTracker({ campaign }: { campaign: ICampaign }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaign._id])
 
-    const timeseries = useMemo(() => {
-        const t = Array.from(new Set(dashboardTimeSalesMetrics?.map(x => x.date)))
-        return {
-            week: t
-        }
-    }, [dashboardTimeSalesMetrics])
-
-    console.log(dashboardTimeSalesMetrics, 'DASHBOARD TIME SALES METRICS REGION METRICS')
-
     return (
         <>
             {/* {showCampaignLoader && <LoadingScreen />} */}
-            {<Suspense fallback={<LoadingScreen />}><UserActivityView campaign={campaign} /></Suspense>}
+            <Suspense fallback={<LoadingScreen />}><UserActivityView campaign={campaign} /></Suspense>
 
             {/* {
                     !showCampaignLoader && dashboarCampaignSalesMetrics &&

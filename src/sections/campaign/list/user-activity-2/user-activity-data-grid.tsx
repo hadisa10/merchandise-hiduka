@@ -10,6 +10,7 @@ import {
 
 import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
+import { useCampaigns } from "src/hooks/realm/campaign/use-campaign-graphql";
 
 import { fDateTime } from "src/utils/format-time";
 import { formatFilterAndRemoveFields } from "src/utils/helpers";
@@ -34,11 +35,13 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     const theme = useTheme();
 
+    const { getCampaignUsers } = useCampaigns(true);
+
+    const realmApp = useRealmApp();
+
     const loadingCampaignUsers = useBoolean()
 
     const openAssign = useBoolean();
-
-    const realmApp = useRealmApp();
 
     const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([])
 
@@ -58,7 +61,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
             realmApp.currentUser?.functions.getCampaignUsers(campaignId.toString())
                 .then(res => {
                     setCampaignUsersError(null)
-                    console.log(res, "RESPONSE")
                     setCampaignUsers(res)
                 }
                 )
@@ -140,7 +142,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
             },
             {
                 field: "checkInCount",
-                label: "No. of days",
+                label: "No. of Checkins",
                 type: "number",
                 minWidth: 120
             },
@@ -218,7 +220,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         return filtered
     }, [campaignUsers])
 
-    console.log(cleanedUsers.map(x => ({...x, _id: x._id.toString()})), "CLEANED USERS")
+    console.log(cleanedUsers, "CLEANED USERS")
 
     return (
         <>
@@ -235,8 +237,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 ) : cleanedUsers && (
                     <DataGridFlexible
                         data={cleanedUsers}
-                        getRowIdFn={(row) => row._id.toString()} 
-                        columns={columns}
+                        getRowIdFn={(row) => row._id.toString()} columns={columns}
                         hideColumn={{ _id: false }}
                         title={`${campaign.title.split(" ").join("-")}-user-activity`}
                         customActions={{

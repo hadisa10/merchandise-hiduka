@@ -1,7 +1,7 @@
 'use client';
 
 import { enqueueSnackbar } from 'notistack';
-import { memo, useState, useEffect, useMemo } from 'react';
+import { memo, useMemo, useState, useEffect } from 'react';
 
 import { useTheme } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -18,6 +18,7 @@ import AnalyticsCurrentVisits from 'src/sections/overview/analytics/analytics-cu
 import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
 
 import { ICampaign, ISalesByRegion, ISalesAnalyticsResponse, ITimeFrameSalesDataResponse } from 'src/types/realm/realm-types';
+
 import ClientCampaignTimeSales from './c-campaign-time-sales-activity';
 
 // import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
@@ -28,13 +29,6 @@ import ClientCampaignTimeSales from './c-campaign-time-sales-activity';
 
 // ----------------------------------------------------------------------
 
-interface ChartData {
-    categories: string[];
-    series: {
-        name: string;
-        data: number[];
-    }[];
-}
 
 const TIME_LABELS = {
     week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
