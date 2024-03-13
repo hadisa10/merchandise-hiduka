@@ -217,6 +217,8 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         return filtered
     }, [campaignUsers])
 
+    console.log(cleanedUsers, "CLEANED USERS")
+
     return (
         <>
             <Card

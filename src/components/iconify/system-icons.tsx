@@ -21,9 +21,9 @@ const ICON_MAP = {
   campaign: { icon: "ic:baseline-campaign" },
   report: { icon: "iconoir:reports-solid" },
   create: { icon: "ion:create-outline" },
-  checkin: { icon: "uil:user-location" }
+  checkin: { icon: "uil:user-location" },
+  users: { icon: "mdi:users-check" }
 } as const; // Using 'as const' to make the values readonly and their literal types
-
 // Define the props for the DynamicIcon component
 interface DynamicIconProps {
   type: IconType;

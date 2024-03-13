@@ -98,12 +98,20 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
       // {
       //   title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
       // },
+      // PROJECT
+      {
+        title: t('projects'), path: paths.v2.admin.project.root, icon: ICONS.project,
+        children: [
+          { title: t('list'), path: paths.v2.admin.project.root },
+          { title: t('create'), path: paths.v2.admin.project.new }
+        ]
+      },
       // CAMPAIGNS
       {
         title: t('campaign'), path: paths.v2.admin.campaign.root, icon: ICONS.campaign,
         children: [
           { title: t('list'), path: paths.v2.admin.campaign.root },
-          { title: t('create'), path: paths.v2.admin.campaign.root }
+          { title: t('create'), path: paths.v2.admin.campaign.new }
         ]
       },
       // // REPORTS
@@ -131,7 +139,7 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
     subheader: t('Analysis'),
     items: [
       { title: t('Campaign Performance'), path: paths.v2.admin["campaign-performance"], icon: ICONS.campaign },
-      // { title: t('Activity Tracker'), path: paths.dashboard.analytics.userPerformance, icon: ICONS.userPerformace },
+      { title: t('Activity Tracker'), path: paths.v2.admin["activity-tracker"], icon: ICONS.userPerformace },
       // { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
       // { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
       // { title: t('Market and Competitive'), path: paths.dashboard.analytics.marketingCompetitive, icon: ICONS.marketAnalysis }
@@ -155,12 +163,28 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('management'),
     items: [
+      // PROJECT
+      {
+        title: t('projects'), path: paths.v2.admin.project.root, icon: ICONS.project,
+        children: [
+          { title: t('list'), path: paths.v2.admin.project.root },
+          { title: t('create'), path: paths.v2.admin.project.root }
+        ]
+      },
       // CAMPAIGNS
       {
         title: t('campaign'), path: paths.v2.client.campaign.root, icon: ICONS.campaign,
         children: [
           { title: t('list'), path: paths.v2.client.campaign.root },
           { title: t('create'), path: paths.v2.client.campaign.new }
+        ]
+      },
+      // REPORTS
+      {
+        title: t('reports'), path: paths.v2.client.reports.root, icon: ICONS.report,
+        children: [
+          { title: t('list'), path: paths.v2.client.reports.root },
+          { title: t('create'), path: paths.v2.client.reports.new }
         ]
       },
     ],
@@ -171,6 +195,7 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
     subheader: t('Analysis'),
     items: [
       { title: t('Campaign Performance'), path: paths.v2.client["campaign-performance"], icon: ICONS.campaign },
+      { title: t('Activity Tracker'), path: paths.v2.client["activity-tracker"], icon: ICONS.userPerformace },
     ],
   },
 ])

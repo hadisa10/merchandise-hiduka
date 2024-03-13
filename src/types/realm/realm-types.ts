@@ -1,4 +1,5 @@
 import * as Realm from "realm-web";
+import { IClient } from "../client";
 
 
 
@@ -116,6 +117,15 @@ export interface IAdminDashboardReportSummary {
     filledReportsByUser: IAdminDashboardUserReportSummary[];
     avgAnswersPerDayPerReport: IAdminDashboardAvgAnswersPerDay[];
 }
+
+export interface IClientDashboardSummaryUpdated {
+    totalProjects: number;
+    totalActiveCampaigns: number;
+    clientDetails: IClient;
+    totalVerifiedUsers: number;
+    childrenDetails: IClient[];
+}
+
 
 interface IAdminDashboardCampaignSummary {
     campaignId: string;
