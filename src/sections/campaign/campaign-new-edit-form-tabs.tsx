@@ -29,7 +29,7 @@ import RouteCreateEditForm from './edit/route-create-edit-form';
 
 const ProductListDataGrid = lazy(() => import('../product/product-list-data-grid'));
 
-const UserActivityView = lazy(() => import('./list/user-activity'));
+const UserActivityView = lazy(() => import('./list/user-activity-2'));
 
 const CampaignNewEditRouteForm = lazy(() => import('./edit/campaign-new-edit-route'));
 const CampaignNewEditDetailsTab = lazy(() => import('./edit/campaign-new-edit-details-tab'));

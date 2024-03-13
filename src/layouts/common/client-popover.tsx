@@ -3,17 +3,19 @@ import { enqueueSnackbar } from 'notistack';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import MenuItem from '@mui/material/MenuItem';
-import { Button, Typography } from '@mui/material';
+import { alpha, Avatar, Button, IconButton, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import { ERole } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
+import { varHover } from 'src/components/animate';
 import { useRealmApp } from 'src/components/realm';
 import { LoadingScreen } from 'src/components/loading-screen';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -33,6 +35,8 @@ export default function ClientPopover() {
   const realmApp = useRealmApp()
 
   const clientloading = useBoolean(true)
+
+  const mdUp = useResponsive('up', 'md');
 
   const showClientLoader = useShowLoader((clientloading.value), 300);
 
@@ -64,7 +68,7 @@ export default function ClientPopover() {
 
   useEffect(() => {
     if (Array.isArray(clients) && client) {
-      const c = clients.find(x => x._id.toString() === client._id.toString())
+      const c = clients.find(x => x._id.toString() === client?._id.toString())
       if (c) {
         setClientObj(c)
       }
@@ -88,7 +92,7 @@ export default function ClientPopover() {
 
   return (
     <>
-      <Button
+      {mdUp && <Button
         component={m.button}
         whileTap="tap"
         whileHover="hover"
@@ -96,28 +100,69 @@ export default function ClientPopover() {
         variant='soft'
         color={clObj?.name ? 'success' : 'error'}
         size='small'
+        sx={{
+          textOverflow: "ellipsis",
+          md: { maxWidth: 200 }, xs: { maxWidth: 50 }
+        }}
+        startIcon={
+          client?.type === "agency" &&
+            <Iconify icon="solar:star-bold" width={15} />
+            
+        }
         endIcon={
           <Iconify icon={popover.open ? "ph:caret-up-bold" : "ph:caret-down-bold"} width={15} />
         }
       >
-        {clObj?.name ?? "no client"}
-      </Button>
-
-      <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160 }}>
-        {showClientLoader && <LoadingScreen />}
-        {!showClientLoader && clients && clients.map((option) => (
-          <MenuItem
-            key={option._id.toString()}
-            selected={option._id.toString() === clObj?._id.toString()}
-            onClick={() => handleChangeClient(option)}
-
+        <span>{clObj?.name ?? "no client"}</span>
+      </Button>}
+      {!mdUp &&
+            <IconButton
+            component={m.button}
+            whileTap="tap"
+            whileHover="hover"
+            variants={varHover(1.05)}
+            onClick={popover.onOpen}
+            color='success'
+            sx={{
+              width: 40,
+              height: 40,
+              background: (theme) => alpha(theme.palette.success.main, 0.08),
+              ...(popover.open && {
+                background: (theme) =>
+                  `linear-gradient(135deg, ${theme.palette.success.light} 0%, ${theme.palette.success.main} 100%)`,
+              }),
+            }}
           >
-            <Iconify icon={option.client_icon} sx={{ borderRadius: 0.65, width: 28 }} />
+            <Avatar
+              src={client?.name as string}
+              alt={client?.name}
+              variant="rounded"
+              sx={{
+                width: 36,
+                height: 36,
+                border: (theme) => `solid 2px ${theme.palette.background.default}`,
+              }}
+            >
+              {client?.name.charAt(0).toUpperCase()}
+            </Avatar>
+            </IconButton>
+      }
 
-            <Typography variant='caption' noWrap>{option.name}</Typography>
-          </MenuItem>
-        ))}
-      </CustomPopover>
+            < CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160 }}>
+          {showClientLoader && <LoadingScreen />}
+          {!showClientLoader && clients && clients.map((option) => (
+            <MenuItem
+              key={option._id.toString()}
+              selected={option._id.toString() === clObj?._id.toString()}
+              onClick={() => handleChangeClient(option)}
+
+            >
+              <Iconify icon={option.client_icon} sx={{ borderRadius: 0.65, width: 28 }} />
+
+              <Typography variant='caption' noWrap>{option.name}</Typography>
+            </MenuItem>
+          ))}
+        </CustomPopover>
     </>
   );
 }

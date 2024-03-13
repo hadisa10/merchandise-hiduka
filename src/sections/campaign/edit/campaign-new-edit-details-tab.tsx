@@ -113,7 +113,7 @@ const CampaignNewEditDetailsTab: FC = () => {
                   }
 
                   return (
-                    <li {...props} key={client._id?.toString()}>
+                    <li {...props} key={client?._id?.toString()}>
                       {client?.name}
                     </li>
                   );

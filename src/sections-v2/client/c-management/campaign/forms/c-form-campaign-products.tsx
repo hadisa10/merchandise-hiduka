@@ -41,7 +41,7 @@ function CFormCampaignProducts({ products, loading }: { products?: IProductItem[
     if (client?._id) {
       productsLoading.onTrue()
       setError(null);
-      realmApp.currentUser?.functions.getClientProducts(client._id.toString()).then((prds: IProductItem[]) => {
+      realmApp.currentUser?.functions.getClientProducts(client?._id.toString()).then((prds: IProductItem[]) => {
         setClientProducts(prds)
       })
         .catch(e => {

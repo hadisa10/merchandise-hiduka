@@ -44,7 +44,7 @@ export default function CampaignNewView() {
         if (client?._id) {
             usersloading.onTrue()
             setError(null);
-            realmApp.currentUser?.functions.getClientUsers(client._id.toString()).then((usrs: IUser[]) => {
+            realmApp.currentUser?.functions.getClientUsers(client?._id.toString()).then((usrs: IUser[]) => {
                 setUsers(usrs.map(x => ({ ...x, _id: x._id.toString() })));
             })
                 .catch(e => {

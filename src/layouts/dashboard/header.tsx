@@ -18,7 +18,6 @@ import { NAV, HEADER } from '../config-layout';
 import ClientPopover from '../common/client-popover';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
-import ContactsPopover from '../common/contacts-popover';
 
 // ----------------------------------------------------------------------
 
@@ -66,7 +65,7 @@ export default function Header({ onOpenNav }: Props) {
 
         {/* <NotificationsPopover /> */}
 
-        <ContactsPopover />
+        {/* <ContactsPopover /> */}
 
         <SettingsButton />
 

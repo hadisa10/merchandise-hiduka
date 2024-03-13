@@ -4,6 +4,7 @@ import { isNumber } from 'lodash';
 import { enqueueSnackbar } from 'notistack';
 import { memo, useState, useEffect, useCallback } from 'react';
 
+import { ButtonBase } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { useShowLoader } from 'src/hooks/realm';
@@ -16,12 +17,10 @@ import { SystemIcon } from 'src/components/iconify';
 import { useClientContext } from 'src/components/clients';
 import { LoadingScreen } from 'src/components/loading-screen';
 
+import { IChartSeries } from 'src/sections/overview/analytics/analytics-conversion-rates';
 import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
-import AnalyticsTopUserCheckins from 'src/sections/overview/analytics/analytics-top-user-checkins';
-import AnalyticsAvarageFilledReport from 'src/sections/overview/analytics/analytics-avg-filled-report';
-import AnalyticsConversionRates, { IChartSeries } from 'src/sections/overview/analytics/analytics-conversion-rates';
 
-import { IAdminDashboardData, IAdminDashboardReportSummary } from 'src/types/realm/realm-types';
+import { IAdminDashboardData, IAdminDashboardReportSummary, IClientDashboardSummaryUpdated } from 'src/types/realm/realm-types';
 
 function ClientDashboardCampaignMetrics() {
 
@@ -29,24 +28,28 @@ function ClientDashboardCampaignMetrics() {
 
   const campaignloading = useBoolean(true)
 
+  const campaignUpdatedloading = useBoolean(true)
+
   const reportsloading = useBoolean(false)
 
   const { client } = useClientContext();
 
-  const showCampaignLoader = useShowLoader((campaignloading.value || reportsloading.value), 300);
+  const showCampaignLoader = useShowLoader((campaignloading.value || reportsloading.value || campaignUpdatedloading.value), 300);
 
   const [dashboardCampaignMetrics, setDashboarCampaignMetrics] = useState<IAdminDashboardData | null>(null);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [dashboardReportsMetrics, setDashboardReportsMetrics] = useState<IAdminDashboardReportSummary | null>(null);
+  const [dashboardMetricsUpdated, setDashboardMetricsUpdated] = useState<IClientDashboardSummaryUpdated | null>(null);
 
   // // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<unknown>(null);
+
 
   useEffect(() => {
     if (client?._id) {
       campaignloading.onTrue()
       setError(null);
-      realmApp.currentUser?.functions.getClientDashboardMetrics(client._id.toString())
+      realmApp.currentUser?.functions.getClientDashboardMetrics(client?._id.toString())
         .then((data: IAdminDashboardData) => setDashboarCampaignMetrics(data))
         .catch(e => {
           console.error(e)
@@ -64,7 +67,7 @@ function ClientDashboardCampaignMetrics() {
     if (client?._id) {
       campaignloading.onTrue();
       setError(null);
-      realmApp.currentUser?.functions.getClientReportDashboardMetrics(client._id.toString()).then((data: IAdminDashboardReportSummary) => setDashboardReportsMetrics(data))
+      realmApp.currentUser?.functions.getClientReportDashboardMetrics(client?._id.toString()).then((data: IAdminDashboardReportSummary) => setDashboardReportsMetrics(data))
         .catch(e => {
           console.error(e)
           setError(e);
@@ -72,6 +75,23 @@ function ClientDashboardCampaignMetrics() {
         }
         )
         .finally(() => campaignloading.onFalse())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client?._id])
+
+  useEffect(() => {
+    if (client?._id) {
+      campaignUpdatedloading.onTrue();
+      setError(null);
+      console.log(client._id.toString(), "ID")
+      realmApp.currentUser?.functions.getClientDashboardMetricsUpdated(client?._id.toString()).then((data: IClientDashboardSummaryUpdated) => setDashboardMetricsUpdated(data))
+        .catch(e => {
+          console.error(e)
+          setError(e);
+          enqueueSnackbar("Failed to get dashboard updated Metrics", { variant: "error" })
+        }
+        )
+        .finally(() => campaignUpdatedloading.onFalse())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client?._id])
@@ -90,7 +110,55 @@ function ClientDashboardCampaignMetrics() {
     <>
       {showCampaignLoader && <LoadingScreen />}
 
-      {
+      {!showCampaignLoader &&
+        <Grid container spacing={3}>
+          <Grid xs={12} sm={6} md={3}>
+            <AnalyticsWidgetSummary
+              sx={{ width: "100%" }}
+              component={ButtonBase}
+              onClick={() => console.log("TOTAL PROJECTS")}
+              title="Total Projects"
+              total={dashboardMetricsUpdated?.totalProjects ?? 0}
+              color="info"
+              icon={<SystemIcon type="project" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+            />
+          </Grid>
+          <Grid xs={12} sm={6} md={3}>
+            <AnalyticsWidgetSummary
+              sx={{ width: "100%" }}
+              component={ButtonBase}
+              onClick={() => console.log("TOTAL ACTIVE CAMPAIGNS")}
+              title="Total Active Campaigns"
+              total={dashboardMetricsUpdated?.totalActiveCampaigns ?? 0}
+              color="success"
+              icon={<SystemIcon type="campaign" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+            />
+          </Grid>
+          <Grid xs={12} sm={6} md={3}>
+            <AnalyticsWidgetSummary
+              sx={{ width: "100%" }}
+              component={ButtonBase}
+              onClick={() => console.log("TOTAL ACTIVE USERS")}
+              title="Total Active Users"
+              total={dashboardMetricsUpdated?.totalVerifiedUsers ?? 0}
+              color="success"
+              icon={<SystemIcon type="users" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+            />
+          </Grid>
+          <Grid xs={12} sm={6} md={3}>
+            <AnalyticsWidgetSummary
+              sx={{ width: "100%" }}
+              component={ButtonBase}
+              onClick={() => console.log("TOTAL AVARAGE CHECKIN DURATION")}
+              title="Avarage checkin duration"
+              total={isNumber(dashboardCampaignMetrics?.averageCheckInDuration) ? getRelevantTimeInfo(dashboardCampaignMetrics?.averageCheckInDuration) : 0}
+              color="error"
+              icon={<SystemIcon type="checkin" width={45} sx={{ color: 'error.main' }} />} // Example icon for engagement
+            />
+          </Grid>
+        </Grid>
+      }
+      {/* {
         !showCampaignLoader &&
         dashboardCampaignMetrics &&
         dashboardReportsMetrics &&
@@ -163,7 +231,7 @@ function ClientDashboardCampaignMetrics() {
               title='Rank By Daily Average Report Activity' />
           </Grid>
         </Grid>
-      }
+      } */}
     </>
   );
 }

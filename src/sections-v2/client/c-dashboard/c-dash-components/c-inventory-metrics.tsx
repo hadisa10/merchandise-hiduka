@@ -36,10 +36,10 @@ function AdminDashboardInventoryMetrics() {
   const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
-    if (client._id) {
+    if (client?._id) {
       inventoryloading.onTrue()
       setError(null);
-      realmApp.currentUser?.functions.getClientsInventoryDashboardMetrics(client._id.toString()).then((data: IAdminDashboardInventoryMetrics) => setDashboarInventoryMetrics(data))
+      realmApp.currentUser?.functions.getClientsInventoryDashboardMetrics(client?._id.toString()).then((data: IAdminDashboardInventoryMetrics) => setDashboarInventoryMetrics(data))
         .catch(e => {
           console.error(e)
           setError(e);

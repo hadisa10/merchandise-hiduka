@@ -347,6 +347,6 @@ export function getRelevantTimeInfo(milliseconds: number): string {
     } if (duration.seconds && duration.seconds > 0) {
         return `${duration.seconds} second(s)`;
     }
-    return 'Less than a second';
+    return '0 seconds';
 
 }

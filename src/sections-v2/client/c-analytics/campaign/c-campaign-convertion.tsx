@@ -19,6 +19,7 @@ export default function CampaignConversionView({ reports }: { reports: IReport[]
     // const reportsColl = useMemo(() => reports.reduce((acc, r) => acc + r.responses, 0), [reports])
 
     // Generate series data from reports, each with a random value
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const conversionRatesSeries = useMemo(() => {
         const unsortedSeries = reports.map(report => ({
             label: report.title,

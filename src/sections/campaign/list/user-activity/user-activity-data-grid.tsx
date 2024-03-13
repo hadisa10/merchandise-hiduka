@@ -10,11 +10,11 @@ import {
 
 import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
-import { useCampaigns } from "src/hooks/realm/campaign/use-campaign-graphql";
 
 import { fDateTime } from "src/utils/format-time";
 import { formatFilterAndRemoveFields } from "src/utils/helpers";
 
+import { useRealmApp } from "src/components/realm";
 import { DataGridFlexible } from "src/components/data-grid";
 import { LoadingScreen } from "src/components/loading-screen";
 import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
@@ -34,11 +34,11 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     const theme = useTheme();
 
-    const { getCampaignUsers } = useCampaigns(true);
-
     const loadingCampaignUsers = useBoolean()
 
     const openAssign = useBoolean();
+
+    const realmApp = useRealmApp();
 
     const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([])
 
@@ -55,9 +55,10 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         if (isString(campaignId) && !isEmpty(campaignId)) {
             loadingCampaignUsers.onTrue()
             setCampaignUsersError(null)
-            getCampaignUsers(campaignId.toString())
+            realmApp.currentUser?.functions.getCampaignUsers(campaignId.toString())
                 .then(res => {
                     setCampaignUsersError(null)
+                    console.log(res, "RESPONSE")
                     setCampaignUsers(res)
                 }
                 )
@@ -139,7 +140,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
             },
             {
                 field: "checkInCount",
-                label: "No. of Checkins",
+                label: "No. of days",
                 type: "number",
                 minWidth: 120
             },
@@ -217,6 +218,8 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         return filtered
     }, [campaignUsers])
 
+    console.log(cleanedUsers.map(x => ({...x, _id: x._id.toString()})), "CLEANED USERS")
+
     return (
         <>
             <Card
@@ -232,7 +235,8 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 ) : cleanedUsers && (
                     <DataGridFlexible
                         data={cleanedUsers}
-                        getRowIdFn={(row) => row._id.toString()} columns={columns}
+                        getRowIdFn={(row) => row._id.toString()} 
+                        columns={columns}
                         hideColumn={{ _id: false }}
                         title={`${campaign.title.split(" ").join("-")}-user-activity`}
                         customActions={{
