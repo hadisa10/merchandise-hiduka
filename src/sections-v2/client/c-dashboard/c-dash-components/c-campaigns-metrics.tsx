@@ -149,8 +149,8 @@ function ClientDashboardCampaignMetrics() {
             <AnalyticsWidgetSummary
               sx={{ width: "100%" }}
               component={ButtonBase}
-              onClick={() => console.log("TOTAL AVARAGE CHECKIN DURATION")}
-              title="Avarage checkin duration"
+              onClick={() => console.log("TOTAL Average CHECKIN DURATION")}
+              title="Average checkin duration"
               total={isNumber(dashboardCampaignMetrics?.averageCheckInDuration) ? getRelevantTimeInfo(dashboardCampaignMetrics?.averageCheckInDuration) : 0}
               color="error"
               icon={<SystemIcon type="checkin" width={45} sx={{ color: 'error.main' }} />} // Example icon for engagement
@@ -191,7 +191,7 @@ function ClientDashboardCampaignMetrics() {
 
           <Grid xs={12} sm={6} md={3}>
             <AnalyticsWidgetSummary
-              title="Avarage checkin duration"
+              title="Average checkin duration"
               total={isNumber(dashboardCampaignMetrics.averageCheckInDuration) ? getRelevantTimeInfo(dashboardCampaignMetrics.averageCheckInDuration) : 0}
               color="error"
               icon={<SystemIcon type="checkin" width={45} sx={{ color: 'error.main' }} />} // Example icon for engagement
@@ -226,7 +226,7 @@ function ClientDashboardCampaignMetrics() {
           </Grid>
 
           <Grid xs={12} md={6} lg={4}>
-            <AnalyticsAvarageFilledReport
+            <AnalyticsAverageFilledReport
               list={dashboardReportsMetrics.avgAnswersPerDayPerReport}
               title='Rank By Daily Average Report Activity' />
           </Grid>

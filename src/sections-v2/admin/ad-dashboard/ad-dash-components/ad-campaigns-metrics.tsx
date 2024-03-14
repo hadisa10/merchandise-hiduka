@@ -17,7 +17,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
 import AnalyticsTopUserCheckins from 'src/sections/overview/analytics/analytics-top-user-checkins';
-import AnalyticsAvarageFilledReport from 'src/sections/overview/analytics/analytics-avg-filled-report';
+import AnalyticsAverageFilledReport from 'src/sections/overview/analytics/analytics-avg-filled-report';
 import AnalyticsConversionRates, { IChartSeries } from 'src/sections/overview/analytics/analytics-conversion-rates';
 
 import { IAdminDashboardData, IAdminDashboardReportSummary } from 'src/types/realm/realm-types';
@@ -115,7 +115,7 @@ function AdminDashboardCampaignMetrics() {
 
           <Grid xs={12} sm={6} md={3}>
             <AnalyticsWidgetSummary
-              title="Avarage checkin duration"
+              title="Average checkin duration"
               total={isNumber(dashboarCampaignMetrics.averageCheckInDuration) ? getRelevantTimeInfo(dashboarCampaignMetrics.averageCheckInDuration) : 0}
               color="error"
               icon={<SystemIcon type="checkin" width={45} sx={{ color: 'error.main' }} />} // Example icon for engagement
@@ -150,7 +150,7 @@ function AdminDashboardCampaignMetrics() {
           </Grid>
 
           <Grid xs={12} md={6} lg={4}>
-            <AnalyticsAvarageFilledReport
+            <AnalyticsAverageFilledReport
               list={dashboarReportsMetrics.avgAnswersPerDayPerReport}
               title='Rank By Daily Average Report Activity' />
           </Grid>

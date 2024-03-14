@@ -81,7 +81,7 @@ function AdminDashboardInventoryMetrics() {
 
           <Grid xs={12} sm={6} md={3}>
             <AnalyticsWidgetSummary
-              title="Avarage Product price"
+              title="Average Product price"
               total={dashboardInventoryMetrics.averagePrice}
               color="warning"
               icon={<SystemIcon type="checkin" width={45} sx={{ color: 'primary.main' }} />} // Example icon for engagement

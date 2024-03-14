@@ -35,6 +35,7 @@ export interface IUser {
 export interface ICampaignUser extends IUser {
     isCheckedIn: boolean;
     checkInCount: number;
+    lastActivity: Date;
     totalSessionCount: number;
     totalEarnings: number;
     totalHoursWorked: number;

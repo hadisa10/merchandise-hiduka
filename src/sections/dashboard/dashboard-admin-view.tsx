@@ -40,7 +40,7 @@ export default function DashboardAdminView() {
 
                     <Grid xs={12} sm={6} md={3}>
                         <AnalyticsWidgetSummary
-                            title="Avarage Checkin duration"
+                            title="Average Checkin duration"
                             total={dashboardMetrics.averageCheckInDuration}
                             color="info"
                             icon={<Iconify width={64} icon="material-symbols-light:campaign-rounded" />}

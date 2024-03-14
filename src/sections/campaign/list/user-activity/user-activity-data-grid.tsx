@@ -4,8 +4,10 @@ import { isEmpty, isString } from "lodash";
 import { enqueueSnackbar } from "notistack";
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 
+import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import {
-    Card, useTheme
+    Card,
+    Stack, useTheme, ButtonBase
 } from "@mui/material";
 
 import { useShowLoader } from "src/hooks/realm";
@@ -15,12 +17,15 @@ import { fDateTime } from "src/utils/format-time";
 import { formatFilterAndRemoveFields } from "src/utils/helpers";
 
 import { useRealmApp } from "src/components/realm";
+import { SystemIcon } from "src/components/iconify";
 import { DataGridFlexible } from "src/components/data-grid";
 import { LoadingScreen } from "src/components/loading-screen";
 import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
 
-import { ICampaign } from "src/types/realm/realm-types";
+import AnalyticsWidgetSummary from "src/sections/overview/analytics/analytics-widget-summary";
+
 import { IUser, ICampaignUser } from "src/types/user_realm";
+import { ICampaign, ICampaignKPIMetricsResponse } from "src/types/realm/realm-types";
 
 import AssignProductDialog from "./assign-product-dialog";
 
@@ -42,7 +47,18 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([])
 
+    const [campaignKPIMetrics, setCampaignKPIMetrics] = useState<ICampaignKPIMetricsResponse | null>(null)
+
+
     const [selectedCampaignUsers, setSelectedCampaignUsers] = useState<ICampaignUser[] | null>(null)
+
+    const userActivitySummary = useBoolean();
+
+    const showActivityLoader = useShowLoader((userActivitySummary.value), 300);
+
+    const campaignKPIMetricsLoading = useBoolean();
+
+    const showCampaignKPIMetricsLoader = useShowLoader((campaignKPIMetricsLoading.value), 300);
 
     // eslint-disable-next-line
     const [campaignUsersError, setCampaignUsersError] = useState(null)
@@ -69,6 +85,30 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 })
                 .finally(() => {
                     loadingCampaignUsers.onFalse()
+                })
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [campaignId])
+
+
+    useEffect(() => {
+        if (isString(campaignId) && !isEmpty(campaignId)) {
+            campaignKPIMetricsLoading.onTrue()
+            setCampaignUsersError(null)
+            realmApp.currentUser?.functions.getCampaignKPIMetrics(campaignId.toString())
+                .then((res: ICampaignKPIMetricsResponse) => {
+                    setCampaignUsersError(null)
+                    console.log(res, "RESPONSE")
+                    setCampaignKPIMetrics(res)
+                }
+                )
+                .catch(e => {
+                    enqueueSnackbar("Failed to fetch campaign products", { variant: "error" })
+                    setCampaignUsers(e.message)
+                    console.error(e, "REPORT FETCH")
+                })
+                .finally(() => {
+                    campaignKPIMetricsLoading.onFalse()
                 })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,8 +144,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         [campaignUsers]
     );
 
-
-
     const columns: IGenericColumn<ICampaignUser>[] = useMemo(() => {
         const cols: Omit<IGenericColumn<ICampaignUser>, "order">[] = [
             {
@@ -122,7 +160,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
             },
             {
                 field: "isCheckedIn",
-                label: "Checked In",
+                label: "Live",
                 type: "boolean",
                 minWidth: 120
             },
@@ -151,14 +189,10 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 minWidth: 120
             },
             {
-                field: "createdAt",
-                label: "Created At",
-                type: "date"
-            },
-            {
-                field: "updatedAt",
-                label: "Updated At",
-                type: "date"
+                field: "lastActivity",
+                label: "Latest Activity",
+                type: "string",
+                minWidth: 200
             },
             {
                 field: "actions",
@@ -186,6 +220,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignUsers])
 
+
     const cleanedUsers = useMemo(() => {
         if (!Array.isArray(campaignUsers)) return []
         const filtered = formatFilterAndRemoveFields(
@@ -200,6 +235,10 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 {
                     key: "createdAt",
                     formatter: fDateTime,
+                },
+                {
+                    key: "lastActivity",
+                    formatter: fDateTime
                 },
                 // {
                 //     key: "active",
@@ -218,10 +257,107 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         return filtered
     }, [campaignUsers])
 
-    console.log(cleanedUsers.map(x => ({...x, _id: x._id.toString()})), "CLEANED USERS")
+    console.log(cleanedUsers, "CLEANED USERS")
+    const totalLiveUsers = useMemo(() => cleanedUsers.filter(x => x.isCheckedIn).length, [cleanedUsers])
+
+    console.log(campaignKPIMetrics, "CAMPAIGN KPI METRICS")
 
     return (
-        <>
+        <Stack rowGap={2}>
+            <Grid container spacing={3}>
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL LIVE USERS")}
+                        title="Total Live Users"
+                        total={totalLiveUsers ?? 0}
+                        color="error"
+                        icon={<SystemIcon type="live" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL REACH")}
+                        title="Total Checkins Today"
+                        total={campaignKPIMetrics?.totalUsersCheckedInToday ?? 0}
+                        color="warning"
+                        icon={<SystemIcon type="todayCheckin" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL USERS IN CAMPAIGN")}
+                        title="Total Campaign Users"
+                        total={campaignKPIMetrics?.totalUsersInCampaign ?? 0}
+                        color="info"
+                        icon={<SystemIcon type="users" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+
+
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL REACH")}
+                        title="Total Customers Reached"
+                        total={campaignKPIMetrics?.totalFilledReports?.totalReports ?? 0}
+                        color="success"
+                        icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL REACH")}
+                        title="Reached Today"
+                        total={campaignKPIMetrics?.dailyStats.reports?.dailyReports ?? 0}
+                        color="success"
+                        icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL REACH")}
+                        title="Sold Today"
+                        total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
+                        color="success"
+                        icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+                {/* <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL SALES PER DAY")}
+                        title="Average Sales per day"
+                        total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
+                        color="info"
+                        icon={<SystemIcon type="average" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL SALES PER DAY")}
+                        title="Average Sales per day"
+                        total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
+                        color="info"
+                        icon={<SystemIcon type="average" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid> */}
+            </Grid>
             <Card
                 sx={{
                     height: { xs: 800, md: 600 },
@@ -235,7 +371,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 ) : cleanedUsers && (
                     <DataGridFlexible
                         data={cleanedUsers}
-                        getRowIdFn={(row) => row._id.toString()} 
+                        getRowIdFn={(row) => row._id.toString()}
                         columns={columns}
                         hideColumn={{ _id: false }}
                         title={`${campaign.title.split(" ").join("-")}-user-activity`}
@@ -271,6 +407,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                     handleAssignNewProduct={() => console.log("ASSIGN")}
                 />
             }
-        </>
+        </Stack>
     );
 }
