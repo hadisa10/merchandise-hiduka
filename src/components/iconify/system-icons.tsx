@@ -22,7 +22,13 @@ const ICON_MAP = {
   report: { icon: "iconoir:reports-solid" },
   create: { icon: "ion:create-outline" },
   checkin: { icon: "uil:user-location" },
-  users: { icon: "mdi:users-check" }
+  users: { icon: "mdi:users-check" },
+  reach: { icon: "cib:periscope" },
+  sale: {icon: "mingcute:sale-fill"},
+  todayCheckin: {icon : "fluent:calendar-today-24-filled"},
+  average: { icon: "carbon:chart-average" },
+  live: { icon: "fluent:live-20-filled" }
+
 } as const; // Using 'as const' to make the values readonly and their literal types
 // Define the props for the DynamicIcon component
 interface DynamicIconProps {

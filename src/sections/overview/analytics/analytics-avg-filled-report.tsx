@@ -17,7 +17,7 @@ interface Props extends CardProps {
   list: IAdminDashboardAvgAnswersPerDay[];
 }
 
-export default function AnalyticsAvarageFilledReport
+export default function AnalyticsAverageFilledReport
 ({ title, subheader, list, ...other }: Props) {
 
   const total = useMemo(() => list.reduce((accumulator, item) => accumulator + item.avgAnswersPerDay, 0)/list.length ,[list])

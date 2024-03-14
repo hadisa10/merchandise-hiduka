@@ -3,6 +3,32 @@ import * as Realm from "realm-web";
 import { IClient } from "../client";
 
 
+export interface ICampaignKPIMetricsResponse {
+    totalUsersInCampaign: number;
+    daysRunning: number;
+    totalUsersCheckedInToday: number;
+    totalCampaignSales: {
+        _id: string | null; // Assuming the campaign_id is returned here; adjust the type as needed (e.g., ObjectId or string)
+        totalSales: number;
+        totalAmount: number;
+    } | null;
+    totalFilledReports: {
+        _id: string | null; // Same assumption about campaign_id type as above
+        totalReports: number;
+    } | null;
+    dailyStats: {
+        sales: {
+            _id: null; // Grouped without a specific _id
+            dailySales: number;
+            dailyAmount: number;
+        } | null;
+        reports: {
+            _id: null; // Grouped without a specific _id
+            dailyReports: number;
+        } | null;
+    };
+}
+
 
 export interface ISalesByRegion {
     totalRevenue: number;

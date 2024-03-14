@@ -44,7 +44,7 @@ export function AdminDashboardCampaignMetrics({ dashboarCampaigndMetrics }: { da
 
     <Grid xs={12} sm={6} md={3}>
       <AnalyticsWidgetSummary
-        title="Avarage checkin duration"
+        title="Average checkin duration"
         total={isNumber(dashboarCampaigndMetrics.averageCheckInDuration) ? getRelevantTimeInfo(dashboarCampaigndMetrics.averageCheckInDuration) : 0}
         color="error"
         icon={<SystemIcon type="checkin" width={45} sx={{ color: 'error.main' }} />} // Example icon for engagement
