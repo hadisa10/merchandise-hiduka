@@ -265,7 +265,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
     return (
         <Stack rowGap={2}>
             <Grid container spacing={3}>
-                <Grid xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={2}>
                     <AnalyticsWidgetSummary
                         sx={{ width: "100%" }}
                         component={ButtonBase}
@@ -276,7 +276,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                         icon={<SystemIcon type="live" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                     />
                 </Grid>
-                <Grid xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={2}>
                     <AnalyticsWidgetSummary
                         sx={{ width: "100%" }}
                         component={ButtonBase}
@@ -287,7 +287,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                         icon={<SystemIcon type="todayCheckin" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                     />
                 </Grid>
-                <Grid xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={2}>
                     <AnalyticsWidgetSummary
                         sx={{ width: "100%" }}
                         component={ButtonBase}
@@ -300,7 +300,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 </Grid>
 
 
-                <Grid xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={2}>
                     <AnalyticsWidgetSummary
                         sx={{ width: "100%" }}
                         component={ButtonBase}
@@ -309,6 +309,30 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                         total={campaignKPIMetrics?.totalFilledReports?.totalReports ?? 0}
                         color="success"
                         icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL REACH")}
+                        title="Reached Today"
+                        total={campaignKPIMetrics?.dailyStats.reports?.dailyReports ?? 0}
+                        color="success"
+                        icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                    />
+                </Grid>
+
+                <Grid xs={12} sm={6} md={2}>
+                    <AnalyticsWidgetSummary
+                        sx={{ width: "100%" }}
+                        component={ButtonBase}
+                        onClick={() => console.log("TOTAL REACH")}
+                        title="Sold Today"
+                        total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
+                        color="success"
+                        icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                     />
                 </Grid>
                 {/* <Grid xs={12} sm={6} md={2}>
