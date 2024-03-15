@@ -12,20 +12,14 @@ export interface ICampaignKPIMetricsResponse {
         totalSales: number;
         totalAmount: number;
     } | null;
-    totalFilledReports: {
-        _id: string | null; // Same assumption about campaign_id type as above
-        totalReports: number;
-    } | null;
+    totalFilledReports: number;
     dailyStats: {
         sales: {
             _id: null; // Grouped without a specific _id
             dailySales: number;
             dailyAmount: number;
         } | null;
-        reports: {
-            _id: null; // Grouped without a specific _id
-            dailyReports: number;
-        } | null;
+        reports: number
     };
 }
 

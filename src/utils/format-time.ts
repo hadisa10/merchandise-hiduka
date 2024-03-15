@@ -1,4 +1,4 @@
-import { format, getTime, isValid, parseISO, formatDistanceToNow } from 'date-fns';
+import { format , getTime, isValid, parseISO, formatDistance, formatDistanceToNow } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -59,4 +59,24 @@ export function isAfter(startDate: Date | null, endDate: Date | null) {
     startDate && endDate ? new Date(startDate).getTime() > new Date(endDate).getTime() : false;
 
   return results;
+}
+
+/**
+ * Calculates the difference between a given date and the current date/time,
+ * returning a human-friendly representation of this difference.
+ *
+ * @param date The date to compare with the current date/time.
+ * @returns A human-friendly representation of the difference.
+ */
+export function formatDifference(date: Date | string): string {
+  // Ensure the input is a Date object
+  const targetDate = typeof date === 'string' ? new Date(date) : date;
+
+  // Get the current date/time
+  const now = new Date();
+
+  // Calculate the difference in a human-friendly format
+  const difference = formatDistance(targetDate, now, { includeSeconds: true, addSuffix: true });
+
+  return difference;
 }
