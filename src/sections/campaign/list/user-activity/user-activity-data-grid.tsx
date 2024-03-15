@@ -1,25 +1,32 @@
 "use client"
 
-import { isEmpty, isString } from "lodash";
+import * as Yup from 'yup';
 import { enqueueSnackbar } from "notistack";
+import { isEmpty, isObject, isString } from "lodash";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 
+import { LoadingButton } from "@mui/lab";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
+import { MobileDateTimePicker, DesktopDateTimePicker } from "@mui/x-date-pickers";
 import {
     Card,
-    Stack, useTheme, ButtonBase
+    Stack, Button, styled, useTheme, ButtonBase
 } from "@mui/material";
 
 import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
+import { useResponsive } from "src/hooks/use-responsive";
 
-import { fDateTime } from "src/utils/format-time";
 import { formatFilterAndRemoveFields } from "src/utils/helpers";
+import { fDateTime, fTimestamp, formatDifference } from "src/utils/format-time";
 
 import { useRealmApp } from "src/components/realm";
 import { SystemIcon } from "src/components/iconify";
 import { DataGridFlexible } from "src/components/data-grid";
 import { LoadingScreen } from "src/components/loading-screen";
+import FormProvider from "src/components/hook-form/form-provider";
 import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
 
 import AnalyticsWidgetSummary from "src/sections/overview/analytics/analytics-widget-summary";
@@ -34,6 +41,16 @@ interface IUserActivityDataGridProps {
     handleOpenCheckInRouteView?: (user: IUser) => void;
 }
 
+// ----------------------------------------------------------------------
+
+const StyledLabel = styled('span')(({ theme }) => ({
+    ...theme.typography.caption,
+    width: "max-content",
+    flexShrink: 0,
+    color: theme.palette.text.secondary,
+    fontWeight: theme.typography.fontWeightSemiBold,
+}));
+
 export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteView }: IUserActivityDataGridProps) {
     // const { loading, clients } = useClients(false);
 
@@ -45,9 +62,54 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     const realmApp = useRealmApp();
 
+    const mdUp = useResponsive('up', 'md');
+
     const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([])
 
     const [campaignKPIMetrics, setCampaignKPIMetrics] = useState<ICampaignKPIMetricsResponse | null>(null)
+
+    const [snapshotDateTime, setSnapShotDateTime] = useState<Date>(new Date);
+
+
+    const NewCurrectSchema = Yup.object().shape({
+        snapshotDateTime: Yup.date()
+            .transform((value, originalValue) => {
+                // Check if the originalValue is a number (Unix timestamp in milliseconds)
+                if (typeof originalValue === 'number') {
+                    return new Date(originalValue);
+                }
+                // For string input, attempt to parse it as a date
+                if (typeof originalValue === 'string') {
+                    return new Date(originalValue);
+                }
+                return value;
+            })
+    })
+
+    const defaultValues = useMemo(
+        () => ({
+            snapshotDateTime: new Date()
+        }),
+        []
+    );
+
+    const methods = useForm({
+        resolver: yupResolver(NewCurrectSchema),
+        defaultValues,
+        mode: "all"
+    });
+
+    const {
+        reset,
+        setValue,
+        watch,
+        control,
+        handleSubmit,
+        getFieldState,
+        formState: { isSubmitting, errors },
+    } = methods;
+
+    const { error: startDateError } = getFieldState("snapshotDateTime")
 
 
     const [selectedCampaignUsers, setSelectedCampaignUsers] = useState<ICampaignUser[] | null>(null)
@@ -68,11 +130,11 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
     const campaignId = useMemo(() => campaign._id.toString(), [campaign._id])
 
     useEffect(() => {
-        if (isString(campaignId) && !isEmpty(campaignId)) {
+        if (isString(campaignId) && !isEmpty(campaignId) && snapshotDateTime) {
             loadingCampaignUsers.onTrue()
             setCampaignUsersError(null)
-            realmApp.currentUser?.functions.getCampaignUsers(campaignId.toString())
-                .then(res => {
+            realmApp.currentUser?.functions.getCampaignUsers(campaignId.toString(), snapshotDateTime.toISOString())
+                .then((res: ICampaignUser[]) => {
                     setCampaignUsersError(null)
                     console.log(res, "RESPONSE")
                     setCampaignUsers(res)
@@ -88,14 +150,14 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [campaignId])
+    }, [campaignId, snapshotDateTime])
 
 
     useEffect(() => {
-        if (isString(campaignId) && !isEmpty(campaignId)) {
+        if (isString(campaignId) && !isEmpty(campaignId) && snapshotDateTime) {
             campaignKPIMetricsLoading.onTrue()
             setCampaignUsersError(null)
-            realmApp.currentUser?.functions.getCampaignKPIMetrics(campaignId.toString())
+            realmApp.currentUser?.functions.getCampaignKPIMetrics(campaignId.toString(), snapshotDateTime.toISOString())
                 .then((res: ICampaignKPIMetricsResponse) => {
                     setCampaignUsersError(null)
                     console.log(res, "RESPONSE")
@@ -112,7 +174,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [campaignId])
+    }, [campaignId, snapshotDateTime])
 
     // const handleDeleteRows = useCallback((id: string) => {
     //     const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
@@ -143,6 +205,8 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [campaignUsers]
     );
+
+    const changedSnapshot = watch("snapshotDateTime")
 
     const columns: IGenericColumn<ICampaignUser>[] = useMemo(() => {
         const cols: Omit<IGenericColumn<ICampaignUser>, "order">[] = [
@@ -257,85 +321,159 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         return filtered
     }, [campaignUsers])
 
-    console.log(cleanedUsers, "CLEANED USERS")
+
     const totalLiveUsers = useMemo(() => cleanedUsers.filter(x => x.isCheckedIn).length, [cleanedUsers])
 
+    const onSubmit = handleSubmit(async (data) => {
+        if (data.snapshotDateTime) {
+            setSnapShotDateTime(data.snapshotDateTime)
+        } else {
+            console.log(data, "SNAPSHOT")
+        }
+    })
     console.log(campaignKPIMetrics, "CAMPAIGN KPI METRICS")
+    console.log(campaignUsers, "CAMPAIGN USERS")
 
     return (
-        <Stack rowGap={2}>
-            <Grid container spacing={3}>
-                <Grid xs={12} sm={6} md={2}>
-                    <AnalyticsWidgetSummary
-                        sx={{ width: "100%" }}
-                        component={ButtonBase}
-                        onClick={() => console.log("TOTAL LIVE USERS")}
-                        title="Total Live Users"
-                        total={totalLiveUsers ?? 0}
-                        color="error"
-                        icon={<SystemIcon type="live" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                    />
-                </Grid>
-                <Grid xs={12} sm={6} md={2}>
-                    <AnalyticsWidgetSummary
-                        sx={{ width: "100%" }}
-                        component={ButtonBase}
-                        onClick={() => console.log("TOTAL REACH")}
-                        title="Total Checkins Today"
-                        total={campaignKPIMetrics?.totalUsersCheckedInToday ?? 0}
-                        color="warning"
-                        icon={<SystemIcon type="todayCheckin" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                    />
-                </Grid>
-                <Grid xs={12} sm={6} md={2}>
-                    <AnalyticsWidgetSummary
-                        sx={{ width: "100%" }}
-                        component={ButtonBase}
-                        onClick={() => console.log("TOTAL USERS IN CAMPAIGN")}
-                        title="Total Campaign Users"
-                        total={campaignKPIMetrics?.totalUsersInCampaign ?? 0}
-                        color="info"
-                        icon={<SystemIcon type="users" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                    />
-                </Grid>
+        <FormProvider methods={methods} onSubmit={onSubmit}>
+            <Stack rowGap={2}>
+                <Grid container spacing={3}>
+                    <Grid xs={12} display="flex" justifyContent="space-evenly" >
+                        <Stack>
+                            {!mdUp &&
+
+                                <Controller
+                                    name="snapshotDateTime"
+                                    control={control}
+                                    render={({ field }) => <MobileDateTimePicker
+                                        {...field}
+                                        value={field.value ? new Date(field.value) : new Date()}
+                                        onChange={(newValue) => {
+                                            if (newValue) {
+                                                field.onChange(fTimestamp(newValue));
+                                            }
+                                        }}
+                                        label="Snapshot Date"
+                                        format="dd/MM/yyyy hh:mm a"
+                                        slotProps={{
+                                            textField: {
+                                                fullWidth: true,
+                                                error: isObject(startDateError),
+                                                helperText: isObject(startDateError) && startDateError.message,
+                                            },
+                                        }}
+                                    />}
+                                />
+                            }
+                            {mdUp &&
+
+                                <Controller
+                                    name="snapshotDateTime"
+                                    control={control}
+                                    render={({ field }) => <DesktopDateTimePicker
+                                        {...field}
+                                        value={field.value ? new Date(field.value) : new Date()}
+                                        onChange={(newValue) => {
+                                            if (newValue) {
+                                                field.onChange(fTimestamp(newValue));
+                                            }
+                                        }}
+                                        label="Date"
+                                        format="dd/MM/yyyy hh:mm a"
+                                        slotProps={{
+                                            textField: {
+                                                fullWidth: true,
+                                                error: isObject(startDateError),
+                                                helperText: isObject(startDateError) && startDateError.message,
+                                            },
+                                        }}
+                                    />}
+                                />
+                            }
+                            <StyledLabel>{changedSnapshot ? formatDifference(new Date(changedSnapshot)) : formatDifference(new Date())}</StyledLabel>
+                        </Stack>
+                        <Stack direction="row" spacing={1} height="max-content" justifyContent="space-between">
+                            <Button color="error" onClick={() => { 
+                                    setValue("snapshotDateTime", new Date())
+                                }} variant="soft" >
+                                Clear
+                            </Button>
+                            <LoadingButton type="submit" loading={isSubmitting || showActivityLoader || showCampaignKPIMetricsLoader} color="success" variant="contained">
+                                Get Snapshot
+                            </LoadingButton>
+                        </Stack>
+                    </Grid>
+                    <Grid xs={12} sm={6} md={4}>
+                        <AnalyticsWidgetSummary
+                            sx={{ width: "100%" }}
+                            component={ButtonBase}
+                            onClick={() => console.log("TOTAL LIVE USERS")}
+                            title="Total Live Users"
+                            total={totalLiveUsers ?? 0}
+                            color="error"
+                            icon={<SystemIcon type="live" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                        />
+                    </Grid>
+                    <Grid xs={12} sm={6} md={4}>
+                        <AnalyticsWidgetSummary
+                            sx={{ width: "100%" }}
+                            component={ButtonBase}
+                            onClick={() => console.log("TOTAL REACH")}
+                            title="Total Checkins Today"
+                            total={campaignKPIMetrics?.totalUsersCheckedInToday ?? 0}
+                            color="warning"
+                            icon={<SystemIcon type="todayCheckin" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                        />
+                    </Grid>
+                    <Grid xs={12} sm={6} md={4}>
+                        <AnalyticsWidgetSummary
+                            sx={{ width: "100%" }}
+                            component={ButtonBase}
+                            onClick={() => console.log("TOTAL USERS IN CAMPAIGN")}
+                            title="Total Campaign Users"
+                            total={campaignKPIMetrics?.totalUsersInCampaign ?? 0}
+                            color="info"
+                            icon={<SystemIcon type="users" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                        />
+                    </Grid>
 
 
-                <Grid xs={12} sm={6} md={2}>
-                    <AnalyticsWidgetSummary
-                        sx={{ width: "100%" }}
-                        component={ButtonBase}
-                        onClick={() => console.log("TOTAL REACH")}
-                        title="Total Customers Reached"
-                        total={campaignKPIMetrics?.totalFilledReports?.totalReports ?? 0}
-                        color="success"
-                        icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                    />
-                </Grid>
+                    <Grid xs={12} sm={6} md={4}>
+                        <AnalyticsWidgetSummary
+                            sx={{ width: "100%" }}
+                            component={ButtonBase}
+                            onClick={() => console.log("TOTAL REACH")}
+                            title="Total Customers Reached"
+                            total={campaignKPIMetrics?.totalFilledReports ?? 0}
+                            color="success"
+                            icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                        />
+                    </Grid>
 
-                <Grid xs={12} sm={6} md={2}>
-                    <AnalyticsWidgetSummary
-                        sx={{ width: "100%" }}
-                        component={ButtonBase}
-                        onClick={() => console.log("TOTAL REACH")}
-                        title="Reached Today"
-                        total={campaignKPIMetrics?.dailyStats.reports?.dailyReports ?? 0}
-                        color="success"
-                        icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                    />
-                </Grid>
+                    <Grid xs={12} sm={6} md={4}>
+                        <AnalyticsWidgetSummary
+                            sx={{ width: "100%" }}
+                            component={ButtonBase}
+                            onClick={() => console.log("TOTAL REACH")}
+                            title="Reached Today"
+                            total={campaignKPIMetrics?.dailyStats.reports ?? 0}
+                            color="success"
+                            icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                        />
+                    </Grid>
 
-                <Grid xs={12} sm={6} md={2}>
-                    <AnalyticsWidgetSummary
-                        sx={{ width: "100%" }}
-                        component={ButtonBase}
-                        onClick={() => console.log("TOTAL REACH")}
-                        title="Sold Today"
-                        total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
-                        color="success"
-                        icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                    />
-                </Grid>
-                {/* <Grid xs={12} sm={6} md={2}>
+                    <Grid xs={12} sm={6} md={4}>
+                        <AnalyticsWidgetSummary
+                            sx={{ width: "100%" }}
+                            component={ButtonBase}
+                            onClick={() => console.log("TOTAL REACH")}
+                            title="Sold Today"
+                            total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
+                            color="success"
+                            icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                        />
+                    </Grid>
+                    {/* <Grid xs={12} sm={6} md={2}>
                     <AnalyticsWidgetSummary
                         sx={{ width: "100%" }}
                         component={ButtonBase}
@@ -357,56 +495,57 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                         icon={<SystemIcon type="average" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                     />
                 </Grid> */}
-            </Grid>
-            <Card
-                sx={{
-                    height: { xs: 800, md: 600 },
-                    flexGrow: { md: 1 },
-                    display: { md: 'flex' },
-                    flexDirection: { md: 'column' },
-                }}
-            >
-                {showLoader ? (
-                    <LoadingScreen />
-                ) : cleanedUsers && (
-                    <DataGridFlexible
-                        data={cleanedUsers}
-                        getRowIdFn={(row) => row._id.toString()}
-                        columns={columns}
-                        hideColumn={{ _id: false }}
-                        title={`${campaign.title.split(" ").join("-")}-user-activity`}
-                        customActions={{
-                            routes: {
-                                label: "Assign Routes",
-                                color: "info",
-                                icon: "eos-icons:route", // Assuming the icon is specified as a string identifier for Iconify
-                                action: (selectedData: ICampaignUser[]) => console.log(selectedData, "USERS TO ASSIGN ROUTES")
-                            },
-                            products: {
-                                label: "Assign Product",
-                                color: "info",
-                                icon: "fluent-mdl2:product-variant", // Assuming the icon is specified as a string identifier for Iconify
-                                action: (selectedData: ICampaignUser[]) => console.log(selectedData, "USERS TO ASSIGN PRODUCTS")
-                            },
-                            delete: {
-                                label: "Delete",
-                                color: "error",
-                                icon: "solar:trash-bin-trash-bold", // Assuming the icon is specified as a string identifier for Iconify
-                                action: (selectedData: ICampaignUser[]) => console.log(selectedData, "IDS FOR DELETION")
-                            }
-                        }}
+                </Grid>
+                <Card
+                    sx={{
+                        height: { xs: 800, md: 600 },
+                        flexGrow: { md: 1 },
+                        display: { md: 'flex' },
+                        flexDirection: { md: 'column' },
+                    }}
+                >
+                    {showLoader ? (
+                        <LoadingScreen />
+                    ) : cleanedUsers && (
+                        <DataGridFlexible
+                            data={cleanedUsers}
+                            getRowIdFn={(row) => row._id.toString()}
+                            columns={columns}
+                            hideColumn={{ _id: false }}
+                            title={`${campaign.title.split(" ").join("-")}-user-activity`}
+                            customActions={{
+                                routes: {
+                                    label: "Assign Routes",
+                                    color: "info",
+                                    icon: "eos-icons:route", // Assuming the icon is specified as a string identifier for Iconify
+                                    action: (selectedData: ICampaignUser[]) => console.log(selectedData, "USERS TO ASSIGN ROUTES")
+                                },
+                                products: {
+                                    label: "Assign Product",
+                                    color: "info",
+                                    icon: "fluent-mdl2:product-variant", // Assuming the icon is specified as a string identifier for Iconify
+                                    action: (selectedData: ICampaignUser[]) => console.log(selectedData, "USERS TO ASSIGN PRODUCTS")
+                                },
+                                delete: {
+                                    label: "Delete",
+                                    color: "error",
+                                    icon: "solar:trash-bin-trash-bold", // Assuming the icon is specified as a string identifier for Iconify
+                                    action: (selectedData: ICampaignUser[]) => console.log(selectedData, "IDS FOR DELETION")
+                                }
+                            }}
+                        />
+                    )}
+                </Card>
+                {
+                    selectedCampaignUsers && <AssignProductDialog
+                        open={openAssign.value}
+                        onClose={openAssign.onFalse}
+                        campaignId={campaignId}
+                        users={selectedCampaignUsers}
+                        handleAssignNewProduct={() => console.log("ASSIGN")}
                     />
-                )}
-            </Card>
-            {
-                selectedCampaignUsers && <AssignProductDialog
-                    open={openAssign.value}
-                    onClose={openAssign.onFalse}
-                    campaignId={campaignId}
-                    users={selectedCampaignUsers}
-                    handleAssignNewProduct={() => console.log("ASSIGN")}
-                />
-            }
-        </Stack>
+                }
+            </Stack>
+        </FormProvider>
     );
 }
