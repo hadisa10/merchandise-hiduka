@@ -93,11 +93,16 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         .max(2, 'Only two coordinates are required (longitude and latitude)'),
     }),
   });
+  const salesKpiSchema = Yup.object().shape({
+    totalDailyUnits: Yup.number(),
+    totalDailyRevenue: Yup.number()
+  })
 
   const NewCurrectSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     description: Yup.string(),
     client_id: Yup.string().required("Client is required"),
+    type: Yup.string().required("Campaign type is required"),
     users: Yup.array(),
     routes: Yup.lazy(() =>
       Yup.array().of(
@@ -113,6 +118,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     ),
     hourlyRate: Yup.number().min(0).required("Hourly rate is required").typeError("Hourly rate must be a number"),
     inactivityTimeout: Yup.number().required("Inactivity limit required"),
+    salesKpi: salesKpiSchema,
     startDate: Yup.date()
       .transform((value, originalValue) => {
         // Check if the originalValue is a number (Unix timestamp in milliseconds)
@@ -188,7 +194,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         }
       )
   })
-
   const defaultValues = useMemo(
     () => ({
       title: currentCampaign?.title || '',
@@ -196,6 +201,11 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       client_id: currentCampaign?.client_id.toString() || '',
       users: currentCampaign?.users?.map(user => user.toString()) || [],
       startDate: currentCampaign?.startDate || '',
+      type: currentCampaign?.type || 'type',
+      salesKpi: {
+        totalDailyRevenue: currentCampaign?.salesKpi?.totalDailyRevenue || 0,
+        totalDailyUnits: currentCampaign?.salesKpi?.totalDailyUnits || 0, 
+      },
       endDate: currentCampaign?.endDate || '',
       checkInTime: currentCampaign?.checkInTime || '',
       checkOutTime: currentCampaign?.checkOutTime || '',
@@ -306,7 +316,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       const _id = createObjectId().toString();
       const prodject_id = createObjectId().toString()
       const client_id = convertObjectId(data.client_id).toString();
-      
       if (!currentCampaign) {
         const campaign: ICampaign = {
           ...data,
@@ -328,7 +337,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           title: data.title,
           today_checkin: 0,
           total_checkin: 0,
-          type: "RSM"
         };
         const cleanData = removeAndFormatNullFields({
           ...campaign
@@ -418,7 +426,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
             },
           ]
         );
-        console.log(cleanData, 'CLEAN DATA')
+        console.log(cleanData, 'UPDATED CAMPAIGN')
         if (cleanData) {
           await updateCampaign(cleanData)
         } else throw new Error("Failed to clean data")

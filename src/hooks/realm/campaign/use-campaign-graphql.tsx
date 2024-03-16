@@ -54,6 +54,10 @@ export function useCampaigns(lazy = false): ICampaignHook {
             road
            }
           }
+          salesKpi {
+            totalDailyUnits
+            totalDailyRevenue
+          }
           title
           createdAt
           startDate

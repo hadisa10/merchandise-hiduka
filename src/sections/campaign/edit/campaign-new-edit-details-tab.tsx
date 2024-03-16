@@ -34,11 +34,14 @@ import { ICalendarDate } from 'src/types/calendar';
 
 // ----------------------------------------------------------------------
 const INACTIVITY_LIMIT = [
-  {"label": "30 min", "value": 1800000},
-  {"label": "1 hour", "value": 3600000},
-  {"label": "3 hours", "value": 10800000}
+  { "label": "30 min", "value": 1800000 },
+  { "label": "1 hour", "value": 3600000 },
+  { "label": "3 hours", "value": 10800000 }
 ]
-
+const CAMPAIGN_TYPES = [
+  { "label": "Sales", "value": "sales"  },
+  { "label": "Promotion", "value": "promotion" },
+]
 
 const CampaignNewEditDetailsTab: FC = () => {
   const { users, loading: loadingUsers } = useUsers();
@@ -85,6 +88,18 @@ const CampaignNewEditDetailsTab: FC = () => {
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Description</Typography>
               <RHFEditor simple name="description" />
+            </Stack>
+
+            <Stack spacing={1.5}>
+                <Typography variant="subtitle2">Campaign Type</Typography>
+                <RHFSelect name="type" label="Type">
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+                  {CAMPAIGN_TYPES.map((limit) => (
+                    <MenuItem key={limit.value} value={limit.value}>
+                      {limit.label}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
             </Stack>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Client</Typography>
@@ -500,7 +515,7 @@ const CampaignNewEditDetailsTab: FC = () => {
     </>
   );
 
-  const renderUserManagement = (
+  const renderConstraints = (
     <>
       {mdUp && (
         <Grid md={4}>
@@ -545,6 +560,40 @@ const CampaignNewEditDetailsTab: FC = () => {
     </>
   );
 
+  const renderCampaignKPIS = (
+    <>
+      {mdUp && (
+        <Grid md={4}>
+          <Typography variant="h6" sx={{ mb: 0.5 }}>
+            KPIS
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            KPI details ...
+          </Typography>
+        </Grid>
+      )}
+
+      <Grid xs={12} md={8}>
+        <Card>
+          {!mdUp && <CardHeader title="Constraints" />}
+
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">Sales KPIS</Typography>
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Daily Units Target</Typography>
+              <RHFTextField name="salesKpi.totalDailyUnits" type="number" placeholder="Ex: 100..." />
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Daily Revenue Target</Typography>
+              <RHFTextField name="salesKpi.totalDailyRevenue" type="number" placeholder="Ex: Ksh. 1000..." />
+            </Stack>
+          </Stack>
+        </Card>
+      </Grid>
+    </>
+  );
 
   return (
     <Grid container spacing={3}>
@@ -555,7 +604,9 @@ const CampaignNewEditDetailsTab: FC = () => {
 
       {renderUsers}
 
-      {renderUserManagement}
+      {renderCampaignKPIS}
+
+      {renderConstraints}
 
     </Grid>
   );

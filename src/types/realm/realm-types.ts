@@ -88,6 +88,13 @@ export type ICampaign = {
     workingSchedule: Array<string>,
     startDate: Date;
     title: string;
+    salesKpi: {
+        totalDailyUnits: number;
+        totalDailyRevenue: number;
+    },
+    performance_kpi: {
+        total_reach: number;
+    }
     description?: string;
     today_checkin: number;
     total_checkin: number;
