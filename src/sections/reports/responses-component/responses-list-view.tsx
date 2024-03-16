@@ -4,8 +4,13 @@ import React, { FC, memo, useMemo, useState, useEffect } from "react";
 
 import {
     Card,
-    Container
+    Container,
+    Divider,
+    MenuItem,
+    TextField
 } from "@mui/material";
+
+import * as Yup from 'yup';
 
 import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
@@ -20,8 +25,17 @@ import { LoadingScreen } from "src/components/loading-screen";
 import { IColumn } from "src/components/data-grid/data-grid-flexible";
 import { numericFilterOperators } from "src/components/data-grid/ranger-slider-filter";
 
-import { IReport, IReportQuestion } from "src/types/realm/realm-types";
+import { IFilledReport, IReport, IReportQuestion } from "src/types/realm/realm-types";
+import { useRealmApp } from "src/components/realm";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import FormProvider from "src/components/hook-form/form-provider";
+import { RHFSelect } from "src/components/hook-form";
 
+const OPTIONS = [
+    { value: false, label: 'Hide' },
+    { value: true, label: 'Show' },
+];
 interface AnswerObject {
     _id: string; // The new 'id' key
     [key: string]: string | unknown; // Dynamic keys for questions with their answers
@@ -29,7 +43,7 @@ interface AnswerObject {
 const ResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestion[] }> = ({ report, questions }) => {
     const settings = useSettingsContext();
 
-    const { getReportAnswers } = useReports();
+    const { currentUser } = useRealmApp();
 
     const loadingReport = useBoolean()
 
@@ -44,14 +58,45 @@ const ResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestion[] }>
 
     const id = useMemo(() => report?._id.toString(), [report])
 
+    const ResponseSchema = Yup.object().shape({
+        showFiltered: Yup.boolean().typeError("Must be either true or false"),
+    });
 
+    const defaultValues = {
+        showFiltered: false,
+    };
+
+    const methods = useForm({
+        resolver: yupResolver(ResponseSchema),
+        defaultValues,
+    });
+
+    const {
+        reset,
+        watch,
+        handleSubmit,
+        formState: { isSubmitting },
+    } = methods;
+
+    const showFl = watch("showFiltered")
+
+    const renderFilterRole = (
+        <RHFSelect name="showFiltered" label="Show Filtered Data" sx={{ maxWidth: 120 }}>
+            <Divider sx={{ borderStyle: 'dashed' }} />
+            {OPTIONS.map((option) => (
+                // @ts-expect-error expected
+                <MenuItem key={String(option.value)} value={option.value}>
+                    {option.label}
+                </MenuItem>
+            ))}
+        </RHFSelect>
+    )
 
     useEffect(() => {
         if (id && questions) {
             loadingReport.onTrue();
             setReportAnswerError(null);
-            getReportAnswers(id).then(res => {
-
+            currentUser?.functions?.getFilledReports(id, showFl).then((res: IFilledReport[]) => {
                 const resAnswers = res.map(x => [...x.answers.map(y => ({ userName: x.userName, createdAt: x.createdAt, ...y }))]);
 
                 // const qObj: { [key: string]: { text: string, order: number } } = {}
@@ -78,14 +123,14 @@ const ResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestion[] }>
                     type: "date"
                 }
                     , ...questions.map(z => {
-                        
+
                         const r = {
                             field: z._id.toString(),
                             label: z.text,
                             order: z.order,
                             type: z.input_type
                         }
-                        if(z.input_type === "number"){
+                        if (z.input_type === "number") {
                             // @ts-expect-error expected
                             r.filterOperators = numericFilterOperators
                         }
@@ -137,8 +182,8 @@ const ResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestion[] }>
                                     break;
                                 case "text":
                                 case "select":
-                                case "geopoint":                                    ;
-                                    if (typeof answr === "string" &&  answr.includes('"')) {
+                                case "geopoint": ;
+                                    if (typeof answr === "string" && answr.includes('"')) {
                                         answr = answr.replace(/"/g, '');
                                     } else {
                                         answr = String(answr);
@@ -162,31 +207,47 @@ const ResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestion[] }>
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, questions]);
+    }, [id, questions, showFl]);
 
+    const onSubmit = handleSubmit(async (data) => {
+        try {
+            console.log(data, "DATA")
+        } catch (error) {
+            console.error(error);
+            reset();
+        }
+    });
 
     return (
-        <Container
-            maxWidth={settings.themeStretch ? false : 'lg'}
-            sx={{
-                flexGrow: 1,
-                display: 'flex',
-                flexDirection: 'column',
-            }}
-        >
-            <Card
+        <FormProvider methods={methods} onSubmit={onSubmit}>
+            <Container
+                maxWidth={settings.themeStretch ? false : 'lg'}
                 sx={{
-                    height: { xs: 800, md: 600 },
-                    flexGrow: { md: 1 },
-                    display: { md: 'flex' },
-                    flexDirection: { md: 'column' },
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}
             >
-                {showLoader && <LoadingScreen />}
-                {/* @ts-expect-error expected */}
-                {!showLoader && columns && answers && <DataGridFlexible data={answers} getRowIdFn={(row) => row._id.toString()} columns={columns} title={report?.title?.split(" ").join("-")} />}
-            </Card>
-        </Container>
+                <Card
+                    sx={{
+                        height: { xs: 800, md: 600 },
+                        flexGrow: { md: 1 },
+                        display: { md: 'flex' },
+                        flexDirection: { md: 'column' },
+                    }}
+                >
+                    <DataGridFlexible
+                        loading={showLoader}
+                        data={answers ?? []}
+                        getRowIdFn={(row) => row._id.toString()}
+                        // @ts-expect-error expected
+                        columns={columns ?? []}
+                        // @ts-expect-error expected
+                        title={report?.title?.split(" ").join("-")}
+                        customFilters={{ filter: renderFilterRole }} />
+                </Card>
+            </Container>
+        </FormProvider>
     );
 }
 

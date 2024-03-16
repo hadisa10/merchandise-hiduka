@@ -1,5 +1,5 @@
 import { isObject, isString } from 'lodash';
-import React, { useMemo, useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 
 import { Box, Stack, Avatar, Button, Divider, Typography, ButtonOwnProps } from '@mui/material';
 import {
@@ -82,7 +82,9 @@ interface ISelectedColumnActions<RowType> {
   [actionName: string]: ISelectedColumnAction<RowType>;
 }
 
-
+interface ISelectedColumnFilter {
+  [actionName: string]: ReactNode;
+}
 
 type IColumnsArray<T> = IGenericColumn<T>[];
 
@@ -92,8 +94,10 @@ interface DataGridFlexibleProps<RowType extends GridRowModel> {
   getRowIdFn: GridRowIdGetter<RowType>;
   columns: IColumnsArray<RowType>;
   title: string;
+  loading: boolean;
   hideColumn?: Record<string, boolean>;
   customActions?: ISelectedColumnActions<RowType>
+  customFilters: ISelectedColumnFilter;
 }
 
 // const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions) => {
@@ -240,7 +244,7 @@ function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): 
         flex: 1,
         minWidth: column.minWidth ?? 200
       };
-      if(column.filterOperators){
+      if (column.filterOperators) {
         baseColDef.filterOperators = column.filterOperators
       }
 
@@ -288,7 +292,7 @@ function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): 
 
 
 const customExportCsv = (apiRef: React.MutableRefObject<GridApi>, title: string) => {
-  console.log(apiRef.current.exportDataAsCsv({fileName: title}), 'CURRENT');
+  console.log(apiRef.current.exportDataAsCsv({ fileName: title }), 'CURRENT');
   return true;
 };
 
@@ -300,8 +304,10 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
   getRowIdFn,
   columns: columnsArray,
   hideColumn,
+  loading,
   title,
-  customActions
+  customActions,
+  customFilters
 }: DataGridFlexibleProps<RowType>) {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -324,11 +330,12 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
       disableRowSelectionOnClick
       rows={rows}
       columns={columns}
+      loading={loading}
       onRowSelectionModelChange={handleSelectionModelChange}
       columnVisibilityModel={columnVisibilityModel}
       onColumnVisibilityModelChange={setColumnVisibilityModel}
       slots={{
-        toolbar: () => <CustomToolbar title={title} selectedRows={selectedRows} customActions={customActions} />,
+        toolbar: () => <CustomToolbar title={title} selectedRows={selectedRows} customActions={customActions} customFilters={customFilters} />,
         noRowsOverlay: () => <EmptyContent title="No Data" />,
         noResultsOverlay: () => <EmptyContent title="No results found" />,
       }}
@@ -341,13 +348,19 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
   );
 }
 
-function CustomToolbar<RowType>({ title, selectedRows, customActions }: { title: string, selectedRows: RowType[], customActions?: ISelectedColumnActions<RowType> }) {
+function CustomToolbar<RowType>({ title, selectedRows, customActions, customFilters }: { title: string, selectedRows: RowType[], customActions?: ISelectedColumnActions<RowType>, customFilters?: ISelectedColumnFilter }) {
   const gridApiRef = useGridApiContext();
   return (
     <>
       {/* Main Toolbar Container */}
       <GridToolbarContainer>
-        <GridToolbarQuickFilter />
+        <Stack direction="row" spacing={2}>
+          <GridToolbarQuickFilter />
+          {
+            customFilters &&
+            Object.values(customFilters).map(customFilter => customFilter)
+          }
+        </Stack>
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
