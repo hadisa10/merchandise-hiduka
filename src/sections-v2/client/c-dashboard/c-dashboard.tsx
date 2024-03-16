@@ -19,7 +19,7 @@ import ClientDashboardInventoryMetrics from './c-dash-components/c-inventory-met
 // ----------------------------------------------------------------------
 
 export const DASHBOARD_OVERVIEW_DETAILS_TABS = [
-  { value: 'campaigns', label: 'Campaigns' },
+  { value: 'projects', label: 'Projects' },
   { value: 'sales_inventory', label: 'Sales & Inventory' },
 ];
 
@@ -37,7 +37,7 @@ export default function ClientDashboardView() {
 
   const searchTabValue = searchParams.get('tab')
 
-  const [currentTab, setCurrentTab] = useState(searchTabValue ?? 'campaigns');
+  const [currentTab, setCurrentTab] = useState(searchTabValue ?? 'projects');
 
   // @ts-expect-error expected
   const role: ERole = useMemo(() => realmApp.currentUser?.customData.role as unknown, [realmApp.currentUser?.customData.role])
@@ -88,7 +88,7 @@ export default function ClientDashboardView() {
       {renderTabs}
 
       {
-        currentTab === "campaigns" &&
+        currentTab === "projects" &&
         <ClientDashboardCampaignMetrics />
       }
       {
