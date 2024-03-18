@@ -44,9 +44,6 @@ import { ICampaignTableFilters, ICampaignTableFilterValue } from 'src/types/camp
 import CampaignTableToolbar from './campaign-table-toolbar';
 import CampaignReportTableFiltersResult from './campaign-table-filters-result';
 import {
-  // RenderCellStock,
-  // RenderCellPrice,
-  RenderCellCheckin,
   RenderCellCampaign,
   RenderCellCreatedAt,
 } from './campaign-table-row';

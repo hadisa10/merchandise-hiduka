@@ -1,11 +1,9 @@
-import { _userList } from 'src/_mock/_user';
-
-import { CampaignEditView } from 'src/sections/campaign/view';
-
 // ----------------------------------------------------------------------
 
+import { ReportEditView } from "src/sections/reports/view";
+
 export const metadata = {
-  title: 'Dashboard: Campaign Edit',
+  title: 'Dashboard: Report Edit',
 };
 
 type Props = {
@@ -14,14 +12,8 @@ type Props = {
   };
 };
 
-export default function CampaignEditPage({ params }: Props) {
+export default function ReportEditPage({ params }: Props) {
   const { id } = params;
 
-  return <CampaignEditView id={id} />;
-}
-
-export async function generateStaticParams() {
-  return _userList.map((user) => ({
-    id: user.id,
-  }));
+  return <ReportEditView id={id} />;
 }

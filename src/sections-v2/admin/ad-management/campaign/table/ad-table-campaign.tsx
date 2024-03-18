@@ -18,7 +18,6 @@ import { LoadingScreen } from 'src/components/loading-screen'
 import { IGenericColumn } from 'src/components/data-grid/data-grid-flexible'
 
 import { ICampaign } from 'src/types/realm/realm-types'
-import { useRolePath } from 'src/hooks/use-path-role';
 
 
 function AdminCampaignDataGrid({ campaigns, loading }: { campaigns: ICampaign[] | null, loading: boolean }) {

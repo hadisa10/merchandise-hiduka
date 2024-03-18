@@ -13,12 +13,12 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useRealmApp } from 'src/components/realm';
 import { useClientContext } from 'src/components/clients';
 import { useSettingsContext } from 'src/components/settings';
+import { LoadingScreen } from 'src/components/loading-screen';
+
+import CampaignNewEditForm from 'src/sections/campaign/campaign-new-edit-form-tabs';
 
 import { IUser } from 'src/types/user_realm';
 
-import CampaignTabsView from './ad-campaign-tabs-view';
-import { LoadingScreen } from 'src/components/loading-screen';
-import CampaignNewEditForm from 'src/sections/campaign/campaign-new-edit-form-tabs';
 
 // ----------------------------------------------------------------------
 

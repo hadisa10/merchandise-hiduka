@@ -252,6 +252,8 @@ export const paths = {
     admin: {
       root: `${ROOTS.V2}/admin/dashboard`,
       dashboard: `${ROOTS.V2}/admin/dashboard`,
+      product: `${ROOTS.V2}/admin/dashboard/product`,
+      invoice: `${ROOTS.V2}/admin/dashboard/invoice`,
       project: {
         root: `${ROOTS.V2}/client/dashboard/project`,
         list: `${ROOTS.V2}/client/dashboard/project`,
@@ -264,21 +266,20 @@ export const paths = {
         new: `${ROOTS.V2}/admin/dashboard/client/new`,
         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/client/${id}/edit`,
       },
-      reports: {
-        root: `${ROOTS.V2}/client/dashboard/report`,
-        list: `${ROOTS.V2}/client/dashboard/report`,
-        new: `${ROOTS.V2}/client/dashboard/report/new`,
-        edit: (id: string) => `${ROOTS.V2}/client/dashboard/report/${id}/edit`,
+      report: {
+        root: `${ROOTS.V2}/admin/dashboard/report`,
+        list: `${ROOTS.V2}/admin/dashboard/report`,
+        new: `${ROOTS.V2}/admin/dashboard/report/new`,
+        edit: (id: string) => `${ROOTS.V2}/admin/dashboard/report/${id}/edit`,
       },
       campaign: {
         root: `${ROOTS.V2}/admin/dashboard/campaign`,
         list: `${ROOTS.V2}/admin/dashboard/campaign`,
-        new: `${ROOTS.V2}/admin/dashboard/reports/new`,
+        new: `${ROOTS.V2}/admin/dashboard/campaign/new`,
         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/campaign/${id}/edit`,
       },
-      "campaign-performance": `${ROOTS.V2}/client/dashboard/campaign-performance`,
-      "user-tracking": `${ROOTS.V2}/client/dashboard/user-tracking`,
-      "activity-tracker": `${ROOTS.V2}/client/dashboard/activity-tracking`
+      "campaign-performance": `${ROOTS.V2}/admin/dashboard/campaign-performance`,
+      "activity-tracker": `${ROOTS.V2}/client/dashboard/activity-tracker`
     },
     client: {
       root: `${ROOTS.V2}/client/dashboard`,

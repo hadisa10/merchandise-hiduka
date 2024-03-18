@@ -7,15 +7,15 @@ import {
     Container
 } from "@mui/material";
 
-import { paths } from "src/routes/paths";
 import { RouterLink } from "src/routes/components";
+
+import { useRolePath } from "src/hooks/use-path-role";
 
 import Iconify from "src/components/iconify";
 import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 
 import CampaignListDataGrid from "../list/campaigns/campaign-list-data-grid";
-import { useRolePath } from "src/hooks/use-path-role";
 
 export default function CampaignListView() {
     const settings = useSettingsContext();

@@ -89,6 +89,8 @@ import { useClientContext } from 'src/components/clients';
 import { useSettingsContext } from 'src/components/settings';
 import SearchNotFound from 'src/components/search-not-found';
 
+import InvoiceListViewV2 from 'src/sections/invoice/view/invoice-list-view-v2';
+
 import { ICampaign } from 'src/types/realm/realm-types';
 
 import ClientCampaignActivityTracker from './campaign/c-campaign-activity-tracker';
@@ -101,7 +103,7 @@ import ClientCampaignActivityTracker from './campaign/c-campaign-activity-tracke
 export const ANALYTICS_OVERVIEW_DETAILS_TABS = [
   { value: 'active', label: 'Daily Active Users' },
   { value: 'task', label: 'Task Completion Rate' },
-  { value: 'engagement', label: 'User Engagement Score' },
+  { value: 'invoices', label: 'Invoices' },
 ];
 
 // ----------------------------------------------------------------------
@@ -295,8 +297,10 @@ export default function ClientCampaignActivityTrackerView() {
 
         {currentTab === "active" && selectCampaign && !showCampaignLoading && <ClientCampaignActivityTracker campaign={selectCampaign} />}
 
+        {currentTab === "invoices" && <InvoiceListViewV2 />}
+
         {currentTab === "task" && <>Campaign Task</>}
-        {currentTab === "engagement" && <>Campaign Engagement</>}
+
 
 
         {/* {currentTab === "engagement" && !loadingReport.value && selectCampaign && reports && <CampaignEngagmentView reports={reports} />}

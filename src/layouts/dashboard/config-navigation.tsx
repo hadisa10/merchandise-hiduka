@@ -95,9 +95,12 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
           { title: t('create'), path: paths.v2.admin.client.new },
         ]
       },
-      // {
-      //   title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
-      // },
+      {
+        title: t('products'), path: paths.v2.admin.product, icon: ICONS.product,
+      },
+      {
+        title: t('invoice'), path: paths.v2.admin.invoice, icon: ICONS.invoice,
+      },
       // PROJECT
       {
         title: t('projects'), path: paths.v2.admin.project.root, icon: ICONS.project,
@@ -116,10 +119,10 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
       },
       // REPORTS
       {
-        title: t('reports'), path: paths.v2.admin.reports.root, icon: ICONS.report,
+        title: t('reports'), path: paths.v2.admin.report.root, icon: ICONS.report,
         children: [
-          { title: t('list'), path: paths.v2.admin.reports.list },
-          { title: t('create'), path: paths.v2.admin.reports.new },
+          { title: t('list'), path: paths.v2.admin.report.list },
+          { title: t('create'), path: paths.v2.admin.report.new },
         ]
       },
       // // ROUTES

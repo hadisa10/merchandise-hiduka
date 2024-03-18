@@ -8,10 +8,10 @@ import {
     Container
 } from "@mui/material";
 
-import { paths } from "src/routes/paths";
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from "src/routes/components";
 
+import { useRolePath } from "src/hooks/use-path-role";
 import { useClients, useShowLoader } from "src/hooks/realm";
 
 import { fDateTime } from "src/utils/format-time";
@@ -25,9 +25,6 @@ import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
 
 import { IClient } from "src/types/client";
-import { useRealmApp } from "src/components/realm";
-import { ERole } from "src/config-global";
-import { useRolePath } from "src/hooks/use-path-role";
 
 export default function ClientListView() {
     const settings = useSettingsContext();
@@ -63,7 +60,7 @@ export default function ClientListView() {
                 router.push(rolePath.client.edit(id));
             }
         },
-        [router]
+        [router, rolePath]
     );
 
     const handleViewRow = useCallback(
@@ -74,7 +71,7 @@ export default function ClientListView() {
                 router.push(rolePath.client.edit(id));
             }
         },
-        [router]
+        [router, rolePath]
     );
 
     const columns: IGenericColumn<IClient>[] = useMemo(() => {

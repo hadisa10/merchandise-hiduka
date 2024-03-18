@@ -1,9 +1,10 @@
 import { m } from 'framer-motion';
 import { enqueueSnackbar } from 'notistack';
-import { useMemo, useState, useEffect, useCallback, Fragment, MouseEvent } from 'react';
+import { useMemo, useState, Fragment, useEffect, MouseEvent, useCallback } from 'react';
 
+import { Box } from '@mui/system';
 import MenuItem from '@mui/material/MenuItem';
-import { alpha, Avatar, Button, IconButton, TextField, Typography } from '@mui/material';
+import { alpha, Avatar, Button, TextField, IconButton, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -22,7 +23,6 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useClientContext } from 'src/components/clients/context/client-context';
 
 import { IClient, IUpdatedClient } from 'src/types/client';
-import { Box } from '@mui/system';
 
 
 // ----------------------------------------------------------------------
@@ -50,14 +50,12 @@ export default function ClientPopover() {
   const nestedClientIds = useMemo(() => Array.isArray(clients) ? new Set(clients?.flatMap(client => client.nestedClients?.map(nestedClient => nestedClient._id.toString()) || [])) : [], [clients]);
 
   // Filter out top-level clients that are also listed as nested clients
-  const topLevelClients = useMemo(() => {
-    return Array.isArray(clients) ? clients.filter(client => {
+  const topLevelClients = useMemo(() => Array.isArray(clients) ? clients.filter(client => {
       // Ensure client exists and has an _id before checking against nestedClientIds
       const clientId = client?._id?.toString();
         // @ts-expect-error expected
       return clientId && nestedClientIds && !nestedClientIds.has(clientId);
-    }) : [];
-  }, [clients, nestedClientIds]);
+    }) : [], [clients, nestedClientIds]);
   
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<unknown>(null);
@@ -167,19 +165,18 @@ export default function ClientPopover() {
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160, maxHeight: 300, overflowY: "auto" }}>
         <TextField title='Search' size='small' placeholder='Search client' />
         {showClientLoader && <LoadingScreen />}
-        {!showClientLoader && clients && (() => {
-          return topLevelClients.map((client) => (
-            <Fragment key={client._id.toString()}>
+        {!showClientLoader && clients && (() => topLevelClients.map((cl) => (
+            <Fragment key={cl._id.toString()}>
               <MenuItem
-                selected={client._id.toString() === clObj?._id.toString()}
-                onClick={(e) => handleChangeClient(e, client)}
+                selected={cl._id.toString() === clObj?._id.toString()}
+                onClick={(e) => handleChangeClient(e, cl)}
                 sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                   <Iconify icon={client.client_icon} sx={{ borderRadius: 0.65, width: 28 }} />
                   <Typography variant='caption' noWrap>{client.name}</Typography>
                 </Box>
-                {client.nestedClients && client.nestedClients.map((nestedClient) => (
+                {cl.nestedClients && cl.nestedClients.map((nestedClient) => (
                   <MenuItem
                     key={nestedClient._id.toString()}
                     selected={nestedClient._id.toString() === clObj?._id.toString()}
@@ -192,8 +189,7 @@ export default function ClientPopover() {
                 ))}
               </MenuItem>
             </Fragment>
-          ));
-        })()}
+          )))()}
       </CustomPopover>
     </>
   );

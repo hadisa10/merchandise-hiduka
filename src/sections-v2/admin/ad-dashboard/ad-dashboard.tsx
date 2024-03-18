@@ -18,7 +18,7 @@ import AdminDashboardInventoryMetrics from './ad-dash-components/ad-inventory-me
 // ----------------------------------------------------------------------
 
 export const DASHBOARD_OVERVIEW_DETAILS_TABS = [
-  { value: 'campaigns', label: 'Campaigns' },
+  { value: 'system-overview', label: 'System Overview' },
   { value: 'sales_inventory', label: 'Sales & Inventory' },
 ];
 
@@ -34,7 +34,7 @@ export default function AdminDashboardView() {
 
   const searchTabValue = searchParams.get('tab')
 
-  const [currentTab, setCurrentTab] = useState(searchTabValue ?? 'campaigns');
+  const [currentTab, setCurrentTab] = useState(searchTabValue ?? 'system-overview');
 
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
@@ -81,7 +81,7 @@ export default function AdminDashboardView() {
       {renderTabs}
 
       {
-        currentTab === "campaigns" &&
+        currentTab === "system-overview" &&
         <AdminDashboardCampaignMetrics />
       }
       {

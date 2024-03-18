@@ -1,12 +1,11 @@
+import { ReportListView } from "src/sections/reports/view";
 
 // ----------------------------------------------------------------------
 
-import { CampaignListView } from "src/sections/campaign/view";
-
 export const metadata = {
-  title: 'Dashboard: Project Campaign',
+  title: 'Dashboard: Project Reports',
 };
 
-export default function ProjectCampaignPage() {
-  return <CampaignListView/>;
+export default function ProjectReportPage() {
+  return <ReportListView />;
 }
