@@ -1,15 +1,15 @@
-import React from 'react'
-
 // ----------------------------------------------------------------------
+
+import { PMDashboard } from "src/sections-v2/project-manager/pm-dashboard";
 
 export const metadata = {
   title: 'Dashboard',
 };
 
-function ProjectDashboardView() {
+function PMDashboardPage() {
   return (
-    <div>Project Manager Dashboard View</div>
+    <PMDashboard />
   )
 }
 
-export default ProjectDashboardView
+export default PMDashboardPage
