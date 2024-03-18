@@ -1,4 +1,4 @@
-import { ClientCampaignDetailsView, ClientProjectsDetailsView } from 'src/sections-v2/client/c-management';
+import { ClientProjectsDetailsView } from 'src/sections-v2/client/c-management';
 
 
 // ----------------------------------------------------------------------

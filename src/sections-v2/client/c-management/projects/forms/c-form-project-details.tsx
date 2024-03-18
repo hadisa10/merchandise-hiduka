@@ -1,39 +1,29 @@
 "use client"
 
 import * as Yup from 'yup';
-import { isObject } from 'lodash';
+import { useForm } from 'react-hook-form';
 import React, { memo, useMemo } from 'react'
 import { enqueueSnackbar } from 'notistack';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, Controller } from 'react-hook-form';
 
 import { LoadingButton } from '@mui/lab';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Box, Card, Chip, Stack, Divider, MenuItem, CardHeader, Typography } from '@mui/material';
-import { MobileDatePicker, MobileTimePicker, DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
+import { Box, Card, Chip, Stack, CardHeader, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
-import { createObjectId } from 'src/utils/realm';
-import { fTimestamp } from 'src/utils/format-time';
-import { safeDateFormatter, generateAccessCode, removeAndFormatNullFields } from 'src/utils/helpers';
-
-import { JOB_WORKING_SCHEDULE_OPTIONS } from 'src/_mock';
-
+import { useRealmApp } from 'src/components/realm';
 import { useClientContext } from 'src/components/clients';
 import { LoadingScreen } from 'src/components/loading-screen';
 import FormProvider from 'src/components/hook-form/form-provider';
-import { RHFEditor, RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
 import { IUser } from 'src/types/user_realm';
-import { ICalendarDate } from 'src/types/calendar';
-import { ICampaign, IProject } from 'src/types/realm/realm-types';
-import { useRealmApp } from 'src/components/realm';
+import { IProject } from 'src/types/realm/realm-types';
 
 const INACTIVITY_LIMIT = [
   { "label": "30 min", "value": 1800000 },
@@ -108,7 +98,7 @@ function CFormProjectDetails({ currentProject, loading, users }: { currentProjec
           project_managers: data.project_managers ?? [],
           client_id,
         }
-        const {project_id } = await realmApp.currentUser?.functions.updateProject(prj)
+        await realmApp.currentUser?.functions.updateProject(prj)
         enqueueSnackbar(currentProject ? 'Update success!' : 'Create success!');
         router.push(paths.v2.client.project.root);
         console.info('DATA', data);

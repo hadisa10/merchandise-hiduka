@@ -9,8 +9,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm'
 
-import { fCurrency } from 'src/utils/format-number';
-import { fDate, fDateTime } from 'src/utils/format-time'
+import { fDateTime } from 'src/utils/format-time'
 import { formatFilterAndRemoveFields } from 'src/utils/helpers'
 
 import { DataGridFlexible } from 'src/components/data-grid'

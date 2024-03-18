@@ -11,14 +11,10 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
-import { LoadingScreen } from 'src/components/loading-screen';
 
-import { IUser } from 'src/types/user_realm';
-import { IProductItem } from 'src/types/product';
-import { ICampaign, IProject } from 'src/types/realm/realm-types';
+import { IProject } from 'src/types/realm/realm-types';
 
 import ProjectTabsView from './c-projects-tabs-view';
-import { Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 

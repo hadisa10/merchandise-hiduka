@@ -1,7 +1,8 @@
 "use client"
 
+import { enqueueSnackbar } from 'notistack';
 import { useSearchParams } from 'next/navigation'
-import React, { lazy, useState, useCallback, Suspense, useEffect } from "react";
+import React, { useState, Suspense, useEffect, useCallback } from "react";
 
 import {
     Tab,
@@ -15,19 +16,20 @@ import {
 import { paths } from "src/routes/paths";
 import { useRouter } from 'src/routes/hooks';
 
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import { ERole } from 'src/config-global';
+
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
+import { useClientContext } from 'src/components/clients';
 import { useSettingsContext } from "src/components/settings";
 import { LoadingScreen } from "src/components/loading-screen";
 
 import { IUser } from "src/types/user_realm";
-import { IProductItem } from 'src/types/product';
-import { ICampaign, IProject } from "src/types/realm/realm-types";
+import { IProject } from "src/types/realm/realm-types";
+
 import CFormProjectDetails from './forms/c-form-project-details';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useClientContext } from 'src/components/clients';
-import { useRealmApp } from 'src/components/realm';
-import { enqueueSnackbar } from 'notistack';
-import { ERole } from 'src/config-global';
 
 
 export const PROJECT_DETAILS_TABS = [
@@ -36,7 +38,7 @@ export const PROJECT_DETAILS_TABS = [
 
 ];
 
-export default function ProjectsTabsView({ currentProject }: { currentProject?: IProject, loading?: boolean }) {
+export default function ProjectsTabsView({ currentProject }: { currentProject?: IProject }) {
     const settings = useSettingsContext();
 
     const router = useRouter();

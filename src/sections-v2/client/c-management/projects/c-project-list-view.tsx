@@ -19,7 +19,7 @@ import { useClientContext } from "src/components/clients";
 import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 
-import { ICampaign, IProject } from "src/types/realm/realm-types";
+import { IProject } from "src/types/realm/realm-types";
 
 import ClientProjectDataGrid from "./table/c-table-project";
 

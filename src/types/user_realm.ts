@@ -1,7 +1,8 @@
 import * as Realm from "realm-web";
 
-import { CustomFile } from "src/components/upload";
 import { ERole } from "src/config-global";
+
+import { CustomFile } from "src/components/upload";
 
 export interface IUserResponse {
     users: IUser[];
