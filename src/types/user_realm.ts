@@ -1,6 +1,7 @@
 import * as Realm from "realm-web";
 
 import { CustomFile } from "src/components/upload";
+import { ERole } from "src/config-global";
 
 export interface IUserResponse {
     users: IUser[];
@@ -22,7 +23,7 @@ export interface IUser {
     country: string | null;
     address: string | null;
     zipCode: string | null;
-    role: IRole;
+    role: ERole;
     phoneNumber: string | null;
     photoURL: CustomFile | string | null;
     isVerified: boolean;

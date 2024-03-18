@@ -3,6 +3,17 @@ import * as Realm from "realm-web";
 import { IClient } from "../client";
 
 
+export type IProject<T = Realm.BSON.ObjectId> = {
+    _id: T;
+    campaigns: Array<T>;
+    client_id: T;
+    createdAt: Date;
+    project_managers: Array<T>;
+    reports: Array<T>;
+    title: string;
+    updatedAt: Date;
+};
+
 export interface ICampaignKPIMetricsResponse {
     totalUsersInCampaign: number;
     daysRunning: number;

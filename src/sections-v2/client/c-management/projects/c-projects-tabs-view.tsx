@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams } from 'next/navigation'
-import React, { lazy, Suspense, useState, useCallback } from "react";
+import React, { lazy, useState, useCallback, Suspense, useEffect } from "react";
 
 import {
     Tab,
@@ -21,22 +21,22 @@ import { LoadingScreen } from "src/components/loading-screen";
 
 import { IUser } from "src/types/user_realm";
 import { IProductItem } from 'src/types/product';
-import { ICampaign } from "src/types/realm/realm-types";
+import { ICampaign, IProject } from "src/types/realm/realm-types";
+import CFormProjectDetails from './forms/c-form-project-details';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useClientContext } from 'src/components/clients';
+import { useRealmApp } from 'src/components/realm';
+import { enqueueSnackbar } from 'notistack';
+import { ERole } from 'src/config-global';
 
-const CFormCampaignDetails = lazy(() => import("./forms/c-form-project-details"));
-const CFormCampaignProducts = lazy(() => import("./forms/c-form-project-products"));
-const CFormCampaignRegions = lazy(() => import("./forms/c-form-project-regions"));
-const CFormCampaignTeams = lazy(() => import("./forms/c-form-project-teams"));
 
-
-export const CAMPAING_DETAILS_TABS = [
+export const PROJECT_DETAILS_TABS = [
     { value: 'details', label: 'Details' },
-    { value: 'products', label: 'Products' },
-    { value: 'regions', label: 'Region' },
-    { value: 'teams', label: 'Teams' }
+    { value: 'campaigns', label: 'Campaign' },
+
 ];
 
-export default function CampaignTabsView({ currentCampaign, users, products, loading }: { currentCampaign?: ICampaign, users?: IUser[], loading?: boolean, products?: IProductItem[] }) {
+export default function ProjectsTabsView({ currentProject }: { currentProject?: IProject, loading?: boolean }) {
     const settings = useSettingsContext();
 
     const router = useRouter();
@@ -47,15 +47,41 @@ export default function CampaignTabsView({ currentCampaign, users, products, loa
 
     const [currentTab, setCurrentTab] = useState(searchTabValue ?? 'details');
 
+    const { client } = useClientContext()
+
+    const usersloading = useBoolean(true)
+
+    const [users, setUsers] = useState<IUser[]>([])
+
+    const realmApp = useRealmApp();
+    
+    useEffect(() => {
+        if (client?._id) {
+            usersloading.onTrue()
+            realmApp.currentUser?.functions.getClientUsers(client?._id.toString()).then((usrs: IUser[]) => {
+                setUsers(usrs.map(x => ({ ...x, _id: x._id.toString() })).filter(z => z.role === ERole.PROJECT_MANAGER ));
+            })
+                .catch(e => {
+                    console.error(e)
+                    enqueueSnackbar("Failed to get campaign details", { variant: "error" })
+                }
+                )
+                .finally(() => usersloading.onFalse())
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [client?._id])
+
     const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+        console.log("CHANGE TAB")
         setCurrentTab(newValue);
         const tabParams = new URLSearchParams({
             tab: newValue,
         }).toString();
 
-        const href = currentCampaign ? `${paths.v2.client.campaign.edit(currentCampaign._id.toString())}?${tabParams}` : `${paths.v2.client.campaign.new}?${tabParams}`;
+        const href = currentProject ? `${paths.v2.client.project.edit(currentProject._id.toString())}?${tabParams}` : `${paths.v2.client.project.new}?${tabParams}`;
         router.push(href);
-    }, [currentCampaign, router]);
+    }, [currentProject, router]);
 
     const renderTabs = (
         <Tabs
@@ -65,7 +91,7 @@ export default function CampaignTabsView({ currentCampaign, users, products, loa
                 mb: { xs: 1, md: 2 },
             }}
         >
-            {CAMPAING_DETAILS_TABS.map((tab) => (
+            {PROJECT_DETAILS_TABS.map((tab) => (
                 <Tab
                     key={tab.value}
                     iconPosition="end"
@@ -93,17 +119,18 @@ export default function CampaignTabsView({ currentCampaign, users, products, loa
             }}
         >
             <Stack direction="row" spacing={3} alignItems="center">
-                <IconButton color="error" onClick={() => router.replace(paths.v2.client.campaign.list)}>
+                <IconButton color="error" onClick={() => router.replace(paths.v2.client.project.list)}>
                     <Iconify icon="ep:back" />
                 </IconButton>
-                <Typography textTransform="uppercase" color="text.secondary">{currentCampaign?.title ?? "New Campaign"}</Typography>
+                <Typography textTransform="uppercase" color="text.secondary">{currentProject?.title ?? "New Campaign"}</Typography>
             </Stack>
 
             {renderTabs}
-            {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CFormCampaignDetails currentCampaign={currentCampaign} users={users} loading={loading} /></Suspense>}
+            {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CFormProjectDetails currentProject={currentProject} loading={usersloading.value} users={users} /></Suspense>}
+            {/* {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CFormCampaignDetails currentCampaign={currentCampaign} users={users} loading={loading} /></Suspense>}
             {currentTab === 'products' && <Suspense fallback={<LoadingScreen />}><CFormCampaignProducts products={products} loading={loading} /></Suspense>}
             {currentTab === 'regions' && <Suspense fallback={<LoadingScreen />}><CFormCampaignRegions  /></Suspense>}
-            {currentTab === 'teams' && <Suspense fallback={<LoadingScreen />}><CFormCampaignTeams campaign={currentCampaign} users={users} loading={loading} /></Suspense>}
+            {currentTab === 'teams' && <Suspense fallback={<LoadingScreen />}><CFormCampaignTeams campaign={currentCampaign} users={users} loading={loading} /></Suspense>} */}
 
         </Container>
     );

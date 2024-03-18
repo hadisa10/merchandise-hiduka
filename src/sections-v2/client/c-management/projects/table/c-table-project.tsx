@@ -17,26 +17,26 @@ import { DataGridFlexible } from 'src/components/data-grid'
 import { LoadingScreen } from 'src/components/loading-screen'
 import { IGenericColumn } from 'src/components/data-grid/data-grid-flexible'
 
-import { ICampaign } from 'src/types/realm/realm-types'
+import { IProject } from 'src/types/realm/realm-types'
 
 
-function ClientCampaignDataGrid({ campaigns, loading }: { campaigns: ICampaign[] | null, loading: boolean }) {
+function ClientProjectsDataGrid({ projects, loading }: { projects: IProject[] | null, loading: boolean }) {
 
   const router = useRouter();
 
   const showLoader = useShowLoader(loading, 300)
 
-  const handleEditCampaign = (_id: string) => {
-    router.push(paths.v2.client.campaign.edit(_id));
+  const handleEditProject = (_id: string) => {
+    router.push(paths.v2.client.project.edit(_id));
   }
 
   const handleViewDetails = (_id: string) => {
-    router.push(paths.v2.client.campaign.edit(_id));
+    router.push(paths.v2.client.project.edit(_id));
 
   }
 
-  const columns: IGenericColumn<ICampaign>[] = useMemo(() => {
-    const cols: Omit<IGenericColumn<ICampaign>, "order">[] = [
+  const columns: IGenericColumn<IProject>[] = useMemo(() => {
+    const cols: Omit<IGenericColumn<IProject>, "order">[] = [
       {
         field: "_id",
         label: "ID",
@@ -49,46 +49,10 @@ function ClientCampaignDataGrid({ campaigns, loading }: { campaigns: ICampaign[]
         minWidth: 300
       },
       {
-        field: "access_code",
-        label: "Access Code",
-        type: "string",
-        minWidth: 100
-      },
-      {
-        field: "startDate",
-        label: "Start Date",
+        field: "createdAt",
+        label: "Created Date",
         type: "date",
         minWidth: 120
-      },
-      {
-        field: "endDate",
-        label: "End Date",
-        type: "date",
-        minWidth: 120
-      },
-      {
-        field: "hourlyRate",
-        label: "Hourly Rate",
-        type: "number",
-        minWidth: 100
-      },
-      {
-        field: "today_checkin",
-        label: "Today's Check-ins",
-        type: "number",
-        minWidth: 100
-      },
-      {
-        field: "total_checkin",
-        label: "Total Check-ins",
-        type: "number",
-        minWidth: 120
-      },
-      {
-        field: "users",
-        label: "Users Count",
-        type: "number",
-        minWidth: 100
       },
       {
         field: "updatedAt",
@@ -104,7 +68,7 @@ function ClientCampaignDataGrid({ campaigns, loading }: { campaigns: ICampaign[]
           edit: {
             label: 'Edit',
             icon: 'material-symbols:edit-outline',
-            action: handleEditCampaign,
+            action: handleEditProject,
           },
           viewDetails: {
             label: 'Details',
@@ -116,12 +80,12 @@ function ClientCampaignDataGrid({ campaigns, loading }: { campaigns: ICampaign[]
     ];
     return cols.map((c, i) => ({ ...c, order: i + 1 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [campaigns]);
+  }, [projects]);
 
-  const cleanedCampaigns = useMemo(() => {
-    if (!Array.isArray(campaigns)) return []
+  const cleanedProjects = useMemo(() => {
+    if (!Array.isArray(projects)) return []
     const filtered = formatFilterAndRemoveFields(
-      campaigns,
+      projects,
       // @ts-expect-error expected
       ["__typename"],
       [
@@ -137,47 +101,11 @@ function ClientCampaignDataGrid({ campaigns, loading }: { campaigns: ICampaign[]
           key: "createdAt",
           formatter: fDateTime,
         },
-        {
-          key: "startDate",
-          formatter: fDate,
-        },
-        {
-          key: "endDate",
-          formatter: fDate,
-        },
-        {
-          key: "activeCheckins",
-          formatter: (val) => val.toString(),
-        },
-        {
-          key: "client_id",
-          formatter: (val) => val.toString(),
-        },
-        {
-          key: "project_id",
-          formatter: (val) => val.toString(),
-        },
-        {
-          key: "hourlyRate",
-          formatter: fCurrency,
-        },
-        {
-          key: "products",
-          formatter: (val) => val?.length ?? 0,
-        },
-        {
-          key: "users",
-          formatter: (val) => val?.length ?? 0,
-        },
-        {
-          key: "routes",
-          formatter: (val) => val?.length ?? 0,
-        }
       ],
       undefined
     ) ?? []
     return filtered
-  }, [campaigns])
+  }, [projects])
 
   return (
     <Card
@@ -189,9 +117,9 @@ function ClientCampaignDataGrid({ campaigns, loading }: { campaigns: ICampaign[]
       }}
     >
       {showLoader && <LoadingScreen />}
-      {!showLoader && cleanedCampaigns &&
+      {!showLoader && cleanedProjects &&
         <DataGridFlexible
-          data={cleanedCampaigns}
+          data={cleanedProjects}
           columns={columns}
           hideColumn={{ _id: false }}
           title='title'
@@ -202,4 +130,4 @@ function ClientCampaignDataGrid({ campaigns, loading }: { campaigns: ICampaign[]
   )
 }
 
-export default ClientCampaignDataGrid
+export default ClientProjectsDataGrid

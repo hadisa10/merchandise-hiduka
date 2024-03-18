@@ -32,7 +32,8 @@ import { RHFEditor, RHFSelect, RHFTextField, RHFAutocomplete } from 'src/compone
 
 import { IUser } from 'src/types/user_realm';
 import { ICalendarDate } from 'src/types/calendar';
-import { ICampaign } from 'src/types/realm/realm-types';
+import { ICampaign, IProject } from 'src/types/realm/realm-types';
+import { useRealmApp } from 'src/components/realm';
 
 const INACTIVITY_LIMIT = [
   { "label": "30 min", "value": 1800000 },
@@ -40,7 +41,7 @@ const INACTIVITY_LIMIT = [
   { "label": "3 hours", "value": 10800000 }
 ]
 
-function CFormCampaignDetails({ users, loading, currentCampaign }: { users?: IUser[], loading?: boolean, currentCampaign?: ICampaign }) {
+function CFormProjectDetails({ currentProject, loading, users }: { currentProject?: IProject, loading: boolean, users: IUser[] }) {
 
   const router = useRouter();
 
@@ -48,107 +49,21 @@ function CFormCampaignDetails({ users, loading, currentCampaign }: { users?: IUs
 
   const { client } = useClientContext();
 
-  const { saveCampaign, updateCampaign } = useCampaigns(true);
+  const showLoader = useShowLoader(loading, 300);
 
-  const showLoader = useShowLoader(loading ?? false, 200)
+  const realmApp = useRealmApp();
 
   const NewCurrectSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
-    description: Yup.string(),
-    users: Yup.array(),
-    hourlyRate: Yup.number().min(0).required("Hourly rate is required").typeError("Hourly rate must be a number"),
-    inactivityTimeout: Yup.number().required("Inactivity limit required"),
-    startDate: Yup.date()
-      .transform((value, originalValue) => {
-        // Check if the originalValue is a number (Unix timestamp in milliseconds)
-        if (typeof originalValue === 'number') {
-          return new Date(originalValue);
-        }
-        // For string input, attempt to parse it as a date
-        if (typeof originalValue === 'string') {
-          return new Date(originalValue);
-        }
-        return value;
-      })
-      .required('Start date is required')
-      .typeError('Start date must be a valid date, date-time string, or Unix timestamp'),
-    endDate: Yup.date()
-      .transform((value, originalValue) => {
-        // Check if the originalValue is a number (Unix timestamp in milliseconds)
-        if (typeof originalValue === 'number') {
-          return new Date(originalValue);
-        }
-        // For string input, attempt to parse it as a date
-        if (typeof originalValue === 'string') {
-          return new Date(originalValue);
-        }
-        return value;
-      })
-      .required('End date is required')
-      .typeError('End date must be a valid date, date-time string, or Unix timestamp')
-      .test(
-        'date-after-start',
-        'End date must be after start date',
-        (value, { parent }) => {
-          const { startDate } = parent;
-          // Ensure both startDate and endDate are valid Date objects before comparing
-          return startDate && value && new Date(startDate) < new Date(value);
-        }
-      ),
-    checkInTime: Yup.date()
-      .transform((value, originalValue) => {
-        // Check if the originalValue is a number (Unix timestamp in milliseconds)
-        if (typeof originalValue === 'number') {
-          return new Date(originalValue);
-        }
-        // For string input, attempt to parse it as a date
-        if (typeof originalValue === 'string') {
-          return new Date(originalValue);
-        }
-        return value;
-      })
-      .required('Check in is required')
-      .typeError('Check in must be a valid date'),
-    checkOutTime: Yup.date()
-      .transform((value, originalValue) => {
-        // Check if the originalValue is a number (Unix timestamp in milliseconds)
-        if (typeof originalValue === 'number') {
-          return new Date(originalValue);
-        }
-        // For string input, attempt to parse it as a date
-        if (typeof originalValue === 'string') {
-          return new Date(originalValue);
-        }
-        return value;
-      })
-      .required('Check out is required')
-      .typeError('Check out  must be a valid date')
-      .test(
-        'time-after-check-in',
-        'Checkin time must be after checkout time',
-        (value, { parent }) => {
-          const { checkInTime } = parent;
-          // Ensure both startDate and endDate are valid Date objects before comparing
-          return checkInTime && value && new Date(checkInTime) < new Date(value);
-        }
-      )
+    project_managers: Yup.lazy(() => Yup.array().of(Yup.string().required('Project manager is required')))
   })
 
   const defaultValues = useMemo(
     () => ({
-      title: currentCampaign?.title || '',
-      description: currentCampaign?.description || '',
-      client_id: currentCampaign?.client_id.toString() || '',
-      users: currentCampaign?.users?.map(user => user.toString()) || [],
-      startDate: currentCampaign?.startDate || new Date(),
-      endDate: currentCampaign?.endDate || new Date(),
-      checkInTime: currentCampaign?.checkInTime || new Date(),
-      checkOutTime: currentCampaign?.checkOutTime || new Date(),
-      workingSchedule: currentCampaign?.workingSchedule || [],
-      hourlyRate: currentCampaign?.hourlyRate || 0,
-      inactivityTimeout: currentCampaign?.inactivityTimeout || 0,
+      title: currentProject?.title || '',
+      project_managers: currentProject?.project_managers.map(x => x.toString()) || []
     }),
-    [currentCampaign]
+    [currentProject]
   );
 
   const methods = useForm({
@@ -165,128 +80,43 @@ function CFormCampaignDetails({ users, loading, currentCampaign }: { users?: IUs
     formState: { isSubmitting, errors },
   } = methods;
 
-  console.log(errors, "ERROS")
 
-  const { error: startDateError } = getFieldState("startDate")
-  const { error: endDateError } = getFieldState("endDate")
-  const { error: checkInTimeError } = getFieldState("checkInTime")
-  const { error: checkOutTimeError } = getFieldState("checkOutTime")
+
 
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const _id = createObjectId().toString();
-      const project_id = createObjectId().toString()
       const client_id = client?._id.toString();
 
-      if (!currentCampaign) {
-        const campaign: ICampaign = {
+      if (!currentProject) {
+        const prj: Omit<IProject<string>, "_id" | "createdAt" | "updatedAt"> = {
           ...data,
-          // @ts-expect-error expected
-          _id,
-          access_code: generateAccessCode(),
-          // @ts-expect-error expected
+          project_managers: data.project_managers ?? [],
           client_id,
-          description: data.description ?? '',
-          products: [],
-          // @ts-expect-error expected
-          users: data.users.map(x => x.toString()) ?? [],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          // @ts-expect-error expected
-          project_id,
-          title: data.title,
-          today_checkin: 0,
-          total_checkin: 0,
-          type: "RSM"
-        };
-        const cleanData = removeAndFormatNullFields({
-          ...campaign
-        }, [
-          {
-            key: "updatedAt",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "createdAt",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "endDate",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "startDate",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "checkInTime",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "checkOutTime",
-            formatter: safeDateFormatter,
-          }
-          // @ts-expect-error expected
-        ], ["id"]);
-
-        if (!cleanData) {
-          throw new Error("Error creating campaign")
+          campaigns: [],
+          reports: []
         }
-        await saveCampaign(cleanData)
-        reset();
-        enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
-        router.push(paths.v2.client.campaign.root);
+        await realmApp.currentUser?.functions.createProject(prj)
+        enqueueSnackbar(currentProject ? 'Update success!' : 'Create success!');
+        router.push(paths.v2.client.project.root);
         console.info('DATA', data);
-      } else {
-        const campaign: ICampaign = {
-          ...currentCampaign,
-          ...data,
-          description: data.description ?? '',
-          // @ts-expect-error expected
-          updatedAt: safeDateFormatter(),
-          project_id: createObjectId(),
-        };
-        const cleanData = removeAndFormatNullFields(campaign,
-          [
-
-            {
-              key: "createdAt",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "updatedAt",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "startDate",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "endDate",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "checkInTime",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "checkOutTime",
-              formatter: safeDateFormatter,
-            },
-          ]
-        );
-        console.log(cleanData, 'CLEAN DATA')
-        if (cleanData) {
-          await updateCampaign(cleanData)
-        } else throw new Error("Failed to clean data")
         reset();
-        enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
-        router.push(paths.v2.client.campaign.edit(campaign._id.toString()));
-        console.info('DATA', cleanData);
+      } else {
+        const prj: Omit<IProject<string>,  "createdAt" | "updatedAt" | "campaigns" | "reports"> = {
+          _id: currentProject._id.toString(),
+          ...data,
+          project_managers: data.project_managers ?? [],
+          client_id,
+        }
+        const {project_id } = await realmApp.currentUser?.functions.updateProject(prj)
+        enqueueSnackbar(currentProject ? 'Update success!' : 'Create success!');
+        router.push(paths.v2.client.project.root);
+        console.info('DATA', data);
+        reset();
+        
       }
     } catch (error) {
-      enqueueSnackbar(currentCampaign ? 'Update failed!' : 'Failed to create campaign!', { variant: "error" });
+      enqueueSnackbar(currentProject ? 'Update failed!' : 'Failed to create campaign!', { variant: "error" });
       console.error(error);
     }
   });
@@ -313,267 +143,11 @@ function CFormCampaignDetails({ users, loading, currentCampaign }: { users?: IUs
               <Typography variant="subtitle2">Title</Typography>
               <RHFTextField name="title" placeholder="Ex: New year Sales..." />
             </Stack>
-
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Description</Typography>
-              <RHFEditor simple name="description" />
-            </Stack>
-
           </Stack>
         </Card>
       </Grid>
     </>
   );
-
-  const renderTimeDetails = (
-    <>
-      {!mdUp &&
-        <>
-          <Stack spacing={1}>
-            <Typography variant="subtitle2">Timeline</Typography>
-          </Stack>
-          <Controller
-            name="checkInTime"
-            control={control}
-            render={({ field }) => <MobileTimePicker
-              {...field}
-              value={new Date(field.value as unknown as ICalendarDate)}
-              onChange={(newValue) => {
-                if (newValue) {
-                  field.onChange(fTimestamp(newValue));
-                }
-              }}
-              label="Check in time"
-              format="hh:mm a"
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: isObject(checkInTimeError),
-                  helperText: isObject(checkInTimeError) && checkInTimeError.message,
-                },
-              }}
-            />}
-          />
-
-          <Controller
-            name="checkOutTime"
-            control={control}
-            render={({ field }) => (
-              <MobileTimePicker
-                {...field}
-                value={new Date(field.value as unknown as ICalendarDate)}
-                onChange={(newValue) => {
-                  if (newValue) {
-                    field.onChange(fTimestamp(newValue));
-                  }
-                }}
-                label="Check out time"
-                format="hh:mm a"
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    error: isObject(checkOutTimeError),
-                    helperText: isObject(checkOutTimeError) && checkOutTimeError.message,
-                  },
-                }}
-              />
-            )}
-          />
-        </>
-      }
-      {mdUp &&
-        <>
-          <Controller
-            name="checkInTime"
-            control={control}
-            render={({ field }) => (
-              <DesktopTimePicker
-                {...field}
-                value={new Date(field.value as unknown as ICalendarDate)}
-                onChange={(newValue) => {
-                  if (newValue) {
-                    field.onChange(fTimestamp(newValue));
-                  }
-                }}
-                label="Check in time"
-                format="hh:mm a"
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    error: isObject(checkInTimeError),
-                    helperText: isObject(checkInTimeError) && checkInTimeError.message,
-                  },
-                }}
-              />
-            )}
-          />
-
-          <Controller
-            name="checkOutTime"
-            control={control}
-            render={({ field }) => (
-              <DesktopTimePicker
-                {...field}
-                value={new Date(field.value as unknown as ICalendarDate)}
-                onChange={(newValue) => {
-                  if (newValue) {
-                    field.onChange(fTimestamp(newValue));
-                  }
-                }}
-                label="Check out time"
-                format="hh:mm a"
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    error: isObject(checkOutTimeError),
-                    helperText: isObject(checkOutTimeError) && checkOutTimeError.message,
-                  },
-                }}
-              />
-            )}
-          />
-        </>
-      }
-    </>
-  )
-
-  const renderDateDetails = (
-    <>
-      {!mdUp &&
-        <Grid xs={12} md={8}>
-          <Card>
-            <Stack spacing={3} sx={{ p: 3 }}>
-              <Stack spacing={1}>
-                <Typography variant="subtitle2">Timeline</Typography>
-              </Stack>
-              <Controller
-                name="startDate"
-                control={control}
-                render={({ field }) => <MobileDatePicker
-                  {...field}
-                  value={new Date(field.value as unknown as ICalendarDate)}
-                  onChange={(newValue) => {
-                    if (newValue) {
-                      field.onChange(fTimestamp(newValue));
-                    }
-                  }}
-                  label="Start date"
-                  format="dd/MM/yyyy hh:mm a"
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error: isObject(startDateError),
-                      helperText: isObject(startDateError) && startDateError.message,
-                    },
-                  }}
-                />}
-              />
-
-              <Controller
-                name="endDate"
-                control={control}
-                render={({ field }) => (
-                  <MobileDatePicker
-                    {...field}
-                    value={new Date(field.value as unknown as ICalendarDate)}
-                    onChange={(newValue) => {
-                      if (newValue) {
-                        field.onChange(fTimestamp(newValue));
-                      }
-                    }}
-                    label="End date"
-                    format="dd/MM/yyyy"
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: isObject(endDateError),
-                        helperText: isObject(endDateError) && endDateError.message,
-                      },
-                    }}
-                  />
-                )}
-              />
-              {renderTimeDetails}
-            </Stack>
-          </Card>
-        </Grid>
-      }
-      {mdUp &&
-        <>
-          <Grid md={4}>
-            <Typography variant="h6" sx={{ mb: 0.5 }}>
-              Time
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Start and end dates...
-            </Typography>
-          </Grid>
-
-          <Grid xs={12} md={8}>
-            <Card>
-              <Stack spacing={3} sx={{ p: 3 }}>
-                <Stack spacing={1}>
-                  <Typography variant="subtitle2">Timelines</Typography>
-                </Stack>
-                <Controller
-                  name="startDate"
-                  control={control}
-                  render={({ field }) => (
-                    <DesktopDatePicker
-                      {...field}
-                      value={new Date(field.value as unknown as ICalendarDate)}
-                      onChange={(newValue) => {
-                        if (newValue) {
-                          field.onChange(fTimestamp(newValue));
-                        }
-                      }}
-                      label="Start date"
-                      format="dd/MM/yyyy"
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: isObject(startDateError),
-                          helperText: isObject(startDateError) && startDateError.message,
-                        },
-                      }}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="endDate"
-                  control={control}
-                  render={({ field }) => (
-                    <DesktopDatePicker
-                      {...field}
-                      value={new Date(field.value as unknown as ICalendarDate)}
-                      onChange={(newValue) => {
-                        if (newValue) {
-                          field.onChange(fTimestamp(newValue));
-                        }
-                      }}
-                      label="End date"
-                      format="dd/MM/yyyy"
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: isObject(endDateError),
-                          helperText: isObject(endDateError) && endDateError.message,
-                        },
-                      }}
-                    />
-                  )}
-                />
-                {renderTimeDetails}
-              </Stack>
-            </Card>
-          </Grid>
-
-        </>
-      }
-    </>
-  )
-
   const renderUsers = (
     <>
       {mdUp && (
@@ -582,7 +156,7 @@ function CFormCampaignDetails({ users, loading, currentCampaign }: { users?: IUs
             Users
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional details ...
+            User management ...
           </Typography>
         </Grid>
       )}
@@ -597,18 +171,18 @@ function CFormCampaignDetails({ users, loading, currentCampaign }: { users?: IUs
             </Stack>
 
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Users</Typography>
+              <Typography variant="subtitle2">Project Managers</Typography>
               {showLoader && <LoadingScreen />}
-              {!showLoader && users &&
+              {users && !showLoader &&
                 <RHFAutocomplete
-                  name="users"
-                  label="Users"
+                  name="project_managers"
+                  label="Project Managers"
                   placeholder="+ users"
                   multiple
                   freeSolo
-                  loading={loading}
+                  loading={showLoader}
                   disableCloseOnSelect
-                  options={users?.map(usr => usr._id) ?? []}
+                  options={users?.map(usr => usr._id.toString()) ?? []}
                   getOptionLabel={(option) => {
                     const user = users?.find((usr) => usr._id === option);
                     if (user) {
@@ -650,79 +224,7 @@ function CFormCampaignDetails({ users, loading, currentCampaign }: { users?: IUs
                 />}
             </Stack>
 
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Working schedule</Typography>
-              <RHFAutocomplete
-                name="workingSchedule"
-                placeholder="+ Schedule"
-                multiple
-                disableCloseOnSelect
-                options={JOB_WORKING_SCHEDULE_OPTIONS.map((option) => option)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => (
-                    <Chip
-                      {...getTagProps({ index })}
-                      key={option}
-                      label={option}
-                      size="small"
-                      color="info"
-                      variant="soft"
-                    />
-                  ))
-                }
-              />
-            </Stack>
-          </Stack>
-        </Card>
-      </Grid>
-    </>
-  );
 
-  const renderUserManagement = (
-    <>
-      {mdUp && (
-        <Grid md={4}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Constraints
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Constraints details ...
-          </Typography>
-        </Grid>
-      )}
-
-      <Grid xs={12} md={8}>
-        <Card>
-          {!mdUp && <CardHeader title="Constraints" />}
-
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <Stack spacing={1}>
-              <Typography variant="subtitle2">Constraints</Typography>
-            </Stack>
-
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">In Activity Limit</Typography>
-              <RHFSelect name="inactivityTimeout" label="In Activity Limit">
-                <MenuItem value="">None</MenuItem>
-                <Divider sx={{ borderStyle: 'dashed' }} />
-                {INACTIVITY_LIMIT.map((limit) => (
-                  <MenuItem key={limit.value} value={limit.value}>
-                    {limit.label}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-            </Stack>
-
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Hourly rate</Typography>
-              <RHFTextField name="hourlyRate" placeholder="Ex: 200..." />
-            </Stack>
           </Stack>
         </Card>
       </Grid>
@@ -735,18 +237,13 @@ function CFormCampaignDetails({ users, loading, currentCampaign }: { users?: IUs
         <Box display="flex" width="100%" justifyContent="end">
           <LoadingButton loading={isSubmitting} variant='contained' type="submit">Save Details</LoadingButton>
         </Box>
-
         {renderDetails}
 
-        {renderDateDetails}
-
         {renderUsers}
-
-        {renderUserManagement}
 
       </Grid>
     </FormProvider>
   )
 }
 
-export default memo(CFormCampaignDetails)
+export default memo(CFormProjectDetails)

@@ -19,37 +19,37 @@ import { useClientContext } from "src/components/clients";
 import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 
-import { ICampaign } from "src/types/realm/realm-types";
+import { ICampaign, IProject } from "src/types/realm/realm-types";
 
-import ClientCampaignDataGrid from "./table/c-table-project";
+import ClientProjectDataGrid from "./table/c-table-project";
 
-export default function CampaignListView() {
+export default function ProjectListView() {
     const settings = useSettingsContext();
 
-    const campaignloading = useBoolean(true);
+    const projectsloading = useBoolean(true);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [error, setError] = useState<unknown>()
 
     const realmApp = useRealmApp()
 
-    const [campaigns, setCampaigns] = useState<ICampaign[] | null>(null)
+    const [projects, setProjects] = useState<IProject[] | null>(null)
 
     const { client } = useClientContext();
 
-
     useEffect(() => {
         if (client && client?._id) {
-            campaignloading.onTrue()
+            projectsloading.onTrue()
             setError(null);
-            realmApp.currentUser?.functions.getClientCampaigns({ client_id: client?._id.toString() }).then((data: ICampaign[]) => setCampaigns(data))
+            console.log(client?._id.toString(), "CLIENT ID")
+            realmApp.currentUser?.functions.getUserProjects(client?._id.toString()).then((data: IProject[]) => setProjects(data))
                 .catch(e => {
                     console.error(e)
                     setError(e);
                     enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
                 }
                 )
-                .finally(() => campaignloading.onFalse())
+                .finally(() => projectsloading.onFalse())
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [client])
@@ -68,19 +68,19 @@ export default function CampaignListView() {
                 links={[
                     { name: 'Dashboard', href: paths.v2.client.root },
                     {
-                        name: 'Campaign',
-                        href: paths.v2.client.campaign.root,
+                        name: 'Project',
+                        href: paths.v2.client.project.root,
                     },
                     { name: 'List' },
                 ]}
                 action={
                     <Button
                         component={RouterLink}
-                        href={paths.v2.client.campaign.new}
+                        href={paths.v2.client.project.new}
                         variant="contained"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                     >
-                        New Campaign
+                        New Project
                     </Button>
                 }
                 sx={{
@@ -90,7 +90,7 @@ export default function CampaignListView() {
                     },
                 }}
             />
-            <ClientCampaignDataGrid campaigns={campaigns} loading={campaignloading.value} />
+            <ClientProjectDataGrid projects={projects} loading={projectsloading.value} />
         </Container>
     );
 }
