@@ -1,36 +1,32 @@
 "use client"
 
+import * as Yup from 'yup';
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { FC, memo, useMemo, useState, useEffect } from "react";
 
 import {
     Card,
-    Container,
     Divider,
     MenuItem,
-    TextField
+    Container
 } from "@mui/material";
-
-import * as Yup from 'yup';
 
 import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
-import { useReports } from "src/hooks/realm/report/use-report-graphql";
 
 import uuidv4 from "src/utils/uuidv4";
 import { fDateTime } from "src/utils/format-time";
 
+import { useRealmApp } from "src/components/realm";
+import { RHFSelect } from "src/components/hook-form";
 import { DataGridFlexible } from "src/components/data-grid";
 import { useSettingsContext } from "src/components/settings";
-import { LoadingScreen } from "src/components/loading-screen";
+import FormProvider from "src/components/hook-form/form-provider";
 import { IColumn } from "src/components/data-grid/data-grid-flexible";
 import { numericFilterOperators } from "src/components/data-grid/ranger-slider-filter";
 
-import { IFilledReport, IReport, IReportQuestion } from "src/types/realm/realm-types";
-import { useRealmApp } from "src/components/realm";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import FormProvider from "src/components/hook-form/form-provider";
-import { RHFSelect } from "src/components/hook-form";
+import { IReport, IFilledReport, IReportQuestion } from "src/types/realm/realm-types";
 
 const OPTIONS = [
     { value: false, label: 'Hide' },

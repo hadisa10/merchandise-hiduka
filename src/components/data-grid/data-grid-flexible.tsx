@@ -1,5 +1,5 @@
 import { isObject, isString } from 'lodash';
-import React, { ReactNode, useMemo, useState } from 'react';
+import React, { useMemo, useState, ReactNode } from 'react';
 
 import { Box, Stack, Avatar, Button, Divider, Typography, ButtonOwnProps } from '@mui/material';
 import {
@@ -94,10 +94,10 @@ interface DataGridFlexibleProps<RowType extends GridRowModel> {
   getRowIdFn: GridRowIdGetter<RowType>;
   columns: IColumnsArray<RowType>;
   title: string;
-  loading: boolean;
+  loading?: boolean;
   hideColumn?: Record<string, boolean>;
   customActions?: ISelectedColumnActions<RowType>
-  customFilters: ISelectedColumnFilter;
+  customFilters?: ISelectedColumnFilter;
 }
 
 // const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions) => {
