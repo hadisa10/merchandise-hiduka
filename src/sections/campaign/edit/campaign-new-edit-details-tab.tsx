@@ -1,5 +1,5 @@
 
-import { FC, memo } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { isObject } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -31,6 +31,10 @@ import {
 } from 'src/components/hook-form';
 
 import { ICalendarDate } from 'src/types/calendar';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useRealmApp } from 'src/components/realm';
+import { enqueueSnackbar } from 'notistack';
+import { IProject } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 const INACTIVITY_LIMIT = [
@@ -46,13 +50,38 @@ const CAMPAIGN_TYPES = [
 const CampaignNewEditDetailsTab: FC = () => {
   const { users, loading: loadingUsers } = useUsers();
 
-  const { control, getFieldState } = useFormContext();
+  const { control, getFieldState, watch } = useFormContext();
 
   const mdUp = useResponsive('up', 'md');
 
   const { loading, clients } = useClients(false);
 
+  const projectsloading = useBoolean();
+
   const showLoader = useShowLoader(loading, 200)
+
+  const realmApp = useRealmApp();
+
+  const [projects, setProjects] = useState<IProject[] | null>(null)
+
+  const client_id = watch("client_id");
+  useEffect(() => {
+      if (client_id) {
+          projectsloading.onTrue()
+          realmApp.currentUser?.functions.getUserProjects(client_id.toString()).then((data: IProject[]) => { 
+            console.log(client_id.toString(), "CLIENT ID")
+            console.log(data, "PROJECTS DATA")
+            setProjects(data)
+          })
+              .catch(e => {
+                  console.error(e)
+                  enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
+              }
+              )
+              .finally(() => projectsloading.onFalse())
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client_id])
 
   const showUsersLoader = useShowLoader(loadingUsers, 200)
 
@@ -141,6 +170,55 @@ const CampaignNewEditDetailsTab: FC = () => {
                         {...getTagProps({ index })}
                         key={client?._id?.toString() ?? ""}
                         label={client?.name ?? ""}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    )
+                  })
+                }
+              />}
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Project</Typography>
+              {projectsloading.value && <LoadingScreen />}
+              {!projectsloading.value && <RHFAutocomplete
+                name="project_id"
+                label="Project"
+                placeholder="Project client"
+                loading={projectsloading.value}
+                freeSolo
+                options={projects?.map(clnt => clnt._id?.toString()) ?? []}
+                getOptionLabel={(option) => {
+                  const client = projects?.find((clnt) => clnt._id?.toString() === option.toString());
+                  if (client) {
+                    return client?.title
+                  }
+                  return option
+                }}
+                renderOption={(props, option) => {
+                  const client = projects?.filter(
+                    (clnt) => clnt._id?.toString() === option.toString()
+                  )[0];
+
+                  if (!client?._id) {
+                    return null;
+                  }
+
+                  return (
+                    <li {...props} key={client._id?.toString()}>
+                      {client?.title}
+                    </li>
+                  );
+                }}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => {
+                    const client = projects?.find((clnt) => clnt._id?.toString() === option);
+                    return (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={client?._id?.toString() ?? ""}
+                        label={client?.title ?? ""}
                         size="small"
                         color="info"
                         variant="soft"

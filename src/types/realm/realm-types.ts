@@ -7,6 +7,18 @@ export type Item = {
     summary: string;
 };
 
+export type IProject<T = Realm.BSON.ObjectId> = {
+    _id: T;
+    campaigns: Array<T>;
+    client_id: T;
+    createdAt: Date;
+    project_managers: Array<T>;
+    reports: Array<T>;
+    title: string;
+    updatedAt: Date;
+  };
+  
+
 export const ItemSchema = {
     name: 'Item',
     properties: {

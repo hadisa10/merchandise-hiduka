@@ -199,12 +199,13 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       title: currentCampaign?.title || '',
       description: currentCampaign?.description || '',
       client_id: currentCampaign?.client_id.toString() || '',
+      project_id: currentCampaign?.project_id.toString() || '',
       users: currentCampaign?.users?.map(user => user.toString()) || [],
       startDate: currentCampaign?.startDate || '',
       type: currentCampaign?.type || 'type',
       salesKpi: {
         totalDailyRevenue: currentCampaign?.salesKpi?.totalDailyRevenue || 0,
-        totalDailyUnits: currentCampaign?.salesKpi?.totalDailyUnits || 0, 
+        totalDailyUnits: currentCampaign?.salesKpi?.totalDailyUnits || 0,
       },
       endDate: currentCampaign?.endDate || '',
       checkInTime: currentCampaign?.checkInTime || '',
@@ -314,7 +315,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const _id = createObjectId().toString();
-      const prodject_id = createObjectId().toString()
+      const project_id = data.project_id ? data.project_id : createObjectId().toString();
       const client_id = convertObjectId(data.client_id).toString();
       if (!currentCampaign) {
         const campaign: ICampaign = {
@@ -331,7 +332,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           createdAt: new Date(),
           updatedAt: new Date(),
           // @ts-expect-error expected
-          project_id: prodject_id,
+          project_id,
           // @ts-expect-error expected
           routes: data.routes,
           title: data.title,
@@ -383,7 +384,6 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           description: data.description ?? '',
           // @ts-expect-error expected
           updatedAt: safeDateFormatter(),
-          project_id: createObjectId(),
           // @ts-expect-error expected
           routes: data.routes.map(x => {
             if (!x.createdAt) {
