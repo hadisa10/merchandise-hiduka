@@ -2,6 +2,7 @@ import { ClientProjectListView } from "src/sections-v2/client/c-management";
 
 // ----------------------------------------------------------------------
 
+
 export const metadata = {
   title: 'Dashboard: Client Campaigns',
 };

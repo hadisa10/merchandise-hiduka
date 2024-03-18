@@ -12,6 +12,10 @@ import { View403 } from 'src/sections/error';
 
 import { IRole } from 'src/types/user_realm';
 
+import DashboardLeadView from '../dashboard-lead-view';
+import DashboardAdminView from '../dashboard-admin-view';
+import DashboardClientView from '../dashboard-client-view';
+import DashboardMerchantView from '../dashboard-merchant-view';
 
 
 // ----------------------------------------------------------------------
@@ -26,20 +30,15 @@ export default function DashboardView() {
     const renderDashboard = useCallback(() => {
         switch (role) {
             case 'admin':
-                // return <DashboardAdminView />;
-                return <>ADMINISTRATIVE VIEW</>;
+                return <DashboardAdminView />;
             case 'client':
-                // return <DashboardClientView />;
-                return <>CLIENT VIEW</>;
+                return <DashboardClientView />;
             case 'lead':
-                // return <DashboardLeadView />;
-                return <>LEAD VIEW</>;
+                return <DashboardLeadView />;
             case 'merchant':
-                return <>MERCHANT VIEW</>;
-                // return <DashboardMerchantView />;
+                return <DashboardMerchantView />;
             case 'brand_ambassador':
-                return <>BRAND AMBASSADOR VIEW</>;
-                // return <DashboardMerchantView />;
+                return <DashboardMerchantView />;
             default:
                 return <View403 />
         }

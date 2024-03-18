@@ -1,4 +1,4 @@
-import { ClientProjectsDetailsView } from 'src/sections-v2/client/c-management';
+import { ClientCampaignDetailsView } from 'src/sections-v2/client/c-management';
 
 
 // ----------------------------------------------------------------------
@@ -16,5 +16,5 @@ type Props = {
 export default function ClientCampaignEditPage({ params }: Props) {
   const { id } = params;
 
-  return <ClientProjectsDetailsView id={id} />;
+  return <ClientCampaignDetailsView id={id} />;
 }

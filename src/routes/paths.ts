@@ -301,6 +301,26 @@ export const paths = {
     "project-manager": {
       root: `${ROOTS.V2}/project-manager/dashboard`,
       dashboard: `${ROOTS.V2}/project-manager/dashboard`,
+      project: {
+        root: `${ROOTS.V2}/project-manager/dashboard/project`,
+        list: `${ROOTS.V2}/project-manager/dashboard/project`,
+        new: `${ROOTS.V2}/project-manager/dashboard/project/new`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/project/${id}/edit`,
+      },
+      reports: {
+        root: `${ROOTS.V2}/project-manager/dashboard/report`,
+        list: `${ROOTS.V2}/project-manager/dashboard/report`,
+        new: `${ROOTS.V2}/project-manager/dashboard/report/new`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/report/${id}/edit`,
+      },
+      campaign: {
+        root: `${ROOTS.V2}/project-manager/dashboard/campaign`,
+        list: `${ROOTS.V2}/project-manager/dashboard/campaign`,
+        new: `${ROOTS.V2}/project-manager/dashboard/campaign/new`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/campaign/${id}/edit`,
+      },
+      "campaign-performance": `${ROOTS.V2}/project-manager/dashboard/campaign-performance`,
+      "activity-tracker": `${ROOTS.V2}/project-manager/dashboard/activity-tracker`
     },
     "team-lead": {
       root: `${ROOTS.V2}/team-lead/dashboard`,

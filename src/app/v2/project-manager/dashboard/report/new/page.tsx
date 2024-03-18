@@ -1,12 +1,12 @@
 
 // ----------------------------------------------------------------------
 
-import { ClientProjectNewView } from "src/sections-v2/client/c-management";
+import { CampaignCreateView } from "src/sections/campaign/view";
 
 export const metadata = {
     title: 'Dashboard: Project New Campaign',
 };
 
 export default function ProjectCampaignNewPage() {
-    return <ClientProjectNewView />;
+    return <CampaignCreateView />;
 }
