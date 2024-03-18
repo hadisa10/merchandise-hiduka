@@ -88,13 +88,13 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
     subheader: t('management'),
     items: [
       // CLIENT
-      // {
-      //   title: t('clients'), path: paths.dashboard.client.root, icon: ICONS.client,
-      //   children: [
-      //     { title: t('list'), path: paths.dashboard.client.root },
-      //     { title: t('create'), path: paths.dashboard.client.new },
-      //   ]
-      // },
+      {
+        title: t('clients'), path: paths.v2.admin.client.root, icon: ICONS.client,
+        children: [
+          { title: t('list'), path: paths.v2.admin.client.list },
+          { title: t('create'), path: paths.v2.admin.client.new },
+        ]
+      },
       // {
       //   title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
       // },
@@ -110,18 +110,18 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
       {
         title: t('campaign'), path: paths.v2.admin.campaign.root, icon: ICONS.campaign,
         children: [
-          { title: t('list'), path: paths.v2.admin.campaign.root },
+          { title: t('list'), path: paths.v2.admin.campaign.list },
           { title: t('create'), path: paths.v2.admin.campaign.new }
         ]
       },
-      // // REPORTS
-      // {
-      //   title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
-      //   children: [
-      //     { title: t('list'), path: paths.dashboard.report.root },
-      //     { title: t('create'), path: paths.dashboard.report.new },
-      //   ]
-      // },
+      // REPORTS
+      {
+        title: t('reports'), path: paths.v2.admin.reports.root, icon: ICONS.report,
+        children: [
+          { title: t('list'), path: paths.v2.admin.reports.list },
+          { title: t('create'), path: paths.v2.admin.reports.new },
+        ]
+      },
       // // ROUTES
       // {
       //   title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,

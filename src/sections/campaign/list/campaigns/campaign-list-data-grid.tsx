@@ -200,14 +200,6 @@ export default function CampaignListDataGrid() {
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
     {
-      field: 'totalCheckins',
-      headerName: 'Total Checkins',
-      flex: 1,
-      minWidth: 360,
-      hideable: false,
-      renderCell: (params) => <RenderCellCheckin params={params} />,
-    },
-    {
       type: 'actions',
       field: 'actions',
       headerName: ' ',

@@ -177,16 +177,6 @@ export type Item = {
     summary: string;
 };
 
-export type IProject<T = Realm.BSON.ObjectId> = {
-    _id: T;
-    campaigns: Array<T>;
-    client_id: T;
-    createdAt: Date;
-    project_managers: Array<T>;
-    reports: Array<T>;
-    title: string;
-    updatedAt: Date;
-  };
   
 
 export const ItemSchema = {
@@ -276,6 +266,7 @@ export type ICampaign = {
     total_checkin: number;
     type: string;
     updatedAt: Date;
+    clientTitle?: string
 };
 
 // Exporting the generic type for operators

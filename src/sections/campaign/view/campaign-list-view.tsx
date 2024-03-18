@@ -15,9 +15,12 @@ import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 
 import CampaignListDataGrid from "../list/campaigns/campaign-list-data-grid";
+import { useRolePath } from "src/hooks/use-path-role";
 
 export default function CampaignListView() {
     const settings = useSettingsContext();
+
+    const rolePath = useRolePath();
 
     return (
         <Container
@@ -31,17 +34,20 @@ export default function CampaignListView() {
             <CustomBreadcrumbs
                 heading="List"
                 links={[
-                    { name: 'Dashboard', href: paths.dashboard.root },
+                    // @ts-expect-error expected
+                    { name: 'Dashboard', href: rolePath?.root },
                     {
                         name: 'Campaign',
-                        href: paths.dashboard.campaign.root,
+                        // @ts-expect-error expected
+                        href: rolePath.campaign.root,
                     },
                     { name: 'List' },
                 ]}
                 action={
                     <Button
                         component={RouterLink}
-                        href={paths.dashboard.campaign.new}
+                        // @ts-expect-error expected
+                        href={rolePath?.campaign.new}
                         variant="contained"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                     >

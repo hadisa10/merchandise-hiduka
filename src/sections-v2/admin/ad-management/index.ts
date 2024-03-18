@@ -1,0 +1,1 @@
+export { default as AdminCampaignListView } from './campaign/ad-campaign-list-view';

@@ -375,13 +375,15 @@ function CustomToolbar<RowType>({ title, selectedRows, customActions, customFilt
 
       {/* Custom Actions Container */}
       {customActions && selectedRows.length > 0 && (
-        <Stack sx={{ px: 2, pt: 0, pb: 1 }} spacing={1}> {/* Adjust the margins/padding as needed */}
+        <Stack sx={{ px: 2, pt: 0, pb: 1, width: "100%" }} spacing={1}> {/* Adjust the margins/padding as needed */}
           <Divider><Typography variant='caption' color="text.secondary">bulk actions</Typography></Divider>
-          <Stack direction="row" spacing={1}> {/* Ensure there's some spacing between each button */}
+          <Stack direction="row" spacing={1} width="100%"> {/* Ensure there's some spacing between each button */}
             {Object.values(customActions).map((customAction) => (
               <Button
                 key={customAction.label}
                 size='small'
+                fullWidth
+                sx={{ width: "100%" }}
                 variant={customAction.variant ?? "soft"}
                 color={customAction.color ?? "info"}
                 startIcon={<Iconify icon={customAction.icon} />} // Ensure you have a mapping for these icons

@@ -258,6 +258,12 @@ export const paths = {
         new: `${ROOTS.V2}/client/dashboard/project/new`,
         edit: (id: string) => `${ROOTS.V2}/client/dashboard/project/${id}/edit`,
       },
+      client: {
+        root: `${ROOTS.V2}/admin/dashboard/client`,
+        list: `${ROOTS.V2}/admin/dashboard/client`,
+        new: `${ROOTS.V2}/admin/dashboard/client/new`,
+        edit: (id: string) => `${ROOTS.V2}/admin/dashboard/client/${id}/edit`,
+      },
       reports: {
         root: `${ROOTS.V2}/client/dashboard/report`,
         list: `${ROOTS.V2}/client/dashboard/report`,

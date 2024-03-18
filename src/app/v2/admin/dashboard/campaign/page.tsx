@@ -1,12 +1,11 @@
 
+import { AdminCampaignListView } from "src/sections-v2/admin/ad-management";
 // ----------------------------------------------------------------------
-
-import { CampaignListView } from "src/sections/campaign/view";
 
 export const metadata = {
   title: 'Dashboard: Project Campaign',
 };
 
 export default function ProjectCampaignPage() {
-  return <CampaignListView/>;
+  return <AdminCampaignListView/>;
 }
