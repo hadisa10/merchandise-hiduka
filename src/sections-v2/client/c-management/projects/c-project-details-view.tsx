@@ -52,7 +52,7 @@ export default function ClientProjectsDetailsView({ id }: { id: string }) {
     return (
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
             {/* <CampaignNewEdit currentCampaign={campaign} /> */}
-            {!showProjectLoading && <ProjectTabsView currentProject={project} loading={showProjectLoading}/>}
+            {!showProjectLoading && <ProjectTabsView currentProject={project} />}
         </Container>
     );
 }
