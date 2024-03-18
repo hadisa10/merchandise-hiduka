@@ -12,6 +12,7 @@ import * as Realm from "realm-web";
 //     updatedAt: Date;
 // }
 
+
 interface IUser {
     _id: Realm.BSON.ObjectId;
     name: string;
@@ -38,6 +39,9 @@ export interface IClient {
     name: string;
     createdAt: Date;
     updatedAt: Date;
+    children: Realm.BSON.ObjectId;
+    type: "admin" | "agency" | "single-client" | "nested-client",
+    parent: Realm.BSON.ObjectId;
     client_icon: string;
     client_plan: string;
 }

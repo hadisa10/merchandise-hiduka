@@ -16,7 +16,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import { createObjectId, convertObjectId } from 'src/utils/realm';
-import { safeDateFormatter, removeAndFormatNullFields } from 'src/utils/helpers';
+import { safeDateFormatter, generateAccessCode, removeAndFormatNullFields } from 'src/utils/helpers';
 
 import Label from 'src/components/label';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -29,7 +29,7 @@ import RouteCreateEditForm from './edit/route-create-edit-form';
 
 const ProductListDataGrid = lazy(() => import('../product/product-list-data-grid'));
 
-const UserActivityView = lazy(() => import('./list/user-activity'));
+const UserActivityView = lazy(() => import('./list/user-activity-2'));
 
 const CampaignNewEditRouteForm = lazy(() => import('./edit/campaign-new-edit-route'));
 const CampaignNewEditDetailsTab = lazy(() => import('./edit/campaign-new-edit-details-tab'));
@@ -54,9 +54,7 @@ export const CAMPAING_DETAILS_TABS = [
 ];
 
 
-function generateAccessCode() {
-  return Math.floor(10000 + Math.random() * 90000).toString();
-}
+
 
 export default function CampaignNewEditForm({ currentCampaign }: Props) {
 

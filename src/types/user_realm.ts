@@ -1,5 +1,7 @@
 import * as Realm from "realm-web";
 
+import { ERole } from "src/config-global";
+
 import { CustomFile } from "src/components/upload";
 
 export interface IUserResponse {
@@ -8,7 +10,6 @@ export interface IUserResponse {
 
 export type IStatus = "pending" | "active" | "rejected" | "banned"
 export type IRole = "lead" | "client" | "admin" | "user" | "brand_ambassador" | "merchant"
-
 
 export interface IUser {
     _id: string;
@@ -23,7 +24,7 @@ export interface IUser {
     country: string | null;
     address: string | null;
     zipCode: string | null;
-    role: IRole;
+    role: ERole;
     phoneNumber: string | null;
     photoURL: CustomFile | string | null;
     isVerified: boolean;
@@ -36,6 +37,7 @@ export interface IUser {
 export interface ICampaignUser extends IUser {
     isCheckedIn: boolean;
     checkInCount: number;
+    lastActivity: Date;
     totalSessionCount: number;
     totalEarnings: number;
     totalHoursWorked: number;

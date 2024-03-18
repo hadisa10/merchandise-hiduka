@@ -1,0 +1,1 @@
+export { default as SuperadminDashboardView } from './superadmin-dashboard'

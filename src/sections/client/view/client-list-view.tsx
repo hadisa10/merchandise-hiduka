@@ -190,7 +190,6 @@ export default function ClientListView() {
         return t
     }, [clients])
 
-    console.log(clients, 'CLIENTS')
 
     return (
         <Container

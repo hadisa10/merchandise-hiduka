@@ -6,6 +6,7 @@ import { SxProps } from '@mui/system';
 
 import { paths } from 'src/routes/paths';
 
+import { ERole } from 'src/config-global';
 import { useTranslate } from 'src/locales';
 
 import Iconify from 'src/components/iconify';
@@ -13,7 +14,6 @@ import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 import { useRealmApp } from 'src/components/realm';
 
-import { IRole } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +27,8 @@ const icon = (name: string) => (
 const styleSmall: SxProps = { width: 0.7, height: 0.7 }
 const style: SxProps = { width: 1, height: 1 }
 
-const ICONS = {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const ICONS = {
   job: icon('ic_job'),
   blog: icon('ic_blog'),
   chat: icon('ic_chat'),
@@ -69,40 +70,58 @@ const ICONS = {
   projectSmall: <Iconify icon="material-symbols:construction-rounded" sx={styleSmall} />
 };
 const renderAdmin = (t: TFunction<"translation", undefined>) => ([
-
-
+  // Dashboard
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('Dasboard'),
+    items: [
+      { title: t('Dashboard'), path: paths.v2.admin.root, icon: ICONS.dashboard },
+      // { title: t('Activity Tracker'), path: paths.dashboard.analytics.userPerformance, icon: ICONS.userPerformace },
+      // { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
+      // { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
+      // { title: t('Market and Competitive'), path: paths.dashboard.analytics.marketingCompetitive, icon: ICONS.marketAnalysis }
+    ],
+  },
   // MANAGEMENT
   // ----------------------------------------------------------------------
   {
     subheader: t('management'),
     items: [
       // CLIENT
+      // {
+      //   title: t('clients'), path: paths.dashboard.client.root, icon: ICONS.client,
+      //   children: [
+      //     { title: t('list'), path: paths.dashboard.client.root },
+      //     { title: t('create'), path: paths.dashboard.client.new },
+      //   ]
+      // },
+      // {
+      //   title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
+      // },
+      // PROJECT
       {
-        title: t('clients'), path: paths.dashboard.client.root, icon: ICONS.client,
+        title: t('projects'), path: paths.v2.admin.project.root, icon: ICONS.project,
         children: [
-          { title: t('list'), path: paths.dashboard.client.root },
-          { title: t('create'), path: paths.dashboard.client.new },
+          { title: t('list'), path: paths.v2.admin.project.root },
+          { title: t('create'), path: paths.v2.admin.project.new }
         ]
-      },
-      {
-        title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
       },
       // CAMPAIGNS
       {
-        title: t('campaign'), path: paths.dashboard.campaign.root, icon: ICONS.campaign,
+        title: t('campaign'), path: paths.v2.admin.campaign.root, icon: ICONS.campaign,
         children: [
-          { title: t('list'), path: paths.dashboard.campaign.root },
-          { title: t('create'), path: paths.dashboard.campaign.new }
+          { title: t('list'), path: paths.v2.admin.campaign.root },
+          { title: t('create'), path: paths.v2.admin.campaign.new }
         ]
       },
-      // REPORTS
-      {
-        title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
-        children: [
-          { title: t('list'), path: paths.dashboard.report.root },
-          { title: t('create'), path: paths.dashboard.report.new },
-        ]
-      },
+      // // REPORTS
+      // {
+      //   title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
+      //   children: [
+      //     { title: t('list'), path: paths.dashboard.report.root },
+      //     { title: t('create'), path: paths.dashboard.report.new },
+      //   ]
+      // },
       // // ROUTES
       // {
       //   title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
@@ -119,11 +138,11 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('Analysis'),
     items: [
-      { title: t('Campaign Performance'), path: paths.dashboard.analytics.campaignPerformance, icon: ICONS.campaign },
-      { title: t('Activity Tracker'), path: paths.dashboard.analytics.userPerformance, icon: ICONS.userPerformace },
-      { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
-      { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
-      { title: t('Market and Competitive'), path: paths.dashboard.analytics.marketingCompetitive, icon: ICONS.marketAnalysis }
+      { title: t('Campaign Performance'), path: paths.v2.admin["campaign-performance"], icon: ICONS.campaign },
+      { title: t('Activity Tracker'), path: paths.v2.admin["activity-tracker"], icon: ICONS.userPerformace },
+      // { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
+      // { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
+      // { title: t('Market and Competitive'), path: paths.dashboard.analytics.marketingCompetitive, icon: ICONS.marketAnalysis }
     ],
   },
 
@@ -135,154 +154,215 @@ const renderClient = (t: TFunction<"translation", undefined>) => ([
   {
     subheader: t('overview'),
     items: [
-      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      { title: t('Dashboard'), path: paths.v2.client.root, icon: ICONS.dashboard },
     ],
   },
 
+  // MANAGEMENT
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('management'),
+    items: [
+      // PROJECT
+      {
+        title: t('projects'), path: paths.v2.admin.project.root, icon: ICONS.project,
+        children: [
+          { title: t('list'), path: paths.v2.admin.project.root },
+          { title: t('create'), path: paths.v2.admin.project.root }
+        ]
+      },
+      // CAMPAIGNS
+      {
+        title: t('campaign'), path: paths.v2.client.campaign.root, icon: ICONS.campaign,
+        children: [
+          { title: t('list'), path: paths.v2.client.campaign.root },
+          { title: t('create'), path: paths.v2.client.campaign.new }
+        ]
+      },
+      // REPORTS
+      {
+        title: t('reports'), path: paths.v2.client.reports.root, icon: ICONS.report,
+        children: [
+          { title: t('list'), path: paths.v2.client.reports.root },
+          { title: t('create'), path: paths.v2.client.reports.new }
+        ]
+      },
+    ],
+  },
+  // ANALYSIS
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('Analysis'),
+    items: [
+      { title: t('Campaign Performance'), path: paths.v2.client["campaign-performance"], icon: ICONS.campaign },
+      { title: t('Activity Tracker'), path: paths.v2.client["activity-tracker"], icon: ICONS.userPerformace },
+    ],
+  },
+])
+// ----------------------------------------------------------------------
+
+
+const renderProjectManager = (t: TFunction<"translation", undefined>) => ([
+  // OVERVIEW
+// OVERVIEW
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('overview'),
+    items: [
+      { title: t('Dashboard'), path: paths.v2['project-manager'].root, icon: ICONS.dashboard },
+    ],
+  },
+
+  // MANAGEMENT
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('management'),
+    items: [
+      // PROJECT
+      {
+        title: t('projects'), path: paths.v2['project-manager'].project.root, icon: ICONS.project,
+      },
+      // CAMPAIGNS
+      {
+        title: t('campaign'), path: paths.v2['project-manager'].campaign.root, icon: ICONS.campaign,
+        children: [
+          { title: t('list'), path: paths.v2['project-manager'].campaign.root },
+          { title: t('create'), path: paths.v2['project-manager'].campaign.new }
+        ]
+      },
+      // REPORTS
+      {
+        title: t('reports'), path: paths.v2['project-manager'].reports.root, icon: ICONS.report,
+        children: [
+          { title: t('list'), path: paths.v2['project-manager'].reports.root },
+          { title: t('create'), path: paths.v2['project-manager'].reports.new }
+        ]
+      },
+    ],
+  },
+  // ANALYSIS
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('Analysis'),
+    items: [
+      { title: t('Campaign Performance'), path: paths.v2.client["campaign-performance"], icon: ICONS.campaign },
+      { title: t('Activity Tracker'), path: paths.v2.client["activity-tracker"], icon: ICONS.userPerformace },
+    ],
+  },
+])
+// ----------------------------------------------------------------------
+
+
+const renderTeamLead = (t: TFunction<"translation", undefined>) => ([
+  // OVERVIEW
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('overview'),
+    items: [
+    ],
+  },
+
+  // MANAGEMENT
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('management'),
+    items: [
+    ],
+  },
+])
+// ----------------------------------------------------------------------
+
+
+
+const renderAgent = (t: TFunction<"translation", undefined>) => ([
+  // Dashboard
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('Dasboard'),
+    items: [
+      { title: t('Dashboard'), path: paths.v2.admin.root, icon: ICONS.dashboard },
+      // { title: t('Activity Tracker'), path: paths.dashboard.analytics.userPerformance, icon: ICONS.userPerformace },
+      // { title: t('Merchandising'), path: paths.dashboard.analytics.merchandiseAnalysis, icon: ICONS.product },
+      // { title: t('Customer Segmentation'), path: paths.dashboard.analytics.customerSegmentation, icon: ICONS.customerSegmentation },
+      // { title: t('Market and Competitive'), path: paths.dashboard.analytics.marketingCompetitive, icon: ICONS.marketAnalysis }
+    ],
+  },
   // MANAGEMENT
   // ----------------------------------------------------------------------
   {
     subheader: t('management'),
     items: [
       // CLIENT
-      { title: t('projects'), path: paths.dashboard.client.root, icon: ICONS.client },
-      { title: t('account'), path: paths.dashboard.client.root, icon: ICONS.client },
-    ],
-  },
-
-])
-
-const renderLead = (t: TFunction<"translation", undefined>) => ([
-  // OVERVIEW
-  // ----------------------------------------------------------------------
-  {
-    subheader: t('overview'),
-    items: [
-      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics }
-    ],
-  },
-
-  // MANAGEMENT
-  // ----------------------------------------------------------------------
-  {
-    subheader: t('management'),
-    items: [
-      // CLIENT
-      { title: t('projects'), path: paths.dashboard.project.root, icon: ICONS.project },
-      { title: t('campaigns'), path: paths.dashboard.campaign.root, icon: ICONS.client },
-      { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
-    ],
-  },
-
-])
-
-
-
-const renderBrandAmbassador = (t: TFunction<"translation", undefined>) => ([
-  // OVERVIEW
-  // ----------------------------------------------------------------------
-  {
-    subheader: t('overview'),
-    items: [
-      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-    ],
-  },
-
-  // MANAGEMENT
-  // ----------------------------------------------------------------------
-  {
-    subheader: t('management'),
-    items: [
-      // MERCHANT
+      // {
+      //   title: t('clients'), path: paths.dashboard.client.root, icon: ICONS.client,
+      //   children: [
+      //     { title: t('list'), path: paths.dashboard.client.root },
+      //     { title: t('create'), path: paths.dashboard.client.new },
+      //   ]
+      // },
+      // {
+      //   title: t('products'), path: paths.dashboard.product.root, icon: ICONS.product,
+      // },
+      // PROJECT
       {
-        title: t('campaign'), path: paths.dashboard.campaign.root, icon: ICONS.campaign,
+        title: t('projects'), path: paths.v2.admin.project.root, icon: ICONS.project,
         children: [
-          { title: t('list'), path: paths.dashboard.campaign.root },
-          {
-            title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
-            children: [
-              { title: t('list'), path: paths.dashboard.routes.root },
-              { title: t('create'), path: paths.dashboard.routes.new },
-            ]
-          },
-          {
-            title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
-            children: [
-              { title: t('list'), path: paths.dashboard.report.root },
-              { title: t('create'), path: paths.dashboard.report.new },
-            ]
-          },
+          { title: t('list'), path: paths.v2.admin.project.root },
+          { title: t('create'), path: paths.v2.admin.project.new }
         ]
       },
-      { title: t('account'), path: paths.dashboard.user.account, icon: ICONS.user }
-    ],
-  },
-])
-
-const renderMerchant = (t: TFunction<"translation", undefined>) => ([
-  // OVERVIEW
-  // ----------------------------------------------------------------------
-  {
-    subheader: t('overview'),
-    items: [
-      { title: t('dashboard'), path: paths.dashboard.root, icon: ICONS.dashboard },
-    ],
-  },
-
-  // MANAGEMENT
-  // ----------------------------------------------------------------------
-  {
-    subheader: t('management'),
-    items: [
-      // MERCHANT
+      // CAMPAIGNS
       {
-        title: t('campaign'), path: paths.dashboard.campaign.root, icon: ICONS.campaign,
+        title: t('campaign'), path: paths.v2.admin.campaign.root, icon: ICONS.campaign,
         children: [
-          { title: t('list'), path: paths.dashboard.campaign.root },
+          { title: t('list'), path: paths.v2.admin.campaign.root },
+          { title: t('create'), path: paths.v2.admin.campaign.new }
         ]
       },
-      {
-        title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
-        children: [
-          { title: t('list'), path: paths.dashboard.routes.root },
-          { title: t('create'), path: paths.dashboard.routes.new },
-        ]
-      },
-
-      {
-        title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
-        children: [
-          { title: t('list'), path: paths.dashboard.report.root },
-          { title: t('create'), path: paths.dashboard.report.new },
-        ]
-      },
-      { title: t('account'), path: paths.dashboard.user.account, icon: ICONS.user }
+      // // REPORTS
+      // {
+      //   title: t('reports'), path: paths.dashboard.report.root, icon: ICONS.report,
+      //   children: [
+      //     { title: t('list'), path: paths.dashboard.report.root },
+      //     { title: t('create'), path: paths.dashboard.report.new },
+      //   ]
+      // },
+      // // ROUTES
+      // {
+      //   title: t('routes'), path: paths.dashboard.routes.root, icon: ICONS.route,
+      //   children: [
+      //     { title: t('list'), path: paths.dashboard.routes.root },
+      //     { title: t('create'), path: paths.dashboard.routes.new },
+      //   ]
+      // },
+      // { title: t('teams'), path: paths.dashboard.client.root, icon: ICONS.client },
     ],
-  },
+  }
 ])
 // ----------------------------------------------------------------------
 
 export function useNavData() {
   const { t } = useTranslate();
   const realmApp = useRealmApp();
-  const role = useMemo(() => realmApp.currentUser?.customData?.role as unknown as IRole, [realmApp.currentUser?.customData?.role])
+  const rle = useMemo(() => realmApp.currentUser?.customData?.role as unknown as string, [realmApp.currentUser?.customData?.role])
   const data = useMemo(
     () => {
-      switch (role) {
-        case "admin":
+      switch (rle) {
+        case ERole.SUPERADMIN:
           return renderAdmin(t);
-        case "client":
+        case ERole.ADMIN:
+          return renderAdmin(t);
+        case ERole.CLIENT:
           return renderClient(t);
-        case "brand_ambassador":
-          return renderBrandAmbassador(t);
-        case "merchant":
-          return renderMerchant(t);
-        case "lead":
+        case ERole.PROJECT_MANAGER:
+          return renderProjectManager(t);
+        case ERole.TEAM_LEAD:
+          return renderTeamLead(t);
+        case ERole.AGENT:
         default:
-          return renderLead(t);
+          return renderAgent(t);
       }
-    }, [t, role]);
+    }, [t, rle]);
 
   return data;
 }

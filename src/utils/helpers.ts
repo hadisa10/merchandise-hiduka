@@ -2,6 +2,11 @@ import Decimal from "decimal.js";
 import * as Realm from 'realm-web';
 import _, { isNumber } from 'lodash';
 import { cloneElement } from "react";
+import { intervalToDuration } from 'date-fns';
+
+import { paths } from "src/routes/paths";
+
+import { ERole } from "src/config-global";
 
 export async function convertBlobToFile(blob: string, fileName: string): Promise<File | null> {
     try {
@@ -278,6 +283,10 @@ export const safeDateFormatter = (value?: string): string => {
     return new Date().toISOString();
 };
 
+export function generateAccessCode() {
+    return Math.floor(10000 + Math.random() * 90000).toString();
+}
+
 
 export const removeNullFields = <T>(data: T): T | undefined => {
     // Check if the data is an object and not null
@@ -297,3 +306,47 @@ export const removeNullFields = <T>(data: T): T | undefined => {
     return data !== null ? data : undefined;
 
 };
+
+
+export const getRolePath = (rle: string) => {
+    switch (rle) {
+        case ERole.SUPERADMIN:
+            return paths.v2.superadmin.root;
+        case ERole.ADMIN:
+            return paths.v2.admin.root;
+        case ERole.CLIENT:
+            return paths.v2.client.root;
+        case ERole.PROJECT_MANAGER:
+            return paths.v2["project-manager"].root;
+        case ERole.TEAM_LEAD:
+            return paths.v2["team-lead"].root;
+        case ERole.AGENT:
+        default:
+            return paths.v2.agent.root;
+    }
+};
+
+export function getRelevantTimeInfo(milliseconds: number): string {
+    // Create a duration object from milliseconds
+    const duration = intervalToDuration({ start: 0, end: milliseconds });
+
+    // Determine the most relevant unit of time based on the duration
+    if (duration.months && duration.months > 0) {
+        return `${duration.months} month(s)`;
+    } if (duration.days && duration.days > 0) {
+        // Convert days to weeks and days for more precise output
+        const weeks = Math.floor(duration.days / 7);
+        const days = duration.days % 7;
+        return `${weeks} week(s) ${days > 0 ? `and ${days} day(s)` : ''}`;
+    } if (duration.days && duration.days > 0) {
+        return `${duration.days} day(s)`;
+    } if (duration.hours && duration.hours > 0) {
+        return `${duration.hours} hour(s)`;
+    } if (duration.minutes && duration.minutes > 0) {
+        return `${duration.minutes} minute(s)`;
+    } if (duration.seconds && duration.seconds > 0) {
+        return `${duration.seconds} second(s)`;
+    }
+    return '0 seconds';
+
+}

@@ -12,6 +12,7 @@ const ROOTS = {
   AUTH: '/auth',
   AUTH_DEMO: '/auth-demo',
   DASHBOARD: '/dashboard',
+  V2: '/v2'
 };
 
 // ----------------------------------------------------------------------
@@ -242,4 +243,93 @@ export const paths = {
       },
     },
   },
+  v2: {
+    root: `${ROOTS.V2}`,
+    superadmin: {
+      root: `${ROOTS.V2}/superadmin/dashboard`,
+      dashboard: `${ROOTS.V2}/superadmin/dashboard`,
+    },
+    admin: {
+      root: `${ROOTS.V2}/admin/dashboard`,
+      dashboard: `${ROOTS.V2}/admin/dashboard`,
+      project: {
+        root: `${ROOTS.V2}/client/dashboard/project`,
+        list: `${ROOTS.V2}/client/dashboard/project`,
+        new: `${ROOTS.V2}/client/dashboard/project/new`,
+        edit: (id: string) => `${ROOTS.V2}/client/dashboard/project/${id}/edit`,
+      },
+      reports: {
+        root: `${ROOTS.V2}/client/dashboard/report`,
+        list: `${ROOTS.V2}/client/dashboard/report`,
+        new: `${ROOTS.V2}/client/dashboard/report/new`,
+        edit: (id: string) => `${ROOTS.V2}/client/dashboard/report/${id}/edit`,
+      },
+      campaign: {
+        root: `${ROOTS.V2}/admin/dashboard/campaign`,
+        list: `${ROOTS.V2}/admin/dashboard/campaign`,
+        new: `${ROOTS.V2}/admin/dashboard/reports/new`,
+        edit: (id: string) => `${ROOTS.V2}/admin/dashboard/campaign/${id}/edit`,
+      },
+      "campaign-performance": `${ROOTS.V2}/client/dashboard/campaign-performance`,
+      "user-tracking": `${ROOTS.V2}/client/dashboard/user-tracking`,
+      "activity-tracker": `${ROOTS.V2}/client/dashboard/activity-tracking`
+    },
+    client: {
+      root: `${ROOTS.V2}/client/dashboard`,
+      dashboard: `${ROOTS.V2}/client/dashboard`,
+      project: {
+        root: `${ROOTS.V2}/client/dashboard/project`,
+        list: `${ROOTS.V2}/client/dashboard/project`,
+        new: `${ROOTS.V2}/client/dashboard/project/new`,
+        edit: (id: string) => `${ROOTS.V2}/client/dashboard/project/${id}/edit`,
+      },
+      reports: {
+        root: `${ROOTS.V2}/client/dashboard/report`,
+        list: `${ROOTS.V2}/client/dashboard/report`,
+        new: `${ROOTS.V2}/client/dashboard/report/new`,
+        edit: (id: string) => `${ROOTS.V2}/client/dashboard/report/${id}/edit`,
+      },
+      campaign: {
+        root: `${ROOTS.V2}/client/dashboard/campaign`,
+        list: `${ROOTS.V2}/client/dashboard/campaign`,
+        new: `${ROOTS.V2}/client/dashboard/campaign/new`,
+        edit: (id: string) => `${ROOTS.V2}/client/dashboard/campaign/${id}/edit`,
+      },
+      "campaign-performance": `${ROOTS.V2}/client/dashboard/campaign-performance`,
+      "activity-tracker": `${ROOTS.V2}/client/dashboard/activity-tracker`
+    },
+    "project-manager": {
+      root: `${ROOTS.V2}/project-manager/dashboard`,
+      dashboard: `${ROOTS.V2}/project-manager/dashboard`,
+      project: {
+        root: `${ROOTS.V2}/project-manager/dashboard/project`,
+        list: `${ROOTS.V2}/project-manager/dashboard/project`,
+        new: `${ROOTS.V2}/project-manager/dashboard/project/new`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/project/${id}/edit`,
+      },
+      reports: {
+        root: `${ROOTS.V2}/project-manager/dashboard/report`,
+        list: `${ROOTS.V2}/project-manager/dashboard/report`,
+        new: `${ROOTS.V2}/project-manager/dashboard/report/new`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/report/${id}/edit`,
+      },
+      campaign: {
+        root: `${ROOTS.V2}/project-manager/dashboard/campaign`,
+        list: `${ROOTS.V2}/project-manager/dashboard/campaign`,
+        new: `${ROOTS.V2}/project-manager/dashboard/campaign/new`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/campaign/${id}/edit`,
+      },
+      "campaign-performance": `${ROOTS.V2}/project-manager/dashboard/campaign-performance`,
+      "activity-tracker": `${ROOTS.V2}/project-manager/dashboard/activity-tracker`
+    },
+    "team-lead": {
+      root: `${ROOTS.V2}/team-lead/dashboard`,
+      dashboard: `${ROOTS.V2}/team-lead/dashboard`,
+    },
+    agent: {
+      root: `${ROOTS.V2}/agent/dashboard`,
+      dashboard: `${ROOTS.V2}/agent/dashboard`,
+    }
+
+  }
 };
