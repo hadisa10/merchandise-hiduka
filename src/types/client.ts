@@ -46,6 +46,23 @@ export interface IClient {
     client_plan: string;
 }
 
+export interface IUpdatedClient {
+    // __typename?: string,
+    _id: Realm.BSON.ObjectId;
+    active: boolean;
+    creator: IUser;
+    users: string[];
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    children: Realm.BSON.ObjectId;
+    type: "admin" | "agency" | "single-client" | "nested-client",
+    parent: Realm.BSON.ObjectId;
+    client_icon: string;
+    client_plan: string;
+    nestedClients: IClient[];
+}
+
 
 export interface IDraftClient {
     _id: Realm.BSON.ObjectId;

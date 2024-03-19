@@ -8,10 +8,10 @@ import {
     Container
 } from "@mui/material";
 
-import { paths } from "src/routes/paths";
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from "src/routes/components";
 
+import { useRolePath } from "src/hooks/use-path-role";
 import { useClients, useShowLoader } from "src/hooks/realm";
 
 import { fDateTime } from "src/utils/format-time";
@@ -35,6 +35,9 @@ export default function ClientListView() {
 
     const router = useRouter();
 
+
+    const rolePath = useRolePath();
+
     // const handleDeleteRows = useCallback(() => {
     // const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row._id.toString()));
 
@@ -47,18 +50,28 @@ export default function ClientListView() {
         console.log(`${id} DELETED`)
     }, [])
 
+
+
     const handleEditRow = useCallback(
         (id: string) => {
-            router.push(paths.dashboard.client.edit(id));
+            // @ts-expect-error expected
+            if (rolePath && rolePath?.client && rolePath.client?.edit) {
+                // @ts-expect-error expected
+                router.push(rolePath.client.edit(id));
+            }
         },
-        [router]
+        [router, rolePath]
     );
 
     const handleViewRow = useCallback(
         (id: string) => {
-            router.push(paths.dashboard.client.edit(id));
+            // @ts-expect-error expected
+            if (rolePath && rolePath?.client && rolePath.client?.edit) {
+                // @ts-expect-error expected
+                router.push(rolePath.client.edit(id));
+            }
         },
-        [router]
+        [router, rolePath]
     );
 
     const columns: IGenericColumn<IClient>[] = useMemo(() => {
@@ -203,17 +216,20 @@ export default function ClientListView() {
             <CustomBreadcrumbs
                 heading="List"
                 links={[
-                    { name: 'Dashboard', href: paths.dashboard.root },
+                    // @ts-expect-error expected
+                    { name: 'Dashboard', href: rolePath?.root },
                     {
                         name: 'Client',
-                        href: paths.dashboard.client.root,
+                        // @ts-expect-error expected
+                        href: rolePath?.client.root,
                     },
                     { name: 'List' },
                 ]}
                 action={
                     <Button
                         component={RouterLink}
-                        href={paths.dashboard.client.new}
+                        // @ts-expect-error expected
+                        href={rolePath?.client.new}
                         variant="contained"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                     >

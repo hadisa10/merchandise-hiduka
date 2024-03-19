@@ -177,6 +177,8 @@ export type Item = {
     summary: string;
 };
 
+  
+
 export const ItemSchema = {
     name: 'Item',
     properties: {
@@ -252,11 +254,19 @@ export type ICampaign = {
     workingSchedule: Array<string>,
     startDate: Date;
     title: string;
+    salesKpi: {
+        totalDailyUnits: number;
+        totalDailyRevenue: number;
+    },
+    performance_kpi: {
+        total_reach: number;
+    }
     description?: string;
     today_checkin: number;
     total_checkin: number;
     type: string;
     updatedAt: Date;
+    clientTitle?: string
 };
 
 // Exporting the generic type for operators

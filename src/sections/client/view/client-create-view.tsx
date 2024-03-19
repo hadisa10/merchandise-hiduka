@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import Container from '@mui/material/Container';
 
-import { paths } from 'src/routes/paths';
+import { useRolePath } from 'src/hooks/use-path-role';
 
 import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
@@ -25,6 +25,9 @@ export default function ClientCreateView() {
 
   const role = useMemo(() => realmApp.currentUser?.customData?.role as unknown as IRole, [realmApp.currentUser?.customData?.role])
 
+  const rolePath = useRolePath();
+
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -32,11 +35,13 @@ export default function ClientCreateView() {
         links={[
           {
             name: 'Dashboard',
-            href: paths.dashboard.root,
+            // @ts-expect-error expected
+            href: rolePath?.root,
           },
           {
             name: 'Client',
-            href: paths.dashboard.client.root,
+            // @ts-expect-error expected
+            href: rolePath.client.root,
           },
           { name: 'New client' },
         ]}

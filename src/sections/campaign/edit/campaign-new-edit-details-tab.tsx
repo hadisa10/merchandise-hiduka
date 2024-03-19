@@ -1,6 +1,7 @@
 
-import { FC, memo } from 'react';
 import { isObject } from 'lodash';
+import { enqueueSnackbar } from 'notistack';
+import { FC, memo, useState, useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import Chip from '@mui/material/Chip';
@@ -12,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import { Divider, MenuItem } from '@mui/material';
 import { MobileDatePicker, MobileTimePicker, DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
 
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useClients, useShowLoader } from 'src/hooks/realm';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
@@ -22,6 +24,7 @@ import {
   JOB_WORKING_SCHEDULE_OPTIONS,
 } from 'src/_mock';
 
+import { useRealmApp } from 'src/components/realm';
 import { LoadingScreen } from 'src/components/loading-screen';
 import {
   RHFEditor,
@@ -31,25 +34,54 @@ import {
 } from 'src/components/hook-form';
 
 import { ICalendarDate } from 'src/types/calendar';
+import { IProject } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 const INACTIVITY_LIMIT = [
-  {"label": "30 min", "value": 1800000},
-  {"label": "1 hour", "value": 3600000},
-  {"label": "3 hours", "value": 10800000}
+  { "label": "30 min", "value": 1800000 },
+  { "label": "1 hour", "value": 3600000 },
+  { "label": "3 hours", "value": 10800000 }
 ]
-
+const CAMPAIGN_TYPES = [
+  { "label": "Sales", "value": "sales"  },
+  { "label": "Promotion", "value": "promotion" },
+]
 
 const CampaignNewEditDetailsTab: FC = () => {
   const { users, loading: loadingUsers } = useUsers();
 
-  const { control, getFieldState } = useFormContext();
+  const { control, getFieldState, watch } = useFormContext();
 
   const mdUp = useResponsive('up', 'md');
 
   const { loading, clients } = useClients(false);
 
+  const projectsloading = useBoolean();
+
   const showLoader = useShowLoader(loading, 200)
+
+  const realmApp = useRealmApp();
+
+  const [projects, setProjects] = useState<IProject[] | null>(null)
+
+  const client_id = watch("client_id");
+  useEffect(() => {
+      if (client_id) {
+          projectsloading.onTrue()
+          realmApp.currentUser?.functions.getUserProjects(client_id.toString()).then((data: IProject[]) => { 
+            console.log(client_id.toString(), "CLIENT ID")
+            console.log(data, "PROJECTS DATA")
+            setProjects(data)
+          })
+              .catch(e => {
+                  console.error(e)
+                  enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
+              }
+              )
+              .finally(() => projectsloading.onFalse())
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client_id])
 
   const showUsersLoader = useShowLoader(loadingUsers, 200)
 
@@ -85,6 +117,18 @@ const CampaignNewEditDetailsTab: FC = () => {
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Description</Typography>
               <RHFEditor simple name="description" />
+            </Stack>
+
+            <Stack spacing={1.5}>
+                <Typography variant="subtitle2">Campaign Type</Typography>
+                <RHFSelect name="type" label="Type">
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+                  {CAMPAIGN_TYPES.map((limit) => (
+                    <MenuItem key={limit.value} value={limit.value}>
+                      {limit.label}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
             </Stack>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Client</Typography>
@@ -126,6 +170,55 @@ const CampaignNewEditDetailsTab: FC = () => {
                         {...getTagProps({ index })}
                         key={client?._id?.toString() ?? ""}
                         label={client?.name ?? ""}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    )
+                  })
+                }
+              />}
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Project</Typography>
+              {projectsloading.value && <LoadingScreen />}
+              {!projectsloading.value && <RHFAutocomplete
+                name="project_id"
+                label="Project"
+                placeholder="Project client"
+                loading={projectsloading.value}
+                freeSolo
+                options={projects?.map(clnt => clnt._id?.toString()) ?? []}
+                getOptionLabel={(option) => {
+                  const client = projects?.find((clnt) => clnt._id?.toString() === option.toString());
+                  if (client) {
+                    return client?.title
+                  }
+                  return option
+                }}
+                renderOption={(props, option) => {
+                  const client = projects?.filter(
+                    (clnt) => clnt._id?.toString() === option.toString()
+                  )[0];
+
+                  if (!client?._id) {
+                    return null;
+                  }
+
+                  return (
+                    <li {...props} key={client._id?.toString()}>
+                      {client?.title}
+                    </li>
+                  );
+                }}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => {
+                    const client = projects?.find((clnt) => clnt._id?.toString() === option);
+                    return (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={client?._id?.toString() ?? ""}
+                        label={client?.title ?? ""}
                         size="small"
                         color="info"
                         variant="soft"
@@ -500,7 +593,7 @@ const CampaignNewEditDetailsTab: FC = () => {
     </>
   );
 
-  const renderUserManagement = (
+  const renderConstraints = (
     <>
       {mdUp && (
         <Grid md={4}>
@@ -545,6 +638,40 @@ const CampaignNewEditDetailsTab: FC = () => {
     </>
   );
 
+  const renderCampaignKPIS = (
+    <>
+      {mdUp && (
+        <Grid md={4}>
+          <Typography variant="h6" sx={{ mb: 0.5 }}>
+            KPIS
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            KPI details ...
+          </Typography>
+        </Grid>
+      )}
+
+      <Grid xs={12} md={8}>
+        <Card>
+          {!mdUp && <CardHeader title="Constraints" />}
+
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">Sales KPIS</Typography>
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Daily Units Target</Typography>
+              <RHFTextField name="salesKpi.totalDailyUnits" type="number" placeholder="Ex: 100..." />
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Daily Revenue Target</Typography>
+              <RHFTextField name="salesKpi.totalDailyRevenue" type="number" placeholder="Ex: Ksh. 1000..." />
+            </Stack>
+          </Stack>
+        </Card>
+      </Grid>
+    </>
+  );
 
   return (
     <Grid container spacing={3}>
@@ -555,7 +682,9 @@ const CampaignNewEditDetailsTab: FC = () => {
 
       {renderUsers}
 
-      {renderUserManagement}
+      {renderCampaignKPIS}
+
+      {renderConstraints}
 
     </Grid>
   );

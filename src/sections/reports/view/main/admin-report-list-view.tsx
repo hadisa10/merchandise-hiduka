@@ -6,8 +6,9 @@ import {
     Button
 } from "@mui/material";
 
-import { paths } from "src/routes/paths";
 import { RouterLink } from "src/routes/components";
+
+import { useRolePath } from "src/hooks/use-path-role";
 
 import Iconify from "src/components/iconify";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
@@ -16,22 +17,26 @@ import ReportListDataGrid from "../report-list-data-grid";
 
 
 export default function AdminReportListView() {
+    const rolePath = useRolePath();
     return (
         <>
             <CustomBreadcrumbs
                 heading="List"
                 links={[
-                    { name: 'Dashboard', href: paths.dashboard.root },
+                    // @ts-expect-error expected
+                    { name: 'Dashboard', href: rolePath?.root },
                     {
                         name: 'Report',
-                        href: paths.dashboard.report.root,
+                        // @ts-expect-error expected
+                        href: rolePath.report.root,
                     },
                     { name: 'List' },
                 ]}
                 action={
                     <Button
                         component={RouterLink}
-                        href={paths.dashboard.report.new}
+                        // @ts-expect-error expected
+                        href={rolePath.report.new}
                         variant="contained"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                     >

@@ -44,9 +44,6 @@ import { ICampaignTableFilters, ICampaignTableFilterValue } from 'src/types/camp
 import CampaignTableToolbar from './campaign-table-toolbar';
 import CampaignReportTableFiltersResult from './campaign-table-filters-result';
 import {
-  // RenderCellStock,
-  // RenderCellPrice,
-  RenderCellCheckin,
   RenderCellCampaign,
   RenderCellCreatedAt,
 } from './campaign-table-row';
@@ -198,14 +195,6 @@ export default function CampaignListDataGrid() {
       headerName: 'Create at',
       width: 160,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
-    },
-    {
-      field: 'totalCheckins',
-      headerName: 'Total Checkins',
-      flex: 1,
-      minWidth: 360,
-      hideable: false,
-      renderCell: (params) => <RenderCellCheckin params={params} />,
     },
     {
       type: 'actions',

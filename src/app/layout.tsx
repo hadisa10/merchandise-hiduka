@@ -60,7 +60,6 @@ export default function RootLayout({ children }: Props) {
       <body>
         <AuthProvider>
           <ClientProvider>
-
             <LocalizationProvider>
               <SettingsProvider
                 defaultSettings={{
@@ -74,7 +73,6 @@ export default function RootLayout({ children }: Props) {
               >
                 <ThemeProvider>
                   <MotionLazy>
-
                     <RealmProvider appId={appId}>
                       <SnackbarProvider>
                         <CheckoutProvider>

@@ -36,7 +36,7 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
   const coordinatesSchema = Yup.array().of(Yup.number().required())
     .length(2, 'Coordinates must be an array of two numbers')
     .test('lon-lat', 'Coordinates must have a valid longitude and latitude', values => {
-      const [lon, lat] = values || [];
+      const [lat, lon] = values || [];
       return lon >= -180 && lon <= 180 && lat >= -90 && lat <= 90;
     });
 
@@ -69,7 +69,7 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
           latitude: lat ?? 0,
           location: {
             type: currentRoute?.location?.type || 'Point', // Default to 'Point' if not specified
-            coordinates: [lng, lat] || [0, 0], // Default coordinates if not specified
+            coordinates: [lat, lng] || [0, 0], // Default coordinates if not specified
           },
           phoneNumber: currentRoute?.phoneNumber || '',
           road: currentRoute?.road || '',
@@ -116,7 +116,7 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
       latitude: newGeoLocation.lat,
       location: {
         type: 'Point',
-        coordinates: [newGeoLocation.lng, newGeoLocation.lat],
+        coordinates: [newGeoLocation.lat,newGeoLocation.lng,],
       },
       phoneNumber: currentRoute?.phoneNumber || '',
       road: currentRoute?.road || '',
@@ -133,7 +133,6 @@ export default function RouteCreateEditForm({ currentRoute, newGeoLocation, hand
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const dt = new Date();
-
       const route: IRoute = {
         _id: createObjectId(),
         businessSector: data.businessSector,
