@@ -1,4 +1,4 @@
-import { CampaignPerformanceAnalyticView } from 'src/sections/overview/analytics/mock';
+import { ClientCampaignPerformaceView } from 'src/sections-v2/client/c-analytics';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function CampaignPerformancePage() {
-  return <CampaignPerformanceAnalyticView />
+  return <ClientCampaignPerformaceView />
 }

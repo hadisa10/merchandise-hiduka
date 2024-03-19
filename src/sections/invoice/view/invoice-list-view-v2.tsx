@@ -50,6 +50,10 @@ import InvoiceAnalytic from '../invoice-analytic';
 import InvoiceTableRow from '../invoice-table-row';
 import InvoiceTableToolbar from '../invoice-table-toolbar';
 import InvoiceTableFiltersResult from '../invoice-table-filters-result';
+import { useRealmApp } from 'src/components/realm';
+import { IUpdateInvoice } from 'src/types/realm/realm-types';
+import { createObjectId } from 'src/utils/realm';
+import InvoiceTableRowV2 from '../invoice-table-row-v2';
 
 // ----------------------------------------------------------------------
 
@@ -73,7 +77,7 @@ const defaultFilters: IInvoiceTableFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceListViewV2() {
+export default function InvoiceListViewV2({ campaign_id }: { campaign_id?: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const theme = useTheme();
@@ -86,15 +90,42 @@ export default function InvoiceListViewV2() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<IInvoice[]>([]);
+  const [tableData, setTableData] = useState<IUpdateInvoice<string>[]>([]);
 
-  const { loading: ordersLoading, invoices } = useInvoices();
+  const invoiceLoading = useBoolean();
+
+  const realmApp = useRealmApp();
 
   useEffect(() => {
-    if (invoices.length) {
-      setTableData(invoices);
+    if (campaign_id) {
+      console.log(campaign_id.toString(), "CAMPAIGN ID")
+      invoiceLoading.onTrue()
+      realmApp.currentUser?.functions.getCampaignInvoice(campaign_id.toString())
+        .then((data: IUpdateInvoice[]) => setTableData(data.map(x => (
+          {
+            ...x,
+            _id: x._id.toString(),
+            order_id: createObjectId().toString(),
+            campaign_id: x.campaign_id.toString()
+          }
+        ))))
+        .catch(e => {
+          console.error(e)
+          enqueueSnackbar("Failed to get invoices", { variant: "error" })
+        }
+        )
+        .finally(() => invoiceLoading.onFalse())
     }
-  }, [invoices, ordersLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // const { loading: invoiceLoading, invoices } = useInvoices();
+
+  // useEffect(() => {
+  //   if (invoices.length) {
+  //     setTableData(invoices);
+  //   }
+  // }, [invoices, invoiceLoading]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -216,6 +247,7 @@ export default function InvoiceListViewV2() {
 
   const handleViewRow = useCallback(
     (id: string) => {
+      console.log(rolePath, "ROLE PATH")
       // @ts-expect-error expected
       router.push(rolePath?.invoice.details(id));
     },
@@ -349,7 +381,7 @@ export default function InvoiceListViewV2() {
               onSelectAllRows={(checked) => {
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id)
+                  dataFiltered.map((row) => row._id.toString())
                 );
               }}
               action={
@@ -393,7 +425,7 @@ export default function InvoiceListViewV2() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row._id)
+                      dataFiltered.map((row) => row._id.toString())
                     )
                   }
                 />
@@ -405,14 +437,14 @@ export default function InvoiceListViewV2() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <InvoiceTableRow
-                        key={row._id}
+                      <InvoiceTableRowV2
+                        key={row._id.toString()}
                         row={row}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onViewRow={() => handleViewRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        selected={table.selected.includes(row._id.toString())}
+                        onSelectRow={() => table.onSelectRow(row._id.toString())}
+                        onViewRow={() => handleViewRow(row._id.toString())}
+                        onEditRow={() => handleEditRow(row._id.toString())}
+                        onDeleteRow={() => handleDeleteRow(row._id.toString())}
                       />
                     ))}
 
@@ -474,7 +506,7 @@ function applyFilter({
   filters,
   dateError,
 }: {
-  inputData: IInvoice[];
+  inputData: IUpdateInvoice<string>[];
   comparator: (a: any, b: any) => number;
   filters: IInvoiceTableFilters;
   dateError: boolean;
@@ -494,8 +526,8 @@ function applyFilter({
   if (name) {
     inputData = inputData.filter(
       (invoice) =>
-        invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        invoice.invoiceNumber.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        invoice.invoiceTo?.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
@@ -505,13 +537,13 @@ function applyFilter({
 
   if (service.length) {
     inputData = inputData.filter((invoice) =>
-      invoice.items.some((filterItem) => service.includes(filterItem.service))
+      invoice.items.some((filterItem) => service.includes(filterItem.service ?? ""))
     );
   }
 
   if (!dateError) {
     if (startDate && endDate) {
-      inputData = inputData.filter((invoice) => isBetween(invoice.createDate, startDate, endDate));
+      inputData = inputData.filter((invoice) => isBetween(invoice.createdAt, startDate, endDate));
     }
   }
 

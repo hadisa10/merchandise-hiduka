@@ -177,7 +177,7 @@ export type Item = {
     summary: string;
 };
 
-  
+
 
 export const ItemSchema = {
     name: 'Item',
@@ -561,101 +561,59 @@ export const client_usersSchema = {
     },
 };
 
-export type invoice = {
-    _id: Realm.BSON.ObjectId;
-    createDate: string;
+export type IUpdateInvoice<T = Realm.BSON.ObjectId> = {
+    _id: T;
+    campaign_id: T;
+    createdAt: Date;
     discount?: number;
-    dueDate: string;
-    invoiceFrom?: invoice_invoiceFrom;
-    invoiceNumber: string;
-    invoiceTo?: invoice_invoiceTo;
+    dueDate: Date;
+    invoiceFrom?: InvoiceInvoiceFrom;
+    invoiceNumber: Realm.BSON.ObjectId;
+    invoiceTo?: InvoiceInvoiceTo;
     items: Array<invoice_items>;
-    order_id?: Realm.BSON.ObjectId;
+    location?: InvoiceLocation;
+    order_id?: T;
     sent: number;
     shipping?: number;
     status: string;
     subTotal: number;
     taxes: number;
     totalAmount: number;
+    updatedAt: Date;
 };
 
-export const invoiceSchema = {
-    name: 'invoice',
-    properties: {
-        _id: 'objectId',
-        createDate: 'string',
-        discount: 'double?',
-        dueDate: 'string',
-        invoiceFrom: 'invoice_invoiceFrom',
-        invoiceNumber: 'string',
-        invoiceTo: 'invoice_invoiceTo',
-        items: 'invoice_items[]',
-        order_id: 'objectId?',
-        sent: 'int',
-        shipping: 'double?',
-        status: 'string',
-        subTotal: 'double',
-        taxes: 'double',
-        totalAmount: 'double',
-    },
-    primaryKey: '_id',
+export type InvoiceLocation = {
+    coordinates: Array<number>;
+    type: string;
 };
 
-export type invoice_invoiceFrom = {
+
+export type InvoiceInvoiceFrom<T = Realm.BSON.ObjectId> = {
     addressType: string;
+    client_id: T;
     company: string;
-    company_id: Realm.BSON.ObjectId;
     email: string;
     fullAddress: string;
-    id?: string;
     name: string;
     phoneNumber: string;
     primary: boolean;
-    user_id: Realm.BSON.ObjectId;
+    user_id: T;
 };
 
-export const invoice_invoiceFromSchema = {
-    name: 'invoice_invoiceFrom',
-    embedded: true,
-    properties: {
-        addressType: 'string',
-        company: 'string',
-        company_id: 'objectId',
-        email: 'string',
-        fullAddress: 'string',
-        id: 'string?',
-        name: 'string',
-        phoneNumber: 'string',
-        primary: 'bool',
-        user_id: 'objectId',
-    },
-};
 
-export type invoice_invoiceTo = {
+
+export type InvoiceInvoiceTo = {
     addressType?: string;
     company?: string;
     email?: string;
     fullAddress?: string;
     id?: string;
-    name?: string;
+    name: string;
     phoneNumber?: string;
     primary?: boolean;
 };
 
-export const invoice_invoiceToSchema = {
-    name: 'invoice_invoiceTo',
-    embedded: true,
-    properties: {
-        addressType: 'string?',
-        company: 'string?',
-        email: 'string?',
-        fullAddress: 'string?',
-        id: 'string?',
-        name: 'string?',
-        phoneNumber: 'string?',
-        primary: 'bool?',
-    },
-};
+
 
 export type invoice_items = {
     description: string;

@@ -19,6 +19,8 @@ import { useClientContext } from 'src/components/clients';
 import { useSettingsContext } from 'src/components/settings';
 import SearchNotFound from 'src/components/search-not-found';
 
+import InvoiceListViewV2 from 'src/sections/invoice/view/invoice-list-view-v2';
+
 import { ICampaign } from 'src/types/realm/realm-types';
 
 import ClientCampaignSalesInventoryView from './campaign/c-campaign-sales-inventory';
@@ -27,6 +29,7 @@ import ClientCampaignSalesInventoryView from './campaign/c-campaign-sales-invent
 
 export const ANALYTICS_OVERVIEW_DETAILS_TABS = [
   { value: 'sales', label: 'Sales & Inventory' },
+  { value: 'invoice', label: 'Invoices' },
   { value: 'engagement', label: 'Engagement Rate' },
   { value: 'conversion', label: 'Conversion Rate ' },
   { value: 'cost', label: 'Cost Per Acquisition ' },
@@ -196,6 +199,7 @@ export default function ClientCampaignPerformaceView() {
       ))}
     </Tabs>
   );
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -221,9 +225,8 @@ export default function ClientCampaignPerformaceView() {
       {/* {!selectCampaign && <>FAILED TO FETCH REPORTS</>} */}
 
       {selectCampaign && renderTabs}
-
       {currentTab === "sales" && selectCampaign && !showCampaignLoading && <ClientCampaignSalesInventoryView campaign={selectCampaign} />}
-
+      {currentTab === "invoice" && selectCampaign && !showCampaignLoading && <InvoiceListViewV2 campaign_id={selectCampaign?._id.toString()} />}
       {currentTab === "engagement" && <>Campaign Engagement</>}
       {currentTab === "conversion" && <>Campaign Engagement</>}
 
