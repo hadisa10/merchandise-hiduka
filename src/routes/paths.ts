@@ -253,7 +253,14 @@ export const paths = {
       root: `${ROOTS.V2}/admin/dashboard`,
       dashboard: `${ROOTS.V2}/admin/dashboard`,
       product: `${ROOTS.V2}/admin/dashboard/product`,
-      invoice: `${ROOTS.V2}/admin/dashboard/invoice`,
+      invoice: {
+        root: `${ROOTS.V2}/admin/dashboard/invoice`,
+        list: `${ROOTS.V2}/admin/dashboard/invoice`,
+        new: `${ROOTS.V2}/admin/dashboard/invoice/new`,
+        edit: (id: string) => `${ROOTS.V2}/admin/dashboard/invoice/${id}/edit`,
+        details: (id: string) => `${ROOTS.V2}/admin/dashboard/invoice/${id}`,
+
+      },
       project: {
         root: `${ROOTS.V2}/client/dashboard/project`,
         list: `${ROOTS.V2}/client/dashboard/project`,

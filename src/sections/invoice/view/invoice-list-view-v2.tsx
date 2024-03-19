@@ -19,10 +19,10 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { useInvoices } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useRolePath } from 'src/hooks/use-path-role';
 
+import { createObjectId } from 'src/utils/realm';
 import { isAfter, isBetween } from 'src/utils/format-time';
 
 import { INVOICE_SERVICE_OPTIONS } from 'src/_mock';
@@ -30,6 +30,7 @@ import { INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
@@ -44,16 +45,13 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { IInvoice, IInvoiceTableFilters, IInvoiceTableFilterValue } from 'src/types/invoice';
+import { IUpdateInvoice } from 'src/types/realm/realm-types';
+import { IInvoiceTableFilters, IInvoiceTableFilterValue } from 'src/types/invoice';
 
 import InvoiceAnalytic from '../invoice-analytic';
-import InvoiceTableRow from '../invoice-table-row';
+import InvoiceTableRowV2 from '../invoice-table-row-v2';
 import InvoiceTableToolbar from '../invoice-table-toolbar';
 import InvoiceTableFiltersResult from '../invoice-table-filters-result';
-import { useRealmApp } from 'src/components/realm';
-import { IUpdateInvoice } from 'src/types/realm/realm-types';
-import { createObjectId } from 'src/utils/realm';
-import InvoiceTableRowV2 from '../invoice-table-row-v2';
 
 // ----------------------------------------------------------------------
 
@@ -247,7 +245,6 @@ export default function InvoiceListViewV2({ campaign_id }: { campaign_id?: strin
 
   const handleViewRow = useCallback(
     (id: string) => {
-      console.log(rolePath, "ROLE PATH")
       // @ts-expect-error expected
       router.push(rolePath?.invoice.details(id));
     },

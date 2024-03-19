@@ -16,7 +16,7 @@ import { _addressBooks } from 'src/_mock';
 
 import FormProvider from 'src/components/hook-form';
 
-import { IInvoice } from 'src/types/invoice';
+import { IUpdateInvoice } from 'src/types/realm/realm-types';
 
 import InvoiceNewEditDetails from './invoice-new-edit-details';
 import InvoiceNewEditAddress from './invoice-new-edit-address';
@@ -25,7 +25,7 @@ import InvoiceNewEditStatusDate from './invoice-new-edit-status-date';
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentInvoice?: IInvoice;
+  currentInvoice?: IUpdateInvoice;
 };
 
 export default function InvoiceNewEditForm({ currentInvoice }: Props) {
@@ -70,7 +70,7 @@ export default function InvoiceNewEditForm({ currentInvoice }: Props) {
   const defaultValues = useMemo(
     () => ({
       invoiceNumber: currentInvoice?.invoiceNumber || 'INV-1990',
-      createDate: currentInvoice?.createDate || new Date(),
+      createDate: currentInvoice?.createdAt || new Date(),
       dueDate: currentInvoice?.dueDate || null,
       taxes: currentInvoice?.taxes || 0,
       shipping: currentInvoice?.shipping || 0,
@@ -94,6 +94,7 @@ export default function InvoiceNewEditForm({ currentInvoice }: Props) {
   );
 
   const methods = useForm({
+    // @ts-expect-error expected
     resolver: yupResolver(NewInvoiceSchema),
     defaultValues,
   });
