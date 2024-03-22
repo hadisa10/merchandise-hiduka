@@ -43,7 +43,7 @@ interface IUserActivityDataGridProps {
 
 // ----------------------------------------------------------------------
 
-const StyledLabel = styled('span')(({ theme }) => ({
+export const StyledLabel = styled('span')(({ theme }) => ({
     ...theme.typography.caption,
     width: "max-content",
     flexShrink: 0,
@@ -331,8 +331,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
             console.log(data, "SNAPSHOT")
         }
     })
-    console.log(campaignKPIMetrics, "CAMPAIGN KPI METRICS")
-    console.log(campaignUsers, "CAMPAIGN USERS")
 
     return (
         <FormProvider methods={methods} onSubmit={onSubmit}>
