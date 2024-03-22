@@ -122,19 +122,20 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
                 'date-after-start',
                 'End date must be after start date',
                 (value, { parent }) => {
-                    const { startDate } = parent;
+                    const { strtDate } = parent;
                     // Ensure both startDate and endDate are valid Date objects before comparing
-                    return startDate && value && new Date(startDate) < new Date(value);
+                    return strtDate && value && new Date(strtDate) < new Date(value);
                 }
             ),
     })
 
     const defaultValues = useMemo(
         () => ({
-            startDate: startOfDay(campaign.startDate),
+            startDate: startOfDay(campaign?.startDate),
             endDate: new Date()
         }),
-        []
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [campaign]
     );
 
     const methods = useForm({
