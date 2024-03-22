@@ -229,6 +229,12 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 minWidth: 120
             },
             {
+                field: "phoneNumber",
+                label: "Phone Number",
+                type: "string",
+                minWidth: 150
+            },
+            {
                 field: "totalHoursWorked",
                 label: "Total Hours Worked",
                 type: "number",

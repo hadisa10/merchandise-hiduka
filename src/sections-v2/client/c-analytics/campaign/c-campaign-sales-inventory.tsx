@@ -122,11 +122,11 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
                 'date-after-start',
                 'End date must be after start date',
                 (value, { parent }) => {
-                    const { strtDate } = parent;
+                    const { startDate: strtDate } = parent;
                     // Ensure both startDate and endDate are valid Date objects before comparing
                     return strtDate && value && new Date(strtDate) < new Date(value);
                 }
-            ),
+            )
     })
 
     const defaultValues = useMemo(
