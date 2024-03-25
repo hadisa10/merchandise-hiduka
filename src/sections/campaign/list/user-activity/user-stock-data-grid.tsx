@@ -133,7 +133,6 @@ export default function UserStockDataGrid({ campaign, handleOpenCheckInRouteView
         if (isString(campaignId) && !isEmpty(campaignId) && snapshotDateTime) {
             loadingCampaignUsers.onTrue()
             setCampaignUsersError(null)
-            console.log(snapshotDateTime, "SNAPSHOT CAMPAIGN 2@@@")
 
             realmApp.currentUser?.functions.getCampaignStock(campaignId.toString(), snapshotDateTime.toISOString())
                 .then((res: { campaignProducts: IProductItem[], usersWithStockInfo: ICampaignStock[] }) => {

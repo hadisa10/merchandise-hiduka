@@ -57,6 +57,7 @@ import InvoiceTableFiltersResult from '../invoice-table-filters-result';
 
 const TABLE_HEAD = [
   { id: 'invoiceNumber', label: 'Customer' },
+  { id: 'invoiceFrom', label: 'Sales Person' },
   { id: 'createDate', label: 'Create' },
   { id: 'dueDate', label: 'Due' },
   { id: 'price', label: 'Amount' },

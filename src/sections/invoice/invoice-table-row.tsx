@@ -41,7 +41,7 @@ export default function InvoiceTableRow({
   onEditRow,
   onDeleteRow,
 }: Props) {
-  const { sent, invoiceNumber, createDate, dueDate, status, invoiceTo, totalAmount } = row;
+  const { sent, invoiceNumber, createDate, dueDate, status, invoiceTo, invoiceFrom, totalAmount } = row;
 
   const confirm = useBoolean();
 
@@ -55,15 +55,15 @@ export default function InvoiceTableRow({
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={invoiceTo.name} sx={{ mr: 2 }}>
-            {invoiceTo.name.charAt(0).toUpperCase()}
+          <Avatar alt={invoiceTo?.name} sx={{ mr: 2 }}>
+            {invoiceTo?.name.charAt(0).toUpperCase()}
           </Avatar>
 
           <ListItemText
             disableTypography
             primary={
               <Typography variant="body2" noWrap>
-                {invoiceTo.name}
+                {invoiceTo?.name}
               </Typography>
             }
             secondary={
@@ -76,6 +76,19 @@ export default function InvoiceTableRow({
                 {invoiceNumber}
               </Link>
             }
+          />
+        </TableCell>
+        
+        <TableCell>
+          <ListItemText
+            primary={invoiceFrom?.name}
+            secondary={invoiceFrom?.phoneNumber}
+            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
+            secondaryTypographyProps={{
+              mt: 0.5,
+              component: 'span',
+              typography: 'caption',
+            }}
           />
         </TableCell>
 

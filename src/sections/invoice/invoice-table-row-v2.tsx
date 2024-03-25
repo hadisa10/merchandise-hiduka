@@ -41,7 +41,7 @@ export default function InvoiceTableRowV2({
   onEditRow,
   onDeleteRow,
 }: Props) {
-  const { sent, invoiceNumber, createdAt, dueDate, status, invoiceTo, totalAmount } = row;
+  const { sent, invoiceNumber, createdAt, dueDate, status, invoiceTo, invoiceFrom, totalAmount } = row;
 
   const confirm = useBoolean();
 
@@ -76,6 +76,18 @@ export default function InvoiceTableRowV2({
                 {invoiceNumber.toString()}
               </Link>
             }
+          />
+        </TableCell>
+        <TableCell>
+          <ListItemText
+            primary={invoiceFrom?.name}
+            secondary={invoiceFrom?.phoneNumber}
+            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
+            secondaryTypographyProps={{
+              mt: 0.5,
+              component: 'span',
+              typography: 'caption',
+            }}
           />
         </TableCell>
 
