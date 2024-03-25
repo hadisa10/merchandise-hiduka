@@ -2,9 +2,9 @@
 
 import * as Yup from 'yup';
 import { enqueueSnackbar } from "notistack";
-import { isEmpty, isObject, isString } from "lodash";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { isEmpty, isNumber, isObject, isString } from "lodash";
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 
 import { LoadingButton } from "@mui/lab";
@@ -19,20 +19,19 @@ import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
 import { useResponsive } from "src/hooks/use-responsive";
 
-import { formatFilterAndRemoveFields } from "src/utils/helpers";
-import { fDateTime, fTimestamp, formatDifference } from "src/utils/format-time";
+import { fTimestamp, formatDifference } from "src/utils/format-time";
 
 import { useRealmApp } from "src/components/realm";
 import { SystemIcon } from "src/components/iconify";
 import { DataGridFlexible } from "src/components/data-grid";
-import { LoadingScreen } from "src/components/loading-screen";
 import FormProvider from "src/components/hook-form/form-provider";
 import { IGenericColumn } from "src/components/data-grid/data-grid-flexible";
 
 import AnalyticsWidgetSummary from "src/sections/overview/analytics/analytics-widget-summary";
 
-import { IUser, ICampaignUser } from "src/types/user_realm";
-import { ICampaign, ICampaignKPIMetricsResponse } from "src/types/realm/realm-types";
+import { IUser } from "src/types/user_realm";
+import { IProductItem } from 'src/types/product';
+import { ICampaign, ICampaignStock, ICampaignStockGridRow, ICampaignKPIMetricsResponse } from "src/types/realm/realm-types";
 
 import AssignProductDialog from "./assign-product-dialog";
 
@@ -51,7 +50,7 @@ export const StyledLabel = styled('span')(({ theme }) => ({
     fontWeight: theme.typography.fontWeightSemiBold,
 }));
 
-export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteView }: IUserActivityDataGridProps) {
+export default function UserStockDataGrid({ campaign, handleOpenCheckInRouteView }: IUserActivityDataGridProps) {
     // const { loading, clients } = useClients(false);
 
     const theme = useTheme();
@@ -64,7 +63,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     const mdUp = useResponsive('up', 'md');
 
-    const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([])
+    const [campaignUsers, setCampaignUsers] = useState<ICampaignStockGridRow[]>([])
 
     const [campaignKPIMetrics, setCampaignKPIMetrics] = useState<ICampaignKPIMetricsResponse | null>(null)
 
@@ -100,31 +99,30 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
     });
 
     const {
-        reset,
         setValue,
         watch,
         control,
         handleSubmit,
         getFieldState,
-        formState: { isSubmitting, errors },
+        formState: { isSubmitting },
     } = methods;
 
     const { error: startDateError } = getFieldState("snapshotDateTime")
 
-    const [selectedCampaignUsers, setSelectedCampaignUsers] = useState<ICampaignUser[] | null>(null)
+    console.log(isSubmitting, 'START DATE ERROR')
 
-    const userActivitySummary = useBoolean();
+    const [selectedCampaignUsers, setSelectedCampaignUsers] = useState<ICampaignStockGridRow[] | null>(null)
 
-    const showActivityLoader = useShowLoader((userActivitySummary.value), 300);
+    const [campaignProduct, setCampaignProducts] = useState<IProductItem[]>();
 
-    const campaignKPIMetricsLoading = useBoolean();
+    const [productRank, setProductRank] = useState<IProductItem[]>([]);
 
-    const showCampaignKPIMetricsLoader = useShowLoader((campaignKPIMetricsLoading.value), 300);
+    const campaignUserStockMetricsLoading = useBoolean();
+
+    const showCampaignKPIMetricsLoader = useShowLoader((campaignUserStockMetricsLoading.value), 300);
 
     // eslint-disable-next-line
     const [campaignUsersError, setCampaignUsersError] = useState(null)
-
-    const [selectedRows, setSelectedRows] = useState<IUser[] | null>(null);
 
     const showLoader = useShowLoader(loadingCampaignUsers.value, 500);
 
@@ -135,11 +133,27 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
         if (isString(campaignId) && !isEmpty(campaignId) && snapshotDateTime) {
             loadingCampaignUsers.onTrue()
             setCampaignUsersError(null)
-            realmApp.currentUser?.functions.getCampaignUsers(campaignId.toString(), snapshotDateTime.toISOString())
-                .then((res: ICampaignUser[]) => {
+            console.log(snapshotDateTime, "SNAPSHOT CAMPAIGN 2@@@")
+
+            realmApp.currentUser?.functions.getCampaignStock(campaignId.toString(), snapshotDateTime.toISOString())
+                .then((res: { campaignProducts: IProductItem[], usersWithStockInfo: ICampaignStock[] }) => {
                     setCampaignUsersError(null)
+
                     console.log(res, "RESPONSE")
-                    setCampaignUsers(res)
+                    setCampaignProducts(res.campaignProducts);
+                    const val: ICampaignStockGridRow[] = res.usersWithStockInfo.map(x => {
+                        const t: { [key: string]: number; } = {};
+                        x.stockInfo.forEach(z => {
+                            t[z.productId.toString()] = z.latestStock
+                            return z.productId;
+                        })
+                        return {
+                            _id: x._id.toString(),
+                            name: x.name,
+                            ...t
+                        }
+                    })
+                    setCampaignUsers(val)
                 }
                 )
                 .catch(e => {
@@ -150,20 +164,19 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 .finally(() => {
                     loadingCampaignUsers.onFalse()
                 })
+            console.log(snapshotDateTime, "SNAPSHOT CAMPAIGN 2dadsa@@@")
+
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignId, snapshotDateTime])
 
-
     useEffect(() => {
         if (isString(campaignId) && !isEmpty(campaignId) && snapshotDateTime) {
-            campaignKPIMetricsLoading.onTrue()
-            setCampaignUsersError(null)
-            realmApp.currentUser?.functions.getCampaignKPIMetrics(campaignId.toString(), snapshotDateTime.toISOString())
-                .then((res: ICampaignKPIMetricsResponse) => {
-                    setCampaignUsersError(null)
-                    console.log(res, "RESPONSE")
-                    setCampaignKPIMetrics(res)
+            campaignUserStockMetricsLoading.onTrue()
+            realmApp.currentUser?.functions.getCampaignStockMetrics(campaignId.toString(), snapshotDateTime.toISOString())
+                .then((res: { campaignProducts: IProductItem[] }) => {
+                    console.log(res, "RESP");
+                    setProductRank(res.campaignProducts)
                 }
                 )
                 .catch(e => {
@@ -172,31 +185,23 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                     console.error(e, "REPORT FETCH")
                 })
                 .finally(() => {
-                    campaignKPIMetricsLoading.onFalse()
+                    campaignUserStockMetricsLoading.onFalse()
                 })
+            console.log(snapshotDateTime, "SNAPSHOT CAMPAIGN 2dadsa@@@")
+
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignId, snapshotDateTime])
 
-    // const handleDeleteRows = useCallback((id: string) => {
-    //     const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
-    //     if (user && handleOpenCheckInRouteView) {
-    //         handleOpenCheckInRouteView(user);
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [campaignUsers])
+
 
 
     const handleAssignProductsToUser = useCallback((ids: string[]) => {
-        const sUsers = campaignUsers.filter(campaignUser => ids.some(x => x.toString() === campaignUser._id.toString()));
-        if (sUsers) {
-            setSelectedCampaignUsers(sUsers);
-            openAssign.onTrue()
-        }
+        openAssign.onTrue()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignUsers])
 
-    const handleBulkAssignProducts = useCallback((cmpUsers: ICampaignUser[]) => {
+    const handleBulkAssignProducts = useCallback((cmpUsers: ICampaignStockGridRow[]) => {
         if (cmpUsers) {
             setSelectedCampaignUsers(cmpUsers);
             openAssign.onTrue()
@@ -206,11 +211,10 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     const handleEditRow = useCallback(
         (id: string) => {
-            const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
-            if (user && handleOpenCheckInRouteView) {
-                handleOpenCheckInRouteView(user);
-            }
-
+            // const user = campaignUsers.find(campaignUser => campaignUser._id.toString() === id.toString());
+            // if (user && handleOpenCheckInRouteView) {
+            // handleOpenCheckInRouteView(user);
+            // }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [campaignUsers]
@@ -218,63 +222,29 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     const changedSnapshot = watch("snapshotDateTime")
 
-    const columns: IGenericColumn<ICampaignUser>[] = useMemo(() => {
-        const cols: Omit<IGenericColumn<ICampaignUser>, "order">[] = [
+    const columns: IGenericColumn<ICampaignStockGridRow>[] = useMemo(() => {
+        const prds = campaignProduct?.map(x => ({
+            field: x._id.toString(),
+            label: x.name,
+            type: "number",
+            minWidth: 200
+        })) ?? []
+        const cols: Omit<IGenericColumn<ICampaignStock<string>>, "order">[] = [
             {
                 field: "_id",
                 label: "id",
                 type: "string"
             },
             {
-                field: "displayName",
+                field: "name",
                 label: "Name",
                 type: "main",
                 minWidth: 300
-
             },
+            // @ts-expect-error expected
+            ...prds,
             {
-                field: "isCheckedIn",
-                label: "Live",
-                type: "boolean",
-                minWidth: 120
-            },
-            {
-                field: "phoneNumber",
-                label: "Phone Number",
-                type: "string",
-                minWidth: 150
-            },
-            {
-                field: "totalHoursWorked",
-                label: "Total Hours Worked",
-                type: "number",
-                minWidth: 120
-            },
-            {
-                field: "totalEarnings",
-                label: "Total Earnings",
-                type: "number",
-                minWidth: 120
-            },
-            {
-                field: "checkInCount",
-                label: "No. of days",
-                type: "number",
-                minWidth: 120
-            },
-            {
-                field: "totalSessionCount",
-                label: "No. of Sessions",
-                type: "number",
-                minWidth: 120
-            },
-            {
-                field: "lastActivity",
-                label: "Latest Activity",
-                type: "string",
-                minWidth: 200
-            },
-            {
+                // @ts-expect-error expected
                 field: "actions",
                 label: "Actions",
                 type: "actions",
@@ -296,52 +266,25 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
 
         ]
+        console.log(prds, "PRDS")
+        console.log(campaignProduct, "PRDS")
         return cols.map((c, i) => ({ ...c, order: i + 1 }))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [campaignUsers])
+    }, [campaignUsers, campaignProduct])
 
 
     const cleanedUsers = useMemo(() => {
         if (!Array.isArray(campaignUsers)) return []
-        const filtered = formatFilterAndRemoveFields(
-            campaignUsers,
-            // @ts-expect-error expected
-            ["__typename"],
-            [
-                {
-                    key: "updatedAt",
-                    formatter: fDateTime,
-                },
-                {
-                    key: "createdAt",
-                    formatter: fDateTime,
-                },
-                {
-                    key: "lastActivity",
-                    formatter: fDateTime
-                },
-                // {
-                //     key: "active",
-                //     formatter: (v) => {
-                //         if (isString(v)) {
-                //             return v.toLowerCase() === "yes"
-                //         }
-                //         return false
-                //     },
-                // },
-
-            ],
-            undefined,
-            ["name", "creator"]
-        ) ?? []
-        return filtered
+        return campaignUsers
     }, [campaignUsers])
 
+    const totalStock = useMemo(() => Array.isArray(productRank) ? productRank.reduce((acc, item) => acc + ( isNumber(item.totalStock) ? item.totalStock : 0), 0) : 0 ,[productRank])
+    const totalSold = useMemo(() => Array.isArray(productRank) ? productRank.reduce((acc, item) => acc + ( isNumber(item.totalSold) ? item.totalSold : 0), 0) : 0 ,[productRank])
+    const topProduct = useMemo(() => Array.isArray(productRank) ? productRank[0]: null ,[productRank])
 
-
-    const totalLiveUsers = useMemo(() => cleanedUsers.filter(x => x.isCheckedIn).length, [cleanedUsers])
 
     const onSubmit = handleSubmit(async (data) => {
+        console.log(data, "DATA")
         if (data.snapshotDateTime) {
             setSnapShotDateTime(data.snapshotDateTime)
         } else {
@@ -414,7 +357,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                                 }} variant="soft" >
                                     Clear
                                 </Button>
-                                <LoadingButton type="submit" loading={isSubmitting || showActivityLoader || showCampaignKPIMetricsLoader} color="success" variant="contained">
+                                <LoadingButton type="submit" loading={isSubmitting || showLoader || showCampaignKPIMetricsLoader} color="success" variant="contained">
                                     Get Snapshot
                                 </LoadingButton>
                             </Stack>
@@ -423,9 +366,9 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                             <AnalyticsWidgetSummary
                                 sx={{ width: "100%" }}
                                 component={ButtonBase}
-                                onClick={() => console.log("TOTAL LIVE USERS")}
-                                title="Total Live Users"
-                                total={totalLiveUsers ?? 0}
+                                onClick={() => console.log("TOTAL STOCK")}
+                                title="Total Stock"
+                                total={totalStock}
                                 color="error"
                                 icon={<SystemIcon type="live" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                             />
@@ -434,11 +377,11 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                             <AnalyticsWidgetSummary
                                 sx={{ width: "100%" }}
                                 component={ButtonBase}
-                                onClick={() => console.log("TOTAL REACH")}
-                                title="Total Checkins Today"
-                                total={campaignKPIMetrics?.totalUsersCheckedInToday ?? 0}
+                                onClick={() => console.log("TOTAL SOLD STOCK")}
+                                title="Total Sold stock"
+                                total={totalSold}
                                 color="warning"
-                                icon={<SystemIcon type="todayCheckin" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                                icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                             />
                         </Grid>
                         <Grid xs={12} sm={6} md={4}>
@@ -446,71 +389,12 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                                 sx={{ width: "100%" }}
                                 component={ButtonBase}
                                 onClick={() => console.log("TOTAL USERS IN CAMPAIGN")}
-                                title="Total Campaign Users"
-                                total={campaignKPIMetrics?.totalUsersInCampaign ?? 0}
+                                title={`Top Product in Stock: ${topProduct?.name ?? ""}`}
+                                total={topProduct?.totalStock ?? 0}
                                 color="info"
                                 icon={<SystemIcon type="users" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                             />
                         </Grid>
-
-
-                        <Grid xs={12} sm={6} md={4}>
-                            <AnalyticsWidgetSummary
-                                sx={{ width: "100%" }}
-                                component={ButtonBase}
-                                onClick={() => console.log("TOTAL REACH")}
-                                title="Total Customers Reached"
-                                total={campaignKPIMetrics?.totalFilledReports ?? 0}
-                                color="success"
-                                icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                            />
-                        </Grid>
-
-                        <Grid xs={12} sm={6} md={4}>
-                            <AnalyticsWidgetSummary
-                                sx={{ width: "100%" }}
-                                component={ButtonBase}
-                                onClick={() => console.log("TOTAL REACH")}
-                                title="Reached Today"
-                                total={campaignKPIMetrics?.dailyStats.reports ?? 0}
-                                color="success"
-                                icon={<SystemIcon type="reach" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                            />
-                        </Grid>
-
-                        <Grid xs={12} sm={6} md={4}>
-                            <AnalyticsWidgetSummary
-                                sx={{ width: "100%" }}
-                                component={ButtonBase}
-                                onClick={() => console.log("TOTAL REACH")}
-                                title="Sold Today"
-                                total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
-                                color="success"
-                                icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                            />
-                        </Grid>
-                        {/* <Grid xs={12} sm={6} md={2}>
-                    <AnalyticsWidgetSummary
-                        sx={{ width: "100%" }}
-                        component={ButtonBase}
-                        onClick={() => console.log("TOTAL SALES PER DAY")}
-                        title="Average Sales per day"
-                        total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
-                        color="info"
-                        icon={<SystemIcon type="average" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                    />
-                </Grid>
-                <Grid xs={12} sm={6} md={2}>
-                    <AnalyticsWidgetSummary
-                        sx={{ width: "100%" }}
-                        component={ButtonBase}
-                        onClick={() => console.log("TOTAL SALES PER DAY")}
-                        title="Average Sales per day"
-                        total={campaignKPIMetrics?.dailyStats.sales?.dailySales ?? 0}
-                        color="info"
-                        icon={<SystemIcon type="average" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
-                    />
-                </Grid> */}
                     </Grid>
                     <Card
                         sx={{
@@ -520,37 +404,35 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                             flexDirection: { md: 'column' },
                         }}
                     >
-                        {showLoader ? (
-                            <LoadingScreen />
-                        ) : cleanedUsers && (
-                            <DataGridFlexible
-                                data={cleanedUsers}
-                                getRowIdFn={(row) => row._id.toString()}
-                                columns={columns}
-                                hideColumn={{ _id: false }}
-                                title={`${campaign.title.split(" ").join("-")}-user-activity`}
-                                customActions={{
-                                    routes: {
-                                        label: "Assign Routes",
-                                        color: "info",
-                                        icon: "eos-icons:route", // Assuming the icon is specified as a string identifier for Iconify
-                                        action: (selectedData: ICampaignUser[]) => console.log(selectedData, "USERS TO ASSIGN ROUTES")
-                                    },
-                                    products: {
-                                        label: "Assign Product",
-                                        color: "info",
-                                        icon: "fluent-mdl2:product-variant", // Assuming the icon is specified as a string identifier for Iconify
-                                        action: handleBulkAssignProducts
-                                    }
-                                    // delete: {
-                                    //     label: "Delete",
-                                    //     color: "error",
-                                    //     icon: "solar:trash-bin-trash-bold", // Assuming the icon is specified as a string identifier for Iconify
-                                    //     action: (selectedData: ICampaignUser[]) => console.log(selectedData, "IDS FOR DELETION")
-                                    // }
-                                }}
-                            />
-                        )}
+
+                        <DataGridFlexible
+                            data={cleanedUsers}
+                            getRowIdFn={(row) => row?._id?.toString()}
+                            columns={columns}
+                            loading={showLoader}
+                            hideColumn={{ _id: false }}
+                            title={`${campaign.title.split(" ").join("-")}-user-activity`}
+                            customActions={{
+                                routes: {
+                                    label: "Assign Routes",
+                                    color: "info",
+                                    icon: "eos-icons:route", // Assuming the icon is specified as a string identifier for Iconify
+                                    action: (selectedData: ICampaignStockGridRow[]) => console.log(selectedData, "USERS TO ASSIGN ROUTES")
+                                },
+                                products: {
+                                    label: "Assign Product",
+                                    color: "info",
+                                    icon: "fluent-mdl2:product-variant", // Assuming the icon is specified as a string identifier for Iconify
+                                    action: handleBulkAssignProducts
+                                }
+                                // delete: {
+                                //     label: "Delete",
+                                //     color: "error",
+                                //     icon: "solar:trash-bin-trash-bold", // Assuming the icon is specified as a string identifier for Iconify
+                                //     action: (selectedData: ICampaignUser[]) => console.log(selectedData, "IDS FOR DELETION")
+                                // }
+                            }}
+                        />
                     </Card>
                 </Stack>
             </FormProvider>
@@ -559,7 +441,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                     open={openAssign.value}
                     onClose={openAssign.onFalse}
                     campaignId={campaignId}
-                    users={selectedCampaignUsers.map(x => ({ _id: x._id.toString(), name: `${x.firstname} ${x.lastname}` }))}
+                    users={selectedCampaignUsers}
                     handleAssignNewProduct={() => console.log("ASSIGN")}
                 />
             }

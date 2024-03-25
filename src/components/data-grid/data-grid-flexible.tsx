@@ -382,8 +382,7 @@ function CustomToolbar<RowType>({ title, selectedRows, customActions, customFilt
               <Button
                 key={customAction.label}
                 size='small'
-                fullWidth
-                sx={{ width: "100%" }}
+                sx={{ width: "max-content" }}
                 variant={customAction.variant ?? "soft"}
                 color={customAction.color ?? "info"}
                 startIcon={<Iconify icon={customAction.icon} />} // Ensure you have a mapping for these icons

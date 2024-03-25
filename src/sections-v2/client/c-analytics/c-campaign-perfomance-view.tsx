@@ -23,16 +23,18 @@ import InvoiceListViewV2 from 'src/sections/invoice/view/invoice-list-view-v2';
 
 import { ICampaign } from 'src/types/realm/realm-types';
 
+import ClientCampaignStockTracker from './campaign/c-campaign-stock-tracker';
 import ClientCampaignSalesInventoryView from './campaign/c-campaign-sales-inventory';
+
 
 // ----------------------------------------------------------------------
 
 export const ANALYTICS_OVERVIEW_DETAILS_TABS = [
   { value: 'sales', label: 'Sales & Inventory' },
   { value: 'invoice', label: 'Invoices' },
+  { value: 'stock', label: 'Stock Tracker ' },
   { value: 'engagement', label: 'Engagement Rate' },
   { value: 'conversion', label: 'Conversion Rate ' },
-  { value: 'cost', label: 'Cost Per Acquisition ' },
   { value: 'invsetment', label: 'Return on investment' },
 ];
 
@@ -227,7 +229,7 @@ export default function ClientCampaignPerformaceView() {
       {selectCampaign && renderTabs}
       {currentTab === "sales" && selectCampaign && !showCampaignLoading && <ClientCampaignSalesInventoryView campaign={selectCampaign} />}
       {currentTab === "invoice" && selectCampaign && !showCampaignLoading && <InvoiceListViewV2 campaign_id={selectCampaign?._id.toString()} />}
-      {currentTab === "engagement" && <>Campaign Engagement</>}
+      {currentTab === "stock" && selectCampaign && !showCampaignLoading && <ClientCampaignStockTracker campaign={selectCampaign} />}
       {currentTab === "conversion" && <>Campaign Engagement</>}
 
 

@@ -2,6 +2,39 @@ import * as Realm from "realm-web";
 
 import { IClient } from "../client";
 
+export type IChangeStock = {
+    campaign_id: string;
+    merchantProducts: {
+        merchant_id: string;
+        products: IStockChangeProduct[]
+    }[]
+}
+
+export type ICampaignStock<T = Realm.BSON.ObjectId> = {
+    _id: T;
+    name: string;
+    stockInfo: IStockInfo<T>[]
+}
+
+export type ICampaignStockGridRow = {
+    _id: string
+    name: string;
+    [key: string]: number | string;
+}
+
+
+export type IStockInfo<T> = {
+    productId: T;
+    latestStock: number
+}
+
+export type IStockChangeProduct = {
+    product_id: string,
+    type: "assign" | "sale",
+    quantity: number,
+    notes: string,
+    images: string[]
+}
 
 export type IProject<T = Realm.BSON.ObjectId> = {
     _id: T;

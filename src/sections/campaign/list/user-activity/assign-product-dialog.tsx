@@ -1,27 +1,29 @@
 import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { isEmpty, isString } from 'lodash';
 import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
+import { Stack } from '@mui/system';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { List, ListItem, Typography } from '@mui/material';
+import { List, Badge, Avatar, ListItem, Typography, ListItemText, ListItemAvatar } from '@mui/material';
 
-import { useProducts } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import FormProvider from 'src/components/hook-form';
+import { useRealmApp } from 'src/components/realm';
+import { SystemIcon } from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { LoadingScreen } from 'src/components/loading-screen';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 import { IProductItem } from 'src/types/product';
-import { ICampaignUser } from 'src/types/user_realm';
+import { IChangeStock, IStockChangeProduct } from 'src/types/realm/realm-types';
 
 
 // ----------------------------------------------------------------------
@@ -31,7 +33,7 @@ type Props = {
   onClose: VoidFunction;
   campaignId: string;
   // eslint-disable-next-line react/no-unused-prop-types
-  users: ICampaignUser[];
+  users: { _id: string, name: string }[];
   // eslint-disable-next-line react/no-unused-prop-types
   handleAssignNewProduct: () => void;
 };
@@ -39,10 +41,10 @@ type Props = {
 // const icon = <Iconify icon="fluent:checkbox-checked-16-regular" />;
 // const checkedIcon = <Iconify icon="fluent:checkbox-checked-16-filled" />;
 
-export default function AssignProductDialog({ campaignId, open, onClose }: Props) {
+export default function AssignProductDialog({ campaignId, open, onClose, users }: Props) {
   const { enqueueSnackbar } = useSnackbar();
-  // const { saveRoute } = useRealmRoutes();
-  const { getCampaignProducts } = useProducts();
+
+  const realmApp = useRealmApp()
 
   const loadingReport = useBoolean()
 
@@ -53,14 +55,82 @@ export default function AssignProductDialog({ campaignId, open, onClose }: Props
 
   const loading = useMemo(() => loadingReport.value, [loadingReport.value])
 
+
+
+
+  // Define the main schema for the routeAddress object
+  const AssignedUserProductsSchema = Yup.object().shape({
+    assignedUserProducts: Yup.lazy(() =>
+      Yup.array().of(
+        Yup.object({
+          product_id: Yup.string().required('Product is required'),
+          coverUrl: Yup.string(),
+          name: Yup.string(),
+          quantity: Yup.number()
+            .nullable()
+            .transform((value, originalValue) => {
+              // Ensure originalValue is a string before calling trim()
+              if (typeof originalValue === "string") {
+                // If originalValue is an empty string, return null; otherwise, return the value unmodified
+                return originalValue.trim() === "" ? null : value;
+              }
+              // If originalValue is not a string, return it unmodified
+              return value;
+            })
+            .min(1, "Minimum of one product")
+            .typeError("Quantity must be a number")
+        })
+      )
+    ),
+  })
+  // products: Yup.lazy(() => Yup.array().of(Yup.string().required('Product is required').min(1, 'Select atleast one product')))
+
+  const defaultValues = useMemo(
+    () => ({
+      assignedUserProducts: products.map(x => ({
+        product_id: x._id.toString(),
+        coverUrl: x.coverUrl,
+        name: x.name,
+        quantity: null
+      }))
+    }),
+    [products]
+  );
+
+  const methods = useForm({
+    resolver: yupResolver(AssignedUserProductsSchema),
+    defaultValues,
+  });
+
+  const {
+    control,
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const { fields } = useFieldArray({
+    control,
+    name: "assignedUserProducts",
+  });
+
   useEffect(() => {
     if (isString(campaignId) && !isEmpty(campaignId)) {
       loadingReport.onTrue()
       setProductsError(null)
-      getCampaignProducts(campaignId.toString())
-        .then(res => {
+      realmApp.currentUser?.functions.getCampaignsProducts(campaignId.toString())
+        .then((res: IProductItem[]) => {
           setProductsError(null)
           setProducts(res)
+          const newDefaultValues = {
+            assignedUserProducts: res.map(product => ({
+              product_id: product._id.toString(),
+              coverUrl: product.coverUrl,
+              name: product.name,
+              quantity: null // Or any other default value for quantity
+            }))
+          };
+          reset(newDefaultValues);
         }
         )
         .catch(e => {
@@ -75,54 +145,29 @@ export default function AssignProductDialog({ campaignId, open, onClose }: Props
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaignId])
 
-
-  // Define the main schema for the routeAddress object
-  const AssignedUserProductsSchema = Yup.object().shape({
-    assignedUserProducts: Yup.lazy(() =>
-      Yup.array().of(
-        Yup.object({
-          user_id: Yup.string().required('User is required'),
-          products: Yup.array().of(Yup.string().required('Product is required'))
-        })
-      )
-    ),
-  })
-  // products: Yup.lazy(() => Yup.array().of(Yup.string().required('Product is required').min(1, 'Select atleast one product')))
-
-  const defaultValues = useMemo(
-    () => ({
-      assignedUserProducts: []
-    }),
-    []
-  );
-
-  const methods = useForm({
-    resolver: yupResolver(AssignedUserProductsSchema),
-    defaultValues,
-  });
-
-  const {
-    getValues,
-    trigger,
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (data.assignedUserProducts) {
+        const prds: IStockChangeProduct[] = data.assignedUserProducts
+          .filter(x => x.quantity)
+          .map(z => ({
+            product_id: z.product_id,
+            type: "assign",
+            quantity: z.quantity as number,
+            notes: `${realmApp.currentUser?.customData?.firstname} ${realmApp.currentUser?.customData?.lastname} assigned ${z.quantity} to`,
+            images: []
+          }))
+        const merchantProducts = users.map(x => ({ merchant_id: x._id.toString(), products: prds.map(z => ({ ...z, notes: `${z.notes} ${x.name}` })) }))
 
-        console.log("CLICKED")
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        // const dt = new Date();
+        const changeStockArray: IChangeStock = {
+          campaign_id: campaignId,
+          merchantProducts
+        }
+        const stockChangeResult = await realmApp.currentUser?.functions.changeStock(changeStockArray)
+        console.log(stockChangeResult, 'CHANGE RESULT')
         reset();
-        console.log(campaignId, "CAMPAIGN")
-        // handleAddNewProduct();
-        // await addCampaignProducts(campaignId, data.products)
-
-        // onClose();
-        enqueueSnackbar('Products added!');
+        onClose();
+        enqueueSnackbar(stockChangeResult?.success ?? "Stock movements processed successfully");
         console.info('DATA', data);
       } else {
         throw new Error("No products selected")
@@ -136,7 +181,7 @@ export default function AssignProductDialog({ campaignId, open, onClose }: Props
   return (
     <Dialog
       fullWidth
-      maxWidth="md"
+      maxWidth="sm"
       open={open}
       onClose={onClose}
     // PaperProps={{
@@ -144,7 +189,14 @@ export default function AssignProductDialog({ campaignId, open, onClose }: Props
     // }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Assign Product</DialogTitle>
+        <DialogTitle>
+          <Stack direction="row" spacing={1}>
+            Assign Product
+            <Badge badgeContent={users?.length ?? 0} color="secondary">
+              <SystemIcon type="users" width={30} />
+            </Badge>
+          </Stack>
+        </DialogTitle>
 
         <DialogContent>
           <Box
@@ -165,73 +217,59 @@ export default function AssignProductDialog({ campaignId, open, onClose }: Props
 
               Array.isArray(products) && !isEmpty(products) && !loading &&
 
-              <List>
+              <List sx={{ width: '100%', overflowY: "auto", maxHeight: 200 }}>
                 {
-                  products.map(product => (
-                    <ListItem>
-                      {product.name}
+                  fields.map((prd, index) => (
+                    <ListItem
+                      key={prd.product_id.toString()}
+                      secondaryAction={
+                        <RHFTextField
+                          sx={{ maxWidth: 200 }}
+                          size="small"
+                          type="number"
+                          name={`assignedUserProducts[${index}].quantity`}
+                          label="Quantity"
+                          InputLabelProps={{ shrink: true }}
+                        />
+                      }
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          variant="rounded"
+                          alt={prd.name}
+                          src={prd.coverUrl}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText id={prd.product_id} primary={prd.name} />
+
                     </ListItem>
                   ))
                 }
+                {/* {
+                  products.map(product => (
+                    <ListItem
+                      key={product._id.toString()}
+                      secondaryAction={
+                        <IconButton color="error">
+                          <SystemIcon type="campaign" />
+                        </IconButton>
+                      }
+                      disablePadding
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          variant="rounded"
+                          alt={product.name}
+                          src={product.coverUrl}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText id={product._id.toString()} primary={product.name} />
+                    </ListItem>
+                  ))
+                } */}
               </List>
 
             }
-            {/* {Array.isArray(products) && !isEmpty(products) && !loading && <RHFAutocomplete
-              name="products"
-              label="Products"
-              placeholder="+ products"
-              loading={loading}
-              fullWidth
-              multiple
-              limitTags={2}
-              freeSolo
-              disableCloseOnSelect
-              options={products.map(prd => prd._id)}
-              getOptionLabel={(option) => {
-                const product = products?.find((prd) => prd._id.toString() === option?.toString());
-                if (product) {
-                  return product?.name
-                }
-                return option
-              }}
-              renderOption={(props, option, { selected }) => {
-                const product = products?.filter(
-                  (prd) => prd._id.toString() === option.toString()
-                )[0];
-
-                if (!product?._id) {
-                  return null;
-                }
-
-                return (
-                  <li {...props} key={product._id.toString()}>
-                    <Checkbox
-                      icon={icon}
-                      checkedIcon={checkedIcon}
-                      style={{ marginRight: 8 }}
-                      checked={selected}
-                    />
-                    {product?.name}
-                  </li>
-                );
-              }}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => {
-                  const product = products?.find((prd) => prd._id.toString() === option.toString());
-                  return (
-                    <Chip
-                      {...getTagProps({ index })}
-                      key={product?._id.toString() ?? ""}
-                      label={product?.name ?? ""}
-                      size="small"
-                      color="info"
-                      variant="soft"
-                    />
-                  )
-                })
-              }
-            />
-            } */}
           </Box>
         </DialogContent>
 
@@ -239,8 +277,10 @@ export default function AssignProductDialog({ campaignId, open, onClose }: Props
           <Button variant="outlined" onClick={onClose}>
             Cancel
           </Button>
-
-          <LoadingButton onClick={async () => {
+          <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+            Assign Stock
+          </LoadingButton>
+          {/* <LoadingButton onClick={async () => {
             const isValid = await trigger(); // Trigger validation for all fields
             console.log(isValid)
             if (isValid) {
@@ -250,8 +290,8 @@ export default function AssignProductDialog({ campaignId, open, onClose }: Props
             }
 
           }} variant="contained" loading={isSubmitting}>
-            Add
-          </LoadingButton>
+            Assign Stock
+          </LoadingButton> */}
         </DialogActions>
       </FormProvider>
     </Dialog>
