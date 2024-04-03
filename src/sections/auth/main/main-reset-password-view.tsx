@@ -75,6 +75,8 @@ export default function MainResetPasswordView() {
       // console.log(test, "TEST")
       // console.log(data.email, "EMAIL")
       const href = paths.auth.main.login;
+      enqueueSnackbar("Password reset successfully", { variant: "success" })
+
       router.push(href);
     } catch (error) {
       console.error(error);

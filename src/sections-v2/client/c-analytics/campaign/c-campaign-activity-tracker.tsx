@@ -55,7 +55,7 @@ function ClientCampaignActivityTracker({ campaign }: { campaign: ICampaign }) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [dashboarCampaignSalesMetrics, setDashboarCampaignSalesMetrics] = useState<ISalesAnalyticsResponse[] | null>(null);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [dashboardTimeSalesMetrics, setDashboardTimeSalesMetrics] = useState<ITimeFrameSalesDataResponse[] | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [dashboardSalesByRegionMetrics, setDashboardSalesByRegionMetrics] = useState<ISalesByRegion[] | null>(null);

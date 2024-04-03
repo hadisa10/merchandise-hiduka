@@ -55,7 +55,7 @@ export default function MainForgotPasswordView() {
       const searchParams = new URLSearchParams({
         email: data.email,
       }).toString();
-
+      enqueueSnackbar("A reset password email has been sent to you, check your inbox", { variant: "success" })
       const href = `${paths.auth.main.verify}?${searchParams}`;
       router.push(href);
     } catch (error) {
