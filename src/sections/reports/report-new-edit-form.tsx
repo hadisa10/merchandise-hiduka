@@ -51,6 +51,7 @@ export const REPORT_DETAILS_TABS = [
   { value: 'questions', label: 'Questions' },
   { value: 'test', label: 'Test Report' },
   { value: 'responses', label: 'Responses' },
+  { value: 'merged-responses', label: "Merged Reponses" }
 ];
 
 
@@ -63,6 +64,7 @@ const QuestionsNewEditList = lazy(() => import('./question-component/questions-n
 const ReportsDetailsToolbar = lazy(() => import('./report-details-toolbar'));
 const ReportNewEditDetailsForm = lazy(() => import('./edit/report-new-edit-details-form'));
 const ResponsesGridView = lazy(() => import('./responses-component/responses-list-view'));
+const MergedResponsesGridView = lazy(() => import('./responses-component/merged-responses-list-view'));
 
 export default function ReportNewEditForm({ currentReport }: Props) {
 
@@ -296,6 +298,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
         {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} /></Suspense>}
         {currentTab === 'questions' && <Suspense fallback={<LoadingScreen />}><QuestionsNewEditList /></Suspense>}
         {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><ResponsesGridView report={currentReport} questions={currentReport?.questions} /></Suspense>}
+        {currentTab === 'merged-responses' && <Suspense fallback={<LoadingScreen />}><MergedResponsesGridView report={currentReport} questions={currentReport?.questions} /></Suspense>}
 
         {/* {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}

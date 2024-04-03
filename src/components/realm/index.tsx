@@ -8,8 +8,10 @@ import atlasConfig from "../../atlasConfig.json";
 
 interface AppContextProps extends globalThis.Realm.App {
     registerUser: (registerUserDetails: globalThis.Realm.Auth.RegisterUserDetails) => Promise<void>
-    resendConfirmationEmail: (email: string) => Promise<void>
+    resendConfirmationEmail: ({ email }: { email: string }) => Promise<void>
     logOut: () => Promise<void>
+    resetPasswordEmail: ({ email }: { email: string }) => Promise<void>
+    resetPassword: (resetPasswordDetails: globalThis.Realm.Auth.ResetPasswordDetails) => Promise<void>
     loading: boolean;
     // Add other properties/methods you may use from the Realm.App object
 }
@@ -58,6 +60,24 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
         },
         [app]
     );
+    const resetPasswordEmail = useCallback(
+        async ({ email }: globalThis.Realm.Auth.SendResetPasswordDetails) => {
+            setLoading(true);
+            await app.emailPasswordAuth.sendResetPasswordEmail({ email })
+            setLoading(false)
+            setCurrentUser(app.currentUser);
+        },
+        [app]
+    );
+    const resetPassword = useCallback(
+        async ({ token, tokenId, password }: globalThis.Realm.Auth.ResetPasswordDetails) => {
+            setLoading(true);
+            await app.emailPasswordAuth.resetPassword({ token, tokenId, password })
+            setLoading(false)
+            setCurrentUser(app.currentUser);
+        },
+        [app]
+    );
     const logOut = useCallback(async () => {
         try {
             const user = app.currentUser;
@@ -73,7 +93,7 @@ export function RealmProvider({ appId, children }: { appId: string; children: Re
     }, [app, reset]);
 
     // @ts-expect-error
-    const appContext: AppContextProps = useMemo(() => ({ ...app, currentUser, logIn, logOut, registerUser, resendConfirmationEmail, loading }), [app, logIn, logOut, registerUser, resendConfirmationEmail, currentUser, loading]);
+    const appContext: AppContextProps = useMemo(() => ({ ...app, currentUser, logIn, logOut, registerUser, resendConfirmationEmail, resetPasswordEmail, resetPassword, loading }), [app, logIn, logOut, registerUser, resendConfirmationEmail, currentUser, loading, resetPassword, resetPasswordEmail]);
 
     return <RealmAppContext.Provider value={appContext}>{children}</RealmAppContext.Provider>;
 }

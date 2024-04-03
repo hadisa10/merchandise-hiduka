@@ -13,7 +13,6 @@ import UserStockDataGrid from 'src/sections/campaign/list/user-activity/user-sto
 import { ICampaign, ISalesByRegion, ISalesAnalyticsResponse, ITimeFrameSalesDataResponse } from 'src/types/realm/realm-types';
 
 
-const UserActivityView = lazy(() => import('src/sections/campaign/list/user-activity'));
 
 
 function ClientCampaignStockTracker({ campaign }: { campaign: ICampaign }) {
@@ -27,7 +26,7 @@ function ClientCampaignStockTracker({ campaign }: { campaign: ICampaign }) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [dashboarCampaignSalesMetrics, setDashboarCampaignSalesMetrics] = useState<ISalesAnalyticsResponse[] | null>(null);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [dashboardTimeSalesMetrics, setDashboardTimeSalesMetrics] = useState<ITimeFrameSalesDataResponse[] | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [dashboardSalesByRegionMetrics, setDashboardSalesByRegionMetrics] = useState<ISalesByRegion[] | null>(null);

@@ -37,7 +37,7 @@ export default function CampaignNewView() {
     const [error, setError] = useState<unknown>();
 
     // const [products, setProducts] = useState<IProductItem[] | undefined>(undefined);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [users, setUsers] = useState<IUser[] | undefined>(undefined);
 
     const showCampaignLoading = useShowLoader(usersloading.value && productsLoading.value, 300)

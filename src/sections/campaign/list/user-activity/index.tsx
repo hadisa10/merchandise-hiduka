@@ -1,21 +1,26 @@
+import { enqueueSnackbar } from 'notistack';
 import { isAfter, isBefore } from 'date-fns';
-import { memo, useMemo, useState, useCallback } from 'react';
+import { memo, useMemo, useState, useEffect, useCallback } from 'react';
 import { m, LazyMotion, domAnimation, AnimatePresence } from 'framer-motion';
 
 import Grid from '@mui/system/Unstable_Grid/Grid';
-import { Box, Tab, Tabs, Stack, IconButton, Typography } from '@mui/material';
 import { MobileDateTimePicker, DesktopDateTimePicker } from '@mui/x-date-pickers';
+import { Box, Tab, Tabs, Stack, IconButton, Typography, ButtonBase } from '@mui/material';
 
+import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
+import Iconify, { SystemIcon } from 'src/components/iconify';
+
+import AnalyticsWidgetSummary from 'src/sections/overview/analytics/analytics-widget-summary';
 
 import { IUser } from 'src/types/user_realm';
-import { ICampaign } from 'src/types/realm/realm-types';
+import { ICampaign, IUserActivityMetrics } from 'src/types/realm/realm-types';
 
-import UserActivityMapView from './user-activity-map-view';
 import UserActivityDataGrid from './user-activity-data-grid';
+import UserActivityMapViewUpdated from './user-activity-map-view-updated';
 
 export const USER_DETAILS_TAB = [
     { value: 'checkins', label: 'Check Ins' },
@@ -34,7 +39,7 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
 
     const [endDate, setEndDate] = useState<Date | null>(new Date());
 
-    const [startDate, setStartDate] = useState<Date | null>(new Date());
+    const [startDate, setStartDate] = useState<Date | null>(campaign?.startDate ? new Date(campaign.startDate) : new Date());
 
     const endDateError = useMemo(() => {
         if (!(endDate && startDate)) return false;
@@ -46,6 +51,32 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
         return isBefore(endDate, startDate)
     }, [startDate, endDate])
 
+    const realmApp = useRealmApp();
+
+    const metricsloading = useBoolean(true)
+
+    const showLoadingLoader = useShowLoader((metricsloading.value), 300);
+
+    const [checkinMetrics, setUserCheckinMetrics] = useState<IUserActivityMetrics | null>(null);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [error, setError] = useState<unknown>(null);
+
+    useEffect(() => {
+        if (campaign?._id && selectedUser?._id) {
+            metricsloading.onTrue()
+            setError(null);
+            realmApp.currentUser?.functions.getUserCampaignCheckinMetrics({ campaign_id: campaign._id.toString(), startDate, endDate, user_id: selectedUser._id.toString() }).then((data: IUserActivityMetrics) => setUserCheckinMetrics(data))
+                .catch((e) => {
+                    console.error(e)
+                    setError(e);
+                    enqueueSnackbar("Failed to get campaign checkin ", { variant: "error" })
+                }
+                )
+                .finally(() => metricsloading.onFalse())
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [campaign?._id, selectedUser, startDate, endDate])
 
     const handleOpenCheckInRouteView = useCallback((user: IUser) => {
         if (user) {
@@ -213,6 +244,39 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
                                     </IconButton>
                                 </Box>
                             </Grid>
+                            <Grid xs={12} sm={6} md={4}>
+                                <AnalyticsWidgetSummary
+                                    sx={{ width: "100%" }}
+                                    component={ButtonBase}
+                                    onClick={() => console.log("TOTAL SALES")}
+                                    title="Total Days Checked in"
+                                    total={checkinMetrics?.summary[0].totalCheckins ?? 0}
+                                    color="error"
+                                    icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                                />
+                            </Grid>
+                            <Grid xs={12} sm={6} md={4}>
+                                <AnalyticsWidgetSummary
+                                    sx={{ width: "100%" }}
+                                    component={ButtonBase}
+                                    onClick={() => console.log("TOTAL SALES")}
+                                    title="Total Units Sold"
+                                    total={checkinMetrics?.summary[0].totalUnitsSold ?? 0}
+                                    color="error"
+                                    icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                                />
+                            </Grid>
+                            <Grid xs={12} sm={6} md={4}>
+                                <AnalyticsWidgetSummary
+                                    sx={{ width: "100%" }}
+                                    component={ButtonBase}
+                                    onClick={() => console.log("TOTAL Filled Reports")}
+                                    title="Total Filled Reports"
+                                    total={checkinMetrics?.summary[0].totalFilledReports ?? 0}
+                                    color="error"
+                                    icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
+                                />
+                            </Grid>
                             <Grid xs={12} md={1.5}>
                                 {renderTabs}
                             </Grid>
@@ -220,11 +284,13 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
                             <Grid xs={12} md={10.5} px={2}>
                                 {
                                     currentTab === "checkins" && campaign._id &&
-                                    <UserActivityMapView
+                                    <UserActivityMapViewUpdated
                                         user={selectedUser}
                                         startDate={startDate}
                                         endDate={endDate}
                                         campaignId={campaign._id.toString()}
+                                        loading={showLoadingLoader}
+                                        checkins={checkinMetrics?.checkins ? checkinMetrics?.checkins : []}
                                         handleNewRouteOpen={() => console.log("OPEN")}
                                         handleAddNewRoute={() => console.log("NEW ROUTE")}
                                         handleRemoveNewRoute={() => console.log("REMOVE")}

@@ -98,7 +98,6 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
         if (startDate && endDate && user._id) {
             getCampaignUserCheckins(campaignId, startDate.toISOString(), endDate.toISOString(), user._id.toString())
                 .then(res => {
-                    console.log(res, 'RESPONSE')
                     setRoutes(res)
                 })
                 .catch(e => {

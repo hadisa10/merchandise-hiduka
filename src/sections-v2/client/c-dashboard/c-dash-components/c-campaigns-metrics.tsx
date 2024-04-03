@@ -41,7 +41,7 @@ function ClientDashboardCampaignMetrics() {
   const [dashboardReportsMetrics, setDashboardReportsMetrics] = useState<IAdminDashboardReportSummary | null>(null);
   const [dashboardMetricsUpdated, setDashboardMetricsUpdated] = useState<IClientDashboardSummaryUpdated | null>(null);
 
-  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<unknown>(null);
 
 

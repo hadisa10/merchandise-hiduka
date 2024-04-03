@@ -2,6 +2,7 @@
 
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
+import { enqueueSnackbar } from 'notistack';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
@@ -13,16 +14,17 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { PasswordIcon } from 'src/assets/icons';
 
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
 export default function MainForgotPasswordView() {
-  const { forgotPassword } = useAuthContext();
+
+  const realmApp = useRealmApp()
 
   const router = useRouter();
 
@@ -46,8 +48,10 @@ export default function MainForgotPasswordView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await forgotPassword?.(data.email);
-
+      console.log(data, "DATA")
+      const test = await realmApp.resetPasswordEmail({ email: data.email });
+      console.log(test, "TEST")
+      console.log(data.email, "EMAIL")
       const searchParams = new URLSearchParams({
         email: data.email,
       }).toString();
@@ -56,6 +60,7 @@ export default function MainForgotPasswordView() {
       router.push(href);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar(error?.error ?? "Failed to reset password", { variant: 'error' })
     }
   });
 
@@ -68,7 +73,7 @@ export default function MainForgotPasswordView() {
         size="large"
         type="submit"
         variant="contained"
-        loading={isSubmitting}
+        loading={isSubmitting && realmApp.loading}
       >
         Send Request
       </LoadingButton>

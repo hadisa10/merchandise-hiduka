@@ -138,7 +138,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
             realmApp.currentUser?.functions.getCampaignUsers(campaignId.toString(), snapshotDateTime.toISOString())
                 .then((res: ICampaignUser[]) => {
                     setCampaignUsersError(null)
-                    console.log(res, "RESPONSE")
                     setCampaignUsers(res)
                 }
                 )
@@ -162,7 +161,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
             realmApp.currentUser?.functions.getCampaignKPIMetrics(campaignId.toString(), snapshotDateTime.toISOString())
                 .then((res: ICampaignKPIMetricsResponse) => {
                     setCampaignUsersError(null)
-                    console.log(res, "RESPONSE")
                     setCampaignKPIMetrics(res)
                 }
                 )

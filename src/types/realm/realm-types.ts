@@ -269,6 +269,17 @@ export interface IDashboardMetrics {
     campaignsPerClient: ICampaignsPerClient[];
 }
 
+export interface IUserActivityMetrics {
+    checkins: IExtendedCheckin[],
+    summary: {
+        dailyAverageReportsFilled: number,
+        dailyAverageSales: number;
+        totalCheckins: number;
+        totalFilledReports: number;
+        totalUnitsSold: number;
+    }[]
+}
+
 
 export type ICampaign = {
     _id: Realm.BSON.ObjectId;
@@ -337,6 +348,7 @@ export interface IFilledReport<T = Realm.BSON.ObjectId> {
 export type IFilledReportsAnswer<T = Realm.BSON.ObjectId> = {
     answer: string;
     question_id: T;
+    report_id?: Realm.BSON.ObjectId
     question_text: string;
     type: string;
 };
@@ -483,6 +495,36 @@ export type ICheckin = {
     lastActivity: Date;
     user_id: Realm.BSON.ObjectId;
 };
+
+export type IExtendedCheckin = Omit<ICheckin, 'sessions'> & {
+    sessions: IExtendedCheckinSession[]
+    totalUnitsSold: number;
+    totalFilledReports: number;
+}
+
+export type IExtendedCheckinSession =  ICheckinsSessions & {
+    salesData: ISessionSaleData[]
+    reportsData: ISessionReportsData
+}
+
+export type ISessionProduct = {
+    _id: Realm.BSON.ObjectId;
+    name: string;
+    coverUrl: string;
+    price: number;
+    quantity: number;
+}
+
+export type ISessionSaleData = {
+    _id: Realm.BSON.ObjectId,
+    totalUnitsSold: number;
+    products: ISessionProduct[]
+}
+
+export type ISessionReportsData = {
+        totalFilledReports: number;
+    }
+
 
 export type ICheckinsActiveCheckins = {
     checkin_id: Realm.BSON.ObjectId;

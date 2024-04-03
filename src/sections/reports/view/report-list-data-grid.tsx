@@ -196,6 +196,8 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
 
   const rolePath = useRolePath();
 
+  console.log(rolePath, "ROLE PATH")
+
 
   const handleEditRow = useCallback(
     (_id: string) => {

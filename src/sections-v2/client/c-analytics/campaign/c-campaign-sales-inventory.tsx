@@ -42,7 +42,7 @@ import ClientCampaignTimeSales from './c-campaign-time-sales-activity';
 
 // ----------------------------------------------------------------------
 
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TIME_LABELS = {
     week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
     month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -72,8 +72,6 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
     const timeSalesloading = useBoolean()
 
     const showCampaignLoader = useShowLoader((campaignloading.value), 300);
-
-    const showTimeSalesLoader = useShowLoader((timeSalesloading.value), 300);
 
     const showRegionalSalesLoader = useShowLoader((regionalSalesloading.value), 300);
 
@@ -145,13 +143,12 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
     });
 
     const {
-        reset,
         setValue,
         watch,
         control,
         handleSubmit,
         getFieldState,
-        formState: { isSubmitting, errors },
+        formState: { isSubmitting },
     } = methods;
 
     const { error: startDateError } = getFieldState("startDate")
@@ -293,69 +290,69 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
             }
             {mdUp &&
                 <Stack direction="row" spacing={2}>
-                        <Stack>
-                            <Controller
-                                name="startDate"
-                                control={control}
-                                render={({ field }) => (
-                                    <DesktopDateTimePicker
-                                        {...field}
-                                        value={new Date(field.value as Date)}
-                                        onChange={(newValue) => {
-                                            if (newValue) {
-                                                field.onChange(fTimestamp(newValue));
-                                            }
-                                        }}
-                                        label="Start date"
-                                        format="dd/MM/yyyy"
-                                        slotProps={{
-                                            textField: {
-                                                fullWidth: true,
-                                                error: isObject(startDateError),
-                                                helperText: isObject(startDateError) && startDateError.message,
-                                            },
-                                        }}
-                                    />
-                                )}
-                            />
-                            <StyledLabel>{changedStartDate ? formatDifference(new Date(changedStartDate)) : formatDifference(new Date())}</StyledLabel>
-                        </Stack>
-
-                        <Stack>
-                            <Controller
-                                name="endDate"
-                                control={control}
-                                render={({ field }) => (
-                                    <DesktopDateTimePicker
-                                        {...field}
-                                        value={new Date(field.value as Date)}
-                                        onChange={(newValue) => {
-                                            if (newValue) {
-                                                field.onChange(fTimestamp(newValue));
-                                            }
-                                        }}
-                                        label="End date"
-                                        format="dd/MM/yyyy"
-                                        slotProps={{
-                                            textField: {
-                                                fullWidth: true,
-                                                error: isObject(endDateError),
-                                                helperText: isObject(endDateError) && endDateError.message,
-                                            },
-                                        }}
-                                    />
-                                )}
-                            />
-                            <StyledLabel>{changedEndDate ? formatDifference(new Date(changedEndDate)) : formatDifference(new Date())}</StyledLabel>
-                        </Stack>
+                    <Stack>
+                        <Controller
+                            name="startDate"
+                            control={control}
+                            render={({ field }) => (
+                                <DesktopDateTimePicker
+                                    {...field}
+                                    value={new Date(field.value as Date)}
+                                    onChange={(newValue) => {
+                                        if (newValue) {
+                                            field.onChange(fTimestamp(newValue));
+                                        }
+                                    }}
+                                    label="Start date"
+                                    format="dd/MM/yyyy"
+                                    slotProps={{
+                                        textField: {
+                                            fullWidth: true,
+                                            error: isObject(startDateError),
+                                            helperText: isObject(startDateError) && startDateError.message,
+                                        },
+                                    }}
+                                />
+                            )}
+                        />
+                        <StyledLabel>{changedStartDate ? formatDifference(new Date(changedStartDate)) : formatDifference(new Date())}</StyledLabel>
                     </Stack>
+
+                    <Stack>
+                        <Controller
+                            name="endDate"
+                            control={control}
+                            render={({ field }) => (
+                                <DesktopDateTimePicker
+                                    {...field}
+                                    value={new Date(field.value as Date)}
+                                    onChange={(newValue) => {
+                                        if (newValue) {
+                                            field.onChange(fTimestamp(newValue));
+                                        }
+                                    }}
+                                    label="End date"
+                                    format="dd/MM/yyyy"
+                                    slotProps={{
+                                        textField: {
+                                            fullWidth: true,
+                                            error: isObject(endDateError),
+                                            helperText: isObject(endDateError) && endDateError.message,
+                                        },
+                                    }}
+                                />
+                            )}
+                        />
+                        <StyledLabel>{changedEndDate ? formatDifference(new Date(changedEndDate)) : formatDifference(new Date())}</StyledLabel>
+                    </Stack>
+                </Stack>
             }
         </>
     )
     const totalUnitsSold = useMemo(() => dashboarCampaignSalesMetrics ? dashboarCampaignSalesMetrics.reduce((accumulator, item) => accumulator + item.totalQuantity, 0) : 0, [dashboarCampaignSalesMetrics])
     const totalAverageUnitsSold = useMemo(() => totalUnitsSold > 0 && days > 0 ? totalUnitsSold / days : totalUnitsSold, [totalUnitsSold, days])
-    const topSelling = useMemo(() => dashboarCampaignSalesMetrics ? dashboarCampaignSalesMetrics?.sort((a,b) => b.totalQuantity - a.totalQuantity)[0] : null, [dashboarCampaignSalesMetrics])
-    
+    const topSelling = useMemo(() => dashboarCampaignSalesMetrics ? dashboarCampaignSalesMetrics?.sort((a, b) => b.totalQuantity - a.totalQuantity)[0] : null, [dashboarCampaignSalesMetrics])
+
     return (
         <FormProvider methods={methods} onSubmit={onSubmit}>
             <Container maxWidth={settings.themeStretch ? false : 'xl'}>

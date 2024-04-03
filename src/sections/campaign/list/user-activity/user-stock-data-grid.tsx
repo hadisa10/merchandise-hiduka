@@ -138,7 +138,6 @@ export default function UserStockDataGrid({ campaign, handleOpenCheckInRouteView
                 .then((res: { campaignProducts: IProductItem[], usersWithStockInfo: ICampaignStock[] }) => {
                     setCampaignUsersError(null)
 
-                    console.log(res, "RESPONSE")
                     setCampaignProducts(res.campaignProducts);
                     const val: ICampaignStockGridRow[] = res.usersWithStockInfo.map(x => {
                         const t: { [key: string]: number; } = {};

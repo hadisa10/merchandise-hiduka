@@ -71,6 +71,7 @@ export const paths = {
       verified: `${ROOTS.AUTH}/main/verified`,
       retry: `${ROOTS.AUTH}/main/retry`,
       forgotPassword: `${ROOTS.AUTH}/main/forgot-password`,
+      resetPassword: `${ROOTS.AUTH}/main/reset-password`,
     },
     auth0: {
       login: `${ROOTS.AUTH}/auth0/login`,

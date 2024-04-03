@@ -1,15 +1,18 @@
+import { enqueueSnackbar } from 'notistack';
 import { isAfter, isBefore } from 'date-fns';
-import { memo, useMemo, useState, useCallback } from 'react';
+import { memo, useMemo, useState, useEffect, useCallback } from 'react';
 import { m, LazyMotion, domAnimation, AnimatePresence } from 'framer-motion';
 
 import Grid from '@mui/system/Unstable_Grid/Grid';
 import { Box, Tab, Tabs, Stack, IconButton, Typography } from '@mui/material';
 import { MobileDateTimePicker, DesktopDateTimePicker } from '@mui/x-date-pickers';
 
+import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 
 import { IUser } from 'src/types/user_realm';
 import { ICampaign } from 'src/types/realm/realm-types';
@@ -27,14 +30,13 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
 
     const mdUp = useResponsive('up', 'md');
 
-
     const [currentTab, setCurrentTab] = useState('checkins');
 
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
     const [endDate, setEndDate] = useState<Date | null>(new Date());
 
-    const [startDate, setStartDate] = useState<Date | null>(new Date());
+    const [startDate, setStartDate] = useState<Date | null>(campaign?.startDate ? new Date(campaign.startDate) : new Date());
 
     const endDateError = useMemo(() => {
         if (!(endDate && startDate)) return false;
@@ -45,6 +47,39 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
         if (!(endDate && startDate)) return false;
         return isBefore(endDate, startDate)
     }, [startDate, endDate])
+
+    console.log(startDate, "START DATE")
+
+    const realmApp = useRealmApp();
+
+    const metricsloading = useBoolean(true)
+
+    const showClientLoader = useShowLoader((metricsloading.value), 300);
+
+    const [checkinMetrics, setUserCheckinMetrics] = useState<any[] | null>(null);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [error, setError] = useState<unknown>(null);
+
+    useEffect(() => {
+        if (!metricsloading.value && campaign?._id) {
+            metricsloading.onTrue()
+            setError(null);
+            realmApp.currentUser?.functions.getUserCampaignCheckinMetrics(campaign._id, startDate, endDate).then((data: any[]) => setUserCheckinMetrics(data))
+                .catch((e) => {
+                    console.error(e)
+                    setError(e);
+                    enqueueSnackbar("Failed to get your ", { variant: "error" })
+                }
+                )
+                .finally(() => metricsloading.onFalse())
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [metricsloading.value, campaign?._id, startDate, endDate])
+
+
+    console.log(checkinMetrics, 'METRICS')
 
 
     const handleOpenCheckInRouteView = useCallback((user: IUser) => {

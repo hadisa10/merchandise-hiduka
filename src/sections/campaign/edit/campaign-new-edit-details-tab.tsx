@@ -75,7 +75,7 @@ const CampaignNewEditDetailsTab: FC = () => {
           })
               .catch(e => {
                   console.error(e)
-                  enqueueSnackbar("Failed to get dashboard Metrics", { variant: "error" })
+                  enqueueSnackbar("Failed to get user projects", { variant: "error" })
               }
               )
               .finally(() => projectsloading.onFalse())

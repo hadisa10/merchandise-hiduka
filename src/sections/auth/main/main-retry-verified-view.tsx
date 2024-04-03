@@ -53,7 +53,7 @@ export default function MainVerifiedView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await realmApp.resendConfirmationEmail(data.email);
+      await realmApp.resendConfirmationEmail({ email: data.email });
       const searchParams = new URLSearchParams({
         email: data.email,
       }).toString();
@@ -77,7 +77,7 @@ export default function MainVerifiedView() {
       <ForbiddenIllustration sx={{ height: 200, my: { xs: 5, sm: 10 } }} />
 
       <Typography variant="h4" sx={{ mb: 2 }}>
-        Failed to verify email 22.<br /> Try again.
+        Failed to verify email.<br /> Try again.
       </Typography>
     </>
   );
