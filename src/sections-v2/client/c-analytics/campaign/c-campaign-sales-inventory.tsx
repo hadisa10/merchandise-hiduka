@@ -69,8 +69,6 @@ function ClientCampaignSalesInventoryView({ campaign }: { campaign: ICampaign })
 
     const regionalSalesloading = useBoolean()
 
-    const timeSalesloading = useBoolean()
-
     const showCampaignLoader = useShowLoader((campaignloading.value), 300);
 
     const showRegionalSalesLoader = useShowLoader((regionalSalesloading.value), 300);

@@ -37,7 +37,7 @@ function ClientDashboardCampaignMetrics() {
   const showCampaignLoader = useShowLoader((campaignloading.value || reportsloading.value || campaignUpdatedloading.value), 300);
 
   const [dashboardCampaignMetrics, setDashboarCampaignMetrics] = useState<IAdminDashboardData | null>(null);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [dashboardReportsMetrics, setDashboardReportsMetrics] = useState<IAdminDashboardReportSummary | null>(null);
   const [dashboardMetricsUpdated, setDashboardMetricsUpdated] = useState<IClientDashboardSummaryUpdated | null>(null);
 
@@ -95,12 +95,12 @@ function ClientDashboardCampaignMetrics() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client?._id])
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onCampaignReportRankHandler = useCallback((value: IChartSeries) => {
     console.log(value, "ACTIVE CAMPAIGN BY RANK CLICKED")
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onCampaignActiveCampaignRankHandler = useCallback((value: IChartSeries) => {
     console.log(value, "ACTIVE CAMPAIGN CLICKED")
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -24,7 +24,7 @@ import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
 import { IUser } from 'src/types/user_realm';
 import { IProject } from 'src/types/realm/realm-types';
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const INACTIVITY_LIMIT = [
   { "label": "30 min", "value": 1800000 },
   { "label": "1 hour", "value": 3600000 },
@@ -64,10 +64,8 @@ function CFormProjectDetails({ currentProject, loading, users }: { currentProjec
 
   const {
     reset,
-    control,
     handleSubmit,
-    getFieldState,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
 
 
