@@ -10,7 +10,6 @@ import {
 
 import { useShowLoader } from "src/hooks/realm";
 import { useBoolean } from "src/hooks/use-boolean";
-import { useCampaigns } from "src/hooks/realm/campaign/use-campaign-graphql";
 
 import { fDateTime } from "src/utils/format-time";
 import { formatFilterAndRemoveFields } from "src/utils/helpers";

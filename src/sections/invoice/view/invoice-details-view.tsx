@@ -7,7 +7,6 @@ import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
-import { useInvoices } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useRealmApp } from 'src/components/realm';

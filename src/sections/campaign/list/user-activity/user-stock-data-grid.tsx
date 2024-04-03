@@ -31,7 +31,7 @@ import AnalyticsWidgetSummary from "src/sections/overview/analytics/analytics-wi
 
 import { IUser } from "src/types/user_realm";
 import { IProductItem } from 'src/types/product';
-import { ICampaign, ICampaignStock, ICampaignStockGridRow, ICampaignKPIMetricsResponse } from "src/types/realm/realm-types";
+import { ICampaign, ICampaignStock, ICampaignStockGridRow } from "src/types/realm/realm-types";
 
 import AssignProductDialog from "./assign-product-dialog";
 

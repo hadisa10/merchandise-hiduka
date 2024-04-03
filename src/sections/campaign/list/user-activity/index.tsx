@@ -286,14 +286,9 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
                                     currentTab === "checkins" && campaign._id &&
                                     <UserActivityMapViewUpdated
                                         user={selectedUser}
-                                        startDate={startDate}
-                                        endDate={endDate}
-                                        campaignId={campaign._id.toString()}
                                         loading={showLoadingLoader}
                                         checkins={checkinMetrics?.checkins ? checkinMetrics?.checkins : []}
                                         handleNewRouteOpen={() => console.log("OPEN")}
-                                        handleAddNewRoute={() => console.log("NEW ROUTE")}
-                                        handleRemoveNewRoute={() => console.log("REMOVE")}
                                     />
                                 }
 
