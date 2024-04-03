@@ -65,8 +65,6 @@ export default function UserStockDataGrid({ campaign, handleOpenCheckInRouteView
 
     const [campaignUsers, setCampaignUsers] = useState<ICampaignStockGridRow[]>([])
 
-    const [campaignKPIMetrics, setCampaignKPIMetrics] = useState<ICampaignKPIMetricsResponse | null>(null)
-
     const [snapshotDateTime, setSnapShotDateTime] = useState<Date>(new Date);
 
 

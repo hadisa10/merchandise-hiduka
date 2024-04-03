@@ -27,8 +27,6 @@ type Props = {
 export default function InvoiceDetailsView({ id }: Props) {
   const settings = useSettingsContext();
 
-  const { getInvoice } = useInvoices()
-
   const [currentInvoice, setInvoice] = useState<IUpdateInvoice | undefined>(undefined)
   
   const invoiceLoading = useBoolean();

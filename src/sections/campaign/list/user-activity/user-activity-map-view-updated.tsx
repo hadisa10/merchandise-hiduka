@@ -51,7 +51,7 @@ const UserActivityMapViewUpdate: React.FC<UserActivityMapViewProps> = ({ handleN
     const mapRef = useRef<MapRef>(null)
 
     const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [minPageSize, setPageSize] = useState<number>(5);
 
     const [page, setPage] = useState(1);

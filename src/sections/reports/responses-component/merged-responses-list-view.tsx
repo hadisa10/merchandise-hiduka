@@ -51,8 +51,6 @@ const MergedResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestio
 
     const reportsloading = useBoolean(true)
 
-    const showCampaignReportsLoader = useShowLoader((reportsloading.value), 300);
-
     const [campaignReports, setCampaignReports] = useState<IReport[] | null>([]);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,7 +75,7 @@ const MergedResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestio
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [reportAnswersError, setReportAnswerError] = useState(null)
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [questions, setQuestions] = useState<IReportQuestion[] | undefined>(q)
 
     const showLoader = useShowLoader(loadingReport.value, 500)
@@ -103,8 +101,7 @@ const MergedResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestio
     const {
         reset,
         watch,
-        handleSubmit,
-        formState: { isSubmitting },
+        handleSubmit
     } = methods;
 
     const showFl = watch("showFiltered")
@@ -249,7 +246,7 @@ const MergedResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestio
                         user: usrNm,
                         createdAt: fDateTime(dt)
                     }; // Define `t` to explicitly allow string keys and any value
-                    d.filter(a => a.field !== "user" && a.field !== "createdAt" && a.field !== "action"  ).forEach(z => {
+                    d.filter(a => a.field !== "user" && a.field !== "createdAt" && a.field !== "action").forEach(z => {
                         const val = x.find(y => {
                             const comp = `${y.report_id?.toString()}:::${y.question_id.toString()}` === z.field.toString();
                             if (comp) {
@@ -278,17 +275,17 @@ const MergedResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestio
                                     break;
                             }
                             t[z.field] = answr ?? 0;
-                        }else{
-                            if(z.type === "number"){
+                        } else {
+                            if (z.type === "number") {
                                 t[z.field] = 0
                             }
-                            if(z.type === "text"){
+                            if (z.type === "text") {
                                 t[z.field] = "0"
                             }
-                            if(z.type === "geopoint"){
+                            if (z.type === "geopoint") {
                                 t[z.field] = "Failed to fetch location"
                             }
-                            if(z.type === "select"){
+                            if (z.type === "select") {
                                 t[z.field] = "0"
                             }
                         }

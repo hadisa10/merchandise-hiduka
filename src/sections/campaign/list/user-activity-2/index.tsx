@@ -48,13 +48,9 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
         return isBefore(endDate, startDate)
     }, [startDate, endDate])
 
-    console.log(startDate, "START DATE")
-
     const realmApp = useRealmApp();
 
     const metricsloading = useBoolean(true)
-
-    const showClientLoader = useShowLoader((metricsloading.value), 300);
 
     const [checkinMetrics, setUserCheckinMetrics] = useState<any[] | null>(null);
 

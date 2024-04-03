@@ -70,8 +70,7 @@ const ResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestion[] }>
     const {
         reset,
         watch,
-        handleSubmit,
-        formState: { isSubmitting },
+        handleSubmit
     } = methods;
 
     const showFl = watch("showFiltered")

@@ -1,7 +1,7 @@
 'use client';
 
 import { enqueueSnackbar } from 'notistack';
-import { memo, lazy, useState, Suspense, useEffect } from 'react';
+import { memo, useState, Suspense, useEffect } from 'react';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 

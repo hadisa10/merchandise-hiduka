@@ -100,13 +100,12 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
     });
 
     const {
-        reset,
         setValue,
         watch,
         control,
         handleSubmit,
         getFieldState,
-        formState: { isSubmitting, errors },
+        formState: { isSubmitting },
     } = methods;
 
     const { error: startDateError } = getFieldState("snapshotDateTime")
@@ -123,8 +122,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     // eslint-disable-next-line
     const [campaignUsersError, setCampaignUsersError] = useState(null)
-
-    const [selectedRows, setSelectedRows] = useState<IUser[] | null>(null);
 
     const showLoader = useShowLoader(loadingCampaignUsers.value, 500);
 

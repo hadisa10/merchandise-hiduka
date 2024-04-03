@@ -35,8 +35,6 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
 
     const theme = useTheme();
 
-    const { getCampaignUsers } = useCampaigns(true);
-
     const realmApp = useRealmApp();
 
     const loadingCampaignUsers = useBoolean()
