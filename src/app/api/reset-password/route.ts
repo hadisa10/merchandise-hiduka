@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
 
         // Construct URL with token and tokenId as query parameters for reset-password
         const resetPasswordURL = new URL("/auth/main/reset-password", request.nextUrl);
-        // resetPasswordURL.searchParams.set("token", token);
-        // resetPasswordURL.searchParams.set("tokenId", tokenId);
+        resetPasswordURL.searchParams.set("token", token);
+        resetPasswordURL.searchParams.set("tokenId", tokenId);
 
         return NextResponse.redirect(resetPasswordURL);
     } catch (error) {
