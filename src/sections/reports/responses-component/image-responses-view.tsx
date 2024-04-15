@@ -2,6 +2,8 @@
 
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
+import { isEmpty, isString } from 'lodash';
+import { enqueueSnackbar } from 'notistack';
 import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { SlideImage } from 'yet-another-react-lightbox';
@@ -10,7 +12,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Divider, MenuItem } from '@mui/material';
+import { Chip, Stack, Button, Divider, MenuItem, Typography } from '@mui/material';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -20,12 +22,15 @@ import { fDateTime } from 'src/utils/format-time';
 
 import Image from 'src/components/image';
 import { useRealmApp } from 'src/components/realm';
-import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { IColumn } from 'src/components/data-grid/data-grid-flexible';
+import { RHFSelect, RHFAutocomplete } from 'src/components/hook-form';
 
+import MultiDownloadButton from 'src/sections/_examples/extra/dowload/image-dowload-btn';
+
+import { ICampaignUser } from 'src/types/user_realm';
 import { IReport, IFilledReport, IReportQuestion } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
@@ -48,6 +53,7 @@ interface ResponseImages {
   src: string,
   title: string,
   description: string,
+  user: string;
 }
 // ----------------------------------------------------------------------
 
@@ -67,19 +73,20 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
   const showLoader = useShowLoader(loadingReport.value, 500)
 
   const [fetchedImages, setFetchedImages] = useState<ResponseImages[]>([]);
-  const lightbox = useLightBox(fetchedImages)
+
+
 
   const id = useMemo(() => report?._id.toString(), [report])
 
   const ResponseSchema = Yup.object().shape({
     showFiltered: Yup.boolean().typeError("Must be either true or false"),
-    userSearch: Yup.string(),
+    users: Yup.array().of(Yup.string()),
 
   });
 
   const defaultValues = {
     showFiltered: true,
-    userSearch: ""
+    users: []
   };
 
   const methods = useForm({
@@ -95,7 +102,56 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
 
   const showFl = watch("showFiltered")
 
-  const filterUser = watch("userSearch")
+  const realmApp = useRealmApp();
+
+  const filterUser = watch("users")
+
+  const loadingCampaignUsers = useBoolean();
+
+  const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([])
+
+  // eslint-disable-next-line
+  const [campaignUsersError, setCampaignUsersError] = useState(null)
+
+  const showUserLoader = useShowLoader(loadingCampaignUsers.value, 500);
+
+  const campaignId = useMemo(() => report?.campaign_id.toString(), [report?.campaign_id])
+
+  const images = useMemo(() => {
+    if (Array.isArray(filterUser) && filterUser.length > 0) {
+      return fetchedImages.filter(x => {
+        console.log(filterUser, "FILTER USER");
+        console.log(x.user, "USER IN IMAGE")
+        return filterUser.includes(x.user)
+      })
+    }
+    return fetchedImages;
+  }, [fetchedImages, filterUser])
+
+  const lightbox = useLightBox(images)
+
+
+  useEffect(() => {
+    if (isString(campaignId) && !isEmpty(campaignId)) {
+      loadingCampaignUsers.onTrue()
+      setCampaignUsersError(null)
+      realmApp.currentUser?.functions.getCampaignUsers(campaignId.toString())
+        .then(res => {
+          setCampaignUsersError(null)
+          setCampaignUsers(res)
+        }
+        )
+        .catch(e => {
+          enqueueSnackbar("Failed to fetch campaign products", { variant: "error" })
+          setCampaignUsersError(e.message)
+          console.error(e, "REPORT FETCH")
+        })
+        .finally(() => {
+          loadingCampaignUsers.onFalse()
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaignId])
 
 
   const renderFilterRole = (
@@ -110,15 +166,73 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
     </RHFSelect>
   )
   const renderFilterUser = (
-    <RHFTextField name="userSearch" label="Filter User" sx={{ maxWidth: 120 }}/>
+    <RHFAutocomplete
+      name="users"
+      label="Users"
+      placeholder="+ filter by user"
+      multiple
+      freeSolo
+      fullWidth
+      limitTags={2}
+      loading={showUserLoader}
+      sx={{
+        maxWidth: 360
+      }}
+      disableCloseOnSelect
+      options={campaignUsers.map(usr => usr._id)}
+      getOptionLabel={(option) => {
+        const user = campaignUsers?.find((usr) => usr._id === option);
+        if (user) {
+          return user?.displayName
+        }
+        return option
+      }}
+      renderOption={(props, option) => {
+        const user = campaignUsers?.filter(
+          (usr) => usr._id === option
+        )[0];
+
+        if (!user?._id) {
+          return null;
+        }
+
+        return (
+          <li {...props} key={user._id.toString()}>
+            {user?.displayName}
+          </li>
+        );
+      }}
+      renderTags={(selected, getTagProps) => (
+        selected.map((option, index) => {
+          const user = campaignUsers?.find((usr) => usr._id === option);
+          return (
+            <Chip
+              {...getTagProps({ index })}
+              key={user?._id ?? ""}
+              label={user?.displayName ?? ""}
+              size="small"
+              color="info"
+              variant="soft"
+            />
+          )
+        })
+      )
+      }
+    />
   )
+  const onResetFilters = () => {
+    reset({
+      showFiltered: true,
+      users: []
+    })
+  }
 
   useEffect(() => {
     if (id && questions) {
       loadingReport.onTrue();
       setReportAnswerError(null);
       currentUser?.functions?.getFilledReports(id, showFl).then((res: IFilledReport[]) => {
-        const resAnswers = res.map(x => [...x.answers.map(y => ({ userName: x.userName, createdAt: x.createdAt, ...y }))]);
+        const resAnswers = res.map(x => [...x.answers.map(y => ({ userName: x.userName, userId: x.user_id, createdAt: x.createdAt, ...y }))]);
 
         // const qObj: { [key: string]: { text: string, order: number } } = {}
 
@@ -187,6 +301,8 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
 
         const answs = resAnswers.map((x) => {
           const usrNm = Array.isArray(x) ? x[0]?.userName : "NA";
+          const usrId = Array.isArray(x) ? x[0]?.userId : "NA";
+
           const dt = Array.isArray(x) ? x[0]?.createdAt : new Date()
           const t: { _id: string, [key: string]: any } = {
             _id: uuidv4(),
@@ -196,7 +312,6 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
 
           d.forEach(z => {
             const val = x.find(y => y.question_id.toString() === z.field.toString())
-
 
             if (val) {
               t[`${val.question_id}:::type`] = val.type;
@@ -217,8 +332,9 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
                 case "image":
                   imgs.push({
                     src: answr as string,
-                    description: usrNm,
-                    title: fDateTime(dt)
+                    description: `${usrNm}`,
+                    title: `${val.question_text}: ${fDateTime(dt)}`,
+                    user: usrId?.toString() ?? ""
                   })
                   break;
                 default:
@@ -258,12 +374,21 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
         <Card sx={{ p: 2 }}>
           <Grid container spacing={3}>
             <Grid xs={12}>
-              {renderFilterRole}
-              {renderFilterUser}
+              <Stack direction="row" spacing={3}>
+                {renderFilterRole}
+                {renderFilterUser}
+                <Button variant='soft' onClick={onResetFilters} color='error'>Clear</Button>
+
+                <Stack direction="row" flexGrow={2} spacing={3} justifyContent="flex-end">
+                {
+                  images.length > 0 ? <MultiDownloadButton  size="small" urls={images.map((x) => ({ src: x.src, name: `${x.description}${x.title}-${x.src.split("/").pop() ?? ""}`}))}/> : <></>
+                }
+                </Stack>
+              </Stack>
             </Grid>
-            {showLoader && <Grid xs={12}><LoadingScreen /></Grid>}
+            {showLoader && <Grid xs={12}><LoadingScreen height="100%"/></Grid>}
             {!showLoader &&
-              (fetchedImages.length > 0 ?
+              (images.length > 0 ?
                 <Grid xs={12} >
                   <Box
                     gap={1}
@@ -274,20 +399,25 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
                       md: 'repeat(4, 1fr)',
                     }}
                   >
-                    {fetchedImages.map((slide) => {
+                    {images.map((slide) => {
                       const thumbnail = (slide as SlideImage).src;
                       return (
-                        <Image
-                          key={thumbnail}
-                          alt={thumbnail}
-                          src={thumbnail}
-                          ratio="1/1"
-                          onClick={() => lightbox.onOpen(`${thumbnail}`)}
-                          sx={{
-                            borderRadius: 1,
-                            cursor: 'pointer',
-                          }}
-                        />
+                        <Stack>
+                          <Image
+                            key={thumbnail}
+                            alt={thumbnail}
+                            src={thumbnail}
+                            ratio="1/1"
+                            onClick={() => lightbox.onOpen(`${thumbnail}`)}
+                            sx={{
+                              borderRadius: 1,
+                              cursor: 'pointer',
+                            }}
+                          />
+                          <Typography variant='caption' color={theme => theme.palette.text.secondary} sx={{ mt: 1, textAlign: "start", textTransform: "capitalize" }}>{slide.title?.toLocaleLowerCase()}</Typography>
+                          <Typography variant='caption' color={theme => theme.palette.text.secondary} sx={{ mt: 1, textAlign: "start", textTransform: "capitalize" }}>{slide.description?.toLocaleLowerCase()}</Typography>
+                          <MultiDownloadButton size="small" urls={[{ src: slide.src, name: `${slide.description}-${slide.src.split("/").pop() ?? ""}`}]}/>
+                        </Stack>
                       );
                     })}
                   </Box>
@@ -303,7 +433,7 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
       <Lightbox
         open={lightbox.open}
         close={lightbox.onClose}
-        slides={fetchedImages}
+        slides={images}
         index={lightbox.selected}
         disabledZoom={false}
         disabledTotal={false}

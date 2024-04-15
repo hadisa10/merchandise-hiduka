@@ -63,7 +63,7 @@ export default function UserActivityDataGrid({ campaign, handleOpenCheckInRouteV
                 )
                 .catch(e => {
                     enqueueSnackbar("Failed to fetch campaign products", { variant: "error" })
-                    setCampaignUsers(e.message)
+                    setCampaignUsersError(e.message)
                     console.error(e, "REPORT FETCH")
                 })
                 .finally(() => {
