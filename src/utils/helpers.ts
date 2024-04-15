@@ -7,6 +7,7 @@ import { intervalToDuration } from 'date-fns';
 import { paths } from "src/routes/paths";
 
 import { ERole } from "src/config-global";
+import uuidv4 from "./uuidv4";
 
 export async function convertBlobToFile(blob: string, fileName: string): Promise<File | null> {
     try {
@@ -307,6 +308,11 @@ export const removeNullFields = <T>(data: T): T | undefined => {
 
 };
 
+export function generateShortUniqueId() {
+    const uuid = uuidv4();
+    const buffer = Buffer.from(uuid.replace(/-/g, ''), 'hex');
+    return `BRIS${buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '').replace(/=+$/, '').substring(0,8)}PROMO001`.toUpperCase();
+}
 
 export const getRolePath = (rle: string) => {
     switch (rle) {

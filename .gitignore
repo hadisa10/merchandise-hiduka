@@ -39,5 +39,6 @@ yarn-error.log*
 .yarn/install-state.gz
 fillReport.js
 test2.js
+test.js
 test22.json5
 test22.json
