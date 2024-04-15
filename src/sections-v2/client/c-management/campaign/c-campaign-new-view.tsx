@@ -6,10 +6,6 @@ import { useState } from 'react';
 
 import Container from '@mui/material/Container';
 
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { useRealmApp } from 'src/components/realm';
-import { useClientContext } from 'src/components/clients';
 import { useSettingsContext } from 'src/components/settings';
 
 import CampaignNewEditForm from 'src/sections/campaign/campaign-new-edit-form-tabs';
