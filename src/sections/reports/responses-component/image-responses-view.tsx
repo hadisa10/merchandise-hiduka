@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Slide, SlideImage } from 'yet-another-react-lightbox';
+import { SlideImage } from 'yet-another-react-lightbox';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -18,11 +18,9 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import uuidv4 from 'src/utils/uuidv4';
 import { fDateTime } from 'src/utils/format-time';
 
-import { _mock } from 'src/_mock';
-
 import Image from 'src/components/image';
 import { useRealmApp } from 'src/components/realm';
-import { RHFSelect } from 'src/components/hook-form';
+import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -75,10 +73,13 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
 
   const ResponseSchema = Yup.object().shape({
     showFiltered: Yup.boolean().typeError("Must be either true or false"),
+    userSearch: Yup.string(),
+
   });
 
   const defaultValues = {
     showFiltered: true,
+    userSearch: ""
   };
 
   const methods = useForm({
@@ -94,6 +95,9 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
 
   const showFl = watch("showFiltered")
 
+  const filterUser = watch("userSearch")
+
+
   const renderFilterRole = (
     <RHFSelect name="showFiltered" label="Show Filtered Data" sx={{ maxWidth: 120 }}>
       <Divider sx={{ borderStyle: 'dashed' }} />
@@ -104,6 +108,9 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
         </MenuItem>
       ))}
     </RHFSelect>
+  )
+  const renderFilterUser = (
+    <RHFTextField name="userSearch" label="Filter User" sx={{ maxWidth: 120 }}/>
   )
 
   useEffect(() => {
@@ -252,6 +259,7 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
           <Grid container spacing={3}>
             <Grid xs={12}>
               {renderFilterRole}
+              {renderFilterUser}
             </Grid>
             {showLoader && <Grid xs={12}><LoadingScreen /></Grid>}
             {!showLoader &&
