@@ -26,7 +26,7 @@ export default function CampaignNewView() {
 
     const usersloading = useBoolean(true)
 
-    const productsLoading = useBoolean(true);
+    // const productsLoading = useBoolean(true);
 
     const realmApp = useRealmApp();
 
@@ -35,28 +35,28 @@ export default function CampaignNewView() {
 
     // const [products, setProducts] = useState<IProductItem[] | undefined>(undefined);
 
-    const [users, setUsers] = useState<IUser[] | undefined>(undefined);
+    // const [users, setUsers] = useState<IUser[] | undefined>(undefined);
 
     // const showCampaignLoading = useShowLoader(usersloading.value && productsLoading.value, 300)
 
-    useEffect(() => {
-        if (client?._id) {
-            usersloading.onTrue()
-            setError(null);
-            realmApp.currentUser?.functions.getClientUsers(client?._id.toString()).then((usrs: IUser[]) => {
-                setUsers(usrs.map(x => ({ ...x, _id: x._id.toString() })));
-            })
-                .catch(e => {
-                    console.error(e)
-                    setError(e);
-                    enqueueSnackbar("Failed to get campaign details", { variant: "error" })
-                }
-                )
-                .finally(() => usersloading.onFalse())
-        }
+    // useEffect(() => {
+    //     if (client?._id) {
+    //         usersloading.onTrue()
+    //         setError(null);
+    //         realmApp.currentUser?.functions.getClientUsers(client?._id.toString()).then((usrs: IUser[]) => {
+    //             setUsers(usrs.map(x => ({ ...x, _id: x._id.toString() })));
+    //         })
+    //             .catch(e => {
+    //                 console.error(e)
+    //                 setError(e);
+    //                 enqueueSnackbar("Failed to get campaign details", { variant: "error" })
+    //             }
+    //             )
+    //             .finally(() => usersloading.onFalse())
+    //     }
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [client?._id])
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [client?._id])
 
 
     return (
