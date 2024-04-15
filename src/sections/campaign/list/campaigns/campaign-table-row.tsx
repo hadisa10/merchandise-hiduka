@@ -83,7 +83,8 @@ export function RenderCellCampaign({ params }: ParamsProps) {
       // @ts-expect-error expected
       router.push(rolePath?.campaign?.edit(id) ?? "#");
     },
-    [router, rolePath]
+    // @ts-expect-error expected
+    [router, rolePath?.campaign]
   );
 
   return (

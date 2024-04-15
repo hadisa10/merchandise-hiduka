@@ -76,13 +76,14 @@ export function RenderCellProduct({ params }: ParamsProps) {
 
   const router = useRouter()
 
-  
+
   const handleViewRow = useCallback(
     (id: string) => {
       // @ts-expect-error expected
       router.push(rolePath?.campaign?.edit(id) ?? "#");
     },
-    [router, rolePath]
+    // @ts-expect-error expected
+    [router, rolePath?.campaign]
   );
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
