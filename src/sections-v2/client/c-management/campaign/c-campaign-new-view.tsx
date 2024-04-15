@@ -7,17 +7,15 @@ import { enqueueSnackbar } from 'notistack';
 
 import Container from '@mui/material/Container';
 
-import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useRealmApp } from 'src/components/realm';
 import { useClientContext } from 'src/components/clients';
 import { useSettingsContext } from 'src/components/settings';
 
-import { IUser } from 'src/types/user_realm';
-
-import CampaignTabsView from './c-campaign-tabs-view';
 import CampaignNewEditForm from 'src/sections/campaign/campaign-new-edit-form-tabs';
+
+import { IUser } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +37,7 @@ export default function CampaignNewView() {
 
     const [users, setUsers] = useState<IUser[] | undefined>(undefined);
 
-    const showCampaignLoading = useShowLoader(usersloading.value && productsLoading.value, 300)
+    // const showCampaignLoading = useShowLoader(usersloading.value && productsLoading.value, 300)
 
     useEffect(() => {
         if (client?._id) {

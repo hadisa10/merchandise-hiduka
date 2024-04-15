@@ -82,7 +82,7 @@ export function RenderCellProduct({ params }: ParamsProps) {
       // @ts-expect-error expected
       router.push(rolePath?.campaign?.edit(id) ?? "#");
     },
-    [router]
+    [router, rolePath]
   );
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
