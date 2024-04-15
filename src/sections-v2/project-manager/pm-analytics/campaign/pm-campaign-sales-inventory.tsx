@@ -30,11 +30,11 @@ import ClientCampaignTimeSales from './pm-campaign-time-sales-activity';
 // ----------------------------------------------------------------------
 
 
-const TIME_LABELS = {
-    week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-    month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    year: ['2018', '2019', '2020', '2021', '2022'],
-};
+// const TIME_LABELS = {
+//     week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+//     month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+//     year: ['2018', '2019', '2020', '2021', '2022'],
+// };
 
 function PMCampaignSalesInventoryView({ campaign }: { campaign: ICampaign }) {
     const settings = useSettingsContext();
@@ -47,11 +47,11 @@ function PMCampaignSalesInventoryView({ campaign }: { campaign: ICampaign }) {
 
     const regionalSalesloading = useBoolean()
 
-    const timeSalesloading = useBoolean()
+    // const timeSalesloading = useBoolean()
 
     const showCampaignLoader = useShowLoader((campaignloading.value), 300);
 
-    const showTimeSalesLoader = useShowLoader((timeSalesloading.value), 300);
+    // const showTimeSalesLoader = useShowLoader((timeSalesloading.value), 300);
 
     const showRegionalSalesLoader = useShowLoader((regionalSalesloading.value), 300);
 

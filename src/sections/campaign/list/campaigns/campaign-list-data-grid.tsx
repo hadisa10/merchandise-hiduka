@@ -172,7 +172,6 @@ export default function CampaignListDataGrid() {
   );
 
   const handleSearch = (inputValue: string) => {
-    console.log(inputValue, 'INPUT VALUE')
     setSearchQuery(inputValue);
   };
 

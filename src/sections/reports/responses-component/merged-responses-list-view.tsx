@@ -60,7 +60,9 @@ const MergedResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestio
         if (report?.campaign_id) {
             reportsloading.onTrue()
             setError(null);
-            currentUser?.functions.getCampaignReports(report?.campaign_id).then((data: IReport[]) => Array.isArray(data) && setCampaignReports(data.filter(x => x._id.toString() !== report._id.toString())))
+            currentUser?.functions.getCampaignReports(report?.campaign_id).then((data: IReport[]) => {
+                if (Array.isArray(data)) setCampaignReports(data.filter(x => x._id.toString() !== report._id.toString()));
+            })
                 .catch((e) => {
                     console.error(e)
                     setError(e);
@@ -106,7 +108,7 @@ const MergedResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestio
 
     const showFl = watch("showFiltered")
     const reportsMg = watch("reports")
-
+    console.log(campaignReports, "CAMPAIGN REPORTS")
     const renderMergeReport = (
         <RHFAutocomplete
             name="reports"

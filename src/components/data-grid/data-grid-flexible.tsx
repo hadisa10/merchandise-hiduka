@@ -201,7 +201,6 @@ const renderBooleanCell = (params: GridRenderCellParams<any, any, any, GridTreeN
 
 const renderNumberCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  console.log(value, "VALUE")
   return <Typography variant='body2'>{value}</Typography>;
 }
 
@@ -217,7 +216,6 @@ const renderImageCell = (params: GridRenderCellParams<any, any, any, GridTreeNod
 
 const renderArrayCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  console.log(value, 'VALUE ARRAY')
   return <Typography variant='body2'>{Array.isArray(value) && value.join(",")}</Typography>;
 }
 
