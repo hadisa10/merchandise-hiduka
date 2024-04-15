@@ -33,6 +33,8 @@ import { safeDateFormatter, removeAndFormatNullFields } from 'src/utils/helpers'
 import { RHFFormFiller } from 'src/components/hook-form';
 // import { RHFFormFiller, RHFTextField } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
+
+import ImageResponseView from './responses-component/image-responses-view';
 // import { RHFFormFiller } from 'src/components/hook-form';
 
 
@@ -51,7 +53,8 @@ export const REPORT_DETAILS_TABS = [
   { value: 'questions', label: 'Questions' },
   { value: 'test', label: 'Test Report' },
   { value: 'responses', label: 'Responses' },
-  { value: 'merged-responses', label: "Merged Reponses" }
+  { value: 'merged-responses', label: "Merged Reponses" },
+  { value: 'images', label: 'Images' },
 ];
 
 
@@ -299,6 +302,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
         {currentTab === 'questions' && <Suspense fallback={<LoadingScreen />}><QuestionsNewEditList /></Suspense>}
         {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><ResponsesGridView report={currentReport} questions={currentReport?.questions} /></Suspense>}
         {currentTab === 'merged-responses' && <Suspense fallback={<LoadingScreen />}><MergedResponsesGridView report={currentReport} questions={currentReport?.questions} /></Suspense>}
+        {currentTab === 'images' && <Suspense fallback={<LoadingScreen />}><ImageResponseView report={currentReport} questions={currentReport?.questions} /></Suspense>}
 
         {/* {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}

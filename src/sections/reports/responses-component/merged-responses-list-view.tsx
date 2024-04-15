@@ -91,7 +91,7 @@ const MergedResponsesGridView: FC<{ report?: IReport, questions?: IReportQuestio
     });
 
     const defaultValues = {
-        showFiltered: false,
+        showFiltered: true,
         reports: []
     };
 
