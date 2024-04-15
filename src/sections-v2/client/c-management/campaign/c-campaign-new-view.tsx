@@ -2,8 +2,7 @@
 
 
 
-import { useState, useEffect } from 'react';
-import { enqueueSnackbar } from 'notistack';
+import { useState } from 'react';
 
 import Container from '@mui/material/Container';
 
@@ -15,20 +14,19 @@ import { useSettingsContext } from 'src/components/settings';
 
 import CampaignNewEditForm from 'src/sections/campaign/campaign-new-edit-form-tabs';
 
-import { IUser } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
 
 export default function CampaignNewView() {
     const settings = useSettingsContext();
 
-    const { client } = useClientContext()
+    // const { client } = useClientContext()
 
-    const usersloading = useBoolean(true)
+    // const usersloading = useBoolean(true)
 
     // const productsLoading = useBoolean(true);
 
-    const realmApp = useRealmApp();
+    // const realmApp = useRealmApp();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [error, setError] = useState<unknown>();
