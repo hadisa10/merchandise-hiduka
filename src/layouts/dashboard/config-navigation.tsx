@@ -98,9 +98,9 @@ const renderAdmin = (t: TFunction<"translation", undefined>) => ([
       {
         title: t('products'), path: paths.v2.admin.product, icon: ICONS.product,
       },
-      {
-        title: t('invoice'), path: paths.v2.admin.invoice.root, icon: ICONS.invoice,
-      },
+      // {
+      //   title: t('invoice'), path: paths.v2.admin.invoice.root, icon: ICONS.invoice,
+      // },
       // PROJECT
       {
         title: t('projects'), path: paths.v2.admin.project.root, icon: ICONS.project,

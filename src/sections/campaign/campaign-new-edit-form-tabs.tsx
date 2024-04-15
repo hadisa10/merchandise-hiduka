@@ -16,9 +16,10 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import { createObjectId, convertObjectId } from 'src/utils/realm';
-import { safeDateFormatter, generateAccessCode, removeAndFormatNullFields } from 'src/utils/helpers';
+import { getRolePath, safeDateFormatter, generateAccessCode, removeAndFormatNullFields } from 'src/utils/helpers';
 
 import Label from 'src/components/label';
+import { useRealmApp } from 'src/components/realm';
 import { LoadingScreen } from 'src/components/loading-screen';
 import FormProvider from 'src/components/hook-form/form-provider';
 
@@ -63,6 +64,12 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { saveCampaign, updateCampaign } = useCampaigns();
+
+  const { currentUser } = useRealmApp();
+
+  const role = useMemo(() => currentUser?.customData?.role as unknown as string, [currentUser?.customData?.role])
+
+  const rolePath = getRolePath(role);
 
   const open = useBoolean();
 
@@ -373,7 +380,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         await saveCampaign(cleanData)
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
-        router.push(paths.dashboard.campaign.root);
+        // @ts-expect-error expected
+        router.push(rolePath?.campaign?.root ?? "#");
         console.info('DATA', data);
       } else {
         const campaign: ICampaign = {
@@ -430,7 +438,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         } else throw new Error("Failed to clean data")
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
-        router.push(paths.dashboard.campaign.root);
+        // @ts-expect-error expected
+        router.push(rolePath?.campaign.root ?? "#");
         console.info('DATA', cleanData);
       }
     } catch (error) {

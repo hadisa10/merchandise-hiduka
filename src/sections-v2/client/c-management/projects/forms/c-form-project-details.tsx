@@ -28,7 +28,9 @@ import { IProject } from 'src/types/realm/realm-types';
 const INACTIVITY_LIMIT = [
   { "label": "30 min", "value": 1800000 },
   { "label": "1 hour", "value": 3600000 },
-  { "label": "3 hours", "value": 10800000 }
+  { "label": "3 hours", "value": 10800000 },
+  { "label": "6 hour", "value": 3600000 * 6 },
+  { "label": "12 hour", "value": 3600000 * 12 },
 ]
 
 function CFormProjectDetails({ currentProject, loading, users }: { currentProject?: IProject, loading: boolean, users: IUser[] }) {

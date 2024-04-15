@@ -9,6 +9,8 @@ import Container from '@mui/material/Container';
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import CampaignTabsView from 'src/sections-v2/client/c-management/campaign/c-campaign-tabs-view';
+
 import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -17,7 +19,6 @@ import { IUser } from 'src/types/user_realm';
 import { IProductItem } from 'src/types/product';
 import { ICampaign } from 'src/types/realm/realm-types';
 
-import CampaignTabsView from './ad-campaign-tabs-view';
 
 // ----------------------------------------------------------------------
 

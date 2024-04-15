@@ -17,6 +17,7 @@ import { useSettingsContext } from 'src/components/settings';
 import { IUser } from 'src/types/user_realm';
 
 import CampaignTabsView from './c-campaign-tabs-view';
+import CampaignNewEditForm from 'src/sections/campaign/campaign-new-edit-form-tabs';
 
 // ----------------------------------------------------------------------
 
@@ -62,7 +63,7 @@ export default function CampaignNewView() {
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-            <CampaignTabsView users={users} loading={showCampaignLoading}/>
+            <CampaignNewEditForm />
         </Container>
     );
 }
