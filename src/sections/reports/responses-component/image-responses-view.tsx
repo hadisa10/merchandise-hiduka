@@ -381,7 +381,7 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
 
                 <Stack direction="row" flexGrow={2} spacing={3} justifyContent="flex-end">
                 {
-                  images.length > 0 ? <MultiDownloadButton  size="small" urls={images.map((x) => ({ src: x.src, name: `${x.description}${x.title}-${x.src.split("/").pop() ?? ""}`}))}/> : <></>
+                  images.length > 0 ? <MultiDownloadButton  size="large" urls={images.map((x) => ({ src: x.src, name: `${x.description}${x.title}-${x.src.split("/").pop() ?? ""}`}))}/> : <></>
                 }
                 </Stack>
               </Stack>
