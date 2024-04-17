@@ -250,7 +250,7 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
                                     component={ButtonBase}
                                     onClick={() => console.log("TOTAL SALES")}
                                     title="Total Days Checked in"
-                                    total={checkinMetrics?.summary[0].totalCheckins ?? 0}
+                                    total={checkinMetrics?.summary?.[0]?.totalCheckins ?? 0}
                                     color="error"
                                     icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                                 />
@@ -261,7 +261,7 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
                                     component={ButtonBase}
                                     onClick={() => console.log("TOTAL SALES")}
                                     title="Total Units Sold"
-                                    total={checkinMetrics?.summary[0].totalUnitsSold ?? 0}
+                                    total={checkinMetrics?.summary?.[0]?.totalUnitsSold ?? 0}
                                     color="error"
                                     icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                                 />
@@ -272,7 +272,7 @@ const UserActivityView = ({ campaign }: { campaign: ICampaign }) => {
                                     component={ButtonBase}
                                     onClick={() => console.log("TOTAL Filled Reports")}
                                     title="Total Filled Reports"
-                                    total={checkinMetrics?.summary[0].totalFilledReports ?? 0}
+                                    total={checkinMetrics?.summary?.[0]?.totalFilledReports ?? 0}
                                     color="error"
                                     icon={<SystemIcon type="sale" width={45} sx={{ color: 'info.main' }} />} // Example icon for engagement
                                 />

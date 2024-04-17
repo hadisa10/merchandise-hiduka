@@ -4,6 +4,7 @@ import Captions from 'yet-another-react-lightbox/plugins/captions';
 import Slideshow from 'yet-another-react-lightbox/plugins/slideshow';
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails';
+import Download from "yet-another-react-lightbox/plugins/download";
 import ReactLightbox, { useLightboxState } from 'yet-another-react-lightbox';
 
 import Box from '@mui/material/Box';
@@ -18,6 +19,7 @@ export default function Lightbox({
   slides,
   disabledZoom,
   disabledVideo,
+  disabledDownload,
   disabledTotal,
   disabledCaptions,
   disabledSlideshow,
@@ -40,6 +42,7 @@ export default function Lightbox({
         plugins={getPlugins({
           disabledZoom,
           disabledVideo,
+          disabledDownload,
           disabledCaptions,
           disabledSlideshow,
           disabledThumbnails,
@@ -80,15 +83,19 @@ export default function Lightbox({
 export function getPlugins({
   disabledZoom,
   disabledVideo,
+  disabledDownload,
   disabledCaptions,
   disabledSlideshow,
   disabledThumbnails,
   disabledFullscreen,
 }: LightBoxProps) {
-  let plugins = [Captions, Fullscreen, Slideshow, Thumbnails, Video, Zoom];
+  let plugins = [Captions, Fullscreen, Slideshow, Thumbnails, Video, Zoom, Download];
 
   if (disabledThumbnails) {
     plugins = plugins.filter((plugin) => plugin !== Thumbnails);
+  }
+  if (disabledDownload) {
+    plugins = plugins.filter((plugin) => plugin !== Download);
   }
   if (disabledCaptions) {
     plugins = plugins.filter((plugin) => plugin !== Captions);

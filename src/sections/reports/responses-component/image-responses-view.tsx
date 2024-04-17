@@ -386,7 +386,7 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
                 </Stack>
               </Stack>
             </Grid>
-            {showLoader && <Grid xs={12}><LoadingScreen height="100%"/></Grid>}
+            {showLoader &&  <Box sx={{ textAlign: 'center', width: "100%", display: "flex", justifyContent: "center", alignItems: "center", pt: 10, pb: 15 }}><LoadingScreen /></Box>}
             {!showLoader &&
               (images.length > 0 ?
                 <Grid xs={12} >
@@ -442,6 +442,7 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
         disabledSlideshow={false}
         disabledThumbnails={false}
         disabledFullscreen={false}
+        disabledDownload={true}
       />
     </FormProvider>
   );
