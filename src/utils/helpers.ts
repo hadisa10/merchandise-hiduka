@@ -308,10 +308,10 @@ export const removeNullFields = <T>(data: T): T | undefined => {
 
 };
 
-export function generateShortUniqueId() {
+export function generateShortUniqueId(company="COMPANY") {
     const uuid = uuidv4();
     const buffer = Buffer.from(uuid.replace(/-/g, ''), 'hex');
-    return `BRIS${buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '').replace(/=+$/, '').substring(0,8)}PROMO001`.toUpperCase();
+    return `BRIS${buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '').replace(/=+$/, '').substring(0,8)}${company}`.toUpperCase();
 }
 
 export const getRolePath = (rle: string) => {

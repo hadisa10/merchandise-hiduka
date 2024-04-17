@@ -11,6 +11,7 @@ import ScrollProgress from 'src/components/scroll-progress';
 
 import HomeHero from '../home-hero';
 import HomeMinimal from '../home-minimal';
+// import { generateShortUniqueId } from 'src/utils/helpers';
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +43,7 @@ import HomeMinimal from '../home-minimal';
 
 export default function HomeView() {
   const { scrollYProgress } = useScroll();
+  // console.log(generateShortUniqueId("BRISK")+ "002", "UNIQUE ID")
   return (
     <MainLayout>
       <ScrollProgress scrollYProgress={scrollYProgress} />
