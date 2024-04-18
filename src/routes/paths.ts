@@ -68,6 +68,7 @@ export const paths = {
       verify: `${ROOTS.AUTH}/main/verify`,
       register: `${ROOTS.AUTH}/main/register`,
       verified: `${ROOTS.AUTH}/main/verified`,
+      deletedSuccess: `${ROOTS.AUTH}/main/deleted-success`,
       retry: `${ROOTS.AUTH}/main/retry`,
       forgotPassword: `${ROOTS.AUTH}/main/forgot-password`,
     },
@@ -123,7 +124,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/user-routes`,
       new: `${ROOTS.DASHBOARD}/user-routes/new`,
       details: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}/edit`,
     },
     general: {
       main: `${ROOTS.DASHBOARD}/main`,
@@ -152,7 +153,7 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/client/list`,
       cards: `${ROOTS.DASHBOARD}/client/cards`,
       account: `${ROOTS.DASHBOARD}/client/account`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`,
     },
     project: {
       root: `${ROOTS.DASHBOARD}/project`,
@@ -161,7 +162,7 @@ export const paths = {
       product: `${ROOTS.DASHBOARD}/project/product`,
       report: `${ROOTS.DASHBOARD}/project/report`,
       analysis: `${ROOTS.DASHBOARD}/project/analysis`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/client/project/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/client/project/${id}/edit`,
     },
     routes: {
       root: `${ROOTS.DASHBOARD}/routes`,
@@ -174,7 +175,7 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/campaign/list`,
       cards: `${ROOTS.DASHBOARD}/campaign/cards`,
       account: `${ROOTS.DASHBOARD}/campaign/account`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/campaign/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/campaign/${id}/edit`,
     },
     report: {
       root: `${ROOTS.DASHBOARD}/report`,
@@ -182,7 +183,7 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/report/list`,
       cards: `${ROOTS.DASHBOARD}/report/cards`,
       account: `${ROOTS.DASHBOARD}/report/account`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/report/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/report/${id}/edit`,
     },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,

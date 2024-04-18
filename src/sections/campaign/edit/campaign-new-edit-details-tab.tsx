@@ -1,6 +1,7 @@
 
-import { FC, memo, useEffect, useState } from 'react';
 import { isObject } from 'lodash';
+import { enqueueSnackbar } from 'notistack';
+import { FC, memo, useState, useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import Chip from '@mui/material/Chip';
@@ -12,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import { Divider, MenuItem } from '@mui/material';
 import { MobileDatePicker, MobileTimePicker, DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
 
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useClients, useShowLoader } from 'src/hooks/realm';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
@@ -22,6 +24,7 @@ import {
   JOB_WORKING_SCHEDULE_OPTIONS,
 } from 'src/_mock';
 
+import { useRealmApp } from 'src/components/realm';
 import { LoadingScreen } from 'src/components/loading-screen';
 import {
   RHFEditor,
@@ -31,9 +34,6 @@ import {
 } from 'src/components/hook-form';
 
 import { ICalendarDate } from 'src/types/calendar';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useRealmApp } from 'src/components/realm';
-import { enqueueSnackbar } from 'notistack';
 import { IProject } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
