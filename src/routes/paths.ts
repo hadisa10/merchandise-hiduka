@@ -69,6 +69,7 @@ export const paths = {
       register: `${ROOTS.AUTH}/main/register`,
       verified: `${ROOTS.AUTH}/main/verified`,
       deletedSuccess: `${ROOTS.AUTH}/main/deleted-success`,
+      deletedDataSuccess: `${ROOTS.AUTH}/main/deleted-data-success`,
       retry: `${ROOTS.AUTH}/main/retry`,
       forgotPassword: `${ROOTS.AUTH}/main/forgot-password`,
     },

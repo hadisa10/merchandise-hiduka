@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Box } from '@mui/system';
+import { Chip } from '@mui/material';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -18,11 +19,26 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function MainDeleteAccountView() {
+const data = [
+  {
+    id: '1',
+    name: 'Personal Data',
+  },
+  {
+    id: '2',
+    name: 'Reports Data',
+  },
+  {
+    id: '3',
+    name: 'Sales Data',
+  },
+];
+
+export default function MainDeleteDataView() {
   // const { forgotPassword } = useAuthContext();
 
   const confirmDelete = useBoolean(false);
@@ -34,9 +50,10 @@ export default function MainDeleteAccountView() {
       .email('Email must be a valid email address')
       .required('Email is required')
       .email('Email must be a valid email address'),
+    data: Yup.array().min(1, 'Please select at least 1 data type'),
     deleteAccount: Yup.string()
-      .required('Delete Account is required')
-      .oneOf(['delete account'], 'The string must be exactly "delete account"'),
+      .required('Delete Data confirmation is required')
+      .oneOf(['delete data'], 'The string must be exactly "delete account"'),
   });
 
   const defaultValues = {
@@ -55,7 +72,7 @@ export default function MainDeleteAccountView() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 3000));
       reset();
@@ -69,10 +86,56 @@ export default function MainDeleteAccountView() {
   const renderForm = (
     <Stack spacing={3} alignItems="center">
       <RHFTextField name="email" label="Email address" />
+      <RHFAutocomplete
+        name="data"
+        fullWidth
+        label="Delete Data"
+        placeholder="+ data"
+        multiple
+        limitTags={2}
+        freeSolo
+        disableCloseOnSelect
+        options={data.map((dt) => dt.id)}
+        getOptionLabel={(option) => {
+          const d = data?.find((dt) => dt.id === option);
+          if (d) {
+            return d?.name;
+          }
+          return option;
+        }}
+        renderOption={(props, option) => {
+          const d = data?.filter((dt) => dt.id === option)[0];
+
+          if (!d?.id) {
+            return null;
+          }
+
+          return (
+            <li {...props} key={d.id}>
+              {d?.name}
+            </li>
+          );
+        }}
+        renderTags={(selected, getTagProps) =>
+          selected.map((option, index) => {
+            const d = data?.find((dt) => dt.id === option);
+            return (
+              <Chip
+                {...getTagProps({ index })}
+                key={d?.id ?? ''}
+                label={d?.name ?? ''}
+                size="small"
+                color="info"
+                variant="soft"
+              />
+            );
+          })
+        }
+      />
       <Typography variant="caption">
         Enter the{' '}
         <Box component="span" color="error.main">
-          delete account
+          delete data
         </Box>{' '}
         below to confirm
       </Typography>
@@ -110,7 +173,7 @@ export default function MainDeleteAccountView() {
       </Box>
 
       <Stack spacing={1} sx={{ mt: 3, mb: 5 }}>
-        <Typography variant="h3">Delete your account</Typography>
+        <Typography variant="h3">Delete your data</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Please enter the email address associated with your account to delete your account.
         </Typography>

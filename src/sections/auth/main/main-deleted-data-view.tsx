@@ -13,17 +13,16 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function MainDeletedAccountView() {
+export default function MainDeletedDataView() {
   const renderHead = (
     <>
       <CheckoutIllustration height={150} sx={{ mb: 5 }} />
 
       <Typography variant="h4" sx={{ mb: 3 }}>
-        Request to delete account will be processed within the next 24 hours!
+        Request to delete data will be processed within the next 24 hours!
       </Typography>
       <Typography>
         <br /> Thank you for using hokela.
-        <br /> We hope to see you again soon
       </Typography>
     </>
   );
