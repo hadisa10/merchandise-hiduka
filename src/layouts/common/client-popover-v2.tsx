@@ -24,80 +24,97 @@ import { useClientContext } from 'src/components/clients/context/client-context'
 
 import { IClient, IUpdatedClient } from 'src/types/client';
 
-
 // ----------------------------------------------------------------------
 
 export default function ClientPopover() {
-
   const router = useRouter();
 
   const popover = usePopover();
 
-  const realmApp = useRealmApp()
+  const realmApp = useRealmApp();
 
-  const clientloading = useBoolean(true)
+  const clientloading = useBoolean(true);
 
   const mdUp = useResponsive('up', 'md');
 
-  const showClientLoader = useShowLoader((clientloading.value), 300);
+  const showClientLoader = useShowLoader(clientloading.value, 300);
 
   const [clients, setClients] = useState<IUpdatedClient[] | null>(null);
 
   // @ts-expect-error expected
-  const role: ERole = useMemo(() => realmApp.currentUser?.customData.role as unknown, [realmApp.currentUser?.customData.role])
+  const role: ERole = useMemo(
+    () => realmApp.currentUser?.customData.role as unknown,
+    [realmApp.currentUser?.customData.role]
+  );
 
   // Create a Set of all nested client IDs for quick lookup
-  const nestedClientIds = useMemo(() => Array.isArray(clients) ? new Set(clients?.flatMap(client => client.nestedClients?.map(nestedClient => nestedClient._id.toString()) || [])) : [], [clients]);
+  const nestedClientIds = useMemo(
+    () =>
+      Array.isArray(clients)
+        ? new Set(
+            clients?.flatMap(
+              (client) =>
+                client?.nestedClients?.map((nestedClient) => nestedClient?._id.toString()) || []
+            )
+          )
+        : [],
+    [clients]
+  );
 
   // Filter out top-level clients that are also listed as nested clients
-  const topLevelClients = useMemo(() => Array.isArray(clients) ? clients.filter(client => {
-      // Ensure client exists and has an _id before checking against nestedClientIds
-      const clientId = client?._id?.toString();
-        // @ts-expect-error expected
-      return clientId && nestedClientIds && !nestedClientIds.has(clientId);
-    }) : [], [clients, nestedClientIds]);
-  
+  const topLevelClients = useMemo(() => {
+    console.log(clients, 'CLIENTS');
+    return Array.isArray(clients)
+      ? clients?.filter((client) => {
+          // Ensure client exists and has an _id before checking against nestedClientIds
+          const clientId = client?._id?.toString();
+          // @ts-expect-error expected
+          return clientId && nestedClientIds && !nestedClientIds.has(clientId);
+        })
+      : [];
+  }, [clients, nestedClientIds]);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<unknown>(null);
 
-  console.log(nestedClientIds, "CLIENTS");
+  console.log(nestedClientIds, 'NESTED CLIENTS');
 
   useEffect(() => {
-    clientloading.onTrue()
+    clientloading.onTrue();
     setError(null);
-    realmApp.currentUser?.functions.getUserClientsUpdated().then((data: IUpdatedClient[]) => setClients(data))
-      .catch(e => {
-        console.error(e)
+    realmApp.currentUser?.functions
+      .getUserClientsUpdated()
+      .then((data: IUpdatedClient[]) => setClients(data))
+      .catch((e) => {
+        console.error(e);
         setError(e);
-        enqueueSnackbar("Failed to get your clients", { variant: "error" })
-      }
-      )
-      .finally(() => clientloading.onFalse())
+        enqueueSnackbar('Failed to get your clients', { variant: 'error' });
+      })
+      .finally(() => clientloading.onFalse());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  const { onChangeClient, client } = useClientContext()
+  }, []);
+
+  const { onChangeClient, client } = useClientContext();
 
   const [clObj, setClientObj] = useState<IClient | undefined>(undefined);
 
   useEffect(() => {
     if (Array.isArray(clients) && client) {
-      const c = clients.find(x => x?._id.toString() === client?._id.toString())
+      const c = clients?.find((x) => x?._id.toString() === client?._id.toString());
       if (c) {
-        setClientObj(c)
+        setClientObj(c);
       }
     }
-  }, [clients, client])
-
+  }, [clients, client]);
 
   useEffect(() => {
-    if (clObj) onChangeClient(clObj)
-  }, [clObj, onChangeClient])
-
+    if (clObj) onChangeClient(clObj);
+  }, [clObj, onChangeClient]);
 
   const handleChangeClient = useCallback(
     (e: MouseEvent<HTMLLIElement, globalThis.MouseEvent>, cl: IClient) => {
       e.stopPropagation();
-      setClientObj(cl)
+      setClientObj(cl);
       router.replace(paths.v2[role].root);
       popover.onClose();
     },
@@ -106,37 +123,36 @@ export default function ClientPopover() {
 
   return (
     <>
-      {mdUp && <Button
-        component={m.button}
-        whileTap="tap"
-        whileHover="hover"
-        onClick={popover.onOpen}
-        variant='soft'
-        color={clObj?.name ? 'success' : 'error'}
-        size='small'
-        sx={{
-          textOverflow: "ellipsis",
-          md: { maxWidth: 200 }, xs: { maxWidth: 50 }
-        }}
-        startIcon={
-          client?.type === "agency" &&
-          <Iconify icon="solar:star-bold" width={15} />
-
-        }
-        endIcon={
-          <Iconify icon={popover.open ? "ph:caret-up-bold" : "ph:caret-down-bold"} width={15} />
-        }
-      >
-        <span>{clObj?.name ?? "no client"}</span>
-      </Button>}
-      {!mdUp &&
+      {mdUp && (
+        <Button
+          component={m.button}
+          whileTap="tap"
+          whileHover="hover"
+          onClick={popover.onOpen}
+          variant="soft"
+          color={clObj?.name ? 'success' : 'error'}
+          size="small"
+          sx={{
+            textOverflow: 'ellipsis',
+            md: { maxWidth: 200 },
+            xs: { maxWidth: 50 },
+          }}
+          startIcon={client?.type === 'agency' && <Iconify icon="solar:star-bold" width={15} />}
+          endIcon={
+            <Iconify icon={popover.open ? 'ph:caret-up-bold' : 'ph:caret-down-bold'} width={15} />
+          }
+        >
+          <span>{clObj?.name ?? 'no client'}</span>
+        </Button>
+      )}
+      {!mdUp && (
         <IconButton
           component={m.button}
           whileTap="tap"
           whileHover="hover"
           variants={varHover(1.05)}
           onClick={popover.onOpen}
-          color='success'
+          color="success"
           sx={{
             width: 40,
             height: 40,
@@ -160,36 +176,51 @@ export default function ClientPopover() {
             {client?.name.charAt(0).toUpperCase()}
           </Avatar>
         </IconButton>
-      }
+      )}
 
-      <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160, maxHeight: 300, overflowY: "auto" }}>
-        <TextField title='Search' size='small' placeholder='Search client' />
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        sx={{ width: 160, maxHeight: 300, overflowY: 'auto' }}
+      >
+        <TextField title="Search" size="small" placeholder="Search client" />
         {showClientLoader && <LoadingScreen />}
-        {!showClientLoader && clients && (() => topLevelClients.map((cl) => (
-            <Fragment key={cl._id.toString()}>
-              <MenuItem
-                selected={cl._id.toString() === clObj?._id.toString()}
-                onClick={(e) => handleChangeClient(e, cl)}
-                sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                  <Iconify icon={client.client_icon} sx={{ borderRadius: 0.65, width: 28 }} />
-                  <Typography variant='caption' noWrap>{client.name}</Typography>
-                </Box>
-                {cl.nestedClients && cl.nestedClients.map((nestedClient) => (
-                  <MenuItem
-                    key={nestedClient._id.toString()}
-                    selected={nestedClient._id.toString() === clObj?._id.toString()}
-                    onClick={(e) => handleChangeClient(e, nestedClient)}
-                    sx={{ ml: 4 }}
-                  >
-                    <Iconify icon={nestedClient.client_icon} sx={{ borderRadius: 0.65, width: 28 }} />
-                    <Typography variant='caption' noWrap>{nestedClient.name}</Typography>
-                  </MenuItem>
-                ))}
-              </MenuItem>
-            </Fragment>
-          )))()}
+        {!showClientLoader &&
+          clients &&
+          (() =>
+            topLevelClients?.map((cl) => (
+              <Fragment key={cl._id.toString()}>
+                <MenuItem
+                  selected={cl._id.toString() === clObj?._id.toString()}
+                  onClick={(e) => handleChangeClient(e, cl)}
+                  sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    <Iconify icon={client?.client_icon} sx={{ borderRadius: 0.65, width: 28 }} />
+                    <Typography variant="caption" noWrap>
+                      {client?.name}
+                    </Typography>
+                  </Box>
+                  {cl?.nestedClients &&
+                    cl?.nestedClients?.map((nestedClient) => (
+                      <MenuItem
+                        key={nestedClient?._id.toString()}
+                        selected={nestedClient?._id.toString() === clObj?._id.toString()}
+                        onClick={(e) => handleChangeClient(e, nestedClient)}
+                        sx={{ ml: 4 }}
+                      >
+                        <Iconify
+                          icon={nestedClient.client_icon}
+                          sx={{ borderRadius: 0.65, width: 28 }}
+                        />
+                        <Typography variant="caption" noWrap>
+                          {nestedClient.name}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                </MenuItem>
+              </Fragment>
+            )))()}
       </CustomPopover>
     </>
   );

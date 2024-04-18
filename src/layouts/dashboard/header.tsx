@@ -15,9 +15,9 @@ import { useSettingsContext } from 'src/components/settings';
 
 import Searchbar from '../common/searchbar';
 import { NAV, HEADER } from '../config-layout';
-import ClientPopover from '../common/client-popover';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
+import ClientPopover from '../common/client-popover-v2';
 
 // ----------------------------------------------------------------------
 

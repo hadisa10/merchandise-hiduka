@@ -39,9 +39,9 @@ export interface IClient {
     name: string;
     createdAt: Date;
     updatedAt: Date;
-    children: Realm.BSON.ObjectId;
     type: "admin" | "agency" | "single-client" | "nested-client",
     parent: Realm.BSON.ObjectId;
+    children: Array<Realm.BSON.ObjectId>;
     client_icon: string;
     client_plan: string;
 }
@@ -55,7 +55,7 @@ export interface IUpdatedClient {
     name: string;
     createdAt: Date;
     updatedAt: Date;
-    children: Realm.BSON.ObjectId;
+    children: Array<Realm.BSON.ObjectId>;
     type: "admin" | "agency" | "single-client" | "nested-client",
     parent: Realm.BSON.ObjectId;
     client_icon: string;
