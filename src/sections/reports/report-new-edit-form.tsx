@@ -24,7 +24,6 @@ import { IReport, ICampaign } from 'src/types/realm/realm-types';
 // import ReportNewEditDetailsForm from './edit/report-new-edit-details-form';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useRolePath } from 'src/hooks/use-path-role';
 import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 
 import { createObjectId } from 'src/utils/realm';
