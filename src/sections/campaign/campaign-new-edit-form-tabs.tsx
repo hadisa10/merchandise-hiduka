@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -9,14 +9,18 @@ import { lazy, useMemo, useState, Suspense, useEffect, useCallback } from 'react
 
 import { Tab, Tabs } from '@mui/material';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import { createObjectId, convertObjectId } from 'src/utils/realm';
-import { getRolePath, safeDateFormatter, generateAccessCode, removeAndFormatNullFields } from 'src/utils/helpers';
+import {
+  getRolePath,
+  safeDateFormatter,
+  generateAccessCode,
+  removeAndFormatNullFields,
+} from 'src/utils/helpers';
 
 import Label from 'src/components/label';
 import { useRealmApp } from 'src/components/realm';
@@ -36,8 +40,8 @@ const CampaignNewEditRouteForm = lazy(() => import('./edit/campaign-new-edit-rou
 const CampaignNewEditDetailsTab = lazy(() => import('./edit/campaign-new-edit-details-tab'));
 const ReportListDataGrid = lazy(() => import('../reports/view/report-list-data-grid'));
 
-const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
-const ROUTES_FIELDS = ['routes']
+const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule'];
+const ROUTES_FIELDS = ['routes'];
 
 // ----------------------------------------------------------------------
 
@@ -45,20 +49,15 @@ type Props = {
   currentCampaign?: ICampaign;
 };
 
-
 export const CAMPAING_DETAILS_TABS = [
   { value: 'details', label: 'Details' },
   { value: 'reports', label: 'Reports' },
   { value: 'products', label: 'Products' },
   { value: 'routes', label: 'Routes' },
-  { value: 'users', label: 'User Activity' }
+  { value: 'users', label: 'User Activity' },
 ];
 
-
-
-
 export default function CampaignNewEditForm({ currentCampaign }: Props) {
-
   const router = useRouter();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -67,21 +66,24 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const { currentUser } = useRealmApp();
 
-  const role = useMemo(() => currentUser?.customData?.role as unknown as string, [currentUser?.customData?.role])
+  const role = useMemo(
+    () => currentUser?.customData?.role as unknown as string,
+    [currentUser?.customData?.role]
+  );
 
   const rolePath = getRolePath(role);
 
   const open = useBoolean();
 
-  const [newGeoLocation, setNewGeoLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [newGeoLocation, setNewGeoLocation] = useState<{ lat: number; lng: number } | null>(null);
 
-
-  const handleNewRouteOpen = useCallback(({ lat, lng }: { lat: number, lng: number }) => {
-    setNewGeoLocation({ lat, lng });
-    open.onTrue()
-  }, [open])
-
-
+  const handleNewRouteOpen = useCallback(
+    ({ lat, lng }: { lat: number; lng: number }) => {
+      setNewGeoLocation({ lat, lng });
+      open.onTrue();
+    },
+    [open]
+  );
 
   const [currentTab, setCurrentTab] = useState('details');
 
@@ -100,14 +102,14 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
   });
   const salesKpiSchema = Yup.object().shape({
     totalDailyUnits: Yup.number(),
-    totalDailyRevenue: Yup.number()
-  })
+    totalDailyRevenue: Yup.number(),
+  });
 
   const NewCurrectSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     description: Yup.string(),
-    client_id: Yup.string().required("Client is required"),
-    type: Yup.string().required("Campaign type is required"),
+    client_id: Yup.string().required('Client is required'),
+    type: Yup.string().required('Campaign type is required'),
     users: Yup.array(),
     routes: Yup.lazy(() =>
       Yup.array().of(
@@ -121,8 +123,11 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         })
       )
     ),
-    hourlyRate: Yup.number().min(0).required("Hourly rate is required").typeError("Hourly rate must be a number"),
-    inactivityTimeout: Yup.number().required("Inactivity limit required"),
+    hourlyRate: Yup.number()
+      .min(0)
+      .required('Hourly rate is required')
+      .typeError('Hourly rate must be a number'),
+    inactivityTimeout: Yup.number().required('Inactivity limit required'),
     salesKpi: salesKpiSchema,
     startDate: Yup.date()
       .transform((value, originalValue) => {
@@ -152,15 +157,11 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       })
       .required('End date is required')
       .typeError('End date must be a valid date, date-time string, or Unix timestamp')
-      .test(
-        'date-after-start',
-        'End date must be after start date',
-        (value, { parent }) => {
-          const { startDate } = parent;
-          // Ensure both startDate and endDate are valid Date objects before comparing
-          return startDate && value && new Date(startDate) < new Date(value);
-        }
-      ),
+      .test('date-after-start', 'End date must be after start date', (value, { parent }) => {
+        const { startDate } = parent;
+        // Ensure both startDate and endDate are valid Date objects before comparing
+        return startDate && value && new Date(startDate) < new Date(value);
+      }),
     checkInTime: Yup.date()
       .transform((value, originalValue) => {
         // Check if the originalValue is a number (Unix timestamp in milliseconds)
@@ -197,15 +198,15 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           // Ensure both startDate and endDate are valid Date objects before comparing
           return checkInTime && value && new Date(checkInTime) < new Date(value);
         }
-      )
-  })
+      ),
+  });
   const defaultValues = useMemo(
     () => ({
       title: currentCampaign?.title || '',
       description: currentCampaign?.description || '',
       client_id: currentCampaign?.client_id.toString() || '',
       project_id: currentCampaign?.project_id.toString() || '',
-      users: currentCampaign?.users?.map(user => user.toString()) || [],
+      users: currentCampaign?.users?.map((user) => user.toString()) || [],
       startDate: currentCampaign?.startDate || '',
       type: currentCampaign?.type || 'type',
       salesKpi: {
@@ -218,24 +219,24 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
       workingSchedule: currentCampaign?.workingSchedule || [],
       hourlyRate: currentCampaign?.hourlyRate || 0,
       inactivityTimeout: currentCampaign?.inactivityTimeout || 0,
-      routes: currentCampaign?.routes?.map(r => {
-        const _id = r._id.toString()
-        if (r.routeAddress) {
-          const addrs = {
-            ...r.routeAddress,
-            _id: r.routeAddress?._id.toString()
+      routes:
+        currentCampaign?.routes?.map((r) => {
+          const _id = r._id.toString();
+          if (r.routeAddress) {
+            const addrs = {
+              ...r.routeAddress,
+              _id: r.routeAddress?._id.toString(),
+            };
+            return {
+              ...r,
+              _id,
+              routeAddress: addrs,
+            };
           }
           return {
             ...r,
-            _id,
-            routeAddress: addrs
-          }
-        }
-        return {
-          ...r
-        }
-
-      }) || [],
+          };
+        }) || [],
     }),
     [currentCampaign]
   );
@@ -244,7 +245,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     // @ts-expect-error expected
     resolver: yupResolver(NewCurrectSchema),
     defaultValues,
-    mode: "all"
+    mode: 'all',
   });
 
   const {
@@ -254,62 +255,79 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     formState: { isSubmitting, errors },
   } = methods;
 
-  const { fields: campaignRoutes, append, remove } = useFieldArray({
+  const {
+    fields: campaignRoutes,
+    append,
+    remove,
+  } = useFieldArray({
     control,
-    name: "routes",
+    name: 'routes',
   });
 
-  const handleAddNewRoute = useCallback((route: IRoute) => {
-    // Convert route details to match the form's expected structure
-    if (!(Array.isArray(campaignRoutes) && campaignRoutes.some(cmr => cmr._id.toString() === route._id?.toString()))) {
-      const rtAddrs = {
-        _id: route._id,
-        fullAddress: route.fullAddress,
-        location: route.location,
-        phoneNumber: route.phoneNumber ?? '',
-        road: route.road ?? ''
+  const handleAddNewRoute = useCallback(
+    (route: IRoute) => {
+      // Convert route details to match the form's expected structure
+      if (
+        !(
+          Array.isArray(campaignRoutes) &&
+          campaignRoutes.some((cmr) => cmr._id.toString() === route._id?.toString())
+        )
+      ) {
+        const rtAddrs = {
+          _id: route._id,
+          fullAddress: route.fullAddress,
+          location: route.location,
+          phoneNumber: route.phoneNumber ?? '',
+          road: route.road ?? '',
+        };
+        const dt = new Date();
+        const routeForForm: ICampaignRoutes = {
+          _id: createObjectId(), // Ensure _id is a string to match the form's expectation
+          routeAddress: rtAddrs,
+          routeNumber: Array.isArray(campaignRoutes) ? campaignRoutes.length + 1 : 1,
+          totalQuantity: 0,
+          createdAt: dt,
+          updatedAt: dt,
+        };
+        append(routeForForm);
+      } else {
+        enqueueSnackbar('Route already selected', { variant: 'error' });
       }
-      const dt = new Date();
-      const routeForForm: ICampaignRoutes = {
-        _id: createObjectId(), // Ensure _id is a string to match the form's expectation
-        routeAddress: rtAddrs,
-        routeNumber: Array.isArray(campaignRoutes) ? campaignRoutes.length + 1 : 1,
-        totalQuantity: 0,
-        createdAt: dt,
-        updatedAt: dt,
-      };
-      append(routeForForm);
-    } else {
-      enqueueSnackbar("Route already selected", { variant: "error" })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [append, campaignRoutes]);
+    },
+    [append, campaignRoutes, enqueueSnackbar]
+  );
 
-  const handleRemoveNewRoute = useCallback((routeIndex: number) => {
-    if (isNumber(routeIndex)) {
-      remove(routeIndex)
-    }
-  }, [remove])
-
-  const tabErrors = useCallback((tab: string) => {
-    const y = Object.entries(errors).filter(([key, val]) => {
-      switch (tab) {
-        case 'details':
-          return DETAILS_FIELDS.includes(key)
-        case 'routes':
-          return ROUTES_FIELDS.includes(key)
-        default:
-          return false
+  const handleRemoveNewRoute = useCallback(
+    (routeIndex: number) => {
+      if (isNumber(routeIndex)) {
+        remove(routeIndex);
       }
-    })
-    return y;
-  }, [errors])
+    },
+    [remove]
+  );
+
+  const tabErrors = useCallback(
+    (tab: string) => {
+      const y = Object.entries(errors).filter(([key, val]) => {
+        switch (tab) {
+          case 'details':
+            return DETAILS_FIELDS.includes(key);
+          case 'routes':
+            return ROUTES_FIELDS.includes(key);
+          default:
+            return false;
+        }
+      });
+      return y;
+    },
+    [errors]
+  );
 
   useEffect(() => {
     if (!isEmpty(errors)) {
-      console.log(errors, 'ERRORS')
+      console.log(errors, 'ERRORS');
     }
-  }, [errors])
+  }, [errors]);
 
   useEffect(() => {
     if (currentCampaign) {
@@ -333,7 +351,7 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           description: data.description ?? '',
           products: [],
           // @ts-expect-error expected
-          users: data.users.map(x => x.toString()) ?? [],
+          users: data.users.map((x) => x.toString()) ?? [],
           createdAt: new Date(),
           updatedAt: new Date(),
           // @ts-expect-error expected
@@ -344,44 +362,48 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           today_checkin: 0,
           total_checkin: 0,
         };
-        const cleanData = removeAndFormatNullFields({
-          ...campaign
-        }, [
+        const cleanData = removeAndFormatNullFields(
           {
-            key: "updatedAt",
-            formatter: safeDateFormatter,
+            ...campaign,
           },
-          {
-            key: "createdAt",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "endDate",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "startDate",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "checkInTime",
-            formatter: safeDateFormatter,
-          },
-          {
-            key: "checkOutTime",
-            formatter: safeDateFormatter,
-          }
+          [
+            {
+              key: 'updatedAt',
+              formatter: safeDateFormatter,
+            },
+            {
+              key: 'createdAt',
+              formatter: safeDateFormatter,
+            },
+            {
+              key: 'endDate',
+              formatter: safeDateFormatter,
+            },
+            {
+              key: 'startDate',
+              formatter: safeDateFormatter,
+            },
+            {
+              key: 'checkInTime',
+              formatter: safeDateFormatter,
+            },
+            {
+              key: 'checkOutTime',
+              formatter: safeDateFormatter,
+            },
+          ],
           // @ts-expect-error expected
-        ], ["id"]);
+          ['id']
+        );
 
         if (!cleanData) {
-          throw new Error("Error creating campaign")
+          throw new Error('Error creating campaign');
         }
-        await saveCampaign(cleanData)
+        await saveCampaign(cleanData);
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
         // @ts-expect-error expected
-        router.push(rolePath?.campaign?.root ?? "#");
+        router.push(rolePath?.campaign?.root ?? '#');
         console.info('DATA', data);
       } else {
         const campaign: ICampaign = {
@@ -391,59 +413,58 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           // @ts-expect-error expected
           updatedAt: safeDateFormatter(),
           // @ts-expect-error expected
-          routes: data.routes.map(x => {
+          routes: data.routes.map((x) => {
             if (!x.createdAt) {
               return {
                 ...x,
                 createdAt: safeDateFormatter,
                 updatedAt: safeDateFormatter,
-                totalQuantity: 0
-              }
+                totalQuantity: 0,
+              };
             }
             return x;
           }),
         };
-        const cleanData = removeAndFormatNullFields(campaign,
-          [
-
-            {
-              key: "createdAt",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "updatedAt",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "startDate",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "endDate",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "checkInTime",
-              formatter: safeDateFormatter,
-            },
-            {
-              key: "checkOutTime",
-              formatter: safeDateFormatter,
-            },
-          ]
-        );
-        console.log(cleanData, 'UPDATED CAMPAIGN')
+        const cleanData = removeAndFormatNullFields(campaign, [
+          {
+            key: 'createdAt',
+            formatter: safeDateFormatter,
+          },
+          {
+            key: 'updatedAt',
+            formatter: safeDateFormatter,
+          },
+          {
+            key: 'startDate',
+            formatter: safeDateFormatter,
+          },
+          {
+            key: 'endDate',
+            formatter: safeDateFormatter,
+          },
+          {
+            key: 'checkInTime',
+            formatter: safeDateFormatter,
+          },
+          {
+            key: 'checkOutTime',
+            formatter: safeDateFormatter,
+          },
+        ]);
+        console.log(cleanData, 'UPDATED CAMPAIGN');
         if (cleanData) {
-          await updateCampaign(cleanData)
-        } else throw new Error("Failed to clean data")
+          await updateCampaign(cleanData);
+        } else throw new Error('Failed to clean data');
         reset();
         enqueueSnackbar(currentCampaign ? 'Update success!' : 'Create success!');
         // @ts-expect-error expected
-        router.push(rolePath?.campaign.root ?? "#");
+        router.push(rolePath?.campaign.root ?? '#');
         console.info('DATA', cleanData);
       }
     } catch (error) {
-      enqueueSnackbar(currentCampaign ? 'Update failed!' : 'Failed to create campaign!', { variant: "error" });
+      enqueueSnackbar(currentCampaign ? 'Update failed!' : 'Failed to create campaign!', {
+        variant: 'error',
+      });
       console.error(error);
     }
   });
@@ -452,19 +473,22 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     setCurrentTab(newValue);
   }, []);
 
-
-  const tabArray = useMemo(() => CAMPAING_DETAILS_TABS.filter(x => {
-    if (currentCampaign) {
-      return true;
-    }
-    switch (x.value) {
-      case "reports":
-      case "products":
-        return false;
-      default:
-        return true;
-    }
-  }), [currentCampaign])
+  const tabArray = useMemo(
+    () =>
+      CAMPAING_DETAILS_TABS.filter((x) => {
+        if (currentCampaign) {
+          return true;
+        }
+        switch (x.value) {
+          case 'reports':
+          case 'products':
+            return false;
+          default:
+            return true;
+        }
+      }),
+    [currentCampaign]
+  );
 
   const renderTabs = (
     <Tabs
@@ -481,10 +505,13 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
           value={tab.value}
           label={tab.label}
           icon={
-            tabErrors(tab.value)?.length > 1 ?
-              <Label variant="soft" color='error'>{tabErrors(tab.value)?.length}</Label>
-              :
+            tabErrors(tab.value)?.length > 1 ? (
+              <Label variant="soft" color="error">
+                {tabErrors(tab.value)?.length}
+              </Label>
+            ) : (
               ''
+            )
           }
         />
       ))}
@@ -497,17 +524,38 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
         <CampaignDetailsToolbar
           currentCampaign={currentCampaign}
           isSubmitting={isSubmitting}
-          backLink={paths.dashboard.campaign.root}
+          // @ts-expect-error expected
+          backLink={rolePath?.campaign?.root ?? '#'}
         />
         {renderTabs}
 
-        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><CampaignNewEditDetailsTab /></Suspense>}
-        {currentTab === 'reports' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ReportListDataGrid id={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'products' && currentCampaign && <Suspense fallback={<LoadingScreen />}> <ProductListDataGrid clientId={currentCampaign?.client_id.toString() ?? ""} campaignId={currentCampaign?._id.toString() ?? ""} /></Suspense>}
-        {currentTab === 'users' && currentCampaign && <Suspense fallback={<LoadingScreen />}><UserActivityView campaign={currentCampaign} /></Suspense>}
+        {currentTab === 'details' && (
+          <Suspense fallback={<LoadingScreen />}>
+            <CampaignNewEditDetailsTab />
+          </Suspense>
+        )}
+        {currentTab === 'reports' && currentCampaign && (
+          <Suspense fallback={<LoadingScreen />}>
+            {' '}
+            <ReportListDataGrid id={currentCampaign?._id.toString() ?? ''} />
+          </Suspense>
+        )}
+        {currentTab === 'products' && currentCampaign && (
+          <Suspense fallback={<LoadingScreen />}>
+            {' '}
+            <ProductListDataGrid
+              clientId={currentCampaign?.client_id.toString() ?? ''}
+              campaignId={currentCampaign?._id.toString() ?? ''}
+            />
+          </Suspense>
+        )}
+        {currentTab === 'users' && currentCampaign && (
+          <Suspense fallback={<LoadingScreen />}>
+            <UserActivityView campaign={currentCampaign} />
+          </Suspense>
+        )}
         <Suspense fallback={<LoadingScreen />}>
-          {
-            currentTab === 'routes' &&
+          {currentTab === 'routes' && (
             <CampaignNewEditRouteForm
               currentCampaign={currentCampaign}
               handleNewRouteOpen={handleNewRouteOpen}
@@ -516,14 +564,19 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
               // @ts-expect-error campaign routes typescript error
               campaignRoutes={campaignRoutes}
             />
-          }
+          )}
         </Suspense>
       </FormProvider>
-      {newGeoLocation &&
+      {newGeoLocation && (
         <Suspense fallback={<LoadingScreen />}>
-          <RouteCreateEditForm newGeoLocation={newGeoLocation} handleAddNewRoute={handleAddNewRoute} open={open.value} onClose={open.onFalse} />
+          <RouteCreateEditForm
+            newGeoLocation={newGeoLocation}
+            handleAddNewRoute={handleAddNewRoute}
+            open={open.value}
+            onClose={open.onFalse}
+          />
         </Suspense>
-      }
+      )}
     </>
   );
 }

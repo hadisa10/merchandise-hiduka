@@ -115,3 +115,12 @@ export interface IDraftClientItem {
   clientActions: IClientActions;
   draftClientActions: IDraftClientActions;
 }
+
+export enum ERole {
+  SUPERADMIN = 'superadmin',
+  ADMIN = 'admin',
+  CLIENT = 'client',
+  PROJECT_MANAGER = 'project-manager',
+  TEAM_LEAD = 'team-lead',
+  AGENT = 'agent',
+}

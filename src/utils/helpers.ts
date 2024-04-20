@@ -6,7 +6,7 @@ import { intervalToDuration } from 'date-fns';
 
 import { paths } from 'src/routes/paths';
 
-import { ERole } from 'src/config-global';
+import { ERole } from 'src/types/client';
 
 import uuidv4 from './uuidv4';
 
@@ -351,18 +351,18 @@ export function generateShortUniqueId(company = 'COMPANY') {
 export const getRolePath = (rle: string) => {
   switch (rle) {
     case ERole.SUPERADMIN:
-      return paths.v2.superadmin.root;
+      return paths.v2.superadmin;
     case ERole.ADMIN:
-      return paths.v2.admin.root;
+      return paths.v2.admin;
     case ERole.CLIENT:
-      return paths.v2.client.root;
+      return paths.v2.client;
     case ERole.PROJECT_MANAGER:
-      return paths.v2['project-manager'].root;
+      return paths.v2['project-manager'];
     case ERole.TEAM_LEAD:
-      return paths.v2['team-lead'].root;
+      return paths.v2['team-lead'];
     case ERole.AGENT:
     default:
-      return paths.v2.agent.root;
+      return paths.v2.agent;
   }
 };
 

@@ -23,10 +23,12 @@ export default function ClientCreateView() {
 
   const realmApp = useRealmApp();
 
-  const role = useMemo(() => realmApp.currentUser?.customData?.role as unknown as IRole, [realmApp.currentUser?.customData?.role])
+  const role = useMemo(
+    () => realmApp.currentUser?.customData?.role as unknown as IRole,
+    [realmApp.currentUser?.customData?.role]
+  );
 
   const rolePath = useRolePath();
-
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -35,7 +37,6 @@ export default function ClientCreateView() {
         links={[
           {
             name: 'Dashboard',
-            // @ts-expect-error expected
             href: rolePath?.root,
           },
           {
@@ -49,13 +50,8 @@ export default function ClientCreateView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      {
-        role !== "admin" && <View403 />
-      }
-      {
-        role === "admin" && <ClientNewEditForm />
-      }
-
+      {role !== 'admin' && <View403 />}
+      {role === 'admin' && <ClientNewEditForm />}
     </Container>
   );
 }

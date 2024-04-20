@@ -40,7 +40,6 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { findRootClient, deepSearchGeneric } from 'src/utils/helpers';
 
 import { bgBlur } from 'src/theme/css';
-import { ERole } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
@@ -49,7 +48,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useClientContext } from 'src/components/clients/context/client-context';
 
-import { IClient, IUpdatedClient, IGetClientsResponse } from 'src/types/client';
+import { ERole , IClient, IUpdatedClient, IGetClientsResponse } from 'src/types/client';
 
 // ----------------------------------------------------------------------
 

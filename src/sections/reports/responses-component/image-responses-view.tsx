@@ -35,13 +35,10 @@ import { IReport, IFilledReport, IReportQuestion } from 'src/types/realm/realm-t
 
 // ----------------------------------------------------------------------
 
-
-
 const OPTIONS = [
   { value: false, label: 'Hide' },
   { value: true, label: 'Show' },
 ];
-
 
 interface AnswerObject {
   _id: string; // The new 'id' key
@@ -50,43 +47,45 @@ interface AnswerObject {
 }
 
 interface ResponseImages {
-  src: string,
-  title: string,
-  description: string,
+  src: string;
+  title: string;
+  description: string;
   user: string;
 }
 // ----------------------------------------------------------------------
 
-export default function ImageResponseView({ report, questions }: { report?: IReport, questions?: IReportQuestion[] }) {
-
+export default function ImageResponseView({
+  report,
+  questions,
+}: {
+  report?: IReport;
+  questions?: IReportQuestion[];
+}) {
   const { currentUser } = useRealmApp();
 
-  const loadingReport = useBoolean()
+  const loadingReport = useBoolean();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [answers, setAnswers] = useState<AnswerObject[] | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [columns, setColumns] = useState<IColumn[] | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [reportAnswersError, setReportAnswerError] = useState(null)
+  const [reportAnswersError, setReportAnswerError] = useState(null);
 
-  const showLoader = useShowLoader(loadingReport.value, 500)
+  const showLoader = useShowLoader(loadingReport.value, 500);
 
   const [fetchedImages, setFetchedImages] = useState<ResponseImages[]>([]);
 
-
-
-  const id = useMemo(() => report?._id.toString(), [report])
+  const id = useMemo(() => report?._id.toString(), [report]);
 
   const ResponseSchema = Yup.object().shape({
-    showFiltered: Yup.boolean().typeError("Must be either true or false"),
+    showFiltered: Yup.boolean().typeError('Must be either true or false'),
     users: Yup.array().of(Yup.string()),
-
   });
 
   const defaultValues = {
     showFiltered: true,
-    users: []
+    users: [],
   };
 
   const methods = useForm({
@@ -94,65 +93,59 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    handleSubmit
-  } = methods;
+  const { reset, watch, handleSubmit } = methods;
 
-  const showFl = watch("showFiltered")
+  const showFl = watch('showFiltered');
 
   const realmApp = useRealmApp();
 
-  const filterUser = watch("users")
+  const filterUser = watch('users');
 
   const loadingCampaignUsers = useBoolean();
 
-  const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([])
+  const [campaignUsers, setCampaignUsers] = useState<ICampaignUser[]>([]);
 
   // eslint-disable-next-line
-  const [campaignUsersError, setCampaignUsersError] = useState(null)
+  const [campaignUsersError, setCampaignUsersError] = useState(null);
 
   const showUserLoader = useShowLoader(loadingCampaignUsers.value, 500);
 
-  const campaignId = useMemo(() => report?.campaign_id.toString(), [report?.campaign_id])
+  const campaignId = useMemo(() => report?.campaign_id.toString(), [report?.campaign_id]);
 
   const images = useMemo(() => {
     if (Array.isArray(filterUser) && filterUser.length > 0) {
-      return fetchedImages.filter(x => {
-        console.log(filterUser, "FILTER USER");
-        console.log(x.user, "USER IN IMAGE")
-        return filterUser.includes(x.user)
-      })
+      return fetchedImages.filter((x) => {
+        console.log(filterUser, 'FILTER USER');
+        console.log(x.user, 'USER IN IMAGE');
+        return filterUser.includes(x.user);
+      });
     }
     return fetchedImages;
-  }, [fetchedImages, filterUser])
+  }, [fetchedImages, filterUser]);
 
-  const lightbox = useLightBox(images)
-
+  const lightbox = useLightBox(images);
 
   useEffect(() => {
     if (isString(campaignId) && !isEmpty(campaignId)) {
-      loadingCampaignUsers.onTrue()
-      setCampaignUsersError(null)
-      realmApp.currentUser?.functions.getCampaignUsers(campaignId.toString())
-        .then(res => {
-          setCampaignUsersError(null)
-          setCampaignUsers(res)
-        }
-        )
-        .catch(e => {
-          enqueueSnackbar("Failed to fetch campaign products", { variant: "error" })
-          setCampaignUsersError(e.message)
-          console.error(e, "REPORT FETCH")
+      loadingCampaignUsers.onTrue();
+      setCampaignUsersError(null);
+      realmApp.currentUser?.functions
+        .getCampaignUsers(campaignId.toString())
+        .then((res) => {
+          setCampaignUsersError(null);
+          setCampaignUsers(res);
+        })
+        .catch((e) => {
+          enqueueSnackbar('Failed to fetch campaign products', { variant: 'error' });
+          setCampaignUsersError(e.message);
+          console.error(e, 'REPORT FETCH');
         })
         .finally(() => {
-          loadingCampaignUsers.onFalse()
-        })
+          loadingCampaignUsers.onFalse();
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [campaignId])
-
+  }, [campaignId]);
 
   const renderFilterRole = (
     <RHFSelect name="showFiltered" label="Show Filtered Data" sx={{ maxWidth: 120 }}>
@@ -164,7 +157,7 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
         </MenuItem>
       ))}
     </RHFSelect>
-  )
+  );
   const renderFilterUser = (
     <RHFAutocomplete
       name="users"
@@ -176,21 +169,19 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
       limitTags={2}
       loading={showUserLoader}
       sx={{
-        maxWidth: 360
+        maxWidth: 360,
       }}
       disableCloseOnSelect
-      options={campaignUsers.map(usr => usr._id)}
+      options={campaignUsers.map((usr) => usr._id)}
       getOptionLabel={(option) => {
         const user = campaignUsers?.find((usr) => usr._id === option);
         if (user) {
-          return user?.displayName
+          return user?.displayName;
         }
-        return option
+        return option;
       }}
       renderOption={(props, option) => {
-        const user = campaignUsers?.filter(
-          (usr) => usr._id === option
-        )[0];
+        const user = campaignUsers?.filter((usr) => usr._id === option)[0];
 
         if (!user?._id) {
           return null;
@@ -202,166 +193,176 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
           </li>
         );
       }}
-      renderTags={(selected, getTagProps) => (
+      renderTags={(selected, getTagProps) =>
         selected.map((option, index) => {
           const user = campaignUsers?.find((usr) => usr._id === option);
           return (
             <Chip
               {...getTagProps({ index })}
-              key={user?._id ?? ""}
-              label={user?.displayName ?? ""}
+              key={user?._id ?? ''}
+              label={user?.displayName ?? ''}
               size="small"
               color="info"
               variant="soft"
             />
-          )
+          );
         })
-      )
       }
     />
-  )
+  );
   const onResetFilters = () => {
     reset({
       showFiltered: true,
-      users: []
-    })
-  }
+      users: [],
+    });
+  };
 
   useEffect(() => {
     if (id && questions) {
       loadingReport.onTrue();
       setReportAnswerError(null);
-      currentUser?.functions?.getFilledReports(id, showFl).then((res: IFilledReport[]) => {
-        const resAnswers = res.map(x => [...x.answers.map(y => ({ userName: x.userName, userId: x.user_id, createdAt: x.createdAt, ...y }))]);
+      currentUser?.functions
+        ?.getFilledReports(id, showFl)
+        .then((res: IFilledReport[]) => {
+          const resAnswers = res.map((x) => [
+            ...x.answers.map((y) => ({
+              userName: x.userName,
+              userId: x.user_id,
+              createdAt: x.createdAt,
+              ...y,
+            })),
+          ]);
 
-        // const qObj: { [key: string]: { text: string, order: number } } = {}
+          // const qObj: { [key: string]: { text: string, order: number } } = {}
 
-        // questions.forEach(x => {
-        //     qObj[x._id.toString()] = {
+          // questions.forEach(x => {
+          //     qObj[x._id.toString()] = {
 
-        //         field: x._id,
-        //         label: x.text,
-        //         order: x.order,
-        //         type: x.input_type
-        //     }
-        // })
-        const d: IColumn[] = [{
-          field: "userName",
-          label: "User",
-          order: -2,
-          type: "string"
-        },
-        {
-          field: "createdAt",
-          label: "Date Filled",
-          order: -1,
-          type: "date"
-        }
-          , ...questions.map(z => {
-
-            const r = {
-              field: z._id.toString(),
-              label: z.text,
-              order: z.order,
-              type: z.input_type
-            }
-            if (z.input_type === "number") {
-              // @ts-expect-error expected
-              r.filterOperators = numericFilterOperators
-            }
-            return r;
-          }
-          ), {
-          field: "actions",
-          label: "Actions",
-          order: Number.MAX_SAFE_INTEGER,
-          type: "actions",
-          action: {
-            view: {
-              label: 'View',
-              icon: 'solar:eye-bold',
-              action: (_id) => console.log(_id),
+          //         field: x._id,
+          //         label: x.text,
+          //         order: x.order,
+          //         type: x.input_type
+          //     }
+          // })
+          const d: IColumn[] = [
+            {
+              field: 'userName',
+              label: 'User',
+              order: -2,
+              type: 'string',
             },
-            edit: {
-              label: 'Edit',
-              icon: 'solar:pen-bold',
-              action: (_id) => console.log(_id),
+            {
+              field: 'createdAt',
+              label: 'Date Filled',
+              order: -1,
+              type: 'date',
             },
-            delete: {
-              label: 'Delete',
-              icon: 'solar:trash-bin-trash-bold',
-              action: (_id) => console.log(_id),
-            },
-          }
-        }]
-
-        setColumns(d);
-
-        const imgs: ResponseImages[] = [];
-
-        const answs = resAnswers.map((x) => {
-          const usrNm = Array.isArray(x) ? x[0]?.userName : "NA";
-          const usrId = Array.isArray(x) ? x[0]?.userId : "NA";
-
-          const dt = Array.isArray(x) ? x[0]?.createdAt : new Date()
-          const t: { _id: string, [key: string]: any } = {
-            _id: uuidv4(),
-            userName: usrNm,
-            createdAt: fDateTime(dt)
-          }; // Define `t` to explicitly allow string keys and any value
-
-          d.forEach(z => {
-            const val = x.find(y => y.question_id.toString() === z.field.toString())
-
-            if (val) {
-              t[`${val.question_id}:::type`] = val.type;
-              let answr: unknown = val.answer
-              switch (val.type) {
-                case "number":
-                  answr = Number(answr ?? 0);
-                  break;
-                case "text":
-                case "select":
-                case "geopoint": ;
-                  if (typeof answr === "string" && answr.includes('"')) {
-                    answr = answr.replace(/"/g, '');
-                  } else {
-                    answr = String(answr);
-                  }
-                  break;
-                case "image":
-                  imgs.push({
-                    src: answr as string,
-                    description: `${usrNm}`,
-                    title: `${val.question_text}: ${fDateTime(dt)}`,
-                    user: usrId?.toString() ?? ""
-                  })
-                  break;
-                default:
-                  break;
+            ...questions.map((z) => {
+              const r = {
+                field: z._id.toString(),
+                label: z.text,
+                order: z.order,
+                type: z.input_type,
+              };
+              if (z.input_type === 'number') {
+                // @ts-expect-error expected
+                r.filterOperators = numericFilterOperators;
               }
-              t[z.field] = answr;
-            }
-          })
-          return t
-        })
-        setFetchedImages(imgs)
-        // @ts-expect-error expected
-        setAnswers(answs)
+              return r;
+            }),
+            {
+              field: 'actions',
+              label: 'Actions',
+              order: Number.MAX_SAFE_INTEGER,
+              type: 'actions',
+              action: {
+                view: {
+                  label: 'View',
+                  icon: 'solar:eye-bold',
+                  action: (_id) => console.log(_id),
+                },
+                edit: {
+                  label: 'Edit',
+                  icon: 'solar:pen-bold',
+                  action: (_id) => console.log(_id),
+                },
+                delete: {
+                  label: 'Delete',
+                  icon: 'solar:trash-bin-trash-bold',
+                  action: (_id) => console.log(_id),
+                },
+              },
+            },
+          ];
 
-      }).catch(e => {
-        setReportAnswerError(e.message);
-        console.error("FAILED TO FETCH ANSWERS", e.message);
-      }).finally(() => {
-        loadingReport.onFalse();
-      });
+          setColumns(d);
+
+          const imgs: ResponseImages[] = [];
+
+          const answs = resAnswers.map((x) => {
+            const usrNm = Array.isArray(x) ? x[0]?.userName : 'NA';
+            const usrId = Array.isArray(x) ? x[0]?.userId : 'NA';
+
+            const dt = Array.isArray(x) ? x[0]?.createdAt : new Date();
+            const t: { _id: string; [key: string]: any } = {
+              _id: uuidv4(),
+              userName: usrNm,
+              createdAt: fDateTime(dt),
+            }; // Define `t` to explicitly allow string keys and any value
+
+            d.forEach((z) => {
+              const val = x.find((y) => y.question_id.toString() === z.field.toString());
+
+              if (val) {
+                t[`${val.question_id}:::type`] = val.type;
+                let answr: unknown = val.answer;
+                switch (val.type) {
+                  case 'number':
+                    answr = Number(answr ?? 0);
+                    break;
+                  case 'text':
+                  case 'select':
+                  case 'geopoint':
+                    if (typeof answr === 'string' && answr.includes('"')) {
+                      answr = answr.replace(/"/g, '');
+                    } else {
+                      answr = String(answr);
+                    }
+                    break;
+                  case 'image':
+                    imgs.push({
+                      src: answr as string,
+                      description: `${usrNm}`,
+                      title: `${val.question_text}: ${fDateTime(dt)}`,
+                      user: usrId?.toString() ?? '',
+                    });
+                    break;
+                  default:
+                    break;
+                }
+                t[z.field] = answr;
+              }
+            });
+            return t;
+          });
+          setFetchedImages(imgs);
+          // @ts-expect-error expected
+          setAnswers(answs);
+        })
+        .catch((e) => {
+          setReportAnswerError(e.message);
+          console.error('FAILED TO FETCH ANSWERS', e.message);
+        })
+        .finally(() => {
+          loadingReport.onFalse();
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, questions, showFl]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log(data, "DATA")
+      console.log(data, 'DATA');
     } catch (error) {
       console.error(error);
       reset();
@@ -377,19 +378,41 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
               <Stack direction="row" spacing={3}>
                 {renderFilterRole}
                 {renderFilterUser}
-                <Button variant='soft' onClick={onResetFilters} color='error'>Clear</Button>
+                <Button variant="soft" onClick={onResetFilters} color="error">
+                  Clear
+                </Button>
 
                 <Stack direction="row" flexGrow={2} spacing={3} justifyContent="flex-end">
-                {
-                  images.length > 0 ? <MultiDownloadButton  size="large" urls={images.map((x) => ({ src: x.src, name: `${x.description}${x.title}-${x.src.split("/").pop() ?? ""}`}))}/> : <></>
-                }
+                  {images.length > 0 && (
+                    <MultiDownloadButton
+                      size="large"
+                      urls={images.map((x) => ({
+                        src: x.src,
+                        name: `${x.description}${x.title}-${x.src.split('/').pop() ?? ''}`,
+                      }))}
+                    />
+                  )}
                 </Stack>
               </Stack>
             </Grid>
-            {showLoader &&  <Box sx={{ textAlign: 'center', width: "100%", display: "flex", justifyContent: "center", alignItems: "center", pt: 10, pb: 15 }}><LoadingScreen /></Box>}
+            {showLoader && (
+              <Box
+                sx={{
+                  textAlign: 'center',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  pt: 10,
+                  pb: 15,
+                }}
+              >
+                <LoadingScreen />
+              </Box>
+            )}
             {!showLoader &&
-              (images.length > 0 ?
-                <Grid xs={12} >
+              (images.length > 0 ? (
+                <Grid xs={12}>
                   <Box
                     gap={1}
                     display="grid"
@@ -414,18 +437,49 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
                               cursor: 'pointer',
                             }}
                           />
-                          <Typography variant='caption' color={theme => theme.palette.text.secondary} sx={{ mt: 1, textAlign: "start", textTransform: "capitalize" }}>{slide.title?.toLocaleLowerCase()}</Typography>
-                          <Typography variant='caption' color={theme => theme.palette.text.secondary} sx={{ mt: 1, textAlign: "start", textTransform: "capitalize" }}>{slide.description?.toLocaleLowerCase()}</Typography>
-                          <MultiDownloadButton size="small" urls={[{ src: slide.src, name: `${slide.description}-${slide.src.split("/").pop() ?? ""}`}]}/>
+                          <Typography
+                            variant="caption"
+                            color={(theme) => theme.palette.text.secondary}
+                            sx={{ mt: 1, textAlign: 'start', textTransform: 'capitalize' }}
+                          >
+                            {slide.title?.toLocaleLowerCase()}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            color={(theme) => theme.palette.text.secondary}
+                            sx={{ mt: 1, textAlign: 'start', textTransform: 'capitalize' }}
+                          >
+                            {slide.description?.toLocaleLowerCase()}
+                          </Typography>
+                          <MultiDownloadButton
+                            size="small"
+                            urls={[
+                              {
+                                src: slide.src,
+                                name: `${slide.description}-${slide.src.split('/').pop() ?? ''}`,
+                              },
+                            ]}
+                          />
                         </Stack>
                       );
                     })}
                   </Box>
                 </Grid>
-                :
-                <Box sx={{ textAlign: 'center', width: "100%", display: "flex", justifyContent: "center", alignItems: "center", pt: 10, pb: 15 }}>NO IMAGES FOUND</Box>
-              )
-            }
+              ) : (
+                <Box
+                  sx={{
+                    textAlign: 'center',
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    pt: 10,
+                    pb: 15,
+                  }}
+                >
+                  NO IMAGES FOUND
+                </Box>
+              ))}
           </Grid>
         </Card>
       </Container>

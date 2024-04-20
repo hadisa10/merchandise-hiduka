@@ -45,13 +45,14 @@ function Container({ children }: Props) {
 
   const path = usePathname();
 
-  const role = useMemo(() => currentUser?.customData?.role as unknown as string, [currentUser?.customData?.role])
+  const role = useMemo(
+    () => currentUser?.customData?.role as unknown as string,
+    [currentUser?.customData?.role]
+  );
 
-  const { reset } = useClientContext()
-
+  const { reset } = useClientContext();
 
   const redirectTo = () => {
-
     const searchParams = new URLSearchParams({
       returnTo: window.location.pathname,
     }).toString();
@@ -61,13 +62,13 @@ function Container({ children }: Props) {
     const href = `${loginPath}?${searchParams}`;
 
     router.replace(href);
-  }
+  };
 
   const redirectToRole = () => {
     const rolePath = getRolePath(role);
     setChecked(true);
-    router.replace(rolePath);
-  }
+    router.replace(rolePath.root);
+  };
   const check = useCallback(() => {
     try {
       // const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string ?? "") || {};
@@ -78,19 +79,16 @@ function Container({ children }: Props) {
       if (!currentUser?.isLoggedIn) {
         reset();
         redirectTo();
-      }
-      else if (!(currentUser?.customData?.isRegistered)) {
+      } else if (!currentUser?.customData?.isRegistered) {
         router.replace(paths.register);
-      }
-      else if (!path.includes(role.toLowerCase())) {
+      } else if (!path.includes(role.toLowerCase())) {
         redirectToRole();
-      }
-      else {
+      } else {
         setChecked(true);
       }
     } catch (error) {
       reset();
-      console.log(error, "ERROR")
+      console.log(error, 'ERROR');
       redirectTo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

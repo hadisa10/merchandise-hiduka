@@ -2,6 +2,8 @@ import { paramCase } from 'src/utils/change-case';
 
 import { _id, _postTitles } from 'src/_mock/assets';
 
+import { ERole } from 'src/types/client';
+
 // ----------------------------------------------------------------------
 
 const MOCK_ID = _id[1];
@@ -12,10 +14,20 @@ const ROOTS = {
   AUTH: '/auth',
   AUTH_DEMO: '/auth-demo',
   DASHBOARD: '/dashboard',
-  V2: '/v2'
+  V2: '/v2',
 };
 
 // ----------------------------------------------------------------------
+
+// Create a type that represents all roles' paths using TypeScript's keyof typeof
+export type Roles = keyof typeof paths.v2;
+
+// Create a generic type that extracts the paths for a specific role
+export type PathsForRole<Role extends Roles> = (typeof paths.v2)[Role];
+
+// Usage example to get the path types for 'admin'
+
+// Function to get path
 
 export const paths = {
   comingSoon: ROOTS.DASHBOARD,
@@ -125,7 +137,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/user-routes`,
       new: `${ROOTS.DASHBOARD}/user-routes/new`,
       details: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/user-routes/${id}/edit`,
     },
     general: {
       main: `${ROOTS.DASHBOARD}/main`,
@@ -154,7 +166,7 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/client/list`,
       cards: `${ROOTS.DASHBOARD}/client/cards`,
       account: `${ROOTS.DASHBOARD}/client/account`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`,
     },
     project: {
       root: `${ROOTS.DASHBOARD}/project`,
@@ -163,7 +175,7 @@ export const paths = {
       product: `${ROOTS.DASHBOARD}/project/product`,
       report: `${ROOTS.DASHBOARD}/project/report`,
       analysis: `${ROOTS.DASHBOARD}/project/analysis`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/client/project/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/client/project/${id}/edit`,
     },
     routes: {
       root: `${ROOTS.DASHBOARD}/routes`,
@@ -176,7 +188,7 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/campaign/list`,
       cards: `${ROOTS.DASHBOARD}/campaign/cards`,
       account: `${ROOTS.DASHBOARD}/campaign/account`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/campaign/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/campaign/${id}/edit`,
     },
     report: {
       root: `${ROOTS.DASHBOARD}/report`,
@@ -184,7 +196,7 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/report/list`,
       cards: `${ROOTS.DASHBOARD}/report/cards`,
       account: `${ROOTS.DASHBOARD}/report/account`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/report/${id}/edit`
+      edit: (id: string) => `${ROOTS.DASHBOARD}/report/${id}/edit`,
     },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,
@@ -245,12 +257,11 @@ export const paths = {
     },
   },
   v2: {
-    root: `${ROOTS.V2}`,
-    superadmin: {
+    [ERole.SUPERADMIN]: {
       root: `${ROOTS.V2}/superadmin/dashboard`,
       dashboard: `${ROOTS.V2}/superadmin/dashboard`,
     },
-    admin: {
+    [ERole.ADMIN]: {
       root: `${ROOTS.V2}/admin/dashboard`,
       dashboard: `${ROOTS.V2}/admin/dashboard`,
       product: `${ROOTS.V2}/admin/dashboard/product`,
@@ -260,7 +271,6 @@ export const paths = {
         new: `${ROOTS.V2}/admin/dashboard/invoice/new`,
         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/invoice/${id}/edit`,
         details: (id: string) => `${ROOTS.V2}/admin/dashboard/invoice/${id}`,
-
       },
       project: {
         root: `${ROOTS.V2}/client/dashboard/project`,
@@ -286,10 +296,10 @@ export const paths = {
         new: `${ROOTS.V2}/admin/dashboard/campaign/new`,
         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/campaign/${id}/edit`,
       },
-      "campaign-performance": `${ROOTS.V2}/admin/dashboard/campaign-performance`,
-      "activity-tracker": `${ROOTS.V2}/client/dashboard/activity-tracker`
+      'campaign-performance': `${ROOTS.V2}/admin/dashboard/campaign-performance`,
+      'activity-tracker': `${ROOTS.V2}/client/dashboard/activity-tracker`,
     },
-    client: {
+    [ERole.CLIENT]: {
       root: `${ROOTS.V2}/client/dashboard`,
       dashboard: `${ROOTS.V2}/client/dashboard`,
       project: {
@@ -310,10 +320,10 @@ export const paths = {
         new: `${ROOTS.V2}/client/dashboard/campaign/new`,
         edit: (id: string) => `${ROOTS.V2}/client/dashboard/campaign/${id}/edit`,
       },
-      "campaign-performance": `${ROOTS.V2}/client/dashboard/campaign-performance`,
-      "activity-tracker": `${ROOTS.V2}/client/dashboard/activity-tracker`
+      'campaign-performance': `${ROOTS.V2}/client/dashboard/campaign-performance`,
+      'activity-tracker': `${ROOTS.V2}/client/dashboard/activity-tracker`,
     },
-    "project-manager": {
+    [ERole.PROJECT_MANAGER]: {
       root: `${ROOTS.V2}/project-manager/dashboard`,
       dashboard: `${ROOTS.V2}/project-manager/dashboard`,
       project: {
@@ -334,17 +344,120 @@ export const paths = {
         new: `${ROOTS.V2}/project-manager/dashboard/campaign/new`,
         edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/campaign/${id}/edit`,
       },
-      "campaign-performance": `${ROOTS.V2}/project-manager/dashboard/campaign-performance`,
-      "activity-tracker": `${ROOTS.V2}/project-manager/dashboard/activity-tracker`
+      'campaign-performance': `${ROOTS.V2}/project-manager/dashboard/campaign-performance`,
+      'activity-tracker': `${ROOTS.V2}/project-manager/dashboard/activity-tracker`,
     },
-    "team-lead": {
+    [ERole.TEAM_LEAD]: {
       root: `${ROOTS.V2}/team-lead/dashboard`,
       dashboard: `${ROOTS.V2}/team-lead/dashboard`,
     },
-    agent: {
+    [ERole.AGENT]: {
       root: `${ROOTS.V2}/agent/dashboard`,
       dashboard: `${ROOTS.V2}/agent/dashboard`,
-    }
+    },
+  },
+} as const;
+// export const paths = {
 
-  }
-};
+//   v2: {
+//     root: `${ROOTS.V2}`,
+//     superadmin: {
+//       root: `${ROOTS.V2}/superadmin/dashboard`,
+//       dashboard: `${ROOTS.V2}/superadmin/dashboard`,
+//     },
+//     admin: {
+//       root: `${ROOTS.V2}/admin/dashboard`,
+//       dashboard: `${ROOTS.V2}/admin/dashboard`,
+//       product: `${ROOTS.V2}/admin/dashboard/product`,
+//       invoice: {
+//         root: `${ROOTS.V2}/admin/dashboard/invoice`,
+//         list: `${ROOTS.V2}/admin/dashboard/invoice`,
+//         new: `${ROOTS.V2}/admin/dashboard/invoice/new`,
+//         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/invoice/${id}/edit`,
+//         details: (id: string) => `${ROOTS.V2}/admin/dashboard/invoice/${id}`,
+//       },
+//       project: {
+//         root: `${ROOTS.V2}/client/dashboard/project`,
+//         list: `${ROOTS.V2}/client/dashboard/project`,
+//         new: `${ROOTS.V2}/client/dashboard/project/new`,
+//         edit: (id: string) => `${ROOTS.V2}/client/dashboard/project/${id}/edit`,
+//       },
+//       client: {
+//         root: `${ROOTS.V2}/admin/dashboard/client`,
+//         list: `${ROOTS.V2}/admin/dashboard/client`,
+//         new: `${ROOTS.V2}/admin/dashboard/client/new`,
+//         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/client/${id}/edit`,
+//       },
+//       report: {
+//         root: `${ROOTS.V2}/admin/dashboard/report`,
+//         list: `${ROOTS.V2}/admin/dashboard/report`,
+//         new: `${ROOTS.V2}/admin/dashboard/report/new`,
+//         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/report/${id}/edit`,
+//       },
+//       campaign: {
+//         root: `${ROOTS.V2}/admin/dashboard/campaign`,
+//         list: `${ROOTS.V2}/admin/dashboard/campaign`,
+//         new: `${ROOTS.V2}/admin/dashboard/campaign/new`,
+//         edit: (id: string) => `${ROOTS.V2}/admin/dashboard/campaign/${id}/edit`,
+//       },
+//       'campaign-performance': `${ROOTS.V2}/admin/dashboard/campaign-performance`,
+//       'activity-tracker': `${ROOTS.V2}/client/dashboard/activity-tracker`,
+//     },
+//     client: {
+//       root: `${ROOTS.V2}/client/dashboard`,
+//       dashboard: `${ROOTS.V2}/client/dashboard`,
+//       project: {
+//         root: `${ROOTS.V2}/client/dashboard/project`,
+//         list: `${ROOTS.V2}/client/dashboard/project`,
+//         new: `${ROOTS.V2}/client/dashboard/project/new`,
+//         edit: (id: string) => `${ROOTS.V2}/client/dashboard/project/${id}/edit`,
+//       },
+//       reports: {
+//         root: `${ROOTS.V2}/client/dashboard/report`,
+//         list: `${ROOTS.V2}/client/dashboard/report`,
+//         new: `${ROOTS.V2}/client/dashboard/report/new`,
+//         edit: (id: string) => `${ROOTS.V2}/client/dashboard/report/${id}/edit`,
+//       },
+//       campaign: {
+//         root: `${ROOTS.V2}/client/dashboard/campaign`,
+//         list: `${ROOTS.V2}/client/dashboard/campaign`,
+//         new: `${ROOTS.V2}/client/dashboard/campaign/new`,
+//         edit: (id: string) => `${ROOTS.V2}/client/dashboard/campaign/${id}/edit`,
+//       },
+//       'campaign-performance': `${ROOTS.V2}/client/dashboard/campaign-performance`,
+//       'activity-tracker': `${ROOTS.V2}/client/dashboard/activity-tracker`,
+//     },
+//     'project-manager': {
+//       root: `${ROOTS.V2}/project-manager/dashboard`,
+//       dashboard: `${ROOTS.V2}/project-manager/dashboard`,
+//       project: {
+//         root: `${ROOTS.V2}/project-manager/dashboard/project`,
+//         list: `${ROOTS.V2}/project-manager/dashboard/project`,
+//         new: `${ROOTS.V2}/project-manager/dashboard/project/new`,
+//         edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/project/${id}/edit`,
+//       },
+//       reports: {
+//         root: `${ROOTS.V2}/project-manager/dashboard/report`,
+//         list: `${ROOTS.V2}/project-manager/dashboard/report`,
+//         new: `${ROOTS.V2}/project-manager/dashboard/report/new`,
+//         edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/report/${id}/edit`,
+//       },
+//       campaign: {
+//         root: `${ROOTS.V2}/project-manager/dashboard/campaign`,
+//         list: `${ROOTS.V2}/project-manager/dashboard/campaign`,
+//         new: `${ROOTS.V2}/project-manager/dashboard/campaign/new`,
+//         edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/campaign/${id}/edit`,
+//       },
+//       'campaign-performance': `${ROOTS.V2}/project-manager/dashboard/campaign-performance`,
+//       'activity-tracker': `${ROOTS.V2}/project-manager/dashboard/activity-tracker`,
+//     },
+//     'team-lead': {
+//       root: `${ROOTS.V2}/team-lead/dashboard`,
+//       dashboard: `${ROOTS.V2}/team-lead/dashboard`,
+//     },
+//     agent: {
+//       root: `${ROOTS.V2}/agent/dashboard`,
+//       dashboard: `${ROOTS.V2}/agent/dashboard`,
+//     },
+//   },
+// };
