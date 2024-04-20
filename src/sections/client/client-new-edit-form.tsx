@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
 import * as Realm from 'realm-web';
-import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -19,6 +19,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useClients } from 'src/hooks/realm';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 
 import { fData } from 'src/utils/format-number';
@@ -40,7 +41,6 @@ import FormProvider, {
 
 import { IRole } from 'src/types/user_realm';
 import { IClient, IDraftClient } from 'src/types/client';
-import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
@@ -190,8 +190,8 @@ export default function ClientNewEditForm({ currentClient }: Props) {
             </Stack>
           </Stack>
         </Grid>
-        // eslint-disable-next-line react-hooks/exhaustive-deps
       )),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [values]
   );
 
@@ -232,9 +232,9 @@ export default function ClientNewEditForm({ currentClient }: Props) {
       router.push(paths.dashboard.user.root);
       reset();
       return await new Promise((resolve) => setTimeout(resolve, 500));
-    } catch (error) {
+    } catch (e) {
       enqueueSnackbar(currentClient ? 'Update failed!' : 'Update Failed!', { variant: 'error' });
-      console.error(error);
+      console.error(e);
       return await new Promise((resolve) => setTimeout(resolve, 500));
     }
   });
@@ -388,55 +388,53 @@ export default function ClientNewEditForm({ currentClient }: Props) {
                 }
               />
 
-              {
-                <RHFAutocomplete
-                  name="client_id"
-                  label="Client"
-                  placeholder="Select client"
-                  loading={loading.value}
-                  freeSolo
-                  options={clients?.map((clnt) => clnt._id?.toString()) ?? []}
-                  getOptionLabel={(option) => {
-                    const client = clients?.find(
-                      (clnt) => clnt._id?.toString() === option.toString()
-                    );
-                    if (client) {
-                      return client?.name;
-                    }
-                    return option;
-                  }}
-                  renderOption={(props, option) => {
-                    const client = clients?.filter(
-                      (clnt) => clnt._id?.toString() === option.toString()
-                    )[0];
-
-                    if (!client?._id) {
-                      return null;
-                    }
-
-                    return (
-                      <li {...props} key={client?._id?.toString()}>
-                        {client?.name}
-                      </li>
-                    );
-                  }}
-                  renderTags={(selected, getTagProps) =>
-                    selected.map((option, index) => {
-                      const client = clients?.find((clnt) => clnt._id?.toString() === option);
-                      return (
-                        <Chip
-                          {...getTagProps({ index })}
-                          key={client?._id?.toString() ?? ''}
-                          label={client?.name ?? ''}
-                          size="small"
-                          color="info"
-                          variant="soft"
-                        />
-                      );
-                    })
+              <RHFAutocomplete
+                name="client_id"
+                label="Client"
+                placeholder="Select client"
+                loading={loading.value}
+                freeSolo
+                options={clients?.map((clnt) => clnt._id?.toString()) ?? []}
+                getOptionLabel={(option) => {
+                  const client = clients?.find(
+                    (clnt) => clnt._id?.toString() === option.toString()
+                  );
+                  if (client) {
+                    return client?.name;
                   }
-                />
-              }
+                  return option;
+                }}
+                renderOption={(props, option) => {
+                  const client = clients?.filter(
+                    (clnt) => clnt._id?.toString() === option.toString()
+                  )[0];
+
+                  if (!client?._id) {
+                    return null;
+                  }
+
+                  return (
+                    <li {...props} key={client?._id?.toString()}>
+                      {client?.name}
+                    </li>
+                  );
+                }}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => {
+                    const client = clients?.find((clnt) => clnt._id?.toString() === option);
+                    return (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={client?._id?.toString() ?? ''}
+                        label={client?.name ?? ''}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    );
+                  })
+                }
+              />
             </Box>
             <Grid
               container

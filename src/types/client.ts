@@ -1,5 +1,4 @@
-import * as Realm from "realm-web";
-
+import * as Realm from 'realm-web';
 
 // export interface IClient {
 //     _id: string;
@@ -12,108 +11,107 @@ import * as Realm from "realm-web";
 //     updatedAt: Date;
 // }
 
-
 interface IUser {
-    _id: Realm.BSON.ObjectId;
-    name: string;
-    email: string;
-    avatarUrl?: string; // Optional because it's not listed in the "required" array
+  _id: Realm.BSON.ObjectId;
+  name: string;
+  email: string;
+  avatarUrl?: string; // Optional because it's not listed in the "required" array
 }
 
-
 interface IClientUser {
-    _id?: Realm.BSON.ObjectId;
-    name?: string;
-    email: string;
-    verified: boolean;
-    dateAdded: Date;
-    avatarUrl?: string; // Optional because it's not listed in the "required" array
+  _id?: Realm.BSON.ObjectId;
+  name?: string;
+  email: string;
+  verified: boolean;
+  dateAdded: Date;
+  avatarUrl?: string; // Optional because it's not listed in the "required" array
 }
 
 export interface IClient {
-    // __typename?: string,
-    _id: Realm.BSON.ObjectId;
-    active: boolean;
-    creator: IUser;
-    users: string[];
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-    type: "admin" | "agency" | "single-client" | "nested-client",
-    parent: Realm.BSON.ObjectId;
-    children: Array<Realm.BSON.ObjectId>;
-    client_icon: string;
-    client_plan: string;
+  // __typename?: string,
+  _id: Realm.BSON.ObjectId;
+  active: boolean;
+  creator: IUser;
+  users: string[];
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  type: 'admin' | 'agency' | 'single-client' | 'nested-client';
+  parent: Realm.BSON.ObjectId;
+  children: Array<Realm.BSON.ObjectId>;
+  client_icon: string;
+  client_plan: string;
 }
 
 export interface IUpdatedClient {
-    // __typename?: string,
-    _id: Realm.BSON.ObjectId;
-    active: boolean;
-    creator: IUser;
-    users: string[];
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-    children: Array<Realm.BSON.ObjectId>;
-    type: "admin" | "agency" | "single-client" | "nested-client",
-    parent: Realm.BSON.ObjectId;
-    client_icon: string;
-    client_plan: string;
-    nestedClients: IClient[];
+  // __typename?: string,
+  _id: Realm.BSON.ObjectId;
+  active: boolean;
+  creator: IUser;
+  users: string[];
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  children: Array<Realm.BSON.ObjectId>;
+  type: 'admin' | 'agency' | 'single-client' | 'nested-client';
+  parent: Realm.BSON.ObjectId;
+  client_icon: string;
+  client_plan: string;
+  nestedClients: IUpdatedClient[];
 }
 
-
+export interface IGetClientsResponse {
+  nestedClients: Array<IClient>;
+  clients: Array<IUpdatedClient>;
+}
 export interface IDraftClient {
-    _id: Realm.BSON.ObjectId;
-    name: string;
-    users: IClientUser[];
-    creator: IUser;
-    active: boolean;
-    client_icon: string;
-    client_plan: string;
+  _id: Realm.BSON.ObjectId;
+  name: string;
+  users: IClientUser[];
+  creator: IUser;
+  active: boolean;
+  client_icon: string;
+  client_plan: string;
 }
-
 
 export interface IClientChange {
-    fullDocument: IClient;
+  fullDocument: IClient;
 }
 
 export interface IGraphqlResponse {
-    clients: IClient[];
+  clients: IClient[];
 }
 export interface IGraphqlClientResponse {
-    client: IClient;
+  client: IClient;
 }
 export interface IClientActions {
-    saveClient: (draftClient: IDraftClient) => Promise<void>;
-    toggleClientStatus: (client: IClient) => Promise<void>;
-    deleteClient: (client: IClient) => Promise<void>;
-    getClient: (id: string) => Promise<IClient>;
+  saveClient: (draftClient: IDraftClient) => Promise<void>;
+  toggleClientStatus: (client: IClient) => Promise<void>;
+  deleteClient: (client: IClient) => Promise<void>;
+  getClient: (id: string) => Promise<IClient>;
 }
 
 export interface IClientHook extends IClientActions {
-    loading: boolean;
-    clients: IClient[];
+  loading: boolean;
+  clients: IClient[];
 }
 
 export interface IDraftClientsHook extends IDraftClientActions {
-    draftClients: IDraftClient[];
-
+  draftClients: IDraftClient[];
 }
 export interface IDraftClientActions {
-    createDraftClient: () => void;
-    setDraftClientName: (draft: IDraftClient, summary: string) => void;
-    deleteDraftClient: (draft: IDraftClient) => void;
+  createDraftClient: () => void;
+  setDraftClientName: (draft: IDraftClient, summary: string) => void;
+  deleteDraftClient: (draft: IDraftClient) => void;
 }
 
 export interface IClientItem {
-    client: IClient;
-    clientActions: IClientActions;
+  client: IClient;
+  clientActions: IClientActions;
 }
 
 export interface IDraftClientItem {
-    draftClient: IDraftClient;
-    clientActions: IClientActions;
-    draftClientActions: IDraftClientActions;
+  draftClient: IDraftClient;
+  clientActions: IClientActions;
+  draftClientActions: IDraftClientActions;
 }

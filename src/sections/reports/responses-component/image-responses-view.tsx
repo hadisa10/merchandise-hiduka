@@ -442,7 +442,7 @@ export default function ImageResponseView({ report, questions }: { report?: IRep
         disabledSlideshow={false}
         disabledThumbnails={false}
         disabledFullscreen={false}
-        disabledDownload={true}
+        disabledDownload
       />
     </FormProvider>
   );
