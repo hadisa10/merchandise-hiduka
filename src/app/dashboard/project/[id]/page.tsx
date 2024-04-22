@@ -16,4 +16,6 @@ export default function ProjectDetailsPage({ params }: Props) {
   return <>PROJECT DETAILS</>;
 }
 
-export async function generateStaticParams() {}
+export async function generateStaticParams() {
+  return [];
+}

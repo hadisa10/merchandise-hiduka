@@ -18,4 +18,6 @@ export default function ReportEditPage({ params }: Props) {
   return <ReportEditView id={id} />;
 }
 
-export async function generateStaticParams() {}
+export async function generateStaticParams() {
+  return [];
+}

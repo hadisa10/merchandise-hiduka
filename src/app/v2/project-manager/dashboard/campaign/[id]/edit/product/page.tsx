@@ -10,4 +10,6 @@ export default function ProductCreatePage() {
   return <ProductCreateView />;
 }
 
-export async function generateStaticParams() {}
+export async function generateStaticParams() {
+  return [];
+}
