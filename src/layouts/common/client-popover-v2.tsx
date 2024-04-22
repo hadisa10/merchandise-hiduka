@@ -48,7 +48,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useClientContext } from 'src/components/clients/context/client-context';
 
-import { ERole , IClient, IUpdatedClient, IGetClientsResponse } from 'src/types/client';
+import { ERole, IClient, IUpdatedClient, IGetClientsResponse } from 'src/types/client';
 
 // ----------------------------------------------------------------------
 
@@ -115,7 +115,7 @@ export default function ClientPopover() {
       const arr = structuredClone(
         [...clients, ...nestedClients].map((x) => ({
           ...x,
-          _id: x._id.toString(),
+          _id: x?._id?.toString(),
           parent: x?.parent?.toString(),
         }))
       );
@@ -169,6 +169,8 @@ export default function ClientPopover() {
     return clients;
   }, [debouncedSearch, clients]);
 
+  console.log(filteredClients, 'CLIENTS 2222');
+
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setSearch(e.target.value as string);
 
@@ -184,7 +186,6 @@ export default function ClientPopover() {
     },
     [client, combined]
   );
-  console.log(clients?.map((x) => x.name));
 
   return (
     <>
@@ -274,142 +275,151 @@ export default function ClientPopover() {
           {!showClientLoader && (
             <List sx={{ height: 200, overflowY: 'auto', width: '100%' }} disablePadding>
               {Array.isArray(filteredClients) &&
-                filteredClients.map((clt) => (
-                  <Fragment key={typeof clt._id === 'string' ? clt._id : clt._id.toString()}>
-                    <ListSubheader
-                      disableGutters
-                      onClick={(e) => handleChangeClient(e, clt)}
-                      sx={{
-                        ...bgBlur({
-                          color: getSelected(clt._id.toString())
-                            ? theme.palette.grey[300]
-                            : theme.palette.grey[900],
-                        }),
-                        ...(getSelected(clt._id.toString())
-                          ? {
-                              color: theme.palette.getContrastText(theme.palette.grey[300]),
-                            }
-                          : {}),
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        pl: 1,
-                        width: '100%',
-                        height: 35,
-                        pointerEvents: 'auto',
-                        '&:hover': {
-                          cursor: 'pointer',
-                          background: getSelected(clt._id.toString())
-                            ? theme.palette.grey[300]
-                            : alpha(theme.palette.primary.main, 0.08),
-                        },
-                        '&:first-of-type': {
-                          borderTopLeftRadius: 5,
-                          borderTopRightRadius: 5,
-                        },
-                        '&:last-of-type': {
-                          borderBottomLeftRadius: 5,
-                          borderBottomRightRadius: 5,
-                        },
-                      }}
-                    >
-                      <Typography variant="caption" noWrap>
-                        {clt.name}
-                      </Typography>
-
-                      <Stack direction="row" spacing={1} height="100%" alignItems="center">
-                        {clt?.nestedClients?.length > 0 && (
-                          <>
-                            <Stack
-                              borderRadius={0.5}
-                              bgcolor={theme.palette.info.main}
-                              color={theme.palette.getContrastText(theme.palette.info.main)}
-                              alignItems="center"
-                              justifyContent="center"
-                              height={20}
-                              width={20}
-                              p={0.3}
-                            >
-                              <Typography variant="caption">
-                                {clt?.nestedClients?.length ?? ''}
-                              </Typography>
-                            </Stack>
-                            <IconButton
-                              color={
-                                client?._id.toString() === clt._id.toString() ? 'inherit' : 'info'
-                              }
-                              size="small"
-                              sx={{ mr: 1 }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleClick(clt._id.toString());
-                              }}
-                            >
-                              {openCollapse === clt._id.toString() ? (
-                                <Iconify
-                                  icon="eva:arrow-ios-upward-fill"
-                                  width={17}
-                                  height={17}
-                                  color={
-                                    client?._id.toString() === clt._id.toString()
-                                      ? theme.palette.getContrastText(theme.palette.grey[300])
-                                      : theme.palette.info.main
-                                  }
-                                />
-                              ) : (
-                                <Iconify
-                                  icon="eva:arrow-ios-downward-fill"
-                                  width={17}
-                                  height={17}
-                                  color={
-                                    client?._id.toString() === clt._id.toString()
-                                      ? theme.palette.getContrastText(theme.palette.grey[300])
-                                      : theme.palette.info.main
-                                  }
-                                />
-                              )}
-                            </IconButton>
-                          </>
-                        )}
-                      </Stack>
-                    </ListSubheader>
-
-                    <Collapse in={openCollapse === clt._id.toString()} timeout="auto" unmountOnExit>
-                      <List component="div" disablePadding dense>
-                        {clt?.nestedClients?.map((r: IUpdatedClient) => (
-                          <ListItem key={r._id.toString()} sx={{ pl: 4 }}>
-                            <RadioGroup
-                              value={client?._id.toString()}
-                              onChange={(e) => {
-                                handleChangeClient(e, r);
-                              }}
-                            >
-                              <FormControlLabel
-                                sx={{ width: '100%' }}
-                                value={r._id.toString()}
-                                control={
-                                  <Radio
-                                    size="small"
-                                    sx={{
-                                      '& .MuiSvgIcon-root': {
-                                        fontSize: 15,
-                                      },
-                                    }}
-                                  />
+                filteredClients.map(
+                  (clt) =>
+                    clt?._id && (
+                      <Fragment key={typeof clt._id === 'string' ? clt._id : clt._id.toString()}>
+                        <ListSubheader
+                          disableGutters
+                          onClick={(e) => handleChangeClient(e, clt)}
+                          sx={{
+                            ...bgBlur({
+                              color: getSelected(clt._id.toString())
+                                ? theme.palette.grey[300]
+                                : theme.palette.grey[900],
+                            }),
+                            ...(getSelected(clt._id.toString())
+                              ? {
+                                  color: theme.palette.getContrastText(theme.palette.grey[300]),
                                 }
-                                label={
-                                  <Typography variant="caption" color="text.secondary" noWrap>
-                                    {r.name ?? ''}
+                              : {}),
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            pl: 1,
+                            width: '100%',
+                            height: 35,
+                            pointerEvents: 'auto',
+                            '&:hover': {
+                              cursor: 'pointer',
+                              background: getSelected(clt._id.toString())
+                                ? theme.palette.grey[300]
+                                : alpha(theme.palette.primary.main, 0.08),
+                            },
+                            '&:first-of-type': {
+                              borderTopLeftRadius: 5,
+                              borderTopRightRadius: 5,
+                            },
+                            '&:last-of-type': {
+                              borderBottomLeftRadius: 5,
+                              borderBottomRightRadius: 5,
+                            },
+                          }}
+                        >
+                          <Typography variant="caption" noWrap>
+                            {clt.name}
+                          </Typography>
+
+                          <Stack direction="row" spacing={1} height="100%" alignItems="center">
+                            {clt?.nestedClients?.length > 0 && (
+                              <>
+                                <Stack
+                                  borderRadius={0.5}
+                                  bgcolor={theme.palette.info.main}
+                                  color={theme.palette.getContrastText(theme.palette.info.main)}
+                                  alignItems="center"
+                                  justifyContent="center"
+                                  height={20}
+                                  width={20}
+                                  p={0.3}
+                                >
+                                  <Typography variant="caption">
+                                    {clt?.nestedClients?.length ?? ''}
                                   </Typography>
-                                }
-                              />
-                            </RadioGroup>
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Collapse>
-                  </Fragment>
-                ))}
+                                </Stack>
+                                <IconButton
+                                  color={
+                                    client?._id.toString() === clt._id.toString()
+                                      ? 'inherit'
+                                      : 'info'
+                                  }
+                                  size="small"
+                                  sx={{ mr: 1 }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleClick(clt._id.toString());
+                                  }}
+                                >
+                                  {openCollapse === clt._id.toString() ? (
+                                    <Iconify
+                                      icon="eva:arrow-ios-upward-fill"
+                                      width={17}
+                                      height={17}
+                                      color={
+                                        client?._id.toString() === clt._id.toString()
+                                          ? theme.palette.getContrastText(theme.palette.grey[300])
+                                          : theme.palette.info.main
+                                      }
+                                    />
+                                  ) : (
+                                    <Iconify
+                                      icon="eva:arrow-ios-downward-fill"
+                                      width={17}
+                                      height={17}
+                                      color={
+                                        client?._id.toString() === clt._id.toString()
+                                          ? theme.palette.getContrastText(theme.palette.grey[300])
+                                          : theme.palette.info.main
+                                      }
+                                    />
+                                  )}
+                                </IconButton>
+                              </>
+                            )}
+                          </Stack>
+                        </ListSubheader>
+
+                        <Collapse
+                          in={openCollapse === clt._id.toString()}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          <List component="div" disablePadding dense>
+                            {clt?.nestedClients?.map((r: IUpdatedClient) => (
+                              <ListItem key={r._id.toString()} sx={{ pl: 4 }}>
+                                <RadioGroup
+                                  value={client?._id.toString()}
+                                  onChange={(e) => {
+                                    handleChangeClient(e, r);
+                                  }}
+                                >
+                                  <FormControlLabel
+                                    sx={{ width: '100%' }}
+                                    value={r._id.toString()}
+                                    control={
+                                      <Radio
+                                        size="small"
+                                        sx={{
+                                          '& .MuiSvgIcon-root': {
+                                            fontSize: 15,
+                                          },
+                                        }}
+                                      />
+                                    }
+                                    label={
+                                      <Typography variant="caption" color="text.secondary" noWrap>
+                                        {r.name ?? ''}
+                                      </Typography>
+                                    }
+                                  />
+                                </RadioGroup>
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Collapse>
+                      </Fragment>
+                    )
+                )}
             </List>
           )}
         </Stack>
