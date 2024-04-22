@@ -21,7 +21,5 @@ export default function ProductShopDetailsPage({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  return _jobs.map((job) => ({
-    id: job.id,
-  }));
+  return [];
 }

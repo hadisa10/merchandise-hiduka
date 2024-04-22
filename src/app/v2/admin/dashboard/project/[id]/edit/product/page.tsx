@@ -1,5 +1,3 @@
-import { _jobs } from 'src/_mock';
-
 import { ProductCreateView } from 'src/sections/product/view';
 
 // ----------------------------------------------------------------------
@@ -13,7 +11,5 @@ export default function ProductCreatePage() {
 }
 
 export async function generateStaticParams() {
-  return _jobs.map((job) => ({
-    id: job.id,
-  }));
+  return [];
 }
