@@ -56,7 +56,7 @@ export default function ClientNewEditForm({ currentClient }: Props) {
   const { users } = useUsers();
 
   const loading = useBoolean(true);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [clients, setClients] = useState<IClient[] | null>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<Error | null>(null);
