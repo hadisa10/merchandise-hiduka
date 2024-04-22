@@ -1,3 +1,4 @@
+import { _jobs } from 'src/_mock';
 import { ProductShopDetailsView } from 'src/sections/product/view';
 
 // ----------------------------------------------------------------------
@@ -16,4 +17,10 @@ export default function ProductShopDetailsPage({ params }: Props) {
   const { id } = params;
 
   return <ProductShopDetailsView id={id} />;
+}
+
+export async function generateStaticParams() {
+  return _jobs.map((job) => ({
+    id: job.id,
+  }));
 }
