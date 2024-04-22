@@ -27,7 +27,7 @@ const OPTIONS = [
   { value: false, label: 'Hide' },
   { value: true, label: 'Show' },
 ];
-interface AnswerObject {
+export interface AnswerObject {
   _id: string; // The new 'id' key
   [key: string]: string | unknown; // Dynamic keys for questions with their answers
 }
@@ -57,7 +57,7 @@ const ResponsesGridView: FC<{ report?: IReport; questions?: IReportQuestion[] }>
   });
 
   const defaultValues = {
-    showFiltered: false,
+    showFiltered: true,
   };
 
   const methods = useForm({

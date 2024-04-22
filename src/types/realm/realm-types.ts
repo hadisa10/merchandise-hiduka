@@ -1,11 +1,40 @@
 import * as Realm from "realm-web";
 
-export type Item = {
-    _id: Realm.BSON.ObjectId;
-    isComplete: boolean;
-    owner_id: string;
-    summary: string;
-};
+import { IClient } from "../client";
+
+export type IChangeStock = {
+    campaign_id: string;
+    merchantProducts: {
+        merchant_id: string;
+        products: IStockChangeProduct[]
+    }[]
+}
+
+export type ICampaignStock<T = Realm.BSON.ObjectId> = {
+    _id: T;
+    name: string;
+    stockInfo: IStockInfo<T>[]
+}
+
+export type ICampaignStockGridRow = {
+    _id: string
+    name: string;
+    [key: string]: number | string;
+}
+
+
+export type IStockInfo<T> = {
+    productId: T;
+    latestStock: number
+}
+
+export type IStockChangeProduct = {
+    product_id: string,
+    type: "assign" | "sale",
+    quantity: number,
+    notes: string,
+    images: string[]
+}
 
 export type IProject<T = Realm.BSON.ObjectId> = {
     _id: T;
@@ -16,8 +45,172 @@ export type IProject<T = Realm.BSON.ObjectId> = {
     reports: Array<T>;
     title: string;
     updatedAt: Date;
-  };
-  
+};
+
+export interface ICampaignKPIMetricsResponse {
+    totalUsersInCampaign: number;
+    daysRunning: number;
+    totalUsersCheckedInToday: number;
+    totalCampaignSales: {
+        _id: string | null; // Assuming the campaign_id is returned here; adjust the type as needed (e.g., ObjectId or string)
+        totalSales: number;
+        totalAmount: number;
+    } | null;
+    totalFilledReports: number;
+    dailyStats: {
+        sales: {
+            _id: null; // Grouped without a specific _id
+            dailySales: number;
+            dailyAmount: number;
+        } | null;
+        reports: number
+    };
+}
+
+
+export interface ISalesByRegion {
+    totalRevenue: number;
+    totalSales: number;
+    regionName: string | null;
+}
+
+
+export type ISalesAnalyticsResponse = {
+    productName: string;
+    totalQuantity: number;
+    totalAmount: number;
+    salesDetails: Array<{
+        team: string; // "Default Team" if no match found
+        quantity: number;
+        amount: number;
+        regionName: string;
+        region_id: string;
+        teamName: string;
+        team_id: string;
+    }>;
+};
+
+export interface ITimeFrameSalesDataResponse {
+    date: string; // Assuming date is returned as a string from the aggregation
+    productId: string; // MongoDB ObjectId represented as a string
+    productName: string;
+    totalSales: number;
+    totalUnitsSold: number;
+}
+
+
+export type ICampaignTeam<T> = {
+    _id: T;
+    campaign_id: T;
+    createdAt: Date;
+    name: string;
+    regions: Array<T>;
+    teamLeads: Array<T>;
+    updatedAt: Date;
+    users: Array<T>;
+};
+
+export type IDraftCampaignTeam = {
+    createdAt: Date;
+    name: string;
+    regions: Array<string>;
+    teamLeads: Array<string>;
+    users: Array<string>;
+};
+
+export interface IAdminDashboardInventoryMetrics {
+    totalProducts: number;
+    totalStock: number;
+    averagePrice: number;
+    totalSold: number;
+    totalRatings: number;
+    totalReviews: number;
+    topProductsDetails: {
+        _id: string;
+        name: string;
+        totalAmount: number;
+    }[]
+}
+
+
+export interface ICampaignByType {
+    _id: string;
+    count: number;
+}
+
+export interface ITotalCheckInsPerCampaign {
+    campaignTitle: string;
+    totalCheckIns: number;
+    campaignId: string;
+}
+
+export interface ICampaignsPerClient {
+    numberOfCampaigns: number;
+    clientId: string;
+    clientName: string;
+}
+
+export interface ITopUserByCheckins {
+    userId: string;
+    userName: string;
+    userURL: string;
+    totalCheckIns: number;
+}
+
+export interface IAdminDashboardData {
+    totalClients: number,
+    totalCampaigns: number;
+    campaignsByType: ICampaignByType[];
+    totalCheckInsToday: number;
+    averageCheckInDuration: number;
+    totalCheckInsPerCampaign: ITotalCheckInsPerCampaign[];
+    campaignsPerClient: ICampaignsPerClient[];
+    topUsersByCheckIns: ITopUserByCheckins[]
+}
+
+export interface IAdminDashboardAvgAnswersPerDay {
+    avgAnswersPerDay: number;
+    reportId: number;
+    reportName: number;
+}
+
+export interface IAdminDashboardReportSummary {
+    totalReports: number;
+    avgResponses: number;
+    reportsByCampaign: IAdminDashboardCampaignSummary[];
+    totalFilledReports: number;
+    filledReportsByUser: IAdminDashboardUserReportSummary[];
+    avgAnswersPerDayPerReport: IAdminDashboardAvgAnswersPerDay[];
+}
+
+export interface IClientDashboardSummaryUpdated {
+    totalProjects: number;
+    totalActiveCampaigns: number;
+    clientDetails: IClient;
+    totalVerifiedUsers: number;
+    childrenDetails: IClient[];
+}
+
+
+interface IAdminDashboardCampaignSummary {
+    campaignId: string;
+    campaignName: string;
+    totalReports: number;
+}
+
+interface IAdminDashboardUserReportSummary {
+    _id: string; // Assuming _id is the user_id
+    count: number;
+}
+
+export type Item = {
+    _id: Realm.BSON.ObjectId;
+    isComplete: boolean;
+    owner_id: string;
+    summary: string;
+};
+
+
 
 export const ItemSchema = {
     name: 'Item',
@@ -59,28 +252,33 @@ export type IRouteProducts = {
 export interface IDashboardMetricType {
     type: string;
     count: number;
-  }
-  
-  export interface ICampaignCheckIn {
+}
+
+export interface ICampaignCheckIn {
     campaignId: string; // Adjust if using ObjectId type
     campaignTitle: string;
     totalCheckIns: number;
-  }
-  
-  export interface ICampaignsPerClient {
-    clientId: string; // Adjust if using ObjectId type
-    clientName: string;
-    numberOfCampaigns: number;
-  }
-  
-  export interface IDashboardMetrics {
+}
+
+export interface IDashboardMetrics {
     totalCampaigns: number;
     campaignsByType: IDashboardMetricType[];
     totalCheckInsToday: number;
     averageCheckInDuration: number;
     totalCheckInsPerCampaign: ICampaignCheckIn[];
     campaignsPerClient: ICampaignsPerClient[];
-  }
+}
+
+export interface IUserActivityMetrics {
+    checkins: IExtendedCheckin[],
+    summary: {
+        dailyAverageReportsFilled: number,
+        dailyAverageSales: number;
+        totalCheckins: number;
+        totalFilledReports: number;
+        totalUnitsSold: number;
+    }[]
+}
 
 
 export type ICampaign = {
@@ -112,6 +310,7 @@ export type ICampaign = {
     total_checkin: number;
     type: string;
     updatedAt: Date;
+    clientTitle?: string
 };
 
 // Exporting the generic type for operators
@@ -149,6 +348,7 @@ export interface IFilledReport<T = Realm.BSON.ObjectId> {
 export type IFilledReportsAnswer<T = Realm.BSON.ObjectId> = {
     answer: string;
     question_id: T;
+    report_id?: Realm.BSON.ObjectId
     question_text: string;
     type: string;
 };
@@ -296,6 +496,36 @@ export type ICheckin = {
     user_id: Realm.BSON.ObjectId;
 };
 
+export type IExtendedCheckin = Omit<ICheckin, 'sessions'> & {
+    sessions: IExtendedCheckinSession[]
+    totalUnitsSold: number;
+    totalFilledReports: number;
+}
+
+export type IExtendedCheckinSession =  ICheckinsSessions & {
+    salesData: ISessionSaleData[]
+    reportsData: ISessionReportsData
+}
+
+export type ISessionProduct = {
+    _id: Realm.BSON.ObjectId;
+    name: string;
+    coverUrl: string;
+    price: number;
+    quantity: number;
+}
+
+export type ISessionSaleData = {
+    _id: Realm.BSON.ObjectId,
+    totalUnitsSold: number;
+    products: ISessionProduct[]
+}
+
+export type ISessionReportsData = {
+        totalFilledReports: number;
+    }
+
+
 export type ICheckinsActiveCheckins = {
     checkin_id: Realm.BSON.ObjectId;
     user_id: Realm.BSON.ObjectId;
@@ -406,101 +636,59 @@ export const client_usersSchema = {
     },
 };
 
-export type invoice = {
-    _id: Realm.BSON.ObjectId;
-    createDate: string;
+export type IUpdateInvoice<T = Realm.BSON.ObjectId> = {
+    _id: T;
+    campaign_id: T;
+    createdAt: Date;
     discount?: number;
-    dueDate: string;
-    invoiceFrom?: invoice_invoiceFrom;
-    invoiceNumber: string;
-    invoiceTo?: invoice_invoiceTo;
+    dueDate: Date;
+    invoiceFrom?: InvoiceInvoiceFrom;
+    invoiceNumber: Realm.BSON.ObjectId;
+    invoiceTo?: InvoiceInvoiceTo;
     items: Array<invoice_items>;
-    order_id?: Realm.BSON.ObjectId;
+    location?: InvoiceLocation;
+    order_id?: T;
     sent: number;
     shipping?: number;
     status: string;
     subTotal: number;
     taxes: number;
     totalAmount: number;
+    updatedAt: Date;
 };
 
-export const invoiceSchema = {
-    name: 'invoice',
-    properties: {
-        _id: 'objectId',
-        createDate: 'string',
-        discount: 'double?',
-        dueDate: 'string',
-        invoiceFrom: 'invoice_invoiceFrom',
-        invoiceNumber: 'string',
-        invoiceTo: 'invoice_invoiceTo',
-        items: 'invoice_items[]',
-        order_id: 'objectId?',
-        sent: 'int',
-        shipping: 'double?',
-        status: 'string',
-        subTotal: 'double',
-        taxes: 'double',
-        totalAmount: 'double',
-    },
-    primaryKey: '_id',
+export type InvoiceLocation = {
+    coordinates: Array<number>;
+    type: string;
 };
 
-export type invoice_invoiceFrom = {
+
+export type InvoiceInvoiceFrom<T = Realm.BSON.ObjectId> = {
     addressType: string;
+    client_id: T;
     company: string;
-    company_id: Realm.BSON.ObjectId;
     email: string;
     fullAddress: string;
-    id?: string;
     name: string;
     phoneNumber: string;
     primary: boolean;
-    user_id: Realm.BSON.ObjectId;
+    user_id: T;
 };
 
-export const invoice_invoiceFromSchema = {
-    name: 'invoice_invoiceFrom',
-    embedded: true,
-    properties: {
-        addressType: 'string',
-        company: 'string',
-        company_id: 'objectId',
-        email: 'string',
-        fullAddress: 'string',
-        id: 'string?',
-        name: 'string',
-        phoneNumber: 'string',
-        primary: 'bool',
-        user_id: 'objectId',
-    },
-};
 
-export type invoice_invoiceTo = {
+
+export type InvoiceInvoiceTo = {
     addressType?: string;
     company?: string;
     email?: string;
     fullAddress?: string;
     id?: string;
-    name?: string;
+    name: string;
     phoneNumber?: string;
     primary?: boolean;
 };
 
-export const invoice_invoiceToSchema = {
-    name: 'invoice_invoiceTo',
-    embedded: true,
-    properties: {
-        addressType: 'string?',
-        company: 'string?',
-        email: 'string?',
-        fullAddress: 'string?',
-        id: 'string?',
-        name: 'string?',
-        phoneNumber: 'string?',
-        primary: 'bool?',
-    },
-};
+
 
 export type invoice_items = {
     description: string;

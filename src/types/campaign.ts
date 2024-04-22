@@ -1,6 +1,6 @@
 import { ICampaignUser } from "./user_realm";
 import { IUserRouteProductItem } from "./user-routes";
-import { ICheckin, ICampaign } from "./realm/realm-types";
+import { ICheckin, ICampaign, ISessionProduct } from "./realm/realm-types";
 
 export interface ICampaignChange {
     fullDocument: ICampaign;
@@ -66,4 +66,11 @@ export type CountryData = {
     address: string;
     phoneNumber: string;
     products: IUserRouteProductItem[]
+};
+
+export type IUserCheckinData = {
+    lnglat: number[];
+    address: string;
+    phoneNumber: string;
+    products: ISessionProduct[]
 };

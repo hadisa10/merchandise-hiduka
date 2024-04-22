@@ -23,12 +23,12 @@ import {
   GridToolbarDensitySelector,
 } from '@mui/x-data-grid';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
+import { useRolePath } from 'src/hooks/use-path-role';
 import { useReports } from 'src/hooks/realm/report/use-report-graphql';
 
 import Iconify from 'src/components/iconify';
@@ -194,18 +194,25 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
     setTableData(deleteRows);
   }, [enqueueSnackbar, selectedRowIds, tableData]);
 
+  const rolePath = useRolePath();
+
+  console.log(rolePath, "ROLE PATH")
+
+
   const handleEditRow = useCallback(
     (_id: string) => {
-      router.push(paths.dashboard.report.edit(_id));
+      // @ts-expect-error expected
+      router.push(rolePath?.report.edit(_id));
     },
-    [router]
+    [router, rolePath]
   );
 
   const handleViewRow = useCallback(
     (_id: string) => {
-      router.push(paths.dashboard.report.edit(_id));
+      // @ts-expect-error expected
+      router.push(rolePath?.report.edit(_id));
     },
-    [router]
+    [router, rolePath]
   );
 
   const handleSearch = (inputValue: string) => {
@@ -323,7 +330,7 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
             getRowHeight={() => 'auto'}
             getEstimatedRowHeight={() => 150}
             pageSizeOptions={[5, 10, 25]}
-            getRowId={(row) => row._id}
+            getRowId={(row) => row._id.toString()}
             initialState={{
               pagination: {
                 paginationModel: { pageSize: 10 },

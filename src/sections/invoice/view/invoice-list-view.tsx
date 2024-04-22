@@ -56,7 +56,8 @@ import InvoiceTableFiltersResult from '../invoice-table-filters-result';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Customer' },
+  { id: 'customer', label: 'Customer' },
+  { id: 'salesperson', label: 'Sales Person' },
   { id: 'createDate', label: 'Create' },
   { id: 'dueDate', label: 'Due' },
   { id: 'price', label: 'Amount' },
@@ -91,6 +92,8 @@ export default function InvoiceListView() {
   const [tableData, setTableData] = useState<IInvoice[]>([]);
 
   const { loading: ordersLoading, invoices } = useInvoices();
+
+  console.log(TABLE_HEAD, "HEAD")
 
   useEffect(() => {
     if (invoices.length) {

@@ -133,7 +133,6 @@ const QuestionsNewEditList = () => {
     if (!(val)) { // Ensure conversion was successful
       const question = questions[questionIndex];
       const valid = question.validation ?? {};
-      console.log(val, "VALUE")
       update(questionIndex, { ...question, validation: { ...valid, regex: { ...valid.regex, matches: val } } });
     }
   }, [questions, update]);

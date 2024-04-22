@@ -1,8 +1,8 @@
 'use client';
 
 import * as Yup from 'yup';
-import { useState } from 'react';
 import { Credentials } from 'realm-web';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isObject, isString } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -22,8 +22,9 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { getRolePath } from 'src/utils/helpers';
+
 import { useAuthContext } from 'src/auth/hooks';
-import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { useRealmApp } from 'src/components/realm';
@@ -35,6 +36,11 @@ export default function MainLoginView() {
   const { loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
 
   const realmApp = useRealmApp();
+
+  const role = useMemo(
+    () => realmApp.currentUser?.customData?.role as unknown as string,
+    [realmApp.currentUser?.customData?.role]
+  );
 
   const router = useRouter();
 
@@ -70,10 +76,13 @@ export default function MainLoginView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await realmApp.logIn(Credentials.emailPassword(data.email, data.password));
-      router.push(returnTo || PATH_AFTER_LOGIN);
+
+      const rolePath = getRolePath(role);
+
+      router.push(returnTo || rolePath.root);
     } catch (error) {
       reset();
-      if (isObject(error) && "error" in error && isString(error.error)) {
+      if (isObject(error) && 'error' in error && isString(error.error)) {
         setErrorMsg(error?.error);
       } else {
         setErrorMsg(typeof error === 'string' ? error : error?.message);

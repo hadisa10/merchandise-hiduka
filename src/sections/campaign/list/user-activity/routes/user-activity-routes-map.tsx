@@ -6,7 +6,7 @@ import { memo, useRef, useMemo, useState, useEffect, forwardRef, useImperativeHa
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import { styled, useTheme } from '@mui/material/styles';
-import { Stack, Avatar, Tooltip, IconButton, AvatarGroup } from '@mui/material';
+import { Box, Stack, Avatar, Tooltip, IconButton, AvatarGroup } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -22,7 +22,8 @@ import GeocoderControl from 'src/components/map/geocoder-controller';
 
 import RouteMapControlPanel from 'src/sections/campaign/map/campaign-route-map-control-panel';
 
-import { CountryData } from 'src/types/campaign';
+import { IUserCheckinData } from 'src/types/campaign';
+
 
 // ----------------------------------------------------------------------
 
@@ -42,12 +43,12 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 
 type Props = {
-  contacts: CountryData[];
+  contacts: IUserCheckinData[];
   handleNewRouteOpen: ({ lng, lat }: { lng: number, lat: number }) => void
   fetchDirections: boolean;
   childrenControlPanel?: React.ReactNode; // Added children prop type
-  popupInfo: CountryData | null;
-  handleSetPopupInfo: (popupInfo: CountryData | null) => void;
+  popupInfo: IUserCheckinData | null;
+  handleSetPopupInfo: (popupInfo: IUserCheckinData | null) => void;
 };
 
 type MouseEventWithCtrl = MouseEvent & { ctrlKey: boolean };
@@ -86,7 +87,7 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
 
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
 
-  const [userLocation, setUserLocation] = useState<CountryData>({
+  const [userLocation, setUserLocation] = useState<IUserCheckinData>({
     lnglat: [NairobiCoord.latitude, NairobiCoord.longitude],
     address: currentUser?.customData?.displayName as string ?? 'ME',
     phoneNumber: currentUser?.customData?.phoneNumber as string ?? 'no-number',
@@ -248,8 +249,10 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
       <Grid xs={12} >
 
         <StyledRoot>
-          {
-            !userLocation && <LoadingScreen />
+          {!userLocation &&
+            <Box height="100%">
+              <LoadingScreen />
+            </Box>
           }
           {
             userLocation &&
@@ -294,7 +297,7 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
 
               <MapControl />
 
-              {Array.isArray(contacts) && [userLocation, ...contacts].map((country, index) => (
+              {Array.isArray(contacts) && [...contacts].map((country, index) => (
                 <Marker
                   key={`marker-${index}`}
                   latitude={country.lnglat[0]}
@@ -346,22 +349,22 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(({
                     sx={{ mt: 1, display: 'flex', alignItems: 'center' }}
                   >
                     <Iconify icon="tdesign:money" width={14} sx={{ mr: 0.5 }} />
-                    <Typography variant='caption'>Ksh {popupInfo.products.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0)}</Typography>
+                    <Typography variant='caption'>Ksh {popupInfo?.products?.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0)}</Typography>
                   </Typography>
 
                   {
-                    Array.isArray(popupInfo.products) &&
-                    <AvatarGroup total={popupInfo.products.length}>
-                      {popupInfo.products.map((prd) =>
+                    Array.isArray(popupInfo?.products) &&
+                    <AvatarGroup total={popupInfo?.products.length}>
+                      {popupInfo?.products.map((prd) =>
                       (
                         <Tooltip title={
                           <Stack>
                             <Typography color="inherit" variant='body1'>{prd.name}</Typography>
                             <Typography color="inherit" variant='caption'>Quantity x{prd.quantity}</Typography>
-                            <Typography color="inherit" variant='caption'>Total x{prd.quantity * prd.price}</Typography>
+                            <Typography color="inherit" variant='caption'>Q x{prd.quantity * prd.price}</Typography>
                           </Stack>
                         } arrow>
-                          <Avatar key={prd.id} alt={prd.name} src={prd.coverUrl} />
+                          <Avatar key={prd._id.toString()} alt={prd.name} src={prd.coverUrl} />
                         </Tooltip>
                       ))}
                     </AvatarGroup>

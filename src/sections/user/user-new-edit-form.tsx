@@ -42,13 +42,13 @@ type Props = {
   currentUser?: IUser;
 };
 
-const ROLES: {role: IRole, label: string}[] = [
+const ROLES: { role: IRole; label: string }[] = [
   // { role: "client", label: "Client" },
   // { role: "lead", label: "Lead" },
   // { role: "admin", label: "Admin" },
   // { role: "user", label: "User"},
   // { role: "brand_ambassador", label: "Brand Ambassador" },
-  { role: "merchant", label: "Merchant" }
+  { role: 'merchant', label: 'Merchant' },
 ];
 
 export default function UserNewEditForm({ currentUser }: Props) {
@@ -93,12 +93,12 @@ export default function UserNewEditForm({ currentUser }: Props) {
       address: currentUser?.address || '',
       country: currentUser?.country || '',
       zipCode: currentUser?.zipCode || '',
-      company: currentUser?.company === "none" || !(currentUser?.company) ? '' : currentUser?.company,
+      company: currentUser?.company === 'none' || !currentUser?.company ? '' : currentUser?.company,
       photoURL: currentUser?.photoURL || null,
       phoneNumber: currentUser?.phoneNumber || '',
       isVerified: currentUser?.isVerified || true,
       isPublic: currentUser?.isPublic || true,
-      about: currentUser?.about || ""
+      about: currentUser?.about || '',
     }),
     [currentUser]
   );
@@ -121,13 +121,14 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const cpPhotoURL = data.photoURL?.path ?? "none"
+      const cpPhotoURL =
+        typeof data.photoURL === 'string' ? data.photoURL : data.photoURL?.path ?? 'none';
       if (!currentUser?.isRegistered) {
         // @ts-expect-error expected
-        await userActions.registerUser({ ...data, photoURL: cpPhotoURL })
+        await userActions.registerUser({ ...data, photoURL: cpPhotoURL });
         await realmApp.currentUser?.refreshCustomData();
         router.push(paths.dashboard.root);
-        enqueueSnackbar("Registration complete");
+        enqueueSnackbar('Registration complete');
         reset();
         return await new Promise((resolve) => setTimeout(resolve, 500));
       }
@@ -136,7 +137,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       reset();
       return await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error) {
-      enqueueSnackbar(currentUser ? 'Update failed!' : 'Update Failed!', { variant: "error" });
+      enqueueSnackbar(currentUser ? 'Update failed!' : 'Update Failed!', { variant: 'error' });
       console.error(error);
       return await new Promise((resolve) => setTimeout(resolve, 500));
     }
@@ -204,11 +205,11 @@ export default function UserNewEditForm({ currentUser }: Props) {
                   <Controller
                     name="status"
                     control={control}
-                    disabled={currentUser?.role !== "admin"}
+                    disabled={currentUser?.role !== 'admin'}
                     render={({ field }) => (
                       <Switch
                         {...field}
-                        checked={field.value !== 'active' && field.value !== "pending"}
+                        checked={field.value !== 'active' && field.value !== 'pending'}
                         onChange={(event) =>
                           field.onChange(event.target.checked ? 'banned' : 'active')
                         }
@@ -233,7 +234,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
             <RHFSwitch
               name="isVerified"
               labelPlacement="start"
-              disabled={currentUser?.role !== "admin"}
+              disabled={currentUser?.role !== 'admin'}
               label={
                 <>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
@@ -249,7 +250,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
             {currentUser && (
               <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                <Button variant="soft" color="error" disabled={currentUser?.role !== "admin"}>
+                <Button variant="soft" color="error" disabled={currentUser?.role !== 'admin'}>
                   Delete User
                 </Button>
               </Stack>
@@ -292,9 +293,9 @@ export default function UserNewEditForm({ currentUser }: Props) {
               <RHFSelect
                 name="role"
                 label="Role"
-              // disabled={currentUser?.role !== "admin"}
+                // disabled={currentUser?.role !== "admin"}
               >
-                {ROLES.map(({role, label}) => (
+                {ROLES.map(({ role, label }) => (
                   <MenuItem key={role} value={role}>
                     {label}
                   </MenuItem>

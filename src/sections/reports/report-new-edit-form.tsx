@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -14,30 +14,32 @@ import { useRouter } from 'src/routes/hooks';
 // import { useBoolean } from 'src/hooks/use-boolean';
 // import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
-
 import Label from 'src/components/label';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import { IReport } from 'src/types/realm/realm-types';
+import { IReport, ICampaign } from 'src/types/realm/realm-types';
 
 // import QuestionsNewEditList from './edit/questions-new-edit';
 // import CampaignDetailsToolbar from './report-details-toolbar';
 // import ReportNewEditDetailsForm from './edit/report-new-edit-details-form';
 
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useReports } from 'src/hooks/realm/report/use-report-graphql';
-import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
 import { createObjectId } from 'src/utils/realm';
 import { safeDateFormatter, removeAndFormatNullFields } from 'src/utils/helpers';
 
+import { useRealmApp } from 'src/components/realm';
 import { RHFFormFiller } from 'src/components/hook-form';
+import { useClientContext } from 'src/components/clients';
 // import { RHFFormFiller, RHFTextField } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
+
+import ImageResponseView from './responses-component/image-responses-view';
 // import { RHFFormFiller } from 'src/components/hook-form';
 
-
-const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule']
-const ROUTES_FIELDS = ['routes']
+const DETAILS_FIELDS = ['title', 'users', 'description', 'workingSchedule'];
+const ROUTES_FIELDS = ['routes'];
 
 // ----------------------------------------------------------------------
 
@@ -45,14 +47,14 @@ type Props = {
   currentReport?: IReport;
 };
 
-
 export const REPORT_DETAILS_TABS = [
   { value: 'details', label: 'Details' },
   { value: 'questions', label: 'Questions' },
   { value: 'test', label: 'Test Report' },
   { value: 'responses', label: 'Responses' },
+  { value: 'merged-responses', label: 'Merged Reponses' },
+  { value: 'images', label: 'Images' },
 ];
-
 
 // function generateAccessCode() {
 //   return Math.floor(10000 + Math.random() * 90000).toString();
@@ -63,57 +65,90 @@ const QuestionsNewEditList = lazy(() => import('./question-component/questions-n
 const ReportsDetailsToolbar = lazy(() => import('./report-details-toolbar'));
 const ReportNewEditDetailsForm = lazy(() => import('./edit/report-new-edit-details-form'));
 const ResponsesGridView = lazy(() => import('./responses-component/responses-list-view'));
+const MergedResponsesGridView = lazy(
+  () => import('./responses-component/merged-responses-list-view')
+);
 
 export default function ReportNewEditForm({ currentReport }: Props) {
-
   const router = useRouter();
 
-  const { updateReport, saveReport } = useReports()
+  const { updateReport, saveReport } = useReports();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { campaigns, loading: campaignsLoading } = useCampaigns();
+  const campaignloading = useBoolean(true);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [error, setError] = useState<unknown>();
+
+  const realmApp = useRealmApp();
+
+  const [campaigns, setCampaigns] = useState<ICampaign[] | undefined>(undefined);
+
+  const { client } = useClientContext();
+
+  useEffect(() => {
+    if (client && client?._id) {
+      campaignloading.onTrue();
+      setError(null);
+      realmApp.currentUser?.functions
+        .getClientCampaigns({ client_id: client?._id.toString() })
+        .then((data: ICampaign[]) => setCampaigns(data))
+        .catch((e) => {
+          console.error(e);
+          setError(e);
+          enqueueSnackbar('Failed to get dashboard Metrics', { variant: 'error' });
+        })
+        .finally(() => campaignloading.onFalse());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client]);
 
   const [currentTab, setCurrentTab] = useState('details');
 
-  const regexValidationSchema = Yup.object().shape({
-    matches: Yup.string().nullable().test(
-      'is-regex',
-      'matches must be a valid regex',
-      value => {
-        try {
-          // Attempt to create a new RegExp object. If `value` is not a valid regex, this will throw an error.
-          // @ts-expect-error expected
-          RegExp(value);
-          // If no error is thrown, then `value` is a valid regex.
-          return true;
-        } catch (e) {
-          // If an error is thrown, then `value` is not a valid regex.
-          return false;
-        }
-      }
-    ), // Allows null
-    message: Yup.string().nullable(), // Allows null
-  }).nullable();
-
-  const questionValidationSchema = Yup.object().shape({
-    required: Yup.boolean().nullable(),
-    minLength: Yup.number().nullable().typeError("Min Length must be a number"),
-    maxLength: Yup.number().nullable().typeError("Max Length must be a number"),
-    minValue: Yup.number().nullable().typeError("Min Value must be a number"),
-    maxValue: Yup.number().nullable().typeError("Min Value must be a number"),
-    regex: regexValidationSchema,
-    fileTypes: Yup.array().of(Yup.string()).nullable(), // Allows null and an array of strings
-  }).nullable();
-
-  const questionDependencySchema = Yup.array().of(
-    Yup.object().shape({
-      questionId: Yup.string().required('Question ID is required'),
-      triggerValue: Yup.string().required('Trigger value is required'),
-      operator: Yup.string().oneOf(['equals', 'notEquals', 'greaterThan', 'lessThan']).required('Operator is required'),
+  const regexValidationSchema = Yup.object()
+    .shape({
+      matches: Yup.string()
+        .nullable()
+        .test('is-regex', 'matches must be a valid regex', (value) => {
+          try {
+            // Attempt to create a new RegExp object. If `value` is not a valid regex, this will throw an error.
+            // @ts-expect-error expected
+            RegExp(value);
+            // If no error is thrown, then `value` is a valid regex.
+            return true;
+          } catch (e) {
+            // If an error is thrown, then `value` is not a valid regex.
+            return false;
+          }
+        }), // Allows null
+      message: Yup.string().nullable(), // Allows null
     })
-  ).nullable();
+    .nullable();
+
+  const questionValidationSchema = Yup.object()
+    .shape({
+      required: Yup.boolean().nullable(),
+      minLength: Yup.number().nullable().typeError('Min Length must be a number'),
+      maxLength: Yup.number().nullable().typeError('Max Length must be a number'),
+      minValue: Yup.number().nullable().typeError('Min Value must be a number'),
+      maxValue: Yup.number().nullable().typeError('Min Value must be a number'),
+      regex: regexValidationSchema,
+      fileTypes: Yup.array().of(Yup.string()).nullable(), // Allows null and an array of strings
+    })
+    .nullable();
+
+  const questionDependencySchema = Yup.array()
+    .of(
+      Yup.object().shape({
+        questionId: Yup.string().required('Question ID is required'),
+        triggerValue: Yup.string().required('Trigger value is required'),
+        operator: Yup.string()
+          .oneOf(['equals', 'notEquals', 'greaterThan', 'lessThan'])
+          .required('Operator is required'),
+      })
+    )
+    .nullable();
 
   const questionSchema = Yup.object().shape({
     _id: Yup.string().required('Id is required'),
@@ -136,13 +171,11 @@ export default function ReportNewEditForm({ currentReport }: Props) {
     questions: Yup.array().of(questionSchema),
   });
 
-
-
   const defaultValues = useMemo(
     () => ({
       title: currentReport?.title || '',
       campaign_id: currentReport?.campaign_id || '',
-      questions: currentReport?.questions || []
+      questions: currentReport?.questions || [],
     }),
     [currentReport]
   );
@@ -151,7 +184,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
     // @ts-expect-error expected
     resolver: yupResolver(NewCurrectSchema),
     defaultValues,
-    mode: "all", // This triggers validation on both onChange and onBlur
+    mode: 'all', // This triggers validation on both onChange and onBlur
   });
 
   const {
@@ -162,24 +195,24 @@ export default function ReportNewEditForm({ currentReport }: Props) {
     formState: { isSubmitting, errors },
   } = methods;
 
-
-  const questions = watch("questions");
-  const tabErrors = useCallback((tab: string) => {
-    const y = Object.entries(errors).filter(([key, val]) => {
-      console.log(key, "ERROR KEYS")
-      switch (tab) {
-        case 'details':
-          return DETAILS_FIELDS.includes(key)
-        case 'routes':
-          return ROUTES_FIELDS.includes(key)
-        default:
-          return false
-      }
-    })
-    return y;
-  }, [errors])
-
-
+  const questions = watch('questions');
+  const tabErrors = useCallback(
+    (tab: string) => {
+      const y = Object.entries(errors).filter(([key, val]) => {
+        console.log(key, 'ERROR KEYS');
+        switch (tab) {
+          case 'details':
+            return DETAILS_FIELDS.includes(key);
+          case 'routes':
+            return ROUTES_FIELDS.includes(key);
+          default:
+            return false;
+        }
+      });
+      return y;
+    },
+    [errors]
+  );
 
   useEffect(() => {
     if (currentReport) {
@@ -191,72 +224,81 @@ export default function ReportNewEditForm({ currentReport }: Props) {
     // Remove null fields from the form data
     try {
       if (currentReport) {
-        const cleanedData = removeAndFormatNullFields({
-          ...currentReport,
-          ...formData
-        }, [
+        const cleanedData = removeAndFormatNullFields(
           {
-            key: "updatedAt",
-            formatter: safeDateFormatter,
+            ...currentReport,
+            ...formData,
           },
-          {
-            key: "createdAt",
-            formatter: safeDateFormatter,
-          }
+          [
+            {
+              key: 'updatedAt',
+              formatter: safeDateFormatter,
+            },
+            {
+              key: 'createdAt',
+              formatter: safeDateFormatter,
+            },
+          ],
           // @ts-expect-error expected
-        ], ["id"]);
+          ['id', 'description']
+        );
         // @ts-expect-error expected
         const dt: IReport = {
-          ...cleanedData
-        }
-        console.log(dt, "DT")
-        await updateReport(dt)
+          ...cleanedData,
+        };
+        console.log(dt, 'DT');
+        await updateReport(dt);
         reset();
         enqueueSnackbar(currentReport ? 'Update success!' : 'Create success!');
-        router.push(paths.dashboard.report.root);
+        // router.push(rolePath?.report.root);
       } else {
-        const cleanedData = removeAndFormatNullFields({
-          ...formData
-        }, [
+        const cleanedData = removeAndFormatNullFields(
           {
-            // @ts-expect-error expected
-            key: "updatedAt",
-            formatter: safeDateFormatter,
+            ...formData,
           },
-          {
-            // @ts-expect-error expected
-            key: "createdAt",
-            formatter: safeDateFormatter,
-          }
-        ], ["id", "workingSchedule", "description"]);
-        console.log(cleanedData, "DT")
+          [
+            {
+              // @ts-expect-error expected
+              key: 'updatedAt',
+              formatter: safeDateFormatter,
+            },
+            {
+              // @ts-expect-error expected
+              key: 'createdAt',
+              formatter: safeDateFormatter,
+            },
+          ],
+          ['id', 'workingSchedule', 'description']
+        );
+        console.log(cleanedData, 'DT');
 
-        const campaign = campaigns.find(cmpg => cmpg._id.toString() === cleanedData?.campaign_id)
-        if (!campaign) throw new Error("Error creating campaign because client does not exist")
+        const campaign = campaigns?.find(
+          (cmpg) => cmpg._id.toString() === cleanedData?.campaign_id
+        );
+        if (!campaign) throw new Error('Error creating campaign because client does not exist');
         // @ts-expect-error expected
         const id = await saveReport({
           ...cleanedData,
           client_id: campaign._id,
           campaign_title: campaign.title,
           project_id: createObjectId(),
-          responses: 0
-
-        })
+          responses: 0,
+        });
         reset();
         enqueueSnackbar(currentReport ? 'Update success!' : 'Create success!');
         router.push(paths.dashboard.report.edit(id.toString()));
       }
-
-    } catch (error) {
-      enqueueSnackbar(currentReport ? 'Update failed!' : 'Failed to create campaign!', { variant: 'error' });
-      console.error(error);
+    } catch (e) {
+      enqueueSnackbar(currentReport ? 'Update failed!' : 'Failed to create campaign!', {
+        variant: 'error',
+      });
+      console.error(e);
     }
   });
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
-
 
   const renderTabs = (
     <Tabs
@@ -273,10 +315,13 @@ export default function ReportNewEditForm({ currentReport }: Props) {
           value={tab.value}
           label={tab.label}
           icon={
-            tabErrors(tab.value)?.length > 1 ?
-              <Label variant="soft" color='error'>{tabErrors(tab.value)?.length}</Label>
-              :
+            tabErrors(tab.value)?.length > 1 ? (
+              <Label variant="soft" color="error">
+                {tabErrors(tab.value)?.length}
+              </Label>
+            ) : (
               ''
+            )
           }
         />
       ))}
@@ -293,9 +338,38 @@ export default function ReportNewEditForm({ currentReport }: Props) {
         />
         {renderTabs}
 
-        {currentTab === 'details' && <Suspense fallback={<LoadingScreen />}><ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} /></Suspense>}
-        {currentTab === 'questions' && <Suspense fallback={<LoadingScreen />}><QuestionsNewEditList /></Suspense>}
-        {currentTab === 'responses' && <Suspense fallback={<LoadingScreen />}><ResponsesGridView report={currentReport} questions={currentReport?.questions} /></Suspense>}
+        {currentTab === 'details' && (
+          <Suspense fallback={<LoadingScreen />}>
+            {campaignloading.value ? (
+              <LoadingScreen />
+            ) : (
+              <ReportNewEditDetailsForm
+                campaigns={campaigns}
+                campaignsLoading={campaignloading.value}
+              />
+            )}
+          </Suspense>
+        )}
+        {currentTab === 'questions' && (
+          <Suspense fallback={<LoadingScreen />}>
+            <QuestionsNewEditList />
+          </Suspense>
+        )}
+        {currentTab === 'responses' && (
+          <Suspense fallback={<LoadingScreen />}>
+            <ResponsesGridView report={currentReport} questions={currentReport?.questions} />
+          </Suspense>
+        )}
+        {currentTab === 'merged-responses' && (
+          <Suspense fallback={<LoadingScreen />}>
+            <MergedResponsesGridView report={currentReport} questions={currentReport?.questions} />
+          </Suspense>
+        )}
+        {currentTab === 'images' && (
+          <Suspense fallback={<LoadingScreen />}>
+            <ImageResponseView report={currentReport} questions={currentReport?.questions} />
+          </Suspense>
+        )}
 
         {/* {currentTab === 'details' && <ReportNewEditDetailsForm campaigns={campaigns} campaignsLoading={campaignsLoading} />}
         {currentTab === 'questions' && <QuestionsNewEditList campaigns={campaigns} campaignsLoading={campaignsLoading} />}
@@ -304,11 +378,13 @@ export default function ReportNewEditForm({ currentReport }: Props) {
           // @ts-expect-error expected
           <RHFFormFiller questions={questions} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
         } */}
-      </FormProvider >
-      {currentTab === 'test' &&
-        // @ts-expect-error expected
-        <RHFFormFiller questions={removeAndFormatNullFields(questions)} onSubmit={(val) => new Promise(() => console.log(val, "FORM FILLED"))} />
-      }
+      </FormProvider>
+      {currentTab === 'test' && (
+        <RHFFormFiller
+          questions={removeAndFormatNullFields(questions) ?? []}
+          onSubmit={(val) => new Promise(() => console.log(val, 'FORM FILLED'))}
+        />
+      )}
     </>
   );
 }

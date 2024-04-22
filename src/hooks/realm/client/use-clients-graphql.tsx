@@ -1,6 +1,6 @@
-import { BSON } from "realm-web";
-import { gql } from "@apollo/client";
-import { useState, useEffect } from "react";
+import { BSON } from 'realm-web';
+import { gql } from '@apollo/client';
+import { useState, useEffect } from 'react';
 
 import {
   getClientIndex,
@@ -8,18 +8,24 @@ import {
   updateValueAtIndex,
   removeValueAtIndex,
   replaceValueAtIndex,
-} from "src/utils/realm";
+} from 'src/utils/realm';
 
-import atlasConfig from "src/atlasConfig.json";
+import atlasConfig from 'src/atlasConfig.json';
 
-import { IClient, IClientHook, IDraftClient, IClientChange, IGraphqlResponse, IGraphqlClientResponse } from "src/types/client";
+import {
+  IClient,
+  IClientHook,
+  IDraftClient,
+  IClientChange,
+  IGraphqlResponse,
+  IGraphqlClientResponse,
+} from 'src/types/client';
 
-import { useWatch } from "../use-watch";
-import { useCollection } from "../use-collection"
-import { useCustomApolloClient } from "../use-apollo-client";
+import { useWatch } from '../use-watch';
+import { useCollection } from '../use-collection';
+import { useCustomApolloClient } from '../use-apollo-client';
 
 const { dataSourceName } = atlasConfig;
-
 
 export function useClients(lazy: boolean = true): IClientHook {
   const graphql = useCustomApolloClient();
@@ -29,38 +35,44 @@ export function useClients(lazy: boolean = true): IClientHook {
   useEffect(() => {
     if (!lazy) {
       const query = gql`
-      query FetchAllClients {
-        clients {
-          _id
-          creator{
+        query FetchAllClients {
+          clients {
+            _id
+            creator {
+              name
+              email
+            }
+            users {
+              name
+              email
+            }
             name
-            email
+            active
+            client_plan
+            client_icon
+            createdAt
+            updatedAt
           }
-          users{
-            name
-            email
-          }
-          name
-          active
-          client_plan
-          client_icon
-          createdAt
-          updatedAt
         }
-      }
-    `;
-      graphql.query<IGraphqlResponse>({ query }).then(({ data }) => {
-        console.log(data, 'DATA')
-        setClients(data.clients);
-        setLoading(false);
-      });
+      `;
+      graphql
+        .query<IGraphqlResponse>({ query })
+        .then(({ data }) => {
+          console.log(data, 'DATA');
+          setClients(data.clients);
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.log(e, 'ERROR CLIENT');
+          return new Error(e);
+        });
     }
   }, [graphql, lazy]);
 
   const clientHidukaCollection = useCollection({
     cluster: dataSourceName,
-    db: "hiduka",
-    collection: "clients",
+    db: 'hiduka',
+    collection: 'clients',
   });
 
   useWatch(clientHidukaCollection, {
@@ -118,13 +130,12 @@ export function useClients(lazy: boolean = true): IClientHook {
 
   const saveClient = async (draftClient: IDraftClient) => {
     if (draftClient.name) {
-      console.log(draftClient, 'DRAFT CLIENT')
       const dt = new Date();
-      const cpClient: IDraftClient & { createdAt: Date, updatedAt: Date } = {
+      const cpClient: IDraftClient & { createdAt: Date; updatedAt: Date } = {
         ...draftClient,
         createdAt: dt,
-        updatedAt: dt
-      }
+        updatedAt: dt,
+      };
       try {
         await graphql.mutate({
           mutation: gql`
@@ -132,7 +143,7 @@ export function useClients(lazy: boolean = true): IClientHook {
               insertOneClient(data: $client) {
                 _id
                 creator {
-                name
+                  name
                 }
                 name
                 active
@@ -158,31 +169,30 @@ export function useClients(lazy: boolean = true): IClientHook {
       query: gql`
         query FetchClient($id: ObjectId!) {
           client(query: { _id: $id }) {
-              _id
-              creator{
-                name
-                email
-              }
-              users{
-                name
-                email
-              }
+            _id
+            creator {
               name
-              active
-              client_plan
-              client_icon
-              createdAt
-              updatedAt
+              email
             }
+            users {
+              name
+              email
+            }
+            name
+            active
+            client_plan
+            client_icon
+            createdAt
+            updatedAt
+          }
         }
       `,
       variables: {
-        id
+        id,
       },
     });
-    console.log(resp, 'CLIENT')
     return resp.data.client;
-  }
+  };
 
   const toggleClientStatus = async (client: IClient) => {
     await graphql.mutate({
@@ -194,7 +204,7 @@ export function useClients(lazy: boolean = true): IClientHook {
           }
         }
       `,
-      variables: { clientId: client._id },
+      variables: { clientId: client?._id },
     });
   };
 
@@ -207,7 +217,7 @@ export function useClients(lazy: boolean = true): IClientHook {
           }
         }
       `,
-      variables: { clientId: client._id },
+      variables: { clientId: client?._id },
     });
   };
 

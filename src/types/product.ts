@@ -61,6 +61,7 @@ export type IProductItem = {
   priceSale: number | null;
   reviews: IProductReview[];
   createdAt: Date;
+  totalStock?: number;
   ratings: {
     name: string;
     starCount: number;

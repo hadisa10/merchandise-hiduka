@@ -22,7 +22,7 @@ import { INVOICE_STATUS_OPTIONS } from 'src/_mock';
 import Label from 'src/components/label';
 import Scrollbar from 'src/components/scrollbar';
 
-import { IInvoice } from 'src/types/invoice';
+import { IUpdateInvoice } from 'src/types/realm/realm-types';
 
 import InvoiceToolbar from './invoice-toolbar';
 
@@ -40,7 +40,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 type Props = {
-  invoice: IInvoice;
+  invoice: IUpdateInvoice;
 };
 
 export default function InvoiceDetails({ invoice }: Props) {
@@ -68,7 +68,7 @@ export default function InvoiceDetails({ invoice }: Props) {
         <TableCell colSpan={3} />
         <TableCell sx={{ color: 'text.secondary' }}>Shipping</TableCell>
         <TableCell width={120} sx={{ color: 'error.main', typography: 'body2' }}>
-          {fCurrency(-invoice.shipping)}
+          {fCurrency(-(invoice.shipping ?? 0))}
         </TableCell>
       </StyledTableRow>
 
@@ -76,7 +76,7 @@ export default function InvoiceDetails({ invoice }: Props) {
         <TableCell colSpan={3} />
         <TableCell sx={{ color: 'text.secondary' }}>Discount</TableCell>
         <TableCell width={120} sx={{ color: 'error.main', typography: 'body2' }}>
-          {fCurrency(-invoice.discount)}
+          {fCurrency(-(invoice.discount ?? 0))}
         </TableCell>
       </StyledTableRow>
 
@@ -201,18 +201,18 @@ export default function InvoiceDetails({ invoice }: Props) {
               {currentStatus}
             </Label>
 
-            <Typography variant="h6">{invoice.invoiceNumber}</Typography>
+            <Typography variant="h6">{invoice.invoiceNumber.toString()}</Typography>
           </Stack>
 
           <Stack sx={{ typography: 'body2' }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
               Invoice From
             </Typography>
-            {invoice.invoiceFrom.name}
+            {invoice.invoiceFrom?.name ?? "N/A"}
             <br />
-            {invoice.invoiceFrom.fullAddress}
+            {invoice.invoiceFrom?.fullAddress ?? "N/A"}
             <br />
-            Phone: {invoice.invoiceFrom.phoneNumber}
+            Phone: {invoice.invoiceFrom?.phoneNumber ?? "N/A"}
             <br />
           </Stack>
 
@@ -220,11 +220,11 @@ export default function InvoiceDetails({ invoice }: Props) {
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
               Invoice To
             </Typography>
-            {invoice.invoiceTo.name}
+            {invoice.invoiceTo?.name ?? "N/A"}
             <br />
-            {invoice.invoiceTo.fullAddress}
+            {invoice.invoiceTo?.fullAddress ?? "N/A"}
             <br />
-            Phone: {invoice.invoiceTo.phoneNumber}
+            Phone: {invoice.invoiceTo?.phoneNumber ?? "N/A"}
             <br />
           </Stack>
 
@@ -232,7 +232,7 @@ export default function InvoiceDetails({ invoice }: Props) {
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
               Date Create
             </Typography>
-            {fDate(invoice.createDate)}
+            {fDate(invoice.createdAt)}
           </Stack>
 
           <Stack sx={{ typography: 'body2' }}>

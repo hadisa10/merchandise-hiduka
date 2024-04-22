@@ -1,0 +1,1 @@
+export {default as AdminDashboardView } from './ad-dashboard';
