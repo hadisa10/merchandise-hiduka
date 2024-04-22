@@ -17,5 +17,5 @@ export default function ProjectDetailsPage({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  return [];
+  return [{ id: 'id' }];
 }
