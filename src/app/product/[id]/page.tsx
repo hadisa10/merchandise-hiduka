@@ -1,3 +1,4 @@
+
 import { ProductShopDetailsView } from 'src/sections/product/view';
 
 // ----------------------------------------------------------------------
@@ -19,5 +20,5 @@ export default function ProductShopDetailsPage({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  return [{ id: '' }];
+  return [];
 }

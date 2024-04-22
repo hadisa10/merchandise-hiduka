@@ -11,5 +11,5 @@ export default function ProductCreatePage() {
 }
 
 export async function generateStaticParams() {
-  return [{ id: '' }];
+  return [];
 }

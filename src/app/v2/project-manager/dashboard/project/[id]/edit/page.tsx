@@ -19,5 +19,5 @@ export default function ClientCampaignEditPage({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  return [{ id: '' }];
+  return [];
 }
