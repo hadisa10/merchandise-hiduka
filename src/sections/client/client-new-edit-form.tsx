@@ -104,8 +104,8 @@ export default function ClientNewEditForm({ currentClient }: Props) {
       client_icon: currentClient?.client_icon || '',
       client_plan: currentClient?.client_plan || '',
       active: currentClient?.active || true,
-      children: currentClient?.children || [],
-      parent: currentClient?.parent || '',
+      // children: currentClient?.children || [],
+      // parent: currentClient?.parent || '',
       users: currentClient?.users || [],
     }),
     [currentClient]
@@ -198,7 +198,8 @@ export default function ClientNewEditForm({ currentClient }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const cpPhotoURL = data.client_icon?.path ?? 'none';
+      const cpPhotoURL =
+        typeof data.client_icon === 'string' ? data.client_icon : data.client_icon?.path ?? 'none';
       const dt = new Date();
       if (!currentClient) {
         if (realmApp.currentUser?.customData._id) {
@@ -389,8 +390,8 @@ export default function ClientNewEditForm({ currentClient }: Props) {
                 }
               />
 
-              <RHFAutocomplete
-                name="client_id"
+              {/* <RHFAutocomplete
+                name="parent"
                 label="Client"
                 placeholder="Select client"
                 loading={loading.value}
@@ -435,7 +436,7 @@ export default function ClientNewEditForm({ currentClient }: Props) {
                     );
                   })
                 }
-              />
+              /> */}
             </Box>
             <Grid
               container
