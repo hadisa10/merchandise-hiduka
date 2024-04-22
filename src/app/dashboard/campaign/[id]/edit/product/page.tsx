@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ProductCreateView } from 'src/sections/product/view';
 
 // ----------------------------------------------------------------------
@@ -8,7 +7,6 @@ export const metadata = {
 };
 
 export default function ProductCreatePage() {
-  const [s, setT] = useState();
   return <ProductCreateView />;
 }
 
