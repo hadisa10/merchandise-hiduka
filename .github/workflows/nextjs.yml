@@ -101,24 +101,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.DIGITALOCEAN_USERNAME }}@${{ secrets.DIGITALOCEAN_HOST }} "\
             export PATH=/home/brilliant/.nvm/versions/node/v20.12.2/bin:\$PATH; \
             cd /home/brilliant/hokela-360 && \
-            if [ -d node_modules ]; then \
-              echo 'Backing up node_modules...' && \
-              mv node_modules ../node_modules_backup; \
-            fi && \
-            echo 'Extracting new build...' && \
             tar -xzf nextjs-build.tar.gz && \
-            if [ -f package-lock.json ]; then \
-              echo 'Checking dependency changes...' && \
-              if ! md5sum -c --status ../prev_package_lock.md5; then \
-                echo 'Dependencies have changed. Installing...' && \
-                npm install --omit=dev; \
-              else \
-                echo 'Restoring node_modules...' && \
-                mv ../node_modules_backup node_modules; \
-              fi; \
-            else \
-              echo 'No package-lock.json found. Installing dependencies...' && \
-              npm install --omit=dev; \
-            fi && \
-            md5sum package-lock.json > ../prev_package_lock.md5 && \
-            pm2 start ecosystem.config.js || pm2 restart all""
+            npm install --omit=dev && \
+            pm2 start ecosystem.config.js || pm2 restart all"
