@@ -1,12 +1,16 @@
+'use client';
+
+import { Container, Typography } from '@mui/material';
+
+import { useSettingsContext } from 'src/components/settings';
+
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: 'Privacy Policy',
-};
+export default function TCView() {
+  const settings = useSettingsContext();
 
-export default function PrivacyPage() {
-  return (
-    <p>
+  const renderContent = (
+    <Typography>
       1 Hokela 360 Privacy Policy
       <br /> This Privacy Policy governs the manner in which Hokela 360 collects, uses, maintains
       and discloses information collected from users (each, a “User”) of the Hokela360.com website
@@ -58,6 +62,17 @@ export default function PrivacyPage() {
       or administer activities on our behalf, such as sending out newsletters or surveys. We may
       share your information with these third parties for those limited purposes provided that you
       have given us your permission.
-    </p>
+    </Typography>
+  );
+
+  return (
+    <Container
+      maxWidth={settings.themeStretch ? false : 'lg'}
+      sx={{
+        mb: 15,
+      }}
+    >
+      {renderContent}
+    </Container>
   );
 }

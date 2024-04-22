@@ -1,12 +1,16 @@
+'use client';
+
+import { Container, Typography } from '@mui/material';
+
+import { useSettingsContext } from 'src/components/settings';
+
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: 'Terms and Conditions',
-};
+export default function TCView() {
+  const settings = useSettingsContext();
 
-export default function TCPage() {
-  return (
-    <p>
+  const renderContent = (
+    <Typography>
       1 Hokela 360 Terms and Conditions
       <br /> These Terms and Conditions constitute a legally binding agreement made between you,
       whether personally or on behalf of an entity (“you”) and Hokela Interactive Africa (“we,” “us”
@@ -95,9 +99,9 @@ export default function TCPage() {
       submit, post, display, transmit, perform, publish, distribute, or broadcast content and
       materials to us or on the Site, including but not limited to text, writings, video, audio,
       photographs, graphics, comments, suggestions, or personal information or other material
-      (collectively, "Contributions"). Contributions may be viewable by other users of the Site and
-      through third-party websites. As such, any Contributions you transmit may be treated as
-      non-confidential and non- proprietary. When you create or make available any Contributions,
+      (collectively, &quot;Contributions&quot;). Contributions may be viewable by other users of the
+      Site and through third-party websites. As such, any Contributions you transmit may be treated
+      as non-confidential and non- proprietary. When you create or make available any Contributions,
       you thereby represent and warrant that: 1. the creation, distribution, transmission, public
       display, or performance, and the accessing, downloading, or copying of your Contributions do
       not and will not infringe the proprietary rights, including but not limited to the copyright,
@@ -252,14 +256,25 @@ export default function TCPage() {
       servers that was obtained through such Third-Party Account, except the username and profile
       picture that become associated with your account. SUBMISSIONS You acknowledge and agree that
       any questions, comments, suggestions, ideas, feedback, or other information regarding the Site
-      ("Submissions") provided by you to us are non- confidential and shall become our sole
-      property. We shall own exclusive rights, including all intellectual property rights, and shall
-      be entitled to the unrestricted use and dissemination of these Submissions for any lawful
-      purpose, commercial or otherwise, without acknowledgment or compensation to you. You hereby
-      waive all moral rights to any such Submissions, and you hereby warrant that any such
+      (&quot;Submissions&quot;) provided by you to us are non- confidential and shall become our
+      sole property. We shall own exclusive rights, including all intellectual property rights, and
+      shall be entitled to the unrestricted use and dissemination of these Submissions for any
+      lawful purpose, commercial or otherwise, without acknowledgment or compensation to you. You
+      hereby waive all moral rights to any such Submissions, and you hereby warrant that any such
       Submissions are original with you or that you have the right to submit such Submissions. You
       agree there shall be no recourse against us for any alleged or actual infringement or
       misappropriation of any proprietary right in your Submissions.
-    </p>
+    </Typography>
+  );
+
+  return (
+    <Container
+      maxWidth={settings.themeStretch ? false : 'lg'}
+      sx={{
+        mb: 15,
+      }}
+    >
+      {renderContent}
+    </Container>
   );
 }
