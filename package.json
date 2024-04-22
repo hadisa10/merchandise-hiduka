@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "next dev ",
     "start": "next start",
-    "build": "next build",
+    "build": "next build --debug",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
