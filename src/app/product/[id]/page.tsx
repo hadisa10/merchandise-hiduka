@@ -1,4 +1,3 @@
-import { _jobs } from 'src/_mock';
 
 import { ProductShopDetailsView } from 'src/sections/product/view';
 
