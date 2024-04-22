@@ -15,3 +15,4 @@ export default function ProjectEditPage({ params }: Props) {
 
   return <>EDIT PROJECT</>;
 }
+export async function generateStaticParams() {}

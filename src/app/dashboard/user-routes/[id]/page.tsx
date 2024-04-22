@@ -1,22 +1,21 @@
-
 import { UserRoutesDetailsView } from 'src/sections/user-routes/view';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-    title: 'Dashboard: Route Details',
+  title: 'Dashboard: Route Details',
 };
 
 type Props = {
-    params: {
-        id: string;
-    };
+  params: {
+    id: string;
+  };
 };
 
 export default function UserRoutesDetailsPage({ params }: Props) {
-    const { id } = params;
+  const { id } = params;
 
-    return <UserRoutesDetailsView id={id} />;
+  return <UserRoutesDetailsView id={id} />;
 }
 
 // export async function generateStaticParams() {
@@ -24,3 +23,5 @@ export default function UserRoutesDetailsPage({ params }: Props) {
 //     id: user.id,
 //   }));
 // }
+
+export async function generateStaticParams() {}

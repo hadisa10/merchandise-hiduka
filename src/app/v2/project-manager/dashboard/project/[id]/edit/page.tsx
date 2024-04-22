@@ -1,6 +1,5 @@
 import { ClientProjectsDetailsView } from 'src/sections-v2/client/c-management';
 
-
 // ----------------------------------------------------------------------
 
 export const metadata = {
@@ -18,3 +17,5 @@ export default function ClientCampaignEditPage({ params }: Props) {
 
   return <ClientProjectsDetailsView id={id} />;
 }
+
+export async function generateStaticParams() {}

@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------
 
-import { ReportEditView } from "src/sections/reports/view";
+import { ReportEditView } from 'src/sections/reports/view';
 
 export const metadata = {
   title: 'Dashboard: Report Edit',
@@ -17,3 +17,4 @@ export default function ReportEditPage({ params }: Props) {
 
   return <ReportEditView id={id} />;
 }
+export async function generateStaticParams() {}

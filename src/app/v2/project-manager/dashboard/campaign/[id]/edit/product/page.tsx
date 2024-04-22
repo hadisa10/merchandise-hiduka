@@ -9,3 +9,5 @@ export const metadata = {
 export default function ProductCreatePage() {
   return <ProductCreateView />;
 }
+
+export async function generateStaticParams() {}
