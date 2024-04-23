@@ -98,9 +98,10 @@ jobs:
       - name: Deploy to Digital Ocean using Rsync
         run: |
           rsync -avz --progress --partial --delete -e "ssh -o StrictHostKeyChecking=no" deploy/nextjs-build.tar.gz ${{ secrets.DIGITALOCEAN_USERNAME }}@${{ secrets.DIGITALOCEAN_HOST }}:/home/brilliant/hokela-360
+          rsync -avz --progress --partial --delete -e "ssh -o StrictHostKeyChecking=no" node_modules ${{ secrets.DIGITALOCEAN_USERNAME }}@${{ secrets.DIGITALOCEAN_HOST }}:/home/brilliant/hokela-360
           ssh -o StrictHostKeyChecking=no ${{ secrets.DIGITALOCEAN_USERNAME }}@${{ secrets.DIGITALOCEAN_HOST }} "\
             export PATH=/home/brilliant/.nvm/versions/node/v20.12.2/bin:\$PATH; \
             cd /home/brilliant/hokela-360 && \
             tar -xzf nextjs-build.tar.gz && \
-            npm install --production && \
+            npm ci --production && \
             pm2 start ecosystem.config.js || pm2 restart all"
