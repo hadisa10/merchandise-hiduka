@@ -102,5 +102,5 @@ jobs:
             export PATH=/home/brilliant/.nvm/versions/node/v20.12.2/bin:\$PATH; \
             cd /home/brilliant/hokela-360 && \
             tar -xzf nextjs-build.tar.gz && \
-            npm install --omit=dev && \
+            npm install --production && \
             pm2 start ecosystem.config.js || pm2 restart all"
