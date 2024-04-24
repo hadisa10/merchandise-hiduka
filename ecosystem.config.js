@@ -11,6 +11,9 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
       },
+      out_file: '/home/brilliant/hokela-360/logs/out.log',
+      error_file: '/home/brilliant/hokela-360/logs/error.log',
+      log_date_format: 'YYYY-MM-DD HH:mm Z',
     },
   ],
 };
