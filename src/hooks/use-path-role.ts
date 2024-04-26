@@ -20,11 +20,11 @@ export function useRolePath(): (typeof paths.v2)[ERole] {
   const rolePath = useMemo(
     () =>
       // Access the path using the role, which is guaranteed to be a valid ERole
-      paths.v2[role],
+      paths?.v2?.[role],
     [role]
   );
 
-  return rolePath;
+  return rolePath ?? {};
 }
 
 export function getPathsForRole<Role extends ERole>(role: Role): (typeof paths.v2)[Role] {
