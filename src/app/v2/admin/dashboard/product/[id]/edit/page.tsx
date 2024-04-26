@@ -1,4 +1,3 @@
-import axios, { endpoints } from 'src/utils/axios';
 
 import { ProductEditView } from 'src/sections/product/view';
 

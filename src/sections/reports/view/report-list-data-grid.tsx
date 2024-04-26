@@ -55,8 +55,8 @@ import {
 
 const CAMPAIGN_TYPE_OPTIONS = [
   { value: 'rsm', label: 'RSM' },
-  { value: 'activation', label: 'Activation' }
-]
+  { value: 'activation', label: 'Activation' },
+];
 
 const defaultFilters: IReportTableFilters = {
   type: [],
@@ -77,51 +77,50 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
   // // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // const [callReport, setCallReport] = useState(isString(id))
 
-  const callReport = useMemo(() => isString(id), [id])
+  const callReport = useMemo(() => isString(id), [id]);
 
   const { getCampaignReport, loading: mainLoading, reports: mainReports } = useReports(callReport);
 
-  const loadingReport = useBoolean()
+  const loadingReport = useBoolean();
 
-  const [reports, setReports] = useState<IReport[]>([])
+  const [reports, setReports] = useState<IReport[]>([]);
 
   // eslint-disable-next-line
-  const [reportError, setReportsError] = useState(null)
+  const [reportError, setReportsError] = useState(null);
 
   const loading = useMemo(() => {
     if (isString(id)) {
-      return loadingReport.value
+      return loadingReport.value;
     }
-    return mainLoading
-  }, [mainLoading, loadingReport.value, id])
+    return mainLoading;
+  }, [mainLoading, loadingReport.value, id]);
 
   useEffect(() => {
     if (isString(id) && !isEmpty(id)) {
-      loadingReport.onTrue()
-      setReportsError(null)
+      loadingReport.onTrue();
+      setReportsError(null);
       getCampaignReport(id.toString())
-        .then(res => {
-          setReportsError(null)
-          setReports(res)
-        }
-        )
-        .catch(e => {
-          enqueueSnackbar("Failed to fetch campaign reports", { variant: "error" })
-          setReportsError(e.message)
-          console.error(e, "REPORT FETCH")
+        .then((res) => {
+          setReportsError(null);
+          setReports(res);
+        })
+        .catch((e) => {
+          enqueueSnackbar('Failed to fetch campaign reports', { variant: 'error' });
+          setReportsError(e.message);
+          console.error(e, 'REPORT FETCH');
         })
         .finally(() => {
-          loadingReport.onFalse()
-        })
+          loadingReport.onFalse();
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id])
+  }, [id]);
 
   useEffect(() => {
     if (!isString(id)) {
-      setReports(mainReports)
+      setReports(mainReports);
     }
-  }, [id, mainReports])
+  }, [id, mainReports]);
 
   const showLoader = useShowLoader(loading, 200);
 
@@ -142,20 +141,16 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
-
-
   useEffect(() => {
     if (Array.isArray(reports)) {
-      console.log(debouncedQuery, 'DEBOUNCE')
+      console.log(debouncedQuery, 'DEBOUNCE');
       if (debouncedQuery) {
-        setTableData(reports.filter(rep => rep.title.toLowerCase().includes(debouncedQuery)));
+        setTableData(reports.filter((rep) => rep.title.toLowerCase().includes(debouncedQuery)));
       } else {
         setTableData(reports);
       }
     }
   }, [reports, debouncedQuery]);
-
-
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -195,9 +190,6 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
   }, [enqueueSnackbar, selectedRowIds, tableData]);
 
   const rolePath = useRolePath();
-
-  console.log(rolePath, "ROLE PATH")
-
 
   const handleEditRow = useCallback(
     (_id: string) => {
@@ -295,24 +287,18 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
     defaultValues,
   });
 
-  const {
-    handleSubmit
-  } = methods;
-
-
+  const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      handleSearch(data.search)
+      handleSearch(data.search);
     } catch (error) {
       console.error(error);
     }
   });
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-
       <Grid container spacing={3} height="100%">
-
         <Card
           sx={{
             height: { xs: 800, md: 600 },
@@ -351,12 +337,16 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
                       typeOptions={CAMPAIGN_TYPE_OPTIONS}
                     />
                     <Stack direction="row" spacing={3} alignItems="center">
-                      <RHFTextField name='search' placeholder='Search Reports' onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          onSubmit(); // Trigger the search function
-                        }
-                      }} />
-                      <IconButton type='submit' sx={{ height: "max-content" }}>
+                      <RHFTextField
+                        name="search"
+                        placeholder="Search Reports"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            onSubmit(); // Trigger the search function
+                          }
+                        }}
+                      />
+                      <IconButton type="submit" sx={{ height: 'max-content' }}>
                         <Iconify icon="eva:search-fill" />
                       </IconButton>
                     </Stack>
@@ -433,7 +423,7 @@ const ReportListDataGrid: FC<{ id?: string }> = ({ id }) => {
       </Grid>
     </FormProvider>
   );
-}
+};
 
 // ----------------------------------------------------------------------
 
@@ -447,11 +437,12 @@ function applyFilter({
   const { type } = filters;
 
   if (type.length) {
-    inputData = inputData.filter((report) => type.map(x => x.toLowerCase()).includes(report.title.toLowerCase()));
+    inputData = inputData.filter((report) =>
+      type.map((x) => x.toLowerCase()).includes(report.title.toLowerCase())
+    );
   }
 
   return inputData;
 }
 
-
-export default memo(ReportListDataGrid)
+export default memo(ReportListDataGrid);

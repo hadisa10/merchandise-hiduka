@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import { LoadingScreen } from 'src/components/loading-screen';
 import {
   RHFEditor,
   RHFTextField,
@@ -90,39 +91,41 @@ export default function ReportNewEditDetailsForm({
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Campaign</Typography>
+              {campaignsLoading && <LoadingScreen />}
+              {!campaignsLoading && (
+                <RHFAutocomplete
+                  name="campaign_id"
+                  label="Campaign"
+                  placeholder="Search campaign..."
+                  loading={campaignsLoading}
+                  options={Array.isArray(campaigns) ? campaigns.map((cmpg) => cmpg._id) : []}
+                  getOptionLabel={(option) => {
+                    const campaign = campaigns?.find((cmpg) => cmpg._id === option);
+                    if (campaign) {
+                      return campaign?.title;
+                    }
+                    console.log(option, 'option');
+                    return option;
+                  }}
+                  renderOption={(props, option) => {
+                    const campaign = campaigns?.filter((cmpg) => cmpg._id === option)[0];
 
-              <RHFAutocomplete
-                name="campaign_id"
-                label="Campaign"
-                placeholder="Search campaign..."
-                loading={campaignsLoading}
-                options={Array.isArray(campaigns) ? campaigns.map((cmpg) => cmpg._id) : []}
-                getOptionLabel={(option) => {
-                  const campaign = campaigns?.find((cmpg) => cmpg._id === option);
-                  if (campaign) {
-                    return campaign?.title;
-                  }
-                  console.log(option, 'option');
-                  return option;
-                }}
-                renderOption={(props, option) => {
-                  const campaign = campaigns?.filter((cmpg) => cmpg._id === option)[0];
+                    if (!campaign?._id) {
+                      return null;
+                    }
 
-                  if (!campaign?._id) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={campaign._id.toString()}>
-                      {campaign?.title}
-                    </li>
-                  );
-                }}
-                value={campaingsValue || null} // Ensures the value is always an array, even if it's initially undefined
-                onChange={(event, newValue) => {
-                  setValue('campaign_id', newValue);
-                }}
-              />
+                    return (
+                      <li {...props} key={campaign._id.toString()}>
+                        {campaign?.title}
+                      </li>
+                    );
+                  }}
+                  value={campaingsValue || null} // Ensures the value is always an array, even if it's initially undefined
+                  onChange={(event, newValue) => {
+                    setValue('campaign_id', newValue);
+                  }}
+                />
+              )}
             </Stack>
 
             {/* <Stack spacing={1.5}>
