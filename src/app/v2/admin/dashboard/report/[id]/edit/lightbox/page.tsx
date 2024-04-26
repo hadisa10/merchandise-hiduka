@@ -9,6 +9,3 @@ export const metadata = {
 export default function LightboxPage() {
   return <LightboxView />;
 }
-export async function generateStaticParams() {
-  return [{ id: 'id' }];
-}

@@ -17,7 +17,3 @@ export default function ProductShopDetailsPage({ params }: Props) {
 
   return <ProductShopDetailsView id={id} />;
 }
-
-export async function generateStaticParams() {
-  return [{ id: 'id' }];
-}

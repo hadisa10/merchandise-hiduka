@@ -23,7 +23,3 @@ export default function UserRoutesDetailsPage({ params }: Props) {
 //     id: user.id,
 //   }));
 // }
-
-export async function generateStaticParams() {
-  return [{ id: 'id' }];
-}

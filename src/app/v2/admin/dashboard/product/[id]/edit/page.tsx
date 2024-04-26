@@ -1,4 +1,3 @@
-
 import { ProductEditView } from 'src/sections/product/view';
 
 // ----------------------------------------------------------------------
@@ -17,8 +16,4 @@ export default function ProductEditPage({ params }: Props) {
   const { id } = params;
 
   return <ProductEditView id={id} />;
-}
-
-export async function generateStaticParams() {
-  return [{ id: 'id' }];
 }

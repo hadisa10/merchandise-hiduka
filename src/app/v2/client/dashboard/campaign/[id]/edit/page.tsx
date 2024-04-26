@@ -17,7 +17,3 @@ export default function ClientCampaignEditPage({ params }: Props) {
 
   return <ClientCampaignDetailsView id={id} />;
 }
-
-export async function generateStaticParams() {
-  return [{ id: 'id' }];
-}
