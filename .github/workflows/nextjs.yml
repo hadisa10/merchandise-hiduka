@@ -59,7 +59,7 @@ jobs:
           path: |
             .next/cache
             node_modules
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock', '**/package-lock.json') }}-${{ github.sha }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock', '**/package-lock.json') }}-${{ github.sha }}-v2
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock', '**/package-lock.json') }}-
 
@@ -82,7 +82,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: digital-ocean  # Specify the environment name here
+    environment: digital-ocean # Specify the environment name here
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
