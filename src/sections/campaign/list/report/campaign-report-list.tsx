@@ -75,7 +75,6 @@ export default function CampaignReportListView({ id }: { id: string }) {
 
   const router = useRouter();
 
-
   const [tableData, setTableData] = useState<IProductItem[]>([]);
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -229,8 +228,6 @@ export default function CampaignReportListView({ id }: { id: string }) {
 
   return (
     <Grid container spacing={3} height="100%">
-
-
       <Card
         sx={{
           height: { xs: 800, md: 600 },
