@@ -97,7 +97,7 @@ const renderAdmin = (t: TFunction<'translation', undefined>) => {
         },
         {
           title: t('products'),
-          path: paths.v2.admin.product,
+          path: paths.v2.admin.product.root,
           icon: ICONS.product,
         },
         // {

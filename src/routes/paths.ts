@@ -266,7 +266,12 @@ export const paths = {
     [ERole.ADMIN]: {
       root: `${ROOTS.V2}/admin/dashboard`,
       dashboard: `${ROOTS.V2}/admin/dashboard`,
-      product: `${ROOTS.V2}/admin/dashboard/product`,
+      product: {
+        root: `${ROOTS.V2}/admin/dashboard/product`,
+        new: `${ROOTS.V2}/admin/dashboard/product/new`,
+        details: (id: string) => `${ROOTS.V2}/dashboard/product/${id}`,
+        edit: (id: string) => `${ROOTS.V2}/dashboard/product/${id}/edit`,
+      },
       invoice: {
         root: `${ROOTS.V2}/admin/dashboard/invoice`,
         list: `${ROOTS.V2}/admin/dashboard/invoice`,
@@ -310,6 +315,12 @@ export const paths = {
         new: `${ROOTS.V2}/client/dashboard/project/new`,
         edit: (id: string) => `${ROOTS.V2}/client/dashboard/project/${id}/edit`,
       },
+      product: {
+        root: `${ROOTS.V2}/client/product`,
+        new: `${ROOTS.V2}/client/product/new`,
+        details: (id: string) => `${ROOTS.V2}/client/product/${id}`,
+        edit: (id: string) => `${ROOTS.V2}/client/product/${id}/edit`,
+      },
       reports: {
         root: `${ROOTS.V2}/client/dashboard/report`,
         list: `${ROOTS.V2}/client/dashboard/report`,
@@ -333,6 +344,12 @@ export const paths = {
         list: `${ROOTS.V2}/project-manager/dashboard/project`,
         new: `${ROOTS.V2}/project-manager/dashboard/project/new`,
         edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/project/${id}/edit`,
+      },
+      product: {
+        root: `${ROOTS.V2}/project-manager/dashboard/product`,
+        new: `${ROOTS.V2}/project-manager/dashboard/product/new`,
+        details: (id: string) => `${ROOTS.V2}/project-manager/dashboard/product/${id}`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/product/${id}/edit`,
       },
       reports: {
         root: `${ROOTS.V2}/project-manager/dashboard/report`,

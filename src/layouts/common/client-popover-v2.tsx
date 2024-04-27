@@ -95,7 +95,6 @@ export default function ClientPopover() {
     realmApp.currentUser?.functions
       .getUserClientsUpdated()
       .then((data: IGetClientsResponse) => {
-        console.log(data?.clients, 'CLIENTS');
         setClients(data.clients ?? []);
         setNestedClients(data?.nestedClients ?? []);
       })
@@ -168,8 +167,6 @@ export default function ClientPopover() {
     }
     return clients;
   }, [debouncedSearch, clients]);
-
-  console.log(filteredClients, 'CLIENTS 2222');
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setSearch(e.target.value as string);
