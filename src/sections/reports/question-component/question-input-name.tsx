@@ -70,25 +70,31 @@ interface QuestionInputNameProps extends InputBaseProps {
   helperText?: string;
 }
 
-export default function QuestionInputName({ name, error, helperText, sx, size, ...other }: QuestionInputNameProps) {
+export default function QuestionInputName({
+  name,
+  error,
+  helperText,
+  sx,
+  size,
+  ...other
+}: QuestionInputNameProps) {
   const { control, watch } = useFormContext();
 
-  const small = size === "small";
+  const small = size === 'small';
 
-  const inputType = watch()
-  console.log(inputType, "INPUT TYPE")
+  const inputType = watch();
 
   return (
     <div>
       <Controller
-        name={name ?? ""}
+        name={name ?? ''}
         control={control}
         defaultValue={undefined} // Default the value to undefined
         render={({ field: { onChange, onBlur, value, name: n, ref } }) => (
           <InputBase
             name={n}
             ref={ref}
-            value={value === "" ? null : value} // Convert empty string to undefined
+            value={value === '' ? null : value} // Convert empty string to undefined
             onChange={onChange}
             onBlur={onBlur}
             sx={{
@@ -106,11 +112,11 @@ export default function QuestionInputName({ name, error, helperText, sx, size, .
                 },
               },
               [`& .${inputBaseClasses.input}`]: {
-                typography: small ? "caption" : 'h6',
+                typography: small ? 'caption' : 'h6',
               },
               ...sx,
             }}
-          // {...other}
+            // {...other}
           />
         )}
       />
@@ -118,4 +124,3 @@ export default function QuestionInputName({ name, error, helperText, sx, size, .
     </div>
   );
 }
-
