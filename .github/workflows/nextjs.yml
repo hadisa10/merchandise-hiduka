@@ -68,6 +68,9 @@ jobs:
 
       - name: Build Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        env:
+          NEXT_PUBLIC_MAPBOX_API: ${{ secrets.NEXT_PUBLIC_MAPBOX_API }}
+          NEXT_PUBLIC_MAPBOX_DIRECTIONS_API: ${{ secrets.NEXT_PUBLIC_MAPBOX_DIRECTIONS_API }}
 
       - name: Archive production artifacts
         run: tar -czf nextjs-build.tar.gz .next public package.json package-lock.json ecosystem.config.js
