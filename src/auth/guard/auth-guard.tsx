@@ -13,8 +13,9 @@ import { useRealmApp } from 'src/components/realm';
 import { useClientContext } from 'src/components/clients';
 import { SplashScreen, LoadingScreen } from 'src/components/loading-screen';
 
-import { useAuthContext } from '../hooks';
 import { ERole } from 'src/types/client';
+
+import { useAuthContext } from '../hooks';
 
 // ----------------------------------------------------------------------
 
