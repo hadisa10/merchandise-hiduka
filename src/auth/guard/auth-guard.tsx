@@ -14,6 +14,7 @@ import { useClientContext } from 'src/components/clients';
 import { SplashScreen, LoadingScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
+import { ERole } from 'src/types/client';
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +53,7 @@ function Container({ children }: Props) {
   const path = usePathname();
 
   const role = useMemo(
-    () => currentUser?.customData?.role as unknown as string,
+    () => (currentUser?.customData?.role as unknown as ERole) ?? 'merchant',
     [currentUser?.customData?.role]
   );
 

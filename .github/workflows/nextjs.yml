@@ -53,6 +53,15 @@ jobs:
         with:
           node-version: '20'
           cache: ${{ steps.detect-package-manager.outputs.manager }}
+      - name: Check Env Variables
+        run: |
+          echo "Checking MapBox API variable presence..."
+          if [ -z "${{ secrets.NEXT_PUBLIC_MAPBOX_API }}" ]; then
+            echo "MAPBOX API is not set."
+          else
+            echo "MAPBOX API is set."
+          fi
+
       - name: Cache Next.js build cache
         uses: actions/cache@v3
         with:
