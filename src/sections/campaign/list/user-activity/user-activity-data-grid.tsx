@@ -140,7 +140,7 @@ export default function UserActivityDataGrid({
         })
         .catch((e) => {
           enqueueSnackbar('Failed to fetch campaign products', { variant: 'error' });
-          setCampaignUsers(e.message);
+          setCampaignUsersError(e.message);
           console.error(e, 'REPORT FETCH');
         })
         .finally(() => {

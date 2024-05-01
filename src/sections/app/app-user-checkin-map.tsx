@@ -1,84 +1,67 @@
 'use client';
 
 import { MapRef } from 'react-map-gl';
-import { flattenDepth } from 'lodash';
-import { memo, useRef, useMemo, Fragment, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import {
-  List,
-  Radio,
-  ListItem,
-  Collapse,
-  useTheme,
-  IconButton,
-  Pagination,
-  RadioGroup,
-  ButtonBase,
-  ListSubheader,
-  FormControlLabel,
-} from '@mui/material';
+import { useTheme, Backdrop, CircularProgress } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
+import useUserLocation from 'src/hooks/useUserLocation';
 
-import { fDate, fTime, fDateTime } from 'src/utils/format-time';
-
-import { bgBlur } from 'src/theme/css';
+import { fDateTime } from 'src/utils/format-time';
 
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 
 import { IUser } from 'src/types/user_realm';
-import { CountryData } from 'src/types/campaign';
-import { IRoute, ICheckin, ICampaignRoutes, ICheckinsSessions } from 'src/types/realm/realm-types';
+import { IUserCheckinData } from 'src/types/campaign';
+import { ICheckin } from 'src/types/realm/realm-types';
 
-import UserActivityRoutesMap from './routes/user-activity-routes-map';
+import UserActivityRoutesMap from '../campaign/list/user-activity/routes/user-activity-routes-map';
 
 // import CampaignRoutesMap from '../campaign-routes-map';
 // import CampaignSearchRoute from '../campaign-search-route';
 
 // ----------------------------------------------------------------------
 
-type UserActivityMapViewProps = {
-  handleNewRouteOpen: ({ lng, lat }: { lng: number; lat: number }) => void;
-  handleRemoveNewRoute: (route: number) => void;
-  handleAddNewRoute: (route: IRoute) => void;
-  campaignRoutes?: ICampaignRoutes[];
-  startDate: Date | null;
-  endDate: Date | null;
-  user: IUser;
-  campaignId: string;
+type UserCheckinMapViewProps = {
+  id: string;
 };
 
-const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({
-  handleNewRouteOpen,
-  handleRemoveNewRoute,
-  handleAddNewRoute,
-  campaignRoutes,
-  user,
-  campaignId,
-  startDate,
-  endDate,
-}: UserActivityMapViewProps) => {
+const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheckinMapViewProps) => {
   const fetchDirections = useBoolean();
 
+  const userLocation = useUserLocation();
+
+  const { currentUser } = useRealmApp();
+
+  useEffect(() => {
+    console.log(id, 'CHECKIN ID');
+  }, [id]);
+
+  const user = useMemo(
+    () => currentUser?.customData as unknown as IUser,
+    [currentUser?.customData]
+  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const theme = useTheme();
 
   const mapRef = useRef<MapRef>(null);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [routes, setRoutes] = useState<ICheckin[] | null>(null);
 
-  const [popupInfo, setPopupInfo] = useState<CountryData | null>(null);
+  const [popupInfo, setPopupInfo] = useState<IUserCheckinData | null>(null);
 
-  const { getCampaignUserCheckins } = useCampaigns(true);
+  // const { getCampaignUserCheckins } = useCampaigns(true);
 
-  const handleSetPopupInfo = useCallback((pInfo: CountryData | null) => {
+  const handleSetPopupInfo = useCallback((pInfo: IUserCheckinData | null) => {
     setPopupInfo(pInfo);
   }, []);
 
@@ -86,10 +69,11 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({
   const [openCollapse, setOpenCollapse] = useState<string | null>(null);
 
   // Function to handle click to expand/collapse items
-  const handleClick = (id: string) => {
-    setOpenCollapse(openCollapse === id ? null : id);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleClick = (clickedid: string) => {
+    setOpenCollapse(openCollapse === clickedid ? null : clickedid);
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSelectRoute = useCallback(
     ({
       longitude,
@@ -108,7 +92,7 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({
       // const prds = []
       zoomToRoute(longitude, latitude);
       setPopupInfo({
-        lnglat: [longitude, latitude],
+        lnglat: [latitude, longitude],
         address: addr,
         phoneNumber: phoneNumber ?? '',
         products: [],
@@ -121,30 +105,30 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({
     const mapInstance = mapRef.current?.getMap();
     if (mapInstance) {
       mapInstance.flyTo({
-        center: [lng, lat],
+        center: [lat, lng],
         zoom: 15,
         essential: true,
       });
     }
   };
 
-  useEffect(() => {
-    if (startDate && endDate && user._id) {
-      getCampaignUserCheckins(
-        campaignId,
-        startDate.toISOString(),
-        endDate.toISOString(),
-        user._id.toString()
-      )
-        .then((res) => {
-          setRoutes(res);
-        })
-        .catch((e) => {
-          console.error(e.message, 'ERROR');
-        });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate, endDate, campaignId, user._id]);
+  // useEffect(() => {
+  //   if (startDate && endDate && user._id) {
+  //     getCampaignUserCheckins(
+  //       campaignId,
+  //       startDate.toISOString(),
+  //       endDate.toISOString(),
+  //       user._id.toString()
+  //     )
+  //       .then((res) => {
+  //         setRoutes(res);
+  //       })
+  //       .catch((e) => {
+  //         console.error(e.message, 'ERROR');
+  //       });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [startDate, endDate, campaignId, user._id]);
 
   const renderRouteForm = (
     <Stack width={250} spacing={1}>
@@ -169,7 +153,7 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({
           {user.displayName ?? ''} Checkins
         </Typography>
       </Stack>
-      <List dense sx={{ maxHeight: 200, overflowY: 'auto', width: '100%' }} disablePadding>
+      {/* <List dense sx={{ maxHeight: 200, overflowY: 'auto', width: '100%' }} disablePadding>
         {Array.isArray(routes) &&
           routes.map((route, index) => (
             <Fragment key={typeof route._id === 'string' ? route._id : route._id.toString()}>
@@ -263,33 +247,52 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({
         <Button variant="soft" color="error" size="small">
           Clear Routes
         </Button>
-      </Stack>
+      </Stack> */}
     </Stack>
   );
   const contacts = useMemo(() => {
-    if (!Array.isArray(routes)) return [];
-    const mappedRoutes: ICheckinsSessions[] = flattenDepth(
-      routes.map((x) => x.sessions),
-      3
-    );
-    return mappedRoutes.map((r) => ({
-      lnglat: [r.location.coordinates[1], r.location.coordinates[0]],
-      address: fDateTime(r.start_time),
-      phoneNumber: user.phoneNumber,
-      products: [],
-    }));
-  }, [routes, user]);
+    // if (!Array.isArray(routes)) return [];
+    // const mappedRoutes: ICheckinsSessions[] = flattenDepth(
+    //   routes.map((x) => x.sessions),
+    //   3
+    // );
+    // return mappedRoutes.map((r) => ({
+    //   lnglat: [r.location.coordinates[1], r.location.coordinates[0]],
+    //   address: fDateTime(r.start_time),
+    //   phoneNumber: user.phoneNumber,
+    //   products: [],
+    // }));
+    if (
+      !userLocation.loading &&
+      !userLocation.error &&
+      (userLocation.latitude === null || userLocation.longitude)
+    )
+      return [];
+    return [
+      {
+        lnglat: [userLocation.latitude as number, userLocation.longitude as number],
+        address: fDateTime(new Date()),
+        phoneNumber: user?.phoneNumber ?? '',
+        products: [],
+      },
+    ];
+  }, [
+    user,
+    userLocation.loading,
+    userLocation.error,
+    userLocation.latitude,
+    userLocation.longitude,
+  ]);
 
   const renderMap = (
-    <Grid xs={12}>
-      <Card sx={{ p: 0 }}>
+    <Grid xs={12} md={7}>
+      <Card sx={{ p: 0, position: 'relative', width: '100%', height: '400px' }}>
         <UserActivityRoutesMap
           ref={mapRef}
           popupInfo={popupInfo}
           handleSetPopupInfo={handleSetPopupInfo}
-          // @ts-expect-error expected
           contacts={contacts}
-          handleNewRouteOpen={handleNewRouteOpen}
+          handleNewRouteOpen={() => console.log('NEW ROUTE OPEN')}
           fetchDirections={fetchDirections.value}
           childrenControlPanel={renderRouteForm}
         />
@@ -297,11 +300,35 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({
     </Grid>
   );
 
+  const renderCheckin = (
+    <Grid xs={12} md={5}>
+      <Card sx={{ p: 3, position: 'relative', width: '100%', height: '400px' }}>
+        <Backdrop
+          sx={{ color: '#fff', position: 'absolute', zIndex: (t) => t.zIndex.drawer + 1 }}
+          open={userLocation.loading || userLocation.error !== null}
+          // onClick={handleClose}
+        >
+          {userLocation.loading && <CircularProgress color="inherit" />}
+          {userLocation.error !== null && (
+            <Button
+              variant="soft"
+              color="error"
+              startIcon={<Iconify icon="eva:alert-triangle-fill" width={20} height={20} />}
+            >
+              {userLocation.error}
+            </Button>
+          )}
+        </Backdrop>
+        CHECKIN
+      </Card>
+    </Grid>
+  );
   return (
     <Grid container spacing={3}>
+      {renderCheckin}
       {renderMap}
     </Grid>
   );
 };
 
-export default memo<UserActivityMapViewProps>(UserActivityMapView);
+export default memo<UserCheckinMapViewProps>(UserCheckinMapView);

@@ -1,56 +1,59 @@
-import { ICampaignUser } from "./user_realm";
-import { IUserRouteProductItem } from "./user-routes";
-import { ICheckin, ICampaign, ISessionProduct } from "./realm/realm-types";
+import { ICampaignUser } from './user_realm';
+import { IUserRouteProductItem } from './user-routes';
+import { ICheckin, ICampaign, ISessionProduct } from './realm/realm-types';
 
 export interface ICampaignChange {
-    fullDocument: ICampaign;
+  fullDocument: ICampaign;
 }
 
 export interface IGraphqlResponse {
-    UserCampaigns: ICampaign[];
+  UserCampaigns: ICampaign[];
 }
 
 export interface IGraphqlCampaignUserResponse {
-    CampaignUsers: ICampaignUser[];
+  CampaignUsers: ICampaignUser[];
 }
 
 export interface IGraphqlCheckinResponse {
-    UserCampaignCheckins: ICheckin[];
+  UserCampaignCheckins: ICheckin[];
 }
 
-
 export interface ICampaignActions {
-    saveCampaign: (draftCampaign: ICampaign) => Promise<void>;
-    updateCampaign: (campaign: ICampaign) => Promise<void>;
-    getCampaignUsers: (id: string) => Promise<ICampaignUser[]>;
-    getCampaignUserCheckins: (campaignId: string, startDate: string, endDate: string, userId?: string) => Promise<ICheckin[]>
-    // toggleCampaignStatus: (campaign: ICampaign) => Promise<void>;
-    // deleteCampaign: (campaign: ICampaign) => Promise<void>;
+  saveCampaign: (draftCampaign: ICampaign) => Promise<void>;
+  updateCampaign: (campaign: ICampaign) => Promise<void>;
+  getCampaignUsers: (id: string) => Promise<ICampaignUser[]>;
+  getCampaignUserCheckins: (
+    campaignId: string,
+    startDate: string,
+    endDate: string,
+    userId?: string
+  ) => Promise<ICheckin[]>;
+  // toggleCampaignStatus: (campaign: ICampaign) => Promise<void>;
+  // deleteCampaign: (campaign: ICampaign) => Promise<void>;
 }
 
 export interface ICampaignHook extends ICampaignActions {
-    loading: boolean;
-    campaigns: ICampaign[];
+  loading: boolean;
+  campaigns: ICampaign[];
 }
 
 export interface IDraftCampaignHook extends IDraftCampaignActions {
-    draftCampaigns: ICampaign[];
-
+  draftCampaigns: ICampaign[];
 }
 export interface IDraftCampaignActions {
-    createDraftCampaign: () => void;
-    setDraftCampaigntName: (draft: ICampaign, summary: string) => void;
+  createDraftCampaign: () => void;
+  setDraftCampaigntName: (draft: ICampaign, summary: string) => void;
 }
 
 export interface ICampaignItem {
-    campaign: ICampaign;
-    campaignActions: ICampaignActions;
+  campaign: ICampaign;
+  campaignActions: ICampaignActions;
 }
 
 export interface IDraftCampaignItem {
-    draftCampaign: ICampaign;
-    campaignActions: ICampaignActions;
-    draftCampaignActions: IDraftCampaignActions;
+  draftCampaign: ICampaign;
+  campaignActions: ICampaignActions;
+  draftCampaignActions: IDraftCampaignActions;
 }
 
 // ============================================
@@ -62,15 +65,19 @@ export type ICampaignTableFilters = {
 };
 
 export type CountryData = {
-    lnglat: number[];
-    address: string;
-    phoneNumber: string;
-    products: IUserRouteProductItem[]
+  lnglat: number[];
+  address: string;
+  phoneNumber: string;
+  products: IUserRouteProductItem[];
 };
 
 export type IUserCheckinData = {
-    lnglat: number[];
-    address: string;
-    phoneNumber: string;
-    products: ISessionProduct[]
+  lnglat: number[];
+  address: string;
+  phoneNumber: string;
+  products: ISessionProduct[];
 };
+
+export interface IAppCampaignITemActions {
+  // You can add more actions here as needed
+}

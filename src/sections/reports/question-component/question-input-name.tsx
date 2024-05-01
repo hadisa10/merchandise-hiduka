@@ -82,6 +82,7 @@ export default function QuestionInputName({
 
   const small = size === 'small';
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const inputType = watch();
 
   return (

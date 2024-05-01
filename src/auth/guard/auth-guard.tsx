@@ -75,7 +75,7 @@ function Container({ children }: Props) {
   const redirectToRole = () => {
     const rolePath = getRolePath(role);
     setChecked(true);
-    router.replace(rolePath.root);
+    router.replace(rolePath.root ?? paths.v2.agent.root);
   };
   const check = useCallback(() => {
     try {

@@ -19,17 +19,27 @@ const options = {
 // ----------------------------------------------------------------------
 
 export function useGetDirections(directions: number[][], automaticFetch: boolean = false) {
-  const points = directions.join(";");
-  const allowFetch = useMemo(() => automaticFetch && directions.length > 1, [automaticFetch, directions])
+  const points = directions.join(';');
+  const allowFetch = useMemo(
+    () => automaticFetch && directions.length > 1,
+    [automaticFetch, directions]
+  );
   let URL: any = '';
 
   if (allowFetch) {
     URL = points
-      ? [`${endpoints.driving}/${points}`, { params: { steps: true, geometries: 'geojson', access_token: MAPBOX_API } }]
+      ? [
+          `${endpoints.driving}/${points}`,
+          { params: { steps: true, geometries: 'geojson', access_token: MAPBOX_API } },
+        ]
       : '';
   }
-  
-  const { data, isLoading, error, isValidating } = useSWR(allowFetch ? URL : null, fetcher, options);
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    allowFetch ? URL : null,
+    fetcher,
+    options
+  );
 
   const memoizedValue = useMemo(
     () => ({
@@ -43,7 +53,6 @@ export function useGetDirections(directions: number[][], automaticFetch: boolean
 
   return memoizedValue;
 }
-
 
 // // ----------------------------------------------------------------------
 
