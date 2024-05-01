@@ -278,7 +278,7 @@ const UserActivityRoutesMap = forwardRef<MapRef, Props>(
               // onClick={handleClose}
             >
               {currentLocation.loading && <CircularProgress color="inherit" />}
-              {(currentLocation.error !== null || initialState?.latitude === null) && (
+              {currentLocation.error !== null && (
                 <Button
                   variant="soft"
                   color="error"

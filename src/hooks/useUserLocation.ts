@@ -38,7 +38,8 @@ const useUserLocation = (): LocationState => {
 
     const watcher = geo.watchPosition(
       (position) => {
-        if (position.coords.accuracy <= 10) {
+        console.log(position.coords.accuracy, 'ACCURACY');
+        if (position.coords.accuracy <= 40000) {
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
