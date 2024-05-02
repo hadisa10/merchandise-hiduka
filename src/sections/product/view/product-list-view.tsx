@@ -225,7 +225,7 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
 
   const handleViewRow = useCallback(
     (id: string) => {
-      // @ts-expect-error
+      // @ts-expect-error paths error
       router.push(rolePath?.product?.details(id) ?? '/');
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -359,7 +359,7 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
 
         <Card
           sx={{
-            height: { xs: 800, md: 2 },
+            height: { xs: 600, md: 600 },
             flexGrow: { md: 1 },
             display: { md: 'flex' },
             flexDirection: { md: 'column' },

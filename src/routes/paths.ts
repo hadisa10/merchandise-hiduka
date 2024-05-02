@@ -273,8 +273,8 @@ export const paths = {
       product: {
         root: `${ROOTS.V2}/admin/dashboard/product`,
         new: `${ROOTS.V2}/admin/dashboard/product/new`,
-        details: (id: string) => `${ROOTS.V2}/dashboard/product/${id}`,
-        edit: (id: string) => `${ROOTS.V2}/dashboard/product/${id}/edit`,
+        details: (id: string) => `${ROOTS.V2}/admin/dashboard/product/${id}`,
+        edit: (id: string) => `${ROOTS.V2}/admin/dashboard/product/${id}/edit`,
       },
       userApp: {
         root: `${ROOTS.V2}/admin/dashboard/user-app`,
