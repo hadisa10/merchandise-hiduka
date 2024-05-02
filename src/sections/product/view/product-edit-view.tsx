@@ -59,7 +59,7 @@ export default function ProductEditView({ id }: Props) {
           {
             name: 'Product',
             // @ts-expect-error expected
-            href: rolePath?.dashboard.product.root,
+            href: rolePath?.product.root,
           },
           { name: currentProduct?.name },
         ]}
