@@ -44,6 +44,7 @@ import { bgBlur } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
 import { useRealmApp } from 'src/components/realm';
+import { useSettingsContext } from 'src/components/settings';
 import { LoadingScreen } from 'src/components/loading-screen';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useClientContext } from 'src/components/clients/context/client-context';
@@ -54,6 +55,25 @@ import { ERole, IClient, IUpdatedClient, IGetClientsResponse } from 'src/types/c
 
 export default function ClientPopover() {
   const theme = useTheme();
+
+  const settings = useSettingsContext();
+
+  const mainBg = useMemo(
+    () =>
+      settings.themeMode === 'dark'
+        ? theme.palette.grey[900]
+        : alpha(theme.palette.background.default, 0.8),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [settings.themeMode]
+  );
+  const mainBgSelected = useMemo(
+    () =>
+      settings.themeMode === 'dark'
+        ? theme.palette.grey[300]
+        : alpha(theme.palette.background.neutral, 0.1),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [settings.themeMode]
+  );
 
   const router = useRouter();
 
@@ -281,13 +301,11 @@ export default function ClientPopover() {
                           onClick={(e) => handleChangeClient(e, clt)}
                           sx={{
                             ...bgBlur({
-                              color: getSelected(clt._id.toString())
-                                ? theme.palette.grey[300]
-                                : theme.palette.grey[900],
+                              color: getSelected(clt._id.toString()) ? mainBgSelected : mainBg,
                             }),
                             ...(getSelected(clt._id.toString())
                               ? {
-                                  color: theme.palette.getContrastText(theme.palette.grey[300]),
+                                  color: theme.palette.getContrastText(mainBgSelected),
                                 }
                               : {}),
                             display: 'flex',
@@ -299,9 +317,7 @@ export default function ClientPopover() {
                             pointerEvents: 'auto',
                             '&:hover': {
                               cursor: 'pointer',
-                              background: getSelected(clt._id.toString())
-                                ? theme.palette.grey[300]
-                                : alpha(theme.palette.primary.main, 0.08),
+                              background: getSelected(clt._id.toString()) ? mainBgSelected : mainBg,
                             },
                             '&:first-of-type': {
                               borderTopLeftRadius: 5,
@@ -354,7 +370,7 @@ export default function ClientPopover() {
                                       height={17}
                                       color={
                                         client?._id.toString() === clt._id.toString()
-                                          ? theme.palette.getContrastText(theme.palette.grey[300])
+                                          ? theme.palette.getContrastText(mainBg)
                                           : theme.palette.info.main
                                       }
                                     />
@@ -365,7 +381,7 @@ export default function ClientPopover() {
                                       height={17}
                                       color={
                                         client?._id.toString() === clt._id.toString()
-                                          ? theme.palette.getContrastText(theme.palette.grey[300])
+                                          ? theme.palette.getContrastText(mainBg)
                                           : theme.palette.info.main
                                       }
                                     />

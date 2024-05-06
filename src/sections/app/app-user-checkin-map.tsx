@@ -304,7 +304,11 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
     <Grid xs={12} md={5}>
       <Card sx={{ p: 3, position: 'relative', width: '100%', height: '400px' }}>
         <Backdrop
-          sx={{ color: '#fff', position: 'absolute', zIndex: (t) => t.zIndex.drawer + 1 }}
+          sx={{
+            bgcolor: (t) => t.palette.background.paper,
+            position: 'absolute',
+            zIndex: (t) => t.zIndex.drawer + 1,
+          }}
           open={userLocation.loading || userLocation.error !== null}
           // onClick={handleClose}
         >
