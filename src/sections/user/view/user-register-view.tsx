@@ -22,7 +22,6 @@ import { IUser } from 'src/types/user_realm';
 
 // ----------------------------------------------------------------------
 
-
 export default function UserRegistrationView() {
   const settings = useSettingsContext();
 
@@ -40,8 +39,8 @@ export default function UserRegistrationView() {
       email: usr.email,
       isPublic: usr.isPublic,
       displayName: usr.displayName,
-      firstname: "",
-      lastname: "",
+      firstname: '',
+      lastname: '',
       city: usr.city,
       state: usr.state,
       about: usr.about,
@@ -51,36 +50,31 @@ export default function UserRegistrationView() {
       role: usr.role,
       isRegistered: usr.isRegistered,
       phoneNumber: usr.phoneNumber,
-      photoURL: usr.photoURL,
+      photoURL: usr.photoURL ?? '',
       isVerified: usr.isVerified,
       company: usr.company,
       status: usr.status,
       createdAt: usr.createdAt,
-      updatedAt: usr.updatedAt
-    }
-
-  }, [realmApp?.currentUser?.customData])
+      updatedAt: usr.updatedAt,
+    };
+  }, [realmApp?.currentUser?.customData]);
   const handleLogout = async () => {
     try {
-      loading.onTrue()
+      loading.onTrue();
       await realmApp.logOut();
-      loading.onFalse()
+      loading.onFalse();
       router.replace(paths.auth.main.login);
     } catch (error) {
-      loading.onFalse()
+      loading.onFalse();
       console.error(error);
       enqueueSnackbar('Unable to logout!', { variant: 'error' });
     }
   };
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'} sx={{ pb: 4}}>
-
+    <Container maxWidth={settings.themeStretch ? false : 'lg'} sx={{ pb: 4 }}>
       <CustomBreadcrumbs
         heading="Complete Registration"
-        links={[
-          { name: 'Login', href: paths.auth.main.login },
-          { name: 'Complete registration' },
-        ]}
+        links={[{ name: 'Login', href: paths.auth.main.login }, { name: 'Complete registration' }]}
         action={
           <LoadingButton
             color="error"
@@ -96,10 +90,7 @@ export default function UserRegistrationView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      {
-        currentUser && <UserNewEditForm currentUser={currentUser} />
-      }
-
+      {currentUser && <UserNewEditForm currentUser={currentUser} />}
     </Container>
   );
 }
