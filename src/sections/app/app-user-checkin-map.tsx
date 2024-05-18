@@ -319,7 +319,7 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
             </Button>
           )}
         </Backdrop>
-        CHECKIN
+        <Typography>{JSON.stringify(userLocation)}</Typography>
       </Card>
     </Grid>
   );
