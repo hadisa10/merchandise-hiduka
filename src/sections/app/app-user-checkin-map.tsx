@@ -1,7 +1,7 @@
 'use client';
 
 import { MapRef } from 'react-map-gl';
-import { memo, useRef, useMemo, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useMemo, useState, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -39,10 +39,6 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
   const userLocation = useUserLocation();
 
   const { currentUser } = useRealmApp();
-
-  useEffect(() => {
-    console.log(id, 'CHECKIN ID');
-  }, [id]);
 
   const user = useMemo(
     () => currentUser?.customData as unknown as IUser,

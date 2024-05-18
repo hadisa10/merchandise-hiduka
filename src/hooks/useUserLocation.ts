@@ -58,7 +58,7 @@ const useUserLocation = (): LocationState => {
         enqueueSnackbar('Failed to get user location', { variant: 'error' });
         setLocation((prevState) => ({ ...prevState, error: error.message, loading: false }));
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 120000, maximumAge: 0 }
     );
 
     // Clean up the watcher when the component is unmounted or dependencies change
