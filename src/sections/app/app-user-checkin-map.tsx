@@ -305,10 +305,11 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
             position: 'absolute',
             zIndex: (t) => t.zIndex.drawer + 1,
           }}
-          open={userLocation.loading || userLocation.error !== null}
+          // open={userLocation.loading || userLocation.error !== null}
+          open={userLocation.loading}
           // onClick={handleClose}
         >
-          {userLocation.loading && <CircularProgress color="inherit" />}
+          {/* {userLocation.loading && <CircularProgress color="inherit" />}
           {userLocation.error !== null && (
             <Button
               variant="soft"
@@ -317,7 +318,7 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
             >
               {userLocation.error}
             </Button>
-          )}
+          )} */}
         </Backdrop>
         <Typography>{JSON.stringify(userLocation)}</Typography>
       </Card>
