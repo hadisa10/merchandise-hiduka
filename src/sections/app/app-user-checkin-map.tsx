@@ -8,11 +8,26 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { useTheme, Backdrop, CircularProgress } from '@mui/material';
-
+import {
+  useTheme,
+  Backdrop,
+  CircularProgress,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  AppBar,
+  Toolbar,
+  Box,
+  IconButton,
+  Container,
+} from '@mui/material';
+import { Camera } from 'react-camera-pro';
 import { useBoolean } from 'src/hooks/use-boolean';
 import useUserLocation from 'src/hooks/useUserLocation';
-
+import styled from 'styled-components';
 import { fDateTime } from 'src/utils/format-time';
 
 import Iconify from 'src/components/iconify';
@@ -32,7 +47,6 @@ import UserActivityRoutesMap from '../campaign/list/user-activity/routes/user-ac
 type UserCheckinMapViewProps = {
   id: string;
 };
-
 const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheckinMapViewProps) => {
   const fetchDirections = useBoolean();
 
@@ -56,13 +70,19 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
   const [popupInfo, setPopupInfo] = useState<IUserCheckinData | null>(null);
 
   // const { getCampaignUserCheckins } = useCampaigns(true);
-
   const handleSetPopupInfo = useCallback((pInfo: IUserCheckinData | null) => {
     setPopupInfo(pInfo);
   }, []);
 
   // State to track expanded list item
   const [openCollapse, setOpenCollapse] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   // Function to handle click to expand/collapse items
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -107,7 +127,118 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
       });
     }
   };
+  const Wrapper = styled.div`
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  `;
 
+  const Control = styled.div`
+    position: fixed;
+    display: flex;
+    right: 0;
+    width: 20%;
+    min-width: 130px;
+    min-height: 130px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 50px;
+    box-sizing: border-box;
+    flex-direction: column-reverse;
+
+    @media (max-aspect-ratio: 1/1) {
+      flex-direction: row;
+      bottom: 0;
+      width: 100%;
+      height: 20%;
+    }
+
+    @media (max-width: 400px) {
+      padding: 10px;
+    }
+  `;
+
+  const CamButton = styled.button`
+    outline: none;
+    color: white;
+    opacity: 1;
+    background: transparent;
+    background-color: transparent;
+    background-position-x: 0%;
+    background-position-y: 0%;
+    background-repeat: repeat;
+    background-image: none;
+    padding: 0;
+    text-shadow: 0px 0px 4px black;
+    background-position: center center;
+    background-repeat: no-repeat;
+    pointer-events: auto;
+    cursor: pointer;
+    z-index: 2;
+    filter: invert(100%);
+    border: none;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  `;
+
+  const TakePhotoButton = styled(CamButton)`
+    background: url('https://img.icons8.com/ios/50/000000/compact-camera.png');
+    background-position: center;
+    background-size: 50px;
+    background-repeat: no-repeat;
+    width: 80px;
+    height: 80px;
+    border: solid 4px black;
+    border-radius: 50%;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  `;
+
+  const ChangeFacingCameraButton = styled(Button)`
+    background: url(https://img.icons8.com/ios/50/000000/switch-camera.png);
+    background-position: center;
+    background-size: 40px;
+    background-repeat: no-repeat;
+    width: 40px;
+    height: 40px;
+    padding: 40px;
+    &:disabled {
+      opacity: 1;
+      cursor: default;
+    }
+    @media (max-width: 400px) {
+      padding: 40px 5px;
+    }
+  `;
+
+  const ImagePreview = styled.div<{ image: string | null }>`
+    width: 120px;
+    height: 120px;
+    ${({ image }) => (image ? `background-image:  url(${image});` : '')}
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    @media (max-width: 400px) {
+      width: 50px;
+      height: 120px;
+    }
+  `;
+  const cameraRef = useRef(null);
+  const [photoData, setPhotoData] = useState(null);
+  const takePhoto = () => {
+    const photo = cameraRef.current.takePhoto();
+    setPhotoData(photo);
+  };
   // useEffect(() => {
   //   if (startDate && endDate && user._id) {
   //     getCampaignUserCheckins(
@@ -124,6 +255,7 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
   //       });
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
+
   // }, [startDate, endDate, campaignId, user._id]);
 
   const renderRouteForm = (
@@ -320,7 +452,80 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
             </Button>
           )} */}
         </Backdrop>
-        <Typography>{JSON.stringify(userLocation)}</Typography>
+        <Typography>
+          <span>Location : </span>
+          {JSON.stringify(userLocation?.placeName ?? 'Riverside')}{' '}
+        </Typography>
+        <CardContent
+          sx={{
+            display: 'grid',
+            justifyContent: 'center',
+            alignItems: 'center', // Add this line to center vertically
+            position: 'absolute',
+            bottom: '40%',
+            width: '100%',
+            paddingBottom: '1px',
+            paddingRight: '100px',
+          }}
+        >
+          <Button variant="contained" color="primary">
+            Activity Logs
+          </Button>
+          <Button variant="contained" color="success" sx={{ mt: 1 }} onClick={handleOpen}>
+            Check In
+          </Button>
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            fullScreen
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <Box sx={{ flexGrow: 1 }}>
+              <AppBar position="static" color="primary">
+                <Toolbar>
+                  <IconButton
+                    size="large"
+                    edge="start"
+                    color="inherit"
+                    aria-label="menu"
+                    sx={{ mr: 2 }}
+                  >
+                    <Iconify icon="eva:menu-fill" width={12} />
+                  </IconButton>
+                  <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    News
+                  </Typography>
+                  <Button color="inherit" onClick={handleClose}>
+                    Close
+                  </Button>
+                </Toolbar>
+              </AppBar>
+                <Box>
+                  <Wrapper>
+                    <Camera ref={cameraRef} aspectRatio="cover"/>
+                    <Control>
+                    {photoData && <img src={photoData} alt="Preview" />}
+                      <TakePhotoButton onClick={takePhoto} />
+                      <ChangeFacingCameraButton />
+                    </Control>
+                  </Wrapper>
+                </Box>
+            </Box>
+            {/* <List>
+          <ListItemButton>
+            <ListItemText primary="Phone ringtone" secondary="Titania" />
+          </ListItemButton>
+          <Divider />
+          <ListItemButton>
+            <ListItemText
+              primary="Default notification ringtone"
+              secondary="Tethys"
+            />
+          </ListItemButton>
+        </List> */}
+          </Dialog>
+        </CardContent>
       </Card>
     </Grid>
   );
