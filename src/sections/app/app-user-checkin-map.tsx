@@ -25,6 +25,7 @@ import {
   Container,
 } from '@mui/material';
 import { Camera } from 'react-camera-pro';
+// import { useRouter } from 'next/router';
 import { useBoolean } from 'src/hooks/use-boolean';
 import useUserLocation from 'src/hooks/useUserLocation';
 import styled from 'styled-components';
@@ -38,6 +39,7 @@ import { IUserCheckinData } from 'src/types/campaign';
 import { ICheckin } from 'src/types/realm/realm-types';
 
 import UserActivityRoutesMap from '../campaign/list/user-activity/routes/user-activity-routes-map';
+import { cl } from '@fullcalendar/core/internal-common';
 
 // import CampaignRoutesMap from '../campaign-routes-map';
 // import CampaignSearchRoute from '../campaign-search-route';
@@ -81,7 +83,9 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
     setOpen(false);
   };
   const handleOpen = () => {
+    
     setOpen(true);
+    
   };
 
   // Function to handle click to expand/collapse items
@@ -235,9 +239,16 @@ const UserCheckinMapView: React.FC<UserCheckinMapViewProps> = ({ id }: UserCheck
   `;
   const cameraRef = useRef(null);
   const [photoData, setPhotoData] = useState(null);
+  // const router = useRouter();
   const takePhoto = () => {
-    const photo = cameraRef.current.takePhoto();
-    setPhotoData(photo);
+    if (cameraRef.current) {
+      const photo = cameraRef.current.takePhoto();
+      setPhotoData(photo);
+      if (photo !== '') {
+        // router.push('/destination-page');
+        console.log('Testing')
+      }
+    }
   };
   // useEffect(() => {
   //   if (startDate && endDate && user._id) {
