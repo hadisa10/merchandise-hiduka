@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { useTheme, Backdrop, CircularProgress } from '@mui/material';
+import { useTheme, Backdrop } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import useUserLocation from 'src/hooks/useUserLocation';

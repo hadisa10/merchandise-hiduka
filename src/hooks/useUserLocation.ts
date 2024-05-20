@@ -1,6 +1,7 @@
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import { MAPBOX_API } from 'src/config-global';
 
 interface LocationState {
@@ -69,8 +70,8 @@ const useUserLocation = (): LocationState => {
         console.log(position.coords.accuracy, 'ACCURACY');
         if (position.coords.accuracy <= 1000) {
           // Adjusted accuracy threshold
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
+          const {latitude} = position.coords;
+          const {longitude} = position.coords;
           const placeName = await fetchPlaceName(latitude, longitude);
           setLocation({
             latitude,
