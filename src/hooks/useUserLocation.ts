@@ -79,14 +79,14 @@ const useUserLocation = (): LocationState => {
             error: null,
             loading: false,
           });
-          enqueueSnackbar(`Location fetched successfully: ${placeName}`, { variant: 'success' });
+          // enqueueSnackbar(`Location fetched successfully: ${placeName}`, { variant: 'success' });
         } else {
           setLocation((prevState) => ({
             ...prevState,
             error: 'Location accuracy is too low',
             loading: false,
           }));
-          enqueueSnackbar('Location accuracy is too low.', { variant: 'warning' });
+          // enqueueSnackbar('Location accuracy is too low.', { variant: 'warning' });
         }
       },
       (error) => {
@@ -105,7 +105,7 @@ const useUserLocation = (): LocationState => {
             errorMessage = 'An unknown error occurred.';
             break;
         }
-        enqueueSnackbar(errorMessage, { variant: 'error' });
+        // enqueueSnackbar(errorMessage, { variant: 'error' });
         setLocation((prevState) => ({ ...prevState, error: errorMessage, loading: false }));
       },
       { enableHighAccuracy: true, timeout: 120000, maximumAge: 0 }
