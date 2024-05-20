@@ -16,13 +16,12 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useClients, useProducts } from 'src/hooks/realm';
 
-import { uploadImages } from 'src/utils/helpers';
+import { getRolePath, uploadImages } from 'src/utils/helpers';
 
 import {
   _tags,
@@ -60,7 +59,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
 
   const { currentUser } = useRealmApp();
 
-  const { updateProduct, saveProduct } = useProducts()
+  const { updateProduct, saveProduct } = useProducts();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -68,6 +67,13 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
 
   const { loading, clients } = useClients(false);
   // const showClientsLoader = useShowLoader(loading, 200);
+
+  const role = useMemo(
+    () => currentUser?.customData?.role as unknown as string,
+    [currentUser?.customData?.role]
+  );
+
+  const rolePath = getRolePath(role);
 
   const NewProductSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -83,7 +89,9 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     code: Yup.string(),
     publish: Yup.boolean(),
     quantity: Yup.number().required('Quantity is required'),
-    available: Yup.number().required('Available is required').max(Yup.ref('quantity'), 'Available cannot exceed Quantity'), // Validation against Quantity field
+    available: Yup.number()
+      .required('Available is required')
+      .max(Yup.ref('quantity'), 'Available cannot exceed Quantity'), // Validation against Quantity field
     newLabel: Yup.object().shape({
       enabled: Yup.boolean(),
       content: Yup.string(),
@@ -114,7 +122,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
       category: currentProduct?.category || '',
       colors: currentProduct?.colors || [],
       sizes: currentProduct?.sizes || [],
-      publish: currentProduct?.publish === "published",
+      publish: currentProduct?.publish === 'published',
       newLabel: currentProduct?.newLabel || { enabled: false, content: '' },
       saleLabel: currentProduct?.saleLabel || { enabled: false, content: '' },
     }),
@@ -150,39 +158,48 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     }
   }, [currentProduct?.taxes, includeTaxes, setValue]);
 
-  const calculateInventoryType = ({ quantity, available }: { quantity: number, available: number }) => {
+  const calculateInventoryType = ({
+    quantity,
+    available,
+  }: {
+    quantity: number;
+    available: number;
+  }) => {
     if (quantity === 0 || available === 0) {
       return 'out of stock';
     }
     const t = (available * 100) / quantity;
     if (t < 1) {
       return 'out of stock';
-    } if (t < 20) {
+    }
+    if (t < 20) {
       return 'low stock';
     }
     return 'in stock';
-  }
-
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const inventoryType = calculateInventoryType({ quantity: data.quantity, available: data.available });
+      const inventoryType = calculateInventoryType({
+        quantity: data.quantity,
+        available: data.available,
+      });
       // @ts-expect-error expected
       let product: IProductItem = {
-        _id: currentProduct?._id || "",
+        _id: currentProduct?._id || '',
         ...data,
         stockAssigned: 0,
         inventoryType,
-        publish: data?.publish ? "published" : "draft",
+        publish: data?.publish ? 'published' : 'draft',
         saleLabel: {
           enabled: data.saleLabel.enabled ?? false,
-          content: data.saleLabel.content ?? ""
+          content: data.saleLabel.content ?? '',
         },
         newLabel: {
           enabled: data.newLabel.enabled ?? false,
-          content: data.newLabel.content ?? ""
-        }
-      }
+          content: data.newLabel.content ?? '',
+        },
+      };
       if (!currentUser) {
         console.error('No user is currently logged in.');
         return { error: 'You must be logged in to upload files.' };
@@ -190,13 +207,13 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
 
       // Check if `data.images` exists and is an array before proceeding
       if (data.images && Array.isArray(data.images)) {
-        console.log(data.images, 'IMAGES')
+        console.log(data.images, 'IMAGES');
         // @ts-expect-error expected
         const imageObj = await uploadImages({ images: data.images }, currentUser);
         product = {
           ...product,
           images: imageObj.images,
-          coverUrl: imageObj.images[0]
+          coverUrl: imageObj.images[0],
         };
       } else {
         console.log('No images to upload');
@@ -205,10 +222,11 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
       }
 
       if (currentProduct) {
-        await updateProduct(product)
+        await updateProduct(product);
         enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
         reset();
-        router.push(paths.dashboard.product.root);
+        // @ts-expect-error
+        router.push(rolePath?.product.root);
         return await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
@@ -218,19 +236,19 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
         totalReviews: 0,
         totalSold: 0,
         reviews: [],
-        ratings: []
-      })
+        ratings: [],
+      });
 
       enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
       reset();
-      router.push(paths.dashboard.product.root);
+      // @ts-expect-error
+      router.push(rolePath?.product.root);
       console.info('DATA', data);
       return await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error) {
       console.error(error);
-      enqueueSnackbar(currentProduct ? 'Update error!' : 'Create error!', { variant: "error" });
+      enqueueSnackbar(currentProduct ? 'Update error!' : 'Create error!', { variant: 'error' });
       return await new Promise((resolve) => setTimeout(resolve, 500));
-
     }
   });
 
@@ -344,25 +362,23 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
                 placeholder="Select client"
                 loading={loading}
                 freeSolo
-                options={clients?.map(clnt => clnt._id?.toString()) ?? []}
+                options={clients?.map((clnt) => clnt._id?.toString()) ?? []}
                 getOptionLabel={(option) => {
                   const client = clients?.find((clnt) => clnt._id?.toString() === option);
                   if (client) {
-                    return client?.name
+                    return client?.name;
                   }
-                  return option
+                  return option;
                 }}
                 renderOption={(props, option) => {
-                  const client = clients?.filter(
-                    (clnt) => clnt._id?.toString() === option
-                  )[0];
+                  const client = clients?.filter((clnt) => clnt._id?.toString() === option)[0];
 
                   if (!client?._id) {
                     return null;
                   }
 
                   return (
-                    <li {...props} key={client._id?.toString()}>
+                    <li {...props} key={client?._id?.toString()}>
                       {client?.name}
                     </li>
                   );
@@ -373,13 +389,13 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
                     return (
                       <Chip
                         {...getTagProps({ index })}
-                        key={user?._id?.toString() ?? ""}
-                        label={user?.name ?? ""}
+                        key={user?._id?.toString() ?? ''}
+                        label={user?.name ?? ''}
                         size="small"
                         color="info"
                         variant="soft"
                       />
-                    )
+                    );
                   })
                 }
               />
@@ -568,15 +584,16 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8} sx={{
-        display: 'flex', alignItems: 'center', justifyContent: "space-between"
-      }}>
-        < RHFSwitch
-          name="publish"
-          label="Publish"
-          defaultChecked
-          sx={{ flexGrow: 1, pl: 3 }}
-        />
+      <Grid
+        xs={12}
+        md={8}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <RHFSwitch name="publish" label="Publish" defaultChecked sx={{ flexGrow: 1, pl: 3 }} />
 
         <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
           {!currentProduct ? 'Create Product' : 'Save Changes'}

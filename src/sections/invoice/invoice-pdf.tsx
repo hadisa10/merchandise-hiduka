@@ -4,7 +4,7 @@ import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/
 import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
 
-import { IInvoice } from 'src/types/invoice';
+import { IUpdateInvoice } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ const useStyles = () =>
 // ----------------------------------------------------------------------
 
 type Props = {
-  invoice: IInvoice;
+  invoice: IUpdateInvoice;
   currentStatus: string;
 };
 
@@ -98,7 +98,7 @@ export default function InvoicePDF({ invoice, currentStatus }: Props) {
     discount,
     shipping,
     invoiceTo,
-    createDate,
+    createdAt,
     totalAmount,
     invoiceFrom,
     invoiceNumber,
@@ -115,30 +115,30 @@ export default function InvoicePDF({ invoice, currentStatus }: Props) {
 
           <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
             <Text style={styles.h3}>{currentStatus}</Text>
-            <Text> {invoiceNumber} </Text>
+            <Text> {invoiceNumber.toString()} </Text>
           </View>
         </View>
 
         <View style={[styles.gridContainer, styles.mb40]}>
           <View style={styles.col6}>
             <Text style={[styles.subtitle2, styles.mb4]}>Invoice from</Text>
-            <Text style={styles.body2}>{invoiceFrom.name}</Text>
-            <Text style={styles.body2}>{invoiceFrom.fullAddress}</Text>
-            <Text style={styles.body2}>{invoiceFrom.phoneNumber}</Text>
+            <Text style={styles.body2}>{invoiceFrom?.name ?? ""}</Text>
+            <Text style={styles.body2}>{invoiceFrom?.fullAddress ?? ""}</Text>
+            <Text style={styles.body2}>{invoiceFrom?.phoneNumber ?? ""}</Text>
           </View>
 
           <View style={styles.col6}>
             <Text style={[styles.subtitle2, styles.mb4]}>Invoice to</Text>
-            <Text style={styles.body2}>{invoiceTo.name}</Text>
-            <Text style={styles.body2}>{invoiceTo.fullAddress}</Text>
-            <Text style={styles.body2}>{invoiceTo.phoneNumber}</Text>
+            <Text style={styles.body2}>{invoiceTo?.name ?? "N/A"}</Text>
+            <Text style={styles.body2}>{invoiceTo?.fullAddress ?? "N/A"}</Text>
+            <Text style={styles.body2}>{invoiceTo?.phoneNumber ?? "N/A"}</Text>
           </View>
         </View>
 
         <View style={[styles.gridContainer, styles.mb40]}>
           <View style={styles.col6}>
             <Text style={[styles.subtitle2, styles.mb4]}>Date create</Text>
-            <Text style={styles.body2}>{fDate(createDate)}</Text>
+            <Text style={styles.body2}>{fDate(createdAt)}</Text>
           </View>
           <View style={styles.col6}>
             <Text style={[styles.subtitle2, styles.mb4]}>Due date</Text>
@@ -219,7 +219,7 @@ export default function InvoicePDF({ invoice, currentStatus }: Props) {
                 <Text>Shipping</Text>
               </View>
               <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text>{fCurrency(-shipping)}</Text>
+                <Text>{fCurrency(-(shipping ?? 0))}</Text>
               </View>
             </View>
 
@@ -231,7 +231,7 @@ export default function InvoicePDF({ invoice, currentStatus }: Props) {
                 <Text>Discount</Text>
               </View>
               <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text>{fCurrency(-discount)}</Text>
+                <Text>{fCurrency(-(discount ?? 0))}</Text>
               </View>
             </View>
 

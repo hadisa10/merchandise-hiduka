@@ -1,15 +1,17 @@
 import React from 'react'
 
+import ClientDashboardView from 'src/sections-v2/client/c-dashboard/c-dashboard';
+
 // ----------------------------------------------------------------------
 
 export const metadata = {
   title: 'Dashboard',
 };
 
-function AdminDashboardView() {
+function ClientDashboardPage() {
   return (
-    <div>Admin Dashboard View</div>
+    <ClientDashboardView />
   )
 }
 
-export default AdminDashboardView
+export default ClientDashboardPage

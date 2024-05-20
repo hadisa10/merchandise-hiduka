@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
     Button
@@ -9,12 +9,20 @@ import {
 import { paths } from "src/routes/paths";
 import { RouterLink } from "src/routes/components";
 
+import { getRolePath } from "src/utils/helpers";
+
 import Iconify from "src/components/iconify";
+import { useRealmApp } from "src/components/realm";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 
 import CampaignListDataGrid from "../../list/campaigns/campaign-list-data-grid";
 
 export default function CampaignList() {
+    const { currentUser } = useRealmApp();
+
+    const role = useMemo(() => currentUser?.customData?.role as unknown as string, [currentUser?.customData?.role])
+  
+    const rolePath = getRolePath(role);
     return (
         <>
             <CustomBreadcrumbs
@@ -23,14 +31,16 @@ export default function CampaignList() {
                     { name: 'Dashboard', href: paths.dashboard.root },
                     {
                         name: 'Campaign',
-                        href: paths.dashboard.campaign.root,
+                        // @ts-expect-error expected
+                        href: rolePath.campaign.root,
                     },
                     { name: 'List' },
                 ]}
                 action={
                     <Button
                         component={RouterLink}
-                        href={paths.dashboard.campaign.new}
+                        // @ts-expect-error expected
+                        href={rolePath.campaign.new}
                         variant="contained"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                     >

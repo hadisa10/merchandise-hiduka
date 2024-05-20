@@ -2,7 +2,7 @@
 
 import isEqual from 'lodash/isEqual';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -22,7 +22,6 @@ import {
   GridToolbarDensitySelector,
 } from '@mui/x-data-grid';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useShowLoader } from 'src/hooks/realm';
@@ -31,7 +30,10 @@ import { useDebounce } from 'src/hooks/use-debounce';
 import { useRealmRoutes } from 'src/hooks/realm/route/use-route-graphql';
 import { useCampaigns } from 'src/hooks/realm/campaign/use-campaign-graphql';
 
+import { getRolePath } from 'src/utils/helpers';
+
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import EmptyContent from 'src/components/empty-content';
 import { RHFTextField } from 'src/components/hook-form';
@@ -43,20 +45,14 @@ import { ICampaignTableFilters, ICampaignTableFilterValue } from 'src/types/camp
 
 import CampaignTableToolbar from './campaign-table-toolbar';
 import CampaignReportTableFiltersResult from './campaign-table-filters-result';
-import {
-  // RenderCellStock,
-  // RenderCellPrice,
-  RenderCellCheckin,
-  RenderCellCampaign,
-  RenderCellCreatedAt,
-} from './campaign-table-row';
+import { RenderCellCampaign, RenderCellCreatedAt } from './campaign-table-row';
 
 // ----------------------------------------------------------------------
 
 const CAMPAIGN_TYPE_OPTIONS = [
   { value: 'rsm', label: 'RSM' },
-  { value: 'activation', label: 'Activation' }
-]
+  { value: 'activation', label: 'Activation' },
+];
 
 const defaultFilters: ICampaignTableFilters = {
   type: [],
@@ -73,6 +69,15 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 export default function CampaignListDataGrid() {
   const { enqueueSnackbar } = useSnackbar();
+
+  const realmApp = useRealmApp();
+
+  const role = useMemo(
+    () => realmApp.currentUser?.customData?.role as unknown as string,
+    [realmApp.currentUser?.customData?.role]
+  );
+
+  const rolePath = getRolePath(role);
 
   const { loading, campaigns } = useCampaigns();
 
@@ -92,23 +97,22 @@ export default function CampaignListDataGrid() {
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
-
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
   const { searchRoute } = useRealmRoutes();
 
   useEffect(() => {
-    searchRoute("naiv").
-      then(res => console.log(res, 'SEARCH ROUTE RESULT'))
-      .catch(e => console.error(e, 'SEARCH RESULT ERROR'))
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    searchRoute('naiv')
+      .then((res) => console.log(res, 'SEARCH ROUTE RESULT'))
+      .catch((e) => console.error(e, 'SEARCH RESULT ERROR'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (Array.isArray(campaigns)) {
       if (debouncedQuery) {
-        setTableData(campaigns.filter(cmpg => cmpg.title.toLowerCase().includes(debouncedQuery)));
+        setTableData(campaigns.filter((cmpg) => cmpg.title.toLowerCase().includes(debouncedQuery)));
       } else {
         setTableData(campaigns);
       }
@@ -117,11 +121,13 @@ export default function CampaignListDataGrid() {
 
   useEffect(() => {
     if (searchQuery.length < 1) {
-      setTableData(campaigns)
+      setTableData(campaigns);
     } else {
-      setTableData(campaigns.filter(cmpg => cmpg.title.toLowerCase().includes(searchQuery.toLowerCase())));
+      setTableData(
+        campaigns.filter((cmpg) => cmpg.title.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
     }
-  }, [searchQuery, campaigns])
+  }, [searchQuery, campaigns]);
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -162,20 +168,24 @@ export default function CampaignListDataGrid() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.campaign.edit(id));
+      // @ts-expect-error
+      const pt = rolePath?.dashboard.campaign?.edit(id);
+      if (pt) router.push(pt);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [router]
   );
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.campaign.edit(id));
+      // @ts-expect-error
+      const pt = rolePath?.dashboard.campaign?.edit(id);
+      if (pt) router.push(pt);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [router]
   );
-
   const handleSearch = (inputValue: string) => {
-    console.log(inputValue, 'INPUT VALUE')
     setSearchQuery(inputValue);
   };
 
@@ -198,14 +208,6 @@ export default function CampaignListDataGrid() {
       headerName: 'Create at',
       width: 160,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
-    },
-    {
-      field: 'totalCheckins',
-      headerName: 'Total Checkins',
-      flex: 1,
-      minWidth: 360,
-      hideable: false,
-      renderCell: (params) => <RenderCellCheckin params={params} />,
     },
     {
       type: 'actions',
@@ -255,22 +257,18 @@ export default function CampaignListDataGrid() {
     defaultValues,
   });
 
-  const {
-    handleSubmit
-  } = methods;
+  const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      handleSearch(data.search)
+      handleSearch(data.search);
     } catch (error) {
       console.error(error);
     }
   });
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-
       <Grid container spacing={3} height="100%">
-
         <Card
           sx={{
             height: { xs: 800, md: 600 },
@@ -309,12 +307,16 @@ export default function CampaignListDataGrid() {
                       typeOptions={CAMPAIGN_TYPE_OPTIONS}
                     />
                     <Stack direction="row" spacing={3} alignItems="center">
-                      <RHFTextField name='search' placeholder='Search Campaigns' onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          onSubmit(); // Trigger the search function
-                        }
-                      }} />
-                      <IconButton type='submit' sx={{ height: "max-content" }}>
+                      <RHFTextField
+                        name="search"
+                        placeholder="Search Campaigns"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            onSubmit(); // Trigger the search function
+                          }
+                        }}
+                      />
+                      <IconButton type="submit" sx={{ height: 'max-content' }}>
                         <Iconify icon="eva:search-fill" />
                       </IconButton>
                     </Stack>
@@ -405,7 +407,9 @@ function applyFilter({
   const { type } = filters;
 
   if (type.length) {
-    inputData = inputData.filter((campaign) => type.map(x => x.toLowerCase()).includes(campaign.type.toLowerCase()));
+    inputData = inputData.filter((campaign) =>
+      type.map((x) => x.toLowerCase()).includes(campaign.type.toLowerCase())
+    );
   }
 
   return inputData;

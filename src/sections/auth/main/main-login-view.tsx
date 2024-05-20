@@ -37,7 +37,10 @@ export default function MainLoginView() {
 
   const realmApp = useRealmApp();
 
-  const role = useMemo(() => realmApp.currentUser?.customData?.role as unknown as string, [realmApp.currentUser?.customData?.role])
+  const role = useMemo(
+    () => realmApp.currentUser?.customData?.role as unknown as string,
+    [realmApp.currentUser?.customData?.role]
+  );
 
   const router = useRouter();
 
@@ -76,10 +79,10 @@ export default function MainLoginView() {
 
       const rolePath = getRolePath(role);
 
-      router.push(returnTo || rolePath);
+      router.push(returnTo || rolePath.root);
     } catch (error) {
       reset();
-      if (isObject(error) && "error" in error && isString(error.error)) {
+      if (isObject(error) && 'error' in error && isString(error.error)) {
         setErrorMsg(error?.error);
       } else {
         setErrorMsg(typeof error === 'string' ? error : error?.message);

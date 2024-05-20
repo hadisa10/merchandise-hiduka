@@ -1,3 +1,6 @@
+import { useRouter } from 'next/router';
+import { useMemo, useCallback } from 'react';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -6,10 +9,12 @@ import { GridCellParams } from '@mui/x-data-grid';
 import ListItemText from '@mui/material/ListItemText';
 import LinearProgress from '@mui/material/LinearProgress';
 
+import { getRolePath } from 'src/utils/helpers';
 import { fCurrency } from 'src/utils/format-number';
 import { fTime, fDate } from 'src/utils/format-time';
 
 import Label from 'src/components/label';
+import { useRealmApp } from 'src/components/realm';
 
 // ----------------------------------------------------------------------
 
@@ -63,6 +68,23 @@ export function RenderCellStock({ params }: ParamsProps) {
 }
 
 export function RenderCellProduct({ params }: ParamsProps) {
+  const { currentUser } = useRealmApp();
+
+  const role = useMemo(() => currentUser?.customData?.role as unknown as string, [currentUser?.customData?.role])
+
+  const rolePath = getRolePath(role);
+
+  const router = useRouter()
+
+
+  const handleViewRow = useCallback(
+    (id: string) => {
+      // @ts-expect-error expected
+      router.push(rolePath?.campaign?.edit(id) ?? "#");
+    },
+    // @ts-expect-error expected
+    [router, rolePath?.campaign]
+  );
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
       <Avatar
@@ -79,7 +101,7 @@ export function RenderCellProduct({ params }: ParamsProps) {
             noWrap
             color="inherit"
             variant="subtitle2"
-            onClick={params.row.onViewRow}
+            onClick={() => handleViewRow(params.row._id.toString())}
             sx={{ cursor: 'pointer' }}
           >
             {params.row.name}

@@ -68,7 +68,6 @@ export default function AccountPopover() {
 
   const handleLogout = async () => {
     try {
-      console.log("TEST")
       await realmApp.logOut();
       popover.onClose();
       router.replace(paths.auth.main.login);

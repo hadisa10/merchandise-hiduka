@@ -1,4 +1,4 @@
-import React from 'react'
+import { AdminDashboardView } from "src/sections-v2/admin/ad-dashboard";
 
 // ----------------------------------------------------------------------
 
@@ -6,10 +6,10 @@ export const metadata = {
   title: 'Dashboard',
 };
 
-function AdminDashboardView() {
+function AdminDashboardPage() {
   return (
-    <div>Admin Dashboard View</div>
+    <AdminDashboardView />
   )
 }
 
-export default AdminDashboardView
+export default AdminDashboardPage

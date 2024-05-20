@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
-import * as Realm from "realm-web";
-import { useMemo, useCallback } from 'react';
+import * as Realm from 'realm-web';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -19,6 +19,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useClients } from 'src/hooks/realm';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useUsers } from 'src/hooks/realm/user/use-user-graphql';
 
 import { fData } from 'src/utils/format-number';
@@ -54,9 +55,33 @@ export default function ClientNewEditForm({ currentClient }: Props) {
 
   const { users } = useUsers();
 
+  const loading = useBoolean(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [clients, setClients] = useState<IClient[] | null>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    loading.onTrue();
+    setError(null);
+    realmApp.currentUser?.functions
+      .getUserClients()
+      .then((data: IClient[]) => setClients(data))
+      .catch((e) => {
+        console.error(e);
+        setError(e);
+        enqueueSnackbar('Failed to get your clients', { variant: 'error' });
+      })
+      .finally(() => loading.onFalse());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { saveClient } = useClients(true);
 
-  const role = useMemo(() => realmApp.currentUser?.customData?.role as unknown as IRole, [realmApp.currentUser?.customData?.role])
+  const role = useMemo(
+    () => realmApp.currentUser?.customData?.role as unknown as IRole,
+    [realmApp.currentUser?.customData?.role]
+  );
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -66,7 +91,11 @@ export default function ClientNewEditForm({ currentClient }: Props) {
     client_plan: Yup.string().required('Plan is required'),
     // not required
     active: Yup.boolean(),
-    users: Yup.lazy(() => Yup.array().of(Yup.string().required('User is required').email("Invalid email")).min(1, 'Select atleas one user'))
+    users: Yup.lazy(() =>
+      Yup.array()
+        .of(Yup.string().required('User is required').email('Invalid email'))
+        .min(1, 'Select atleas one user')
+    ),
   });
 
   const defaultValues = useMemo(
@@ -74,7 +103,9 @@ export default function ClientNewEditForm({ currentClient }: Props) {
       name: currentClient?.name || '',
       client_icon: currentClient?.client_icon || '',
       client_plan: currentClient?.client_plan || '',
-      active: currentClient?.active || false,
+      active: currentClient?.active || true,
+      // children: currentClient?.children || [],
+      // parent: currentClient?.parent || '',
       users: currentClient?.users || [],
     }),
     [currentClient]
@@ -97,73 +128,78 @@ export default function ClientNewEditForm({ currentClient }: Props) {
   const values = watch();
 
   const handleSelectPlan = (clientPlan: string) => {
-    setValue("client_plan", clientPlan, { shouldValidate: true });
-  }
+    setValue('client_plan', clientPlan, { shouldValidate: true });
+  };
 
-  const renderPlans = useMemo(() => _userPlans.map((plan) => (
-    <Grid xs={12} md={4} key={plan.subscription}>
-      <Stack
-        component={Paper}
-        variant="outlined"
-        onClick={() => handleSelectPlan(plan.subscription)}
-        sx={{
-          p: 2.5,
-          position: 'relative',
-          cursor: 'pointer',
-          ...(plan.primary && {
-            opacity: 0.48,
-            cursor: 'default',
-          }),
-          ...((plan.subscription)?.toLowerCase() === (values.client_plan)?.toLowerCase() && {
-            boxShadow: (theme) => `0 0 0 2px ${theme.palette.text.primary}`,
-          }),
-        }}
-      >
-        {plan.primary && (
-          <Label
-            color="info"
-            startIcon={<Iconify icon="eva:star-fill" />}
-            sx={{ position: 'absolute', top: 8, right: 8 }}
+  const renderPlans = useMemo(
+    () =>
+      _userPlans.map((plan) => (
+        <Grid xs={12} md={4} key={plan.subscription}>
+          <Stack
+            component={Paper}
+            variant="outlined"
+            onClick={() => handleSelectPlan(plan.subscription)}
+            sx={{
+              p: 2.5,
+              position: 'relative',
+              cursor: 'pointer',
+              ...(plan.primary && {
+                opacity: 0.48,
+                cursor: 'default',
+              }),
+              ...(plan.subscription?.toLowerCase() === values.client_plan?.toLowerCase() && {
+                boxShadow: (theme) => `0 0 0 2px ${theme.palette.text.primary}`,
+              }),
+            }}
           >
-            Current
-          </Label>
-        )}
+            {plan.primary && (
+              <Label
+                color="info"
+                startIcon={<Iconify icon="eva:star-fill" />}
+                sx={{ position: 'absolute', top: 8, right: 8 }}
+              >
+                Current
+              </Label>
+            )}
 
-        <Box sx={{ width: 48, height: 48 }}>
-          {plan.subscription === 'basic' && <PlanFreeIcon />}
-          {plan.subscription === 'starter' && <PlanStarterIcon />}
-          {plan.subscription === 'premium' && <PlanPremiumIcon />}
-        </Box>
-
-        <Box
-          sx={{
-            typography: 'subtitle2',
-            mt: 2,
-            mb: 0.5,
-            textTransform: 'capitalize',
-          }}
-        >
-          {plan.subscription}
-        </Box>
-
-        <Stack direction="row" alignItems="center" sx={{ typography: 'h4' }}>
-          {plan.subscription !== 'basic' && "Ksh "}{plan.price || 'Free'}
-
-          {!!plan.price && (
-            <Box component="span" sx={{ typography: 'body2', color: 'text.disabled', ml: 0.5 }}>
-              /mo
+            <Box sx={{ width: 48, height: 48 }}>
+              {plan.subscription === 'basic' && <PlanFreeIcon />}
+              {plan.subscription === 'starter' && <PlanStarterIcon />}
+              {plan.subscription === 'premium' && <PlanPremiumIcon />}
             </Box>
-          )}
-        </Stack>
-      </Stack>
-    </Grid>
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  )), [values]);
 
+            <Box
+              sx={{
+                typography: 'subtitle2',
+                mt: 2,
+                mb: 0.5,
+                textTransform: 'capitalize',
+              }}
+            >
+              {plan.subscription}
+            </Box>
+
+            <Stack direction="row" alignItems="center" sx={{ typography: 'h4' }}>
+              {plan.subscription !== 'basic' && 'Ksh '}
+              {plan.price || 'Free'}
+
+              {!!plan.price && (
+                <Box component="span" sx={{ typography: 'body2', color: 'text.disabled', ml: 0.5 }}>
+                  /mo
+                </Box>
+              )}
+            </Stack>
+          </Stack>
+        </Grid>
+      )),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [values]
+  );
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const cpPhotoURL = data.client_icon?.path ?? "none"
+      const cpPhotoURL =
+        typeof data.client_icon === 'string' ? data.client_icon : data.client_icon?.path ?? 'none';
       const dt = new Date();
       if (!currentClient) {
         if (realmApp.currentUser?.customData._id) {
@@ -173,21 +209,22 @@ export default function ClientNewEditForm({ currentClient }: Props) {
             creator: {
               _id: realmApp.currentUser?.customData._id as Realm.BSON.ObjectId,
               name: realmApp.currentUser?.customData.displayName as string,
-              email: realmApp.currentUser?.customData.email as string
+              email: realmApp.currentUser?.customData.email as string,
             },
-            users: data.users?.map(usr => ({
-              email: usr,
-              verified: false,
-              dateAdded: dt,
-            })) ?? [],
+            users:
+              data.users?.map((usr) => ({
+                email: usr,
+                verified: false,
+                dateAdded: dt,
+              })) ?? [],
             active: data.active ?? false,
-            client_icon: cpPhotoURL
-          }
+            client_icon: cpPhotoURL,
+          };
           await saveClient(newClient);
-          
-          console.log(data, 'DATA')
+
+          console.log(data, 'DATA');
           router.push(paths.dashboard.client.root);
-          enqueueSnackbar("Client Created");
+          enqueueSnackbar('Client Created');
           reset();
         }
 
@@ -197,9 +234,9 @@ export default function ClientNewEditForm({ currentClient }: Props) {
       router.push(paths.dashboard.user.root);
       reset();
       return await new Promise((resolve) => setTimeout(resolve, 500));
-    } catch (error) {
-      enqueueSnackbar(currentClient ? 'Update failed!' : 'Update Failed!', { variant: "error" });
-      console.error(error);
+    } catch (e) {
+      enqueueSnackbar(currentClient ? 'Update failed!' : 'Update Failed!', { variant: 'error' });
+      console.error(e);
       return await new Promise((resolve) => setTimeout(resolve, 500));
     }
   });
@@ -225,14 +262,10 @@ export default function ClientNewEditForm({ currentClient }: Props) {
           <Card sx={{ pt: 10, pb: 5, px: 3 }}>
             {currentClient && (
               <Label
-                color={
-                  (values.active && 'success') ||
-                  (!values.active && 'error') ||
-                  'error'
-                }
+                color={(values.active && 'success') || (!values.active && 'error') || 'error'}
                 sx={{ position: 'absolute', top: 24, right: 24 }}
               >
-                {values.active ? "Active" : "In Active"}
+                {values.active ? 'Active' : 'In Active'}
               </Label>
             )}
 
@@ -270,9 +303,7 @@ export default function ClientNewEditForm({ currentClient }: Props) {
                       <Switch
                         {...field}
                         checked={field.value}
-                        onChange={(event) =>
-                          field.onChange(event.target.checked)
-                        }
+                        onChange={(event) => field.onChange(event.target.checked)}
                       />
                     )}
                   />
@@ -304,7 +335,7 @@ export default function ClientNewEditForm({ currentClient }: Props) {
 
             {currentClient && (
               <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                <Button variant="soft" color="error" disabled={role !== "admin"}>
+                <Button variant="soft" color="error" disabled={role !== 'admin'}>
                   Delete Client
                 </Button>
               </Stack>
@@ -332,12 +363,12 @@ export default function ClientNewEditForm({ currentClient }: Props) {
                 freeSolo
                 disableCloseOnSelect
                 options={users}
-                getOptionLabel={(option) => typeof option === 'string' ? option : option.email}
+                getOptionLabel={(option) => (typeof option === 'string' ? option : option.email)}
                 isOptionEqualToValue={(option, value) => option.email === value.email}
                 onChange={(event, value) => {
-                  // Assuming `setValue` is available in the component's scope, 
+                  // Assuming `setValue` is available in the component's scope,
                   // e.g., from useForm() hook or passed as a prop
-                  const emails = value.map((val) => typeof val === 'string' ? val : val.email);
+                  const emails = value.map((val) => (typeof val === 'string' ? val : val.email));
                   setValue('users', emails, { shouldValidate: true });
                 }}
                 renderOption={(props, option) => (
@@ -358,12 +389,72 @@ export default function ClientNewEditForm({ currentClient }: Props) {
                   ))
                 }
               />
+
+              {/* <RHFAutocomplete
+                name="parent"
+                label="Client"
+                placeholder="Select client"
+                loading={loading.value}
+                freeSolo
+                options={clients?.map((clnt) => clnt._id?.toString()) ?? []}
+                getOptionLabel={(option) => {
+                  const client = clients?.find(
+                    (clnt) => clnt._id?.toString() === option.toString()
+                  );
+                  if (client) {
+                    return client?.name;
+                  }
+                  return option;
+                }}
+                renderOption={(props, option) => {
+                  const client = clients?.filter(
+                    (clnt) => clnt._id?.toString() === option.toString()
+                  )[0];
+
+                  if (!client?._id) {
+                    return null;
+                  }
+
+                  return (
+                    <li {...props} key={client?._id?.toString()}>
+                      {client?.name}
+                    </li>
+                  );
+                }}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => {
+                    const client = clients?.find((clnt) => clnt._id?.toString() === option);
+                    return (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={client?._id?.toString() ?? ''}
+                        label={client?.name ?? ''}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    );
+                  })
+                }
+              /> */}
             </Box>
-            <Grid container spacing={2} sx={{ my: 4, mx: 0.5, p: 1 }}
-              border={theme => `1px ${errors.client_plan ? theme.palette.error.main : theme.palette.text.disabled} dashed`}
-              borderRadius={1}>
+            <Grid
+              container
+              spacing={2}
+              sx={{ my: 4, mx: 0.5, p: 1 }}
+              border={(theme) =>
+                `1px ${
+                  errors.client_plan ? theme.palette.error.main : theme.palette.text.disabled
+                } dashed`
+              }
+              borderRadius={1}
+            >
               {renderPlans}
-              {errors.client_plan && <Typography color="error" variant="caption" marginLeft={1}>Select a client plan</Typography>}
+              {errors.client_plan && (
+                <Typography color="error" variant="caption" marginLeft={1}>
+                  Select a client plan
+                </Typography>
+              )}
             </Grid>
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

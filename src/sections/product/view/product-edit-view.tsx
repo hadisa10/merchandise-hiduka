@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
+import { useMemo, useState, useEffect } from 'react';
 
 import Container from '@mui/material/Container';
 
-import { paths } from 'src/routes/paths';
-
 import { useProducts } from 'src/hooks/realm';
 
+import { getRolePath } from 'src/utils/helpers';
+
+import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
@@ -25,27 +26,40 @@ type Props = {
 export default function ProductEditView({ id }: Props) {
   const settings = useSettingsContext();
 
-  const { getProduct } = useProducts()
-  
-  const [currentProduct, setCurrentProduct] = useState<IProductItem | undefined>(undefined)
+  const { getProduct } = useProducts();
+
+  const [currentProduct, setCurrentProduct] = useState<IProductItem | undefined>(undefined);
+
+  const { currentUser } = useRealmApp();
+
+  const role = useMemo(
+    () => currentUser?.customData?.role as unknown as string,
+    [currentUser?.customData?.role]
+  );
+
+  const rolePath = getRolePath(role);
 
   useEffect(() => {
-    getProduct(id).then(product => {
-      if (product?.data?.product) {
-        setCurrentProduct(product?.data?.product)
-      }
-    }).catch(e => enqueueSnackbar("Product Not found", { variant: "error" }))
-  }, [getProduct, id])
+    getProduct(id)
+      .then((product) => {
+        if (product?.data?.product) {
+          setCurrentProduct(product?.data?.product);
+        }
+      })
+      .catch((e) => enqueueSnackbar('Product Not found', { variant: 'error' }));
+  }, [getProduct, id]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Edit"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          // @ts-expect-error expected
+          { name: 'Dashboard', href: rolePath?.dashboard.root },
           {
             name: 'Product',
-            href: paths.dashboard.product.root,
+            // @ts-expect-error expected
+            href: rolePath?.product.root,
           },
           { name: currentProduct?.name },
         ]}

@@ -19,14 +19,14 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify';
 
-import { IInvoice } from 'src/types/invoice';
+import { IUpdateInvoice } from 'src/types/realm/realm-types';
 
 import InvoicePDF from './invoice-pdf';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  invoice: IInvoice;
+  invoice: IUpdateInvoice;
   currentStatus: string;
   onChangeStatus: (event: React.ChangeEvent<HTMLInputElement>) => void;
   statusOptions: {
@@ -46,7 +46,7 @@ export default function InvoiceToolbar({
   const view = useBoolean();
 
   const handleEdit = useCallback(() => {
-    router.push(paths.dashboard.invoice.edit(invoice._id));
+    router.push(paths.dashboard.invoice.edit(invoice._id.toString()));
   }, [invoice._id, router]);
 
   return (
@@ -72,7 +72,7 @@ export default function InvoiceToolbar({
 
           <PDFDownloadLink
             document={<InvoicePDF invoice={invoice} currentStatus={currentStatus} />}
-            fileName={invoice.invoiceNumber}
+            fileName={invoice.invoiceNumber.toString()}
             style={{ textDecoration: 'none' }}
           >
             {({ loading }) => (

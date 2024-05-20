@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
 import { first, isNumber } from 'lodash';
+import { useMemo, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -8,10 +8,12 @@ import Avatar from '@mui/material/Avatar';
 import { GridCellParams } from '@mui/x-data-grid';
 import ListItemText from '@mui/material/ListItemText';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { getRolePath } from 'src/utils/helpers';
 import { fTime, fDate } from 'src/utils/format-time';
+
+import { useRealmApp } from 'src/components/realm';
 
 import { ICampaign } from 'src/types/realm/realm-types';
 
@@ -68,13 +70,21 @@ export function RenderCellCreatedAt({ params }: ParamsProps) {
 // }
 
 export function RenderCellCampaign({ params }: ParamsProps) {
+  const { currentUser } = useRealmApp();
+
+  const role = useMemo(() => currentUser?.customData?.role as unknown as string, [currentUser?.customData?.role])
+
+  const rolePath = getRolePath(role);
+
   const router = useRouter()
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.campaign.edit(id));
+      // @ts-expect-error expected
+      router.push(rolePath?.campaign?.edit(id) ?? "#");
     },
-    [router]
+    // @ts-expect-error expected
+    [router, rolePath?.campaign]
   );
 
   return (

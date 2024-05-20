@@ -1,12 +1,19 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
+import { Box } from '@mui/system';
+
 import { paths } from 'src/routes/paths';
 import { useRouter, usePathname } from 'src/routes/hooks';
+
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { getRolePath } from 'src/utils/helpers';
 
 import { useRealmApp } from 'src/components/realm';
-import { SplashScreen } from 'src/components/loading-screen';
+import { useClientContext } from 'src/components/clients';
+import { SplashScreen, LoadingScreen } from 'src/components/loading-screen';
+
+import { ERole } from 'src/types/client';
 
 import { useAuthContext } from '../hooks';
 
@@ -38,18 +45,22 @@ function Container({ children }: Props) {
 
   const { method } = useAuthContext();
 
+  const loadingPath = useBoolean();
+
   const { currentUser } = useRealmApp();
 
   const [checked, setChecked] = useState(false);
 
   const path = usePathname();
 
-  const role = useMemo(() => currentUser?.customData?.role as unknown as string, [currentUser?.customData?.role])
+  const role = useMemo(
+    () => (currentUser?.customData?.role as unknown as ERole) ?? 'merchant',
+    [currentUser?.customData?.role]
+  );
 
-
+  const { reset } = useClientContext();
 
   const redirectTo = () => {
-
     const searchParams = new URLSearchParams({
       returnTo: window.location.pathname,
     }).toString();
@@ -59,13 +70,13 @@ function Container({ children }: Props) {
     const href = `${loginPath}?${searchParams}`;
 
     router.replace(href);
-  }
+  };
 
   const redirectToRole = () => {
     const rolePath = getRolePath(role);
     setChecked(true);
-    router.replace(rolePath);
-  }
+    router.replace(rolePath.root ?? paths.v2.agent.root);
+  };
   const check = useCallback(() => {
     try {
       // const { exp } = jwtDecode<JwtPayload>(currentUser?.accessToken as string ?? "") || {};
@@ -74,19 +85,20 @@ function Container({ children }: Props) {
 
       // return;
       if (!currentUser?.isLoggedIn) {
+        reset();
         redirectTo();
-      }
-      else if (!(currentUser?.customData?.isRegistered)) {
+      } else if (!currentUser?.customData?.isRegistered) {
         router.replace(paths.register);
-      }
-      else if (!path.includes(role.toLowerCase())) {
+      } else if (!path.includes(role.toLowerCase())) {
+        loadingPath.onTrue();
         redirectToRole();
-      }
-      else {
+        loadingPath.onFalse();
+      } else {
         setChecked(true);
       }
     } catch (error) {
-      console.log(error, "ERROR")
+      reset();
+      console.log(error, 'ERROR');
       redirectTo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,8 +109,12 @@ function Container({ children }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!checked) {
-    return null;
+  if (!checked || loadingPath.value) {
+    return (
+      <Box sx={{ height: '100%' }} display="flex" justifyContent="center" alignItems="center">
+        <LoadingScreen />
+      </Box>
+    );
   }
 
   return <>{children}</>;

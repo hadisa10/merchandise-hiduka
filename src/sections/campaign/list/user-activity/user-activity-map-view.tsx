@@ -21,7 +21,7 @@ import { bgBlur } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 
 import { IUser } from 'src/types/user_realm';
-import { CountryData } from 'src/types/campaign';
+import { IUserCheckinData } from 'src/types/campaign';
 import { IRoute, ICheckin, ICampaignRoutes, ICheckinsSessions } from 'src/types/realm/realm-types';
 
 import UserActivityRoutesMap from './routes/user-activity-routes-map';
@@ -55,11 +55,11 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
     const [routes, setRoutes] = useState<ICheckin[] | null>(null);
 
 
-    const [popupInfo, setPopupInfo] = useState<CountryData | null>(null)
+    const [popupInfo, setPopupInfo] = useState<IUserCheckinData | null>(null)
 
     const { getCampaignUserCheckins } = useCampaigns(true)
 
-    const handleSetPopupInfo = useCallback((pInfo: CountryData | null) => {
+    const handleSetPopupInfo = useCallback((pInfo: IUserCheckinData | null) => {
         setPopupInfo(pInfo);
     }, [])
 
@@ -76,7 +76,7 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
         // const prds = []
         zoomToRoute(longitude, latitude);
         setPopupInfo({
-            lnglat: [longitude, latitude],
+            lnglat: [latitude, longitude],
             address: addr,
             phoneNumber: phoneNumber ?? "",
             products: [],
@@ -87,7 +87,7 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
         const mapInstance = mapRef.current?.getMap();
         if (mapInstance) {
             mapInstance.flyTo({
-                center: [lng, lat],
+                center: [lat, lng],
                 zoom: 15,
                 essential: true,
             });
@@ -98,7 +98,6 @@ const UserActivityMapView: React.FC<UserActivityMapViewProps> = ({ handleNewRout
         if (startDate && endDate && user._id) {
             getCampaignUserCheckins(campaignId, startDate.toISOString(), endDate.toISOString(), user._id.toString())
                 .then(res => {
-                    console.log(res, 'RESPONSE')
                     setRoutes(res)
                 })
                 .catch(e => {

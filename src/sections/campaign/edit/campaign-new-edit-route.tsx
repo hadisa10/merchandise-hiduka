@@ -24,12 +24,11 @@ import CampaignSearchRoute from '../campaign-search-route';
 // ----------------------------------------------------------------------
 
 type CampaignNewEditRouteFormProps = {
-  handleNewRouteOpen: ({ lng, lat }: { lng: number, lat: number }) => void
+  handleNewRouteOpen: ({ lat, lng }: { lng: number, lat: number }) => void
   handleRemoveNewRoute: (route: number) => void;
   handleAddNewRoute: (route: IRoute) => void;
   campaignRoutes: ICampaignRoutes[];
 };
-
 
 const CampaignNewEditRouteForm: React.FC<CampaignNewEditRouteFormProps> = ({ handleNewRouteOpen, handleRemoveNewRoute, handleAddNewRoute, campaignRoutes }: CampaignNewEditRouteFormProps) => {
   const fetchDirections = useBoolean();
@@ -47,13 +46,14 @@ const CampaignNewEditRouteForm: React.FC<CampaignNewEditRouteFormProps> = ({ han
 
   const onSelectRoute = useCallback((campaignRoute: ICampaignRoutes) => {
     setSelectedRoute(campaignRoute._id.toString());
-    const [longitude, latitude] = campaignRoute.routeAddress?.location?.coordinates ?? [0, 0];
+    const [latitude, longitude] = campaignRoute.routeAddress?.location?.coordinates ?? [0, 0];
+    console.log(campaignRoute, "CAMPAIGN ROUTE")
     const addr = campaignRoute.routeAddress?.fullAddress ?? 'ME';
     const phoneNumber = campaignRoute.routeAddress?.phoneNumber ?? 'no-number'
     // const prds = []
     zoomToRoute(longitude, latitude);
     setPopupInfo({
-      lnglat: [longitude, latitude],
+      lnglat: [latitude, longitude],
       address: addr,
       phoneNumber,
       products: [],
@@ -115,8 +115,8 @@ const CampaignNewEditRouteForm: React.FC<CampaignNewEditRouteFormProps> = ({ han
               <RadioGroup
                 value={selectedRoute}
                 onChange={(e) => {
-                  const longitude = campaignRoute.routeAddress?.location?.coordinates?.[0]
-                  const latitude = campaignRoute.routeAddress?.location?.coordinates?.[1]
+                  const latitude = campaignRoute.routeAddress?.location?.coordinates?.[0]
+                  const longitude = campaignRoute.routeAddress?.location?.coordinates?.[1]
                   if (longitude && latitude) {
                     onSelectRoute(campaignRoute)
                   }

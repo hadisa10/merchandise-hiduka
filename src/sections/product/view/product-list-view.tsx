@@ -29,11 +29,15 @@ import { RouterLink } from 'src/routes/components';
 import { useProducts } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { getRolePath } from 'src/utils/helpers';
+
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 import { useSnackbar } from 'src/components/snackbar';
 import EmptyContent from 'src/components/empty-content';
+import { useClientContext } from 'src/components/clients';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -73,51 +77,84 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 export default function ProductListView({ campaignId }: { campaignId?: string }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const callProduct = useMemo(() => isString(campaignId), [campaignId])
+  const callProduct = useMemo(() => isString(campaignId), [campaignId]);
 
-  const { getCampaignProducts, loading: mainLoading, products: mainProducts } = useProducts(callProduct);
+  const { currentUser } = useRealmApp();
 
-  const loadingReport = useBoolean()
+  const role = useMemo(
+    () => currentUser?.customData?.role as unknown as string,
+    [currentUser?.customData?.role]
+  );
 
-  const [products, setProducts] = useState<IProductItem[]>([])
+  const rolePath = getRolePath(role);
+
+  const { getCampaignProducts } = useProducts(callProduct);
+
+  const loadingReport = useBoolean();
+
+  const [products, setProducts] = useState<IProductItem[]>([]);
 
   // eslint-disable-next-line
-  const [productError, setProductsError] = useState(null)
+  const [productError, setProductsError] = useState(null);
+  const mainLoading = useBoolean();
 
   const productsLoading = useMemo(() => {
     if (isString(campaignId)) {
-      return loadingReport.value
+      return loadingReport.value;
     }
-    return mainLoading
-  }, [mainLoading, loadingReport.value, campaignId])
+    return mainLoading.value;
+  }, [mainLoading.value, loadingReport.value, campaignId]);
 
   useEffect(() => {
     if (isString(campaignId) && !isEmpty(campaignId)) {
-      loadingReport.onTrue()
-      setProductsError(null)
+      loadingReport.onTrue();
+      setProductsError(null);
+      console.log();
       getCampaignProducts(campaignId.toString())
-        .then(res => {
-          setProductsError(null)
-          setProducts(res)
-        }
-        )
-        .catch(e => {
-          enqueueSnackbar("Failed to fetch campaign reports", { variant: "error" })
-          setProductsError(e.message)
-          console.error(e, "REPORT FETCH")
+        .then((res) => {
+          setProductsError(null);
+          setProducts(res);
+        })
+        .catch((e) => {
+          enqueueSnackbar('Failed to fetch campaign reports', { variant: 'error' });
+          setProductsError(e.message);
+          console.error(e, 'REPORT FETCH');
         })
         .finally(() => {
-          loadingReport.onFalse()
-        })
+          loadingReport.onFalse();
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [campaignId])
+  }, [campaignId]);
+
+  const { client } = useClientContext();
+
+  const [mainProducts, setMainProducts] = useState<IProductItem[]>([]);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [mainProductError, setMainProductsError] = useState<unknown>(null);
 
   useEffect(() => {
-    if (!isString(campaignId)) {
-      setProducts(mainProducts)
+    if (client && client?._id) {
+      mainLoading.onTrue();
+      setMainProductsError(null);
+      currentUser?.functions
+        .getClientProducts(client?._id.toString())
+        .then((data: IProductItem[]) => setMainProducts(data))
+        .catch((e) => {
+          console.error(e);
+          setMainProductsError(e);
+          enqueueSnackbar('Failed to get dashboard Metrics', { variant: 'error' });
+        })
+        .finally(() => mainLoading.onFalse());
     }
-  }, [campaignId, mainProducts])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client]);
+  useEffect(() => {
+    if (!isString(campaignId)) {
+      setProducts(mainProducts);
+    }
+  }, [campaignId, mainProducts]);
 
   const confirmRows = useBoolean();
 
@@ -179,16 +216,20 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
+      // @ts-expect-error
+      router.push(rolePath?.product?.edit(id) ?? '/');
     },
-    [router]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [router, rolePath]
   );
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.details(id));
+      // @ts-expect-error paths error
+      router.push(rolePath?.product?.details(id) ?? '/');
     },
-    [router]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [router, rolePath]
   );
 
   const columns: GridColDef[] = [
@@ -289,17 +330,19 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Dashboard', href: rolePath.root ?? paths.v2.agent.root },
             {
               name: 'Product',
-              href: paths.dashboard.product.root,
+              // @ts-expect-error
+              href: rolePath?.product?.root ?? paths.v2.agent.root,
             },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.product.new}
+              // @ts-expect-error
+              href={rolePath?.product?.new ?? paths.v2.agent.root}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
@@ -316,7 +359,7 @@ export default function ProductListView({ campaignId }: { campaignId?: string })
 
         <Card
           sx={{
-            height: { xs: 800, md: 2 },
+            height: { xs: 600, md: 600 },
             flexGrow: { md: 1 },
             display: { md: 'flex' },
             flexDirection: { md: 'column' },

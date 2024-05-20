@@ -7,13 +7,13 @@ import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
-import { useInvoices } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { useRealmApp } from 'src/components/realm';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import { IInvoice } from 'src/types/invoice';
+import { IUpdateInvoice } from 'src/types/realm/realm-types';
 
 import InvoiceDetails from '../invoice-details';
 
@@ -26,34 +26,27 @@ type Props = {
 export default function InvoiceDetailsView({ id }: Props) {
   const settings = useSettingsContext();
 
-  const { getInvoice } = useInvoices()
-
-  const [currentInvoice, setInvoice] = useState<IInvoice | undefined>(undefined)
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [invoiceError, setInvoiceError] = useState<String | undefined>(undefined)
-  console.log(currentInvoice, "CURRENT INVOICE")
+  const [currentInvoice, setInvoice] = useState<IUpdateInvoice | undefined>(undefined)
+  
   const invoiceLoading = useBoolean();
+
+  const realmApp = useRealmApp()
 
   useEffect(() => {
     invoiceLoading.onTrue()
-    getInvoice(id).then(invoice => {
-      if (invoice?.data?.invoice) {
-        setInvoice(invoice?.data?.invoice)
+    realmApp.currentUser?.functions.getInvoice(id.toString()).then((data: IUpdateInvoice) => setInvoice(data))
+      .catch(e => {
+        console.error(e)
+        enqueueSnackbar("Failed to get invoice", { variant: "error" })
       }
-      invoiceLoading.onFalse()
-    }).catch(e => {
-      setInvoiceError(JSON.stringify(e))
-      enqueueSnackbar("Order Not found", { variant: "error" })
-      invoiceLoading.onFalse()
-    }
-    )
+      )
+      .finally(() => invoiceLoading.onFalse())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getInvoice, id])
+  }, [id])
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={currentInvoice?.invoiceNumber}
+        heading={currentInvoice?.invoiceNumber.toString()}
         links={[
           {
             name: 'Dashboard',
@@ -63,7 +56,7 @@ export default function InvoiceDetailsView({ id }: Props) {
             name: 'Invoice',
             href: paths.dashboard.invoice.root,
           },
-          { name: currentInvoice?.invoiceNumber },
+          { name: currentInvoice?.invoiceNumber.toString() },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

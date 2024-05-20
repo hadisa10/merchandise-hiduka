@@ -1,7 +1,7 @@
 'use client';
 
 import { enqueueSnackbar } from 'notistack';
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -13,15 +13,17 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { useProducts } from 'src/hooks/realm';
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { getRolePath } from 'src/utils/helpers';
+
 import { PRODUCT_PUBLISH_OPTIONS } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
+import { useRealmApp } from 'src/components/realm';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 
@@ -63,28 +65,37 @@ type Props = {
 export default function ProductDetailsView({ id }: Props) {
   // const { product, productLoading, productError } = useGetProduct(id);
 
-  const { getProduct } = useProducts()
+  const { getProduct } = useProducts();
 
-  const [product, setProduct] = useState<IProductItem | undefined>(undefined)
-  const [productError, setProductError] = useState<String | undefined>(undefined)
+  const [product, setProduct] = useState<IProductItem | undefined>(undefined);
+  const [productError, setProductError] = useState<String | undefined>(undefined);
   const productLoading = useBoolean();
 
-  useEffect(() => {
-    productLoading.onTrue()
-    getProduct(id).then(res => {
-      if (res?.data?.product) {
-        setProduct(res?.data?.product)
-      }
-      productLoading.onFalse()
-    }).catch(e => {
-      setProductError(JSON.stringify(e))
-      enqueueSnackbar("Product Not found", { variant: "error" })
-      productLoading.onFalse()
-    }
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getProduct, id])
+  const { currentUser } = useRealmApp();
 
+  const role = useMemo(
+    () => currentUser?.customData?.role as unknown as string,
+    [currentUser?.customData?.role]
+  );
+
+  const rolePath = getRolePath(role);
+
+  useEffect(() => {
+    productLoading.onTrue();
+    getProduct(id)
+      .then((res) => {
+        if (res?.data?.product) {
+          setProduct(res?.data?.product);
+        }
+        productLoading.onFalse();
+      })
+      .catch((e) => {
+        setProductError(JSON.stringify(e));
+        enqueueSnackbar('Product Not found', { variant: 'error' });
+        productLoading.onFalse();
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getProduct, id]);
 
   const settings = useSettingsContext();
 
@@ -115,7 +126,8 @@ export default function ProductDetailsView({ id }: Props) {
       action={
         <Button
           component={RouterLink}
-          href={paths.dashboard.product.root}
+          // @ts-expect-error role path checks
+          href={rolePath?.product.root}
           startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
           sx={{ mt: 3 }}
         >
@@ -129,9 +141,12 @@ export default function ProductDetailsView({ id }: Props) {
   const renderProduct = product && (
     <>
       <ProductDetailsToolbar
-        backLink={paths.dashboard.product.root}
-        editLink={paths.dashboard.product.edit(`${product?._id}`)}
-        liveLink={paths.product.details(`${product?._id}`)}
+        // @ts-expect-error role path checks
+        backLink={rolePath?.product.root}
+        // @ts-expect-error role path checks
+        editLink={rolePath?.product.edit(`${product?._id}`)}
+        // @ts-expect-error role path checks
+        liveLink={rolePath?.product.edit(`${product?._id}`)}
         publish={publish || ''}
         onChangePublish={handleChangePublish}
         publishOptions={PRODUCT_PUBLISH_OPTIONS}

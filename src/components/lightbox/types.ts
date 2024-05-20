@@ -6,6 +6,7 @@ export interface LightBoxProps extends LightboxExternalProps {
   disabledZoom?: boolean;
   disabledVideo?: boolean;
   disabledTotal?: boolean;
+  disabledDownload?: boolean;
   disabledCaptions?: boolean;
   disabledSlideshow?: boolean;
   disabledThumbnails?: boolean;

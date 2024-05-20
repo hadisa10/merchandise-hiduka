@@ -1,7 +1,5 @@
-
 import { useFormContext } from 'react-hook-form';
 
-import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -10,10 +8,7 @@ import Typography from '@mui/material/Typography';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import {
-  JOB_WORKING_SCHEDULE_OPTIONS,
-} from 'src/_mock';
-
+import { LoadingScreen } from 'src/components/loading-screen';
 import {
   RHFEditor,
   RHFTextField,
@@ -25,15 +20,18 @@ import { ICampaign } from 'src/types/realm/realm-types';
 
 // ----------------------------------------------------------------------
 
-
-export default function ReportNewEditDetailsForm({campaigns, campaignsLoading}: { campaigns?: ICampaign[], campaignsLoading?: boolean }) {
+export default function ReportNewEditDetailsForm({
+  campaigns,
+  campaignsLoading,
+}: {
+  campaigns?: ICampaign[];
+  campaignsLoading?: boolean;
+}) {
   const { setValue, watch } = useFormContext();
 
-  const campaingsValue = watch("campaign_id");
+  const campaingsValue = watch('campaign_id');
 
   const mdUp = useResponsive('up', 'md');
-
-
 
   const renderDetails = (
     <>
@@ -88,54 +86,49 @@ export default function ReportNewEditDetailsForm({campaigns, campaignsLoading}: 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2">Report Details</Typography>
-              <RHFMultiCheckbox
-                row
-                spacing={4}
-                name="employmentTypes"
-                options={[]}
-              />
+              <RHFMultiCheckbox row spacing={4} name="employmentTypes" options={[]} />
             </Stack>
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Campaign</Typography>
+              {campaignsLoading && <LoadingScreen />}
+              {!campaignsLoading && (
+                <RHFAutocomplete
+                  name="campaign_id"
+                  label="Campaign"
+                  placeholder="Search campaign..."
+                  loading={campaignsLoading}
+                  options={Array.isArray(campaigns) ? campaigns.map((cmpg) => cmpg._id) : []}
+                  getOptionLabel={(option) => {
+                    const campaign = campaigns?.find((cmpg) => cmpg._id === option);
+                    if (campaign) {
+                      return campaign?.title;
+                    }
+                    console.log(option, 'option');
+                    return option;
+                  }}
+                  renderOption={(props, option) => {
+                    const campaign = campaigns?.filter((cmpg) => cmpg._id === option)[0];
 
-              <RHFAutocomplete
-                name="campaign_id"
-                label="Campaign"
-                placeholder="Search campaign..."
-                loading={campaignsLoading}
-                options={Array.isArray(campaigns) ? campaigns.map(cmpg => cmpg._id) : []}
-                getOptionLabel={(option) => {
-                  const campaign = campaigns?.find((cmpg) => cmpg._id === option);
-                  if (campaign) {
-                    return campaign?.title
-                  }
-                  console.log(option, "option")
-                  return option
-                }}
-                renderOption={(props, option) => {
-                  const campaign = campaigns?.filter(
-                    (cmpg) => cmpg._id === option
-                  )[0];
+                    if (!campaign?._id) {
+                      return null;
+                    }
 
-                  if (!campaign?._id) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={campaign._id.toString()}>
-                      {campaign?.title}
-                    </li>
-                  );
-                }}
-                value={campaingsValue || null} // Ensures the value is always an array, even if it's initially undefined
-                onChange={(event, newValue) => {
-                  setValue("campaign_id", newValue);
-                }}
-              />
+                    return (
+                      <li {...props} key={campaign._id.toString()}>
+                        {campaign?.title}
+                      </li>
+                    );
+                  }}
+                  value={campaingsValue || null} // Ensures the value is always an array, even if it's initially undefined
+                  onChange={(event, newValue) => {
+                    setValue('campaign_id', newValue);
+                  }}
+                />
+              )}
             </Stack>
 
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">Working schedule</Typography>
               <RHFAutocomplete
                 name="workingSchedule"
@@ -162,7 +155,7 @@ export default function ReportNewEditDetailsForm({campaigns, campaignsLoading}: 
                   ))
                 }
               />
-            </Stack>
+            </Stack> */}
           </Stack>
         </Card>
       </Grid>
@@ -173,7 +166,6 @@ export default function ReportNewEditDetailsForm({campaigns, campaignsLoading}: 
       {renderDetails}
 
       {renderProperties}
-
     </Grid>
   );
 }
