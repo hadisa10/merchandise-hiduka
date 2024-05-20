@@ -328,6 +328,7 @@ export default function ReportNewEditForm({ currentReport }: Props) {
     </Tabs>
   );
 
+  console.log(questions, 'questions');
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>

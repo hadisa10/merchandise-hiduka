@@ -351,18 +351,18 @@ export function generateShortUniqueId(company = 'COMPANY') {
 export const getRolePath = (rle: string) => {
   switch (rle) {
     case ERole.SUPERADMIN:
-      return paths.v2.superadmin;
+      return paths.v2[ERole.SUPERADMIN];
     case ERole.ADMIN:
-      return paths.v2.admin;
+      return paths.v2[ERole.ADMIN];
     case ERole.CLIENT:
-      return paths.v2.client;
+      return paths.v2[ERole.CLIENT];
     case ERole.PROJECT_MANAGER:
-      return paths.v2['project-manager'];
+      return paths.v2[ERole.PROJECT_MANAGER];
     case ERole.TEAM_LEAD:
-      return paths.v2['team-lead'];
+      return paths.v2[ERole.TEAM_LEAD];
     case ERole.AGENT:
     default:
-      return paths.v2.agent;
+      return paths.v2[ERole.AGENT];
   }
 };
 

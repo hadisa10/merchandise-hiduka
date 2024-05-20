@@ -1,4 +1,7 @@
-module.exports = {
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
   trailingSlash: true,
   modularizeImports: {
     '@mui/icons-material': {
@@ -19,3 +22,5 @@ module.exports = {
     return config;
   },
 };
+
+module.exports = nextConfig;

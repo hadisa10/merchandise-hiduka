@@ -80,6 +80,36 @@ const renderAdmin = (t: TFunction<'translation', undefined>) => {
       subheader: t('Dasboard'),
       items: [{ title: t('Dashboard'), path: adminPath.root, icon: ICONS.dashboard }],
     },
+    // ANALYSIS
+    // ----------------------------------------------------------------------
+    {
+      subheader: t('Analysis'),
+      items: [
+        {
+          title: t('Campaign Performance'),
+          path: paths.v2.admin['campaign-performance'],
+          icon: ICONS.campaign,
+        },
+        {
+          title: t('Activity Tracker'),
+          path: paths.v2.admin['activity-tracker'],
+          icon: ICONS.userPerformace,
+        },
+      ],
+    },
+
+    // User App
+    // ----------------------------------------------------------------------
+    {
+      subheader: t('User App'),
+      items: [
+        {
+          title: t('App'),
+          path: paths.v2.admin.userApp.root,
+          icon: ICONS.campaign,
+        },
+      ],
+    },
     // MANAGEMENT
     // ----------------------------------------------------------------------
     {
@@ -97,7 +127,7 @@ const renderAdmin = (t: TFunction<'translation', undefined>) => {
         },
         {
           title: t('products'),
-          path: paths.v2.admin.product,
+          path: paths.v2.admin.product.root,
           icon: ICONS.product,
         },
         // {
@@ -135,23 +165,6 @@ const renderAdmin = (t: TFunction<'translation', undefined>) => {
         },
       ],
     },
-    // ANALYSIS
-    // ----------------------------------------------------------------------
-    {
-      subheader: t('Analysis'),
-      items: [
-        {
-          title: t('Campaign Performance'),
-          path: paths.v2.admin['campaign-performance'],
-          icon: ICONS.campaign,
-        },
-        {
-          title: t('Activity Tracker'),
-          path: paths.v2.admin['activity-tracker'],
-          icon: ICONS.userPerformace,
-        },
-      ],
-    },
   ];
 };
 
@@ -164,6 +177,35 @@ const renderClient = (t: TFunction<'translation', undefined>) => {
     {
       subheader: t('overview'),
       items: [{ title: t('Dashboard'), path: clientPath.root, icon: ICONS.dashboard }],
+    },
+    // ANALYSIS
+    // ----------------------------------------------------------------------
+    {
+      subheader: t('Analysis'),
+      items: [
+        {
+          title: t('Campaign Performance'),
+          path: clientPath['campaign-performance'],
+          icon: ICONS.campaign,
+        },
+        {
+          title: t('Activity Tracker'),
+          path: clientPath['activity-tracker'],
+          icon: ICONS.userPerformace,
+        },
+      ],
+    },
+    // User App
+    // ----------------------------------------------------------------------
+    {
+      subheader: t('User App'),
+      items: [
+        {
+          title: t('App'),
+          path: paths.v2.client.userApp.root,
+          icon: ICONS.campaign,
+        },
+      ],
     },
 
     // MANAGEMENT
@@ -203,23 +245,6 @@ const renderClient = (t: TFunction<'translation', undefined>) => {
         },
       ],
     },
-    // ANALYSIS
-    // ----------------------------------------------------------------------
-    {
-      subheader: t('Analysis'),
-      items: [
-        {
-          title: t('Campaign Performance'),
-          path: clientPath['campaign-performance'],
-          icon: ICONS.campaign,
-        },
-        {
-          title: t('Activity Tracker'),
-          path: clientPath['activity-tracker'],
-          icon: ICONS.userPerformace,
-        },
-      ],
-    },
   ];
 };
 // ----------------------------------------------------------------------
@@ -232,6 +257,35 @@ const renderProjectManager = (t: TFunction<'translation', undefined>) => {
     {
       subheader: t('overview'),
       items: [{ title: t('Dashboard'), path: pmPaths.root, icon: ICONS.dashboard }],
+    },
+    // ANALYSIS
+    // ----------------------------------------------------------------------
+    {
+      subheader: t('Analysis'),
+      items: [
+        {
+          title: t('Campaign Performance'),
+          path: pmPaths['campaign-performance'],
+          icon: ICONS.campaign,
+        },
+        {
+          title: t('Activity Tracker'),
+          path: pmPaths['activity-tracker'],
+          icon: ICONS.userPerformace,
+        },
+      ],
+    },
+    // User App
+    // ----------------------------------------------------------------------
+    {
+      subheader: t('User App'),
+      items: [
+        {
+          title: t('App'),
+          path: paths.v2.client.userApp.root,
+          icon: ICONS.campaign,
+        },
+      ],
     },
 
     // MANAGEMENT
@@ -267,35 +321,29 @@ const renderProjectManager = (t: TFunction<'translation', undefined>) => {
         },
       ],
     },
-    // ANALYSIS
-    // ----------------------------------------------------------------------
-    {
-      subheader: t('Analysis'),
-      items: [
-        {
-          title: t('Campaign Performance'),
-          path: pmPaths['campaign-performance'],
-          icon: ICONS.campaign,
-        },
-        {
-          title: t('Activity Tracker'),
-          path: pmPaths['activity-tracker'],
-          icon: ICONS.userPerformace,
-        },
-      ],
-    },
   ];
 };
 // ----------------------------------------------------------------------
 
 const renderTeamLead = (t: TFunction<'translation', undefined>) => [
+  // User App
+  // ----------------------------------------------------------------------
+  {
+    subheader: t('User App'),
+    items: [
+      {
+        title: t('App'),
+        path: paths.v2['team-lead'].userApp.root,
+        icon: ICONS.campaign,
+      },
+    ],
+  },
   // OVERVIEW
   // ----------------------------------------------------------------------
   {
     subheader: t('overview'),
     items: [],
   },
-
   // MANAGEMENT
   // ----------------------------------------------------------------------
   {
@@ -309,6 +357,18 @@ const renderAgent = (t: TFunction<'translation', undefined>) => {
   const agentPath = getPathsForRole(ERole.AGENT);
 
   return [
+    // User App
+    // ----------------------------------------------------------------------
+    {
+      subheader: t('User App'),
+      items: [
+        {
+          title: t('App'),
+          path: paths.v2.agent.userApp.root,
+          icon: ICONS.campaign,
+        },
+      ],
+    },
     // Dashboard
     // ----------------------------------------------------------------------
     {

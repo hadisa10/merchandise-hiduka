@@ -1,6 +1,5 @@
 import { ClientCampaignDetailsView } from 'src/sections-v2/client/c-management';
 
-
 // ----------------------------------------------------------------------
 
 export const metadata = {

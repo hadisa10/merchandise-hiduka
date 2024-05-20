@@ -59,6 +59,8 @@ type Props = {
 export default function ProductShopDetailsView({ id }: Props) {
   const settings = useSettingsContext();
 
+  console.log('T');
+
   const checkout = useCheckoutContext();
 
   const [currentTab, setCurrentTab] = useState('description');

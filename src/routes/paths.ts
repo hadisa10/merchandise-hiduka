@@ -81,6 +81,8 @@ export const paths = {
       verify: `${ROOTS.AUTH}/main/verify`,
       register: `${ROOTS.AUTH}/main/register`,
       verified: `${ROOTS.AUTH}/main/verified`,
+      deletedSuccess: `${ROOTS.AUTH}/main/deleted-success`,
+      deletedDataSuccess: `${ROOTS.AUTH}/main/deleted-data-success`,
       retry: `${ROOTS.AUTH}/main/retry`,
       forgotPassword: `${ROOTS.AUTH}/main/forgot-password`,
       resetPassword: `${ROOTS.AUTH}/main/reset-password`,
@@ -260,11 +262,24 @@ export const paths = {
     [ERole.SUPERADMIN]: {
       root: `${ROOTS.V2}/superadmin/dashboard`,
       dashboard: `${ROOTS.V2}/superadmin/dashboard`,
+      userApp: {
+        root: `${ROOTS.V2}/admin/dashboard/user-app`,
+        edit: (id: string) => `${ROOTS.V2}/dashboard/user-app/${id}/checkin`,
+      },
     },
     [ERole.ADMIN]: {
       root: `${ROOTS.V2}/admin/dashboard`,
       dashboard: `${ROOTS.V2}/admin/dashboard`,
-      product: `${ROOTS.V2}/admin/dashboard/product`,
+      product: {
+        root: `${ROOTS.V2}/admin/dashboard/product`,
+        new: `${ROOTS.V2}/admin/dashboard/product/new`,
+        details: (id: string) => `${ROOTS.V2}/admin/dashboard/product/${id}`,
+        edit: (id: string) => `${ROOTS.V2}/admin/dashboard/product/${id}/edit`,
+      },
+      userApp: {
+        root: `${ROOTS.V2}/admin/dashboard/user-app`,
+        edit: (id: string) => `${ROOTS.V2}/admin/dashboard/user-app/${id}/checkin`,
+      },
       invoice: {
         root: `${ROOTS.V2}/admin/dashboard/invoice`,
         list: `${ROOTS.V2}/admin/dashboard/invoice`,
@@ -308,6 +323,16 @@ export const paths = {
         new: `${ROOTS.V2}/client/dashboard/project/new`,
         edit: (id: string) => `${ROOTS.V2}/client/dashboard/project/${id}/edit`,
       },
+      userApp: {
+        root: `${ROOTS.V2}/client/dashboard/user-app`,
+        edit: (id: string) => `${ROOTS.V2}/client/dashboard/user-app/${id}/checkin`,
+      },
+      product: {
+        root: `${ROOTS.V2}/client/product`,
+        new: `${ROOTS.V2}/client/product/new`,
+        details: (id: string) => `${ROOTS.V2}/client/product/${id}`,
+        edit: (id: string) => `${ROOTS.V2}/client/product/${id}/edit`,
+      },
       reports: {
         root: `${ROOTS.V2}/client/dashboard/report`,
         list: `${ROOTS.V2}/client/dashboard/report`,
@@ -332,6 +357,16 @@ export const paths = {
         new: `${ROOTS.V2}/project-manager/dashboard/project/new`,
         edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/project/${id}/edit`,
       },
+      userApp: {
+        root: `${ROOTS.V2}/project-manager/dashboard/user-app`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/user-app/${id}/checkin`,
+      },
+      product: {
+        root: `${ROOTS.V2}/project-manager/dashboard/product`,
+        new: `${ROOTS.V2}/project-manager/dashboard/product/new`,
+        details: (id: string) => `${ROOTS.V2}/project-manager/dashboard/product/${id}`,
+        edit: (id: string) => `${ROOTS.V2}/project-manager/dashboard/product/${id}/edit`,
+      },
       reports: {
         root: `${ROOTS.V2}/project-manager/dashboard/report`,
         list: `${ROOTS.V2}/project-manager/dashboard/report`,
@@ -349,10 +384,42 @@ export const paths = {
     },
     [ERole.TEAM_LEAD]: {
       root: `${ROOTS.V2}/team-lead/dashboard`,
+      userApp: {
+        root: `${ROOTS.V2}/team-lead/dashboard/user-app`,
+        edit: (id: string) => `${ROOTS.V2}/team-lead/dashboard/user-app/${id}/checkin`,
+      },
+      reports: {
+        root: `${ROOTS.V2}/team-lead/dashboard`,
+        list: `${ROOTS.V2}/team-lead/dashboard`,
+        new: `${ROOTS.V2}/team-lead/dashboard`,
+        edit: (id: string) => `${ROOTS.V2}/team-lead/dashboard`,
+      },
+      campaign: {
+        root: `${ROOTS.V2}/team-lead/dashboard`,
+        list: `${ROOTS.V2}/team-lead/dashboard`,
+        new: `${ROOTS.V2}/team-lead/dashboard`,
+        edit: (id: string) => `${ROOTS.V2}/team-lead/dashboard`,
+      },
       dashboard: `${ROOTS.V2}/team-lead/dashboard`,
     },
     [ERole.AGENT]: {
       root: `${ROOTS.V2}/agent/dashboard`,
+      userApp: {
+        root: `${ROOTS.V2}/agent/dashboard/user-app`,
+        edit: (id: string) => `${ROOTS.V2}/agent/dashboard/user-app/${id}/checkin`,
+      },
+      reports: {
+        root: `${ROOTS.V2}/agent/dashboard`,
+        list: `${ROOTS.V2}/agent/dashboard`,
+        new: `${ROOTS.V2}/agent/dashboard`,
+        edit: (id: string) => `${ROOTS.V2}/agent/dashboard`,
+      },
+      campaign: {
+        root: `${ROOTS.V2}/agent/dashboard`,
+        list: `${ROOTS.V2}/agent/dashboard`,
+        new: `${ROOTS.V2}/agent/dashboard`,
+        edit: (id: string) => `${ROOTS.V2}/agent/dashboard`,
+      },
       dashboard: `${ROOTS.V2}/agent/dashboard`,
     },
   },

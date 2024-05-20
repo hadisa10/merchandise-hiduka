@@ -72,7 +72,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
     city: Yup.string().required('City is required'),
     role: Yup.string().required('Role is required'),
     zipCode: Yup.string().required('Zip code is required'),
-    photoURL: Yup.mixed<any>().nullable().required('Avatar is required'),
+    photoURL: Yup.mixed<any>().nullable(),
     // not required
     status: Yup.string(),
     isVerified: Yup.boolean(),
@@ -94,7 +94,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       country: currentUser?.country || '',
       zipCode: currentUser?.zipCode || '',
       company: currentUser?.company === 'none' || !currentUser?.company ? '' : currentUser?.company,
-      photoURL: currentUser?.photoURL || null,
+      photoURL: currentUser?.photoURL || '',
       phoneNumber: currentUser?.phoneNumber || '',
       isVerified: currentUser?.isVerified || true,
       isPublic: currentUser?.isPublic || true,

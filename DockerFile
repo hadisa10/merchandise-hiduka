@@ -1,0 +1,23 @@
+# Use an official Node 18 runtime as a parent image
+FROM node:18-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json (or yarn.lock if you use Yarn)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install --production
+
+# Bundle app source
+COPY . .
+
+# Build your app
+RUN npm run build
+
+# Expose the port your app runs on
+EXPOSE 3000
+
+# Command to run your app
+CMD ["npm", "start"]

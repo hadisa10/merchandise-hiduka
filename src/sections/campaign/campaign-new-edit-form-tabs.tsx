@@ -204,8 +204,8 @@ export default function CampaignNewEditForm({ currentCampaign }: Props) {
     () => ({
       title: currentCampaign?.title || '',
       description: currentCampaign?.description || '',
-      client_id: currentCampaign?.client_id.toString() || '',
-      project_id: currentCampaign?.project_id.toString() || '',
+      client_id: currentCampaign?.client_id?.toString() || '',
+      project_id: currentCampaign?.project_id?.toString() || '',
       users: currentCampaign?.users?.map((user) => user.toString()) || [],
       startDate: currentCampaign?.startDate || '',
       type: currentCampaign?.type || 'type',

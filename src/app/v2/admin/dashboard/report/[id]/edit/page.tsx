@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------
 
-import { ReportEditView } from "src/sections/reports/view";
+import { ReportEditView } from 'src/sections/reports/view';
 
 export const metadata = {
   title: 'Dashboard: Report Edit',

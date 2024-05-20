@@ -1,13 +1,19 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
+import { Box } from '@mui/system';
+
 import { paths } from 'src/routes/paths';
 import { useRouter, usePathname } from 'src/routes/hooks';
+
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { getRolePath } from 'src/utils/helpers';
 
 import { useRealmApp } from 'src/components/realm';
 import { useClientContext } from 'src/components/clients';
-import { SplashScreen } from 'src/components/loading-screen';
+import { SplashScreen, LoadingScreen } from 'src/components/loading-screen';
+
+import { ERole } from 'src/types/client';
 
 import { useAuthContext } from '../hooks';
 
@@ -39,6 +45,8 @@ function Container({ children }: Props) {
 
   const { method } = useAuthContext();
 
+  const loadingPath = useBoolean();
+
   const { currentUser } = useRealmApp();
 
   const [checked, setChecked] = useState(false);
@@ -46,7 +54,7 @@ function Container({ children }: Props) {
   const path = usePathname();
 
   const role = useMemo(
-    () => currentUser?.customData?.role as unknown as string,
+    () => (currentUser?.customData?.role as unknown as ERole) ?? 'merchant',
     [currentUser?.customData?.role]
   );
 
@@ -67,7 +75,7 @@ function Container({ children }: Props) {
   const redirectToRole = () => {
     const rolePath = getRolePath(role);
     setChecked(true);
-    router.replace(rolePath.root);
+    router.replace(rolePath.root ?? paths.v2.agent.root);
   };
   const check = useCallback(() => {
     try {
@@ -82,7 +90,9 @@ function Container({ children }: Props) {
       } else if (!currentUser?.customData?.isRegistered) {
         router.replace(paths.register);
       } else if (!path.includes(role.toLowerCase())) {
+        loadingPath.onTrue();
         redirectToRole();
+        loadingPath.onFalse();
       } else {
         setChecked(true);
       }
@@ -99,8 +109,12 @@ function Container({ children }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!checked) {
-    return null;
+  if (!checked || loadingPath.value) {
+    return (
+      <Box sx={{ height: '100%' }} display="flex" justifyContent="center" alignItems="center">
+        <LoadingScreen />
+      </Box>
+    );
   }
 
   return <>{children}</>;

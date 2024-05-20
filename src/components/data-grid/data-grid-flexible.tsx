@@ -30,7 +30,6 @@ import EmptyContent from 'src/components/empty-content/empty-content';
 import Iconify from '../iconify';
 import Label, { LabelColor } from '../label';
 
-
 interface IColumnValueOption {
   value: any; // The value to match
   label: string; // The label to display
@@ -43,12 +42,12 @@ export interface IColumn {
   order: number;
   type: string;
   minWidth?: number;
-  valueOptions?: IColumnValueOption[]
-  action?: IColumnActions
+  valueOptions?: IColumnValueOption[];
+  action?: IColumnActions;
 }
 
 export interface IGenericColumn<T> {
-  field: keyof T | "actions";
+  field: keyof T | 'actions';
   label: string;
   type: string;
   minWidth?: number;
@@ -62,7 +61,7 @@ interface IColumnAction {
   label: string;
   icon: string; // Assuming the icon is specified as a string identifier for Iconify
   color?: string;
-  variant?: ButtonOwnProps["variant"];
+  variant?: ButtonOwnProps['variant'];
   action: (id: string) => void;
 }
 
@@ -73,8 +72,8 @@ interface IColumnActions {
 interface ISelectedColumnAction<RowType> {
   label: string;
   icon: string; // Assuming the icon is specified as a string identifier for Iconify
-  color?: ButtonOwnProps["color"];
-  variant?: ButtonOwnProps["variant"];
+  color?: ButtonOwnProps['color'];
+  variant?: ButtonOwnProps['variant'];
   action: (rows: RowType[]) => void;
 }
 
@@ -96,7 +95,7 @@ interface DataGridFlexibleProps<RowType extends GridRowModel> {
   title: string;
   loading?: boolean;
   hideColumn?: Record<string, boolean>;
-  customActions?: ISelectedColumnActions<RowType>
+  customActions?: ISelectedColumnActions<RowType>;
   customFilters?: ISelectedColumnFilter;
 }
 
@@ -126,112 +125,108 @@ interface DataGridFlexibleProps<RowType extends GridRowModel> {
 //   ]
 // };
 
-
 const renderActionsCell = (params: GridRowParams<any>, actions?: IColumnActions) => {
   const { id } = params;
 
   // Convert the actions object to an array of its values
-  const actionItems = actions ? Object.values(actions).map((action) => (
-    <GridActionsCellItem
-      component={Button}
-      icon={<Iconify icon={action.icon} />}
-      label={action.label}
-      color="error"
-      onClick={() => action.action(id.toString())}
-      showInMenu
-    />
-  )) : [];
+  const actionItems = actions
+    ? Object.values(actions).map((action) => (
+        <GridActionsCellItem
+          component={Button}
+          icon={<Iconify icon={action.icon} />}
+          label={action.label}
+          color="error"
+          onClick={() => action.action(id.toString())}
+          showInMenu
+        />
+      ))
+    : [];
 
   return actionItems;
 };
 
-
-const renderMainCell = <T,>(params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>, column?: IGenericColumn<T>) => {
+const renderMainCell = <T,>(
+  params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>,
+  column?: IGenericColumn<T>
+) => {
   const { value } = params;
   return (
     <Stack spacing={2} direction="row" alignItems="center" sx={{ minWidth: 0 }}>
-      <Avatar alt={value} sx={{ width: 36, height: 36 }} variant='rounded'>
+      <Avatar alt={value} sx={{ width: 36, height: 36 }} variant="rounded">
         {isString(value) && value.charAt(0).toUpperCase()}
       </Avatar>
       <Typography component="span" variant="body2" noWrap>
         {value}
       </Typography>
     </Stack>
-  )
+  );
 };
 
-const renderSelectCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>, valueOptions: IColumnValueOption[] | undefined) => {
+const renderSelectCell = (
+  params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>,
+  valueOptions: IColumnValueOption[] | undefined
+) => {
   const { value } = params;
   if (Array.isArray(valueOptions)) {
-    const matchedOption = valueOptions.find(option => option.value === value);
+    const matchedOption = valueOptions.find((option) => option.value === value);
     if (matchedOption) {
       // If there's a matched option, you can use its label and color for rendering
       return (
-        <Label
-          variant="soft"
-          color={matchedOption.color ?? "info"}
-          sx={{ mx: 'auto' }}
-        >
+        <Label variant="soft" color={matchedOption.color ?? 'info'} sx={{ mx: 'auto' }}>
           {value}
         </Label>
       );
     }
   }
   return (
-    <Label
-      variant="soft"
-      color="default"
-      sx={{ mx: 'auto' }}
-    >
+    <Label variant="soft" color="default" sx={{ mx: 'auto' }}>
       {value}
     </Label>
-  )
+  );
 };
 
 const renderBooleanCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  return (
-    value ? (
-      <Iconify icon="eva:checkmark-circle-2-fill" sx={{ color: 'primary.main' }} />
-    ) : (
-      '-'
-    )
-  )
-}
+  return value ? (
+    <Iconify icon="eva:checkmark-circle-2-fill" sx={{ color: 'primary.main' }} />
+  ) : (
+    '-'
+  );
+};
 
 const renderNumberCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  return <Typography variant='body2'>{value}</Typography>;
-}
+  return <Typography variant="body2">{value}</Typography>;
+};
 
 const renderStringCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  return <Typography variant='body2'>{value}</Typography>;
-}
+  return <Typography variant="body2">{value}</Typography>;
+};
 
 const renderImageCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  return <Avatar alt={value} src={value} sx={{ width: 36, height: 36 }} variant='rounded' />
-}
+  return <Avatar alt={value} src={value} sx={{ width: 36, height: 36 }} variant="rounded" />;
+};
 
 const renderArrayCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  return <Typography variant='body2'>{Array.isArray(value) && value.join(",")}</Typography>;
-}
+  return <Typography variant="body2">{Array.isArray(value) && value.join(',')}</Typography>;
+};
 
 const renderDateCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  return <Typography variant='body2'>{fDate(value)}</Typography>;
-}
+  return <Typography variant="body2">{fDate(value)}</Typography>;
+};
 const renderObjectCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  return <Typography variant='body2'>{JSON.stringify(value)}</Typography>;
-}
+  return <Typography variant="body2">{JSON.stringify(value)}</Typography>;
+};
 
 const renderDefaultCell = (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
   const { value } = params;
-  return <Typography variant='body2'>{JSON.stringify(value)}</Typography>;
-}
+  return <Typography variant="body2">{JSON.stringify(value)}</Typography>;
+};
 // Function to generate dynamic columns based on the columns array
 function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): GridColDef[] {
   return columnsArray
@@ -241,23 +236,30 @@ function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): 
         field: String(column.field),
         headerName: column.label,
         flex: 1,
-        minWidth: column.minWidth ?? 200
+        minWidth: column.minWidth ?? 200,
       };
       if (column.filterOperators) {
-        baseColDef.filterOperators = column.filterOperators
+        baseColDef.filterOperators = column.filterOperators;
       }
 
       // Conditional rendering logic based on column.type
       switch (column.type) {
-
         case 'main':
           return { ...baseColDef, renderCell: (params) => renderMainCell(params, column) };
         case 'select':
-          return { ...baseColDef, renderCell: (params) => renderSelectCell(params, column.valueOptions) };
+          return {
+            ...baseColDef,
+            renderCell: (params) => renderSelectCell(params, column.valueOptions),
+          };
         case 'boolean':
           return { ...baseColDef, renderCell: renderBooleanCell };
         case 'number':
-          return { ...baseColDef, renderCell: renderNumberCell };
+          return {
+            ...baseColDef,
+            // filterOperators: numberFilterOperators,
+            renderCell: renderNumberCell,
+            // renderEditCell: renderNumberEditInputCell,
+          };
         case 'string':
           return { ...baseColDef, renderCell: renderStringCell };
         case 'image':
@@ -265,7 +267,12 @@ function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): 
         case 'array':
           return { ...baseColDef, renderCell: renderArrayCell };
         case 'date':
-          return { ...baseColDef, renderCell: renderDateCell };
+          return {
+            ...baseColDef,
+            // filterOperators: dateFilterOperators,
+            // renderEditCell: renderDateEditInputCell,
+            renderCell: renderDateCell,
+          };
         case 'object':
           return { ...baseColDef, renderCell: renderObjectCell };
         case 'actions': // Add this case for actions
@@ -288,14 +295,10 @@ function generateDynamicColumns<RowType>(columnsArray: IColumnsArray<RowType>): 
     });
 }
 
-
-
 const customExportCsv = (apiRef: React.MutableRefObject<GridApi>, title: string) => {
   console.log(apiRef.current.exportDataAsCsv({ fileName: title }), 'CURRENT');
   return true;
 };
-
-
 
 // The DataGridFlexible component
 export default function DataGridFlexible<RowType extends GridRowModel>({
@@ -306,19 +309,22 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
   loading,
   title,
   customActions,
-  customFilters
+  customFilters,
 }: DataGridFlexibleProps<RowType>) {
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedRows, setSelectedRows] = useState<RowType[]>([]);
 
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(isObject(hideColumn) ? hideColumn : {});
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(
+    isObject(hideColumn) ? hideColumn : {}
+  );
 
   const columns = useMemo(() => generateDynamicColumns(columnsArray), [columnsArray]);
 
   const handleSelectionModelChange = (selectionModel: GridRowSelectionModel) => {
     // Map selected IDs to full row data
-    const selectedData = selectionModel.map(id => rows.find(row => getRowIdFn(row) === id)).filter(Boolean) as RowType[];
+    const selectedData = selectionModel
+      .map((id) => rows.find((row) => getRowIdFn(row) === id))
+      .filter(Boolean) as RowType[];
     setSelectedRows(selectedData);
   };
 
@@ -333,8 +339,16 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
       onRowSelectionModelChange={handleSelectionModelChange}
       columnVisibilityModel={columnVisibilityModel}
       onColumnVisibilityModelChange={setColumnVisibilityModel}
+      disableColumnFilter={false} // Make sure filters are not disabled
       slots={{
-        toolbar: () => <CustomToolbar title={title} selectedRows={selectedRows} customActions={customActions} customFilters={customFilters} />,
+        toolbar: () => (
+          <CustomToolbar
+            title={title}
+            selectedRows={selectedRows}
+            customActions={customActions}
+            customFilters={customFilters}
+          />
+        ),
         noRowsOverlay: () => <EmptyContent title="No Data" />,
         noResultsOverlay: () => <EmptyContent title="No results found" />,
       }}
@@ -347,7 +361,17 @@ export default function DataGridFlexible<RowType extends GridRowModel>({
   );
 }
 
-function CustomToolbar<RowType>({ title, selectedRows, customActions, customFilters }: { title: string, selectedRows: RowType[], customActions?: ISelectedColumnActions<RowType>, customFilters?: ISelectedColumnFilter }) {
+function CustomToolbar<RowType>({
+  title,
+  selectedRows,
+  customActions,
+  customFilters,
+}: {
+  title: string;
+  selectedRows: RowType[];
+  customActions?: ISelectedColumnActions<RowType>;
+  customFilters?: ISelectedColumnFilter;
+}) {
   const gridApiRef = useGridApiContext();
   return (
     <>
@@ -355,10 +379,7 @@ function CustomToolbar<RowType>({ title, selectedRows, customActions, customFilt
       <GridToolbarContainer>
         <Stack direction="row" spacing={2}>
           <GridToolbarQuickFilter />
-          {
-            customFilters &&
-            Object.values(customFilters).map(customFilter => customFilter)
-          }
+          {customFilters && Object.values(customFilters).map((customFilter) => customFilter)}
         </Stack>
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarColumnsButton />
@@ -374,16 +395,24 @@ function CustomToolbar<RowType>({ title, selectedRows, customActions, customFilt
 
       {/* Custom Actions Container */}
       {customActions && selectedRows.length > 0 && (
-        <Stack sx={{ px: 2, pt: 0, pb: 1, width: "100%" }} spacing={1}> {/* Adjust the margins/padding as needed */}
-          <Divider><Typography variant='caption' color="text.secondary">bulk actions</Typography></Divider>
-          <Stack direction="row" spacing={1} width="100%"> {/* Ensure there's some spacing between each button */}
+        <Stack sx={{ px: 2, pt: 0, pb: 1, width: '100%' }} spacing={1}>
+          {' '}
+          {/* Adjust the margins/padding as needed */}
+          <Divider>
+            <Typography variant="caption" color="text.secondary">
+              bulk actions
+            </Typography>
+          </Divider>
+          <Stack direction="row" spacing={1} width="100%">
+            {' '}
+            {/* Ensure there's some spacing between each button */}
             {Object.values(customActions).map((customAction) => (
               <Button
                 key={customAction.label}
-                size='small'
-                sx={{ width: "max-content" }}
-                variant={customAction.variant ?? "soft"}
-                color={customAction.color ?? "info"}
+                size="small"
+                sx={{ width: 'max-content' }}
+                variant={customAction.variant ?? 'soft'}
+                color={customAction.color ?? 'info'}
                 startIcon={<Iconify icon={customAction.icon} />} // Ensure you have a mapping for these icons
                 onClick={() => customAction.action(selectedRows)}
               >
@@ -397,3 +426,93 @@ function CustomToolbar<RowType>({ title, selectedRows, customActions, customFilt
     </>
   );
 }
+
+// const numberFilterOperators: GridFilterOperator<any>[] = [
+//   {
+//     label: 'Greater',
+//     value: '>',
+//     getApplyFilterFn: (filterItem) => {
+//       if (!filterItem.field || filterItem.value === undefined) {
+//         return null;
+//       }
+//       return ({ value }): boolean => Number(value) > Number(filterItem.value);
+//     },
+//   },
+//   {
+//     label: 'Less',
+//     value: '<',
+//     getApplyFilterFn: (filterItem) => {
+//       if (!filterItem.field || filterItem.value === undefined) {
+//         return null;
+//       }
+//       return ({ value }): boolean => Number(value) < Number(filterItem.value);
+//     },
+//   },
+//   {
+//     label: 'Equal',
+//     value: '=',
+//     getApplyFilterFn: (filterItem) => {
+//       if (!filterItem.field || filterItem.value === undefined) {
+//         return null;
+//       }
+//       return ({ value }): boolean => Number(value) === Number(filterItem.value);
+//     },
+//   },
+// ];
+
+// const dateFilterOperators: GridFilterOperator<any>[] = [
+//   {
+//     label: 'Before',
+//     value: 'before',
+//     getApplyFilterFn: (filterItem) => {
+//       if (!filterItem.value) return null;
+//       const filterDate = new Date(filterItem.value).getTime();
+//       return ({ value }) => new Date(value).getTime() < filterDate;
+//     },
+//   },
+//   {
+//     label: 'After',
+//     value: 'after',
+//     getApplyFilterFn: (filterItem) => {
+//       if (!filterItem.value) return null;
+//       const filterDate = new Date(filterItem.value).getTime();
+//       return ({ value }) => new Date(value).getTime() > filterDate;
+//     },
+//   },
+//   {
+//     label: 'On',
+//     value: 'on',
+//     getApplyFilterFn: (filterItem) => {
+//       if (!filterItem.value) return null;
+//       const targetDate = new Date(filterItem.value).setHours(0, 0, 0, 0);
+//       return ({ value }) => {
+//         const currentValue = new Date(value).setHours(0, 0, 0, 0);
+//         return currentValue === targetDate;
+//       };
+//     },
+//   },
+// ];
+// const renderDateEditInputCell = (params: any) => (
+//     <DateTimePicker
+//       label="Date"
+//       value={params.value}
+//       onChange={(newValue) => {
+//         params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue }, event);
+//         params.api.commitCellChange({ id: params.id, field: params.field });
+//         params.api.setCellMode(params.id, params.field, 'view');
+//       }}
+//     />
+//   );
+
+// const renderNumberEditInputCell = (params: any) => (
+//     <TextField
+//       label="Number"
+//       type="number"
+//       value={params.value}
+//       onChange={(newValue) => {
+//         params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue }, event);
+//         params.api.commitCellChange({ id: params.id, field: params.field });
+//         params.api.setCellMode(params.id, params.field, 'view');
+//       }}
+//     />
+//   );
