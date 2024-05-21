@@ -27,12 +27,12 @@ import Lightbox, { useLightBox } from 'src/components/lightbox';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { IColumn } from 'src/components/data-grid/data-grid-flexible';
 import { RHFSelect, RHFAutocomplete } from 'src/components/hook-form';
+import { numericFilterOperators } from 'src/components/data-grid/ranger-slider-filter';
 
 import MultiDownloadButton from 'src/sections/_examples/extra/dowload/image-dowload-btn';
 
 import { ICampaignUser } from 'src/types/user_realm';
 import { IReport, IFilledReport, IReportQuestion } from 'src/types/realm/realm-types';
-import { numericFilterOperators } from 'src/components/data-grid/ranger-slider-filter';
 
 // ----------------------------------------------------------------------
 
