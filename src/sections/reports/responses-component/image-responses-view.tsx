@@ -32,6 +32,7 @@ import MultiDownloadButton from 'src/sections/_examples/extra/dowload/image-dowl
 
 import { ICampaignUser } from 'src/types/user_realm';
 import { IReport, IFilledReport, IReportQuestion } from 'src/types/realm/realm-types';
+import { numericFilterOperators } from 'src/components/data-grid/ranger-slider-filter';
 
 // ----------------------------------------------------------------------
 
@@ -299,6 +300,8 @@ export default function ImageResponseView({
 
           const imgs: ResponseImages[] = [];
 
+          console.log(imgs, 'IMAGES 1');
+
           const answs = resAnswers.map((x) => {
             const usrNm = Array.isArray(x) ? x[0]?.userName : 'NA';
             const usrId = Array.isArray(x) ? x[0]?.userId : 'NA';
@@ -312,7 +315,7 @@ export default function ImageResponseView({
 
             d.forEach((z) => {
               const val = x.find((y) => y.question_id.toString() === z.field.toString());
-
+              console.log(val?.type, 'TYPE');
               if (val) {
                 t[`${val.question_id}:::type`] = val.type;
                 let answr: unknown = val.answer;
